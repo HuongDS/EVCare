@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EVCare_BackEnd")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5f8c321b64e8a79e6003bbe2d255f7a0db8f2bc4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c79877bbb118cbc26998d0e3684e6b03f9be9ad")]
 [assembly: System.Reflection.AssemblyProductAttribute("EVCare_BackEnd")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EVCare_BackEnd")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
