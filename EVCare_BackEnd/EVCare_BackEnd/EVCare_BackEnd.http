@@ -1,0 +1,6 @@
+@EVCare_BackEnd_HostAddress = http://localhost:5124
+
+GET {{EVCare_BackEnd_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
