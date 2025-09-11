@@ -11,6 +11,7 @@ namespace DataAccess.Entities
     {
         public int Id { get; set; }
         public string AccountId { get; set; }
+        public Account Account { get; set; }
         public string CCCD { get; set; }
         public int rate { get; set; }
         public decimal BaseSalary { get; set; }
