@@ -14,7 +14,7 @@ namespace DataAccess.Entities
         public Employee Employee { get; set; }
         public int TechnicianCategoryId { get; set; }
         public TechnicianCategory TechnicianCategory { get; set; }
-        public string Skill { get; set; }
+        
         public DateTime Created_At { get; set; }
 
     }

@@ -18,8 +18,14 @@ namespace DataAccess
 
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<VehiclesCategory> VehiclesCategories { get; set; }
+        public DbSet<Application> Applications { get; set; }
+
 
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Salary> Salaries { get; set; }
+
+        public DbSet<TechnicianCategory> TechnicianCategories { get; set; }
+        public DbSet<Technician> Technicians { get; set; }
         //public DbSet<Alert> Alerts { get; set; }
         //public DbSet<Application> Applications { get; set; }
         //public DbSet<Appointment> Appointments { get; set; }
@@ -28,6 +34,9 @@ namespace DataAccess
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<ServiceCategory> ServiceCategories { get; set; }
+        public DbSet<Service> Services { get; set; }
+        public DbSet<TechnicianSkill> TechnicianSkills { get; set; }
         //public DbSet<Invoices> Invoices { get; set; }
         //public DbSet<Order> Orders { get; set; }
         //public DbSet<OrderParts> OrderParts { get; set; }
@@ -43,6 +52,13 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new VehicleConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
             modelBuilder.ApplyConfiguration(new RefreshTokenConfigurtation());
+            modelBuilder.ApplyConfiguration(new TechnicianCategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new TechnicianConfiguration());
+            modelBuilder.ApplyConfiguration(new ServiceConfiguration());
+            modelBuilder.ApplyConfiguration(new ServiceCategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new TechnicianSkillConfigruation());
+            modelBuilder.ApplyConfiguration(new SalaryConfiguration());
+            modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
         }
         public async Task<int> SaveChangesAsync()
         {
