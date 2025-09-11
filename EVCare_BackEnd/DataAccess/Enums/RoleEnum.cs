@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Enums
 {
-    public enum Role
+    public enum RoleEnum
     {
         Admin,
         Staff,
-        Customer,
-        Technician
-
+        Technician,
+        Customer
     }
 }
