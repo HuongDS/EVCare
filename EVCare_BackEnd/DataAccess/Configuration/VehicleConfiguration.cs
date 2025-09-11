@@ -14,6 +14,25 @@ namespace DataAccess.Configuration
         public void Configure(EntityTypeBuilder<Vehicle> builder)
         {
             builder.HasKey(x => x.Id);
+            
+            builder.HasOne(x => x.Category)
+                   .WithMany(x=>x.Vehicles)
+                   .HasForeignKey(x => x.CategoryId)
+                   .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x=>x.Customer)
+                .WithMany(x=> x.Vehicles)
+                .HasForeignKey(x=> x.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasData(new Vehicle
+            {
+                Id=1,
+                CustomerId=1,
+                CategoryId=1,
+                Last_Appointment= new DateTime(2025, 02, 04),
+            });
+
+
 
         }
     }
