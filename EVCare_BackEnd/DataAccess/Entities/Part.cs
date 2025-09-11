@@ -7,14 +7,17 @@ using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
 {
-    public class Vehicles : IEntity, IDelete
+    public class Part : IEntity, IDelete, ICreate, IUpdate
     {
         public int Id { get; set; }
         public int CategoryId { get; set; }
-        public int CustomerId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public decimal Price { get; set; }
+        public int Stock { get; set; }
         public string Image { get; set; }
-        public decimal Last_Kilometer { get; set; }
-        public DateTime Last_Appointment { get; set; }
         public DateTime Deleted_At { get; set; }
+        public DateTime Create_At { get; set; }
+        public DateTime Updated_At { get; set; }
     }
 }
