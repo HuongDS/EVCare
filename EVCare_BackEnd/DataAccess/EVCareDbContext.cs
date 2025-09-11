@@ -16,17 +16,18 @@ namespace DataAccess
         {
         }
 
-        //public DbSet<Vehicle> Vehicles { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<VehiclesCategory> VehiclesCategories { get; set; }
 
-        //public DbSet<Account> Accounts { get; set; }
+        public DbSet<Account> Accounts { get; set; }
         //public DbSet<Alert> Alerts { get; set; }
         //public DbSet<Application> Applications { get; set; }
         //public DbSet<Appointment> Appointments { get; set; }
         //public DbSet<AppointmentImages> AppointmentImages { get; set; }
         //public DbSet<AppointmentService> AppointmentServices { get; set; }
-        //public DbSet<Customer> Customers { get; set; }
-        //public DbSet<Employee> Employees { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Employee> Employees { get; set; }
         //public DbSet<Invoices> Invoices { get; set; }
         //public DbSet<Order> Orders { get; set; }
         //public DbSet<OrderParts> OrderParts { get; set; }
@@ -37,6 +38,11 @@ namespace DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new VehicleCategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new AcccountConfigutation());
+            modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+            modelBuilder.ApplyConfiguration(new VehicleConfiguration());
+            modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
+            modelBuilder.ApplyConfiguration(new RefreshTokenConfigurtation());
         }
         public async Task<int> SaveChangesAsync()
         {

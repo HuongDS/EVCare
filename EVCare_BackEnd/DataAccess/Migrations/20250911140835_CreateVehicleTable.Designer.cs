@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250911140835_CreateVehicleTable")]
+    partial class CreateVehicleTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,100 +172,6 @@ namespace DataAccess.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Employee", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("BaseSalary")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("CCCD")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Deleted_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Updated_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("rate")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId")
-                        .IsUnique();
-
-                    b.ToTable("Employees");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AccountId = 1,
-                            BaseSalary = 12000000m,
-                            CCCD = "079123456789",
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Updated_At = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            rate = 5
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AccountId = 2,
-                            BaseSalary = 10000000m,
-                            CCCD = "079987654321",
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Updated_At = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            rate = 4
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AccountId = 4,
-                            BaseSalary = 15000000m,
-                            CCCD = "079555666777",
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Updated_At = new DateTime(2025, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.RefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.ToTable("RefreshTokens");
-                });
-
             modelBuilder.Entity("DataAccess.Entities.Vehicle", b =>
                 {
                     b.Property<int>("Id")
@@ -360,28 +269,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Employee", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Account", "Account")
-                        .WithOne("Employee")
-                        .HasForeignKey("DataAccess.Entities.Employee", "AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.RefreshToken", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Account", "Account")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-                });
-
             modelBuilder.Entity("DataAccess.Entities.Vehicle", b =>
                 {
                     b.HasOne("DataAccess.Entities.VehiclesCategory", "Category")
@@ -404,10 +291,6 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.Account", b =>
                 {
                     b.Navigation("Customer");
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>

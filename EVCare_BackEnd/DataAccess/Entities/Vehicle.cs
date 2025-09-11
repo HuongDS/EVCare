@@ -11,9 +11,12 @@ namespace DataAccess.Entities
     {
         public int Id { get; set; }
         public int CategoryId { get; set; }
+        public VehiclesCategory Category { get; set; }
+
         public int CustomerId { get; set; }
-        public string Image { get; set; }
-        public decimal Last_Kilometer { get; set; }
+        public Customer Customer { get; set; }
+        public string? Image { get; set; }
+        public decimal? Last_Kilometer { get; set; }
         public DateTime Last_Appointment { get; set; }
         public DateTime Deleted_At { get; set; }
     }
