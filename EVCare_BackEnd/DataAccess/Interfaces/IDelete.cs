@@ -9,5 +9,6 @@ namespace DataAccess.Interfaces
     public interface IDelete
     {
         public DateTime Deleted_At { get; set; }
+
     }
 }
