@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Interfaces
+namespace DataAccess.Enums
 {
-    public interface IDelete
+    public enum StockStatusEnum
     {
-        public DateTime Deleted_At { get; set; }
-
+        InStock,
+        LowStock,
+        OutOfStock
     }
 }

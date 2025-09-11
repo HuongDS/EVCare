@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Interfaces
+namespace DataAccess.Enums
 {
-    public interface IDelete
+    public enum PaymentMethodEnum
     {
-        public DateTime Deleted_At { get; set; }
-
+        Cash,
+        CreditCard,
     }
 }
