@@ -8,6 +8,7 @@ using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
 {
+
     public class Account : IEntity, ICreate, IUpdate, IDelete
     {
         public int Id { get; set; }
