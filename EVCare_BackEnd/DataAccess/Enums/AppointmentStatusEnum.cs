@@ -12,6 +12,6 @@ namespace DataAccess.Enums
         Confirmed,
         InProgress,
         Done,
-        
+        Canceled
     }
 }
