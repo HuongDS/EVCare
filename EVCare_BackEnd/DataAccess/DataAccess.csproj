@@ -1,15 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Repositories\**" />
-    <EmbeddedResource Remove="Repositories\**" />
-    <None Remove="Repositories\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Repositories\" />
+	</ItemGroup>
 
 </Project>
