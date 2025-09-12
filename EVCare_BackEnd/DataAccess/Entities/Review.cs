@@ -11,9 +11,9 @@ namespace DataAccess.Entities
     {
         public int Id { get; set; }
         public int AppointmentId { get; set; }
-     
+
         public string Content { get; set; }
-        public DateTime Create_At { get ; set ; }
+        public DateTime Create_At { get; set; }
         public ICollection<ReviewEmployee> ReviewEmployees { get; set; }
     }
 }

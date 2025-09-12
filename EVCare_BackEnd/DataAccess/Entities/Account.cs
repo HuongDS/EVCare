@@ -24,5 +24,5 @@ namespace DataAccess.Entities
         public Customer? Customer { get; set; }
         public Employee? Employee { get; set; }
         public ICollection<RefreshToken> RefreshTokens { get; set; }
-        }
+    }
 }
