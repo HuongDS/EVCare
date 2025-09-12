@@ -11,6 +11,7 @@ namespace DataAccess.Entities
     {
         public int Id { get; set; }
         public int AppointmentId { get; set; }
+        public Appointment Appointment { get; set; }
         public string Message { get; set; }
         public DateTime Create_At { get; set; }
         public bool Is_Read { get; set; }
