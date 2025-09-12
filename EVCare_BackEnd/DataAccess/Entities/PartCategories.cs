@@ -7,7 +7,7 @@ using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
 {
-    public class PartCategories : IEntity, ICreate, IUpdate, IDelete
+    public class PartCategory : IEntity, ICreate, IUpdate, IDelete
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -15,5 +15,6 @@ namespace DataAccess.Entities
         public DateTime Create_At { get; set; }
         public DateTime Updated_At { get; set; }
         public DateTime Deleted_At { get; set; }
+        public ICollection<Part> Parts { get; set; }
     }
 }
