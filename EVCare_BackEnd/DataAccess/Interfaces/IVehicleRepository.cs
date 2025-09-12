@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Interfaces
 {
-    public interface IRepository
+    public interface IVehicleRepository
     {
     }
 }

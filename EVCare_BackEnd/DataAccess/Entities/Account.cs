@@ -21,5 +21,8 @@ namespace DataAccess.Entities
         public DateTime Create_At { get; set; }
         public DateTime Updated_At { get; set; }
         public DateTime Deleted_At { get; set; }
-    }
+        public Customer? Customer { get; set; }
+        public Employee? Employee { get; set; }
+        public ICollection<RefreshToken> RefreshTokens { get; set; }
+        }
 }
