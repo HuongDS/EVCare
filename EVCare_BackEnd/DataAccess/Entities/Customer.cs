@@ -16,6 +16,9 @@ namespace DataAccess.Entities
         public string? Address { get; set; }
         public Account Account { get; set; }
         public ICollection<Vehicle> Vehicles { get; set; }
+        public ICollection<Appointment> Appointments { get; set; }  
+        public ICollection<Invoice> Invoices { get; set; }
+
     }
 
 }

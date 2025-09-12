@@ -19,5 +19,6 @@ namespace DataAccess.Entities
         public decimal? Last_Kilometer { get; set; }
         public DateTime Last_Appointment { get; set; }
         public DateTime Deleted_At { get; set; }
+        public ICollection<Appointment> Appointments { get; set; }
     }
 }
