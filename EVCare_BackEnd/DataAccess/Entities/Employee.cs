@@ -19,7 +19,9 @@ namespace DataAccess.Entities
         public DateTime Deleted_At { get ; set ; }
         public ICollection<Application> Applications { get; set; }
          public ICollection<Salary> Salaries { get; set; }
+        public ICollection<ReviewEmployee> ReviewEmployees { get; set; }
         public Technician? Technician { get; set; }
+        public ICollection<Appointment> Appointments { get; set; }
 
     }
 }

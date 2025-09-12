@@ -8,11 +8,13 @@ using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
 {
-    public class Invoices : IEntity, ICreate, IUpdate
+    public class Invoice : IEntity, ICreate, IUpdate
     {
         public int Id { get; set; }
         public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
         public int OrderId { get; set; }
+        public Order Order { get; set; }
         public decimal Total_Price { get; set; }
         public PaymentMethodEnum Payment_Method { get; set; }
         public DateTime Create_At { get; set; }
