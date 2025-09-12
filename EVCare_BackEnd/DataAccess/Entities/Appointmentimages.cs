@@ -7,7 +7,7 @@ using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
 {
-    public class Appointmentimages : IEntity
+    public class AppointmentImages : IEntity
     {
         public int Id { get; set; }
         public int AppointmentId { get; set; }

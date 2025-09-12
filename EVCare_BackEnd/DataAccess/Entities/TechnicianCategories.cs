@@ -14,6 +14,7 @@ namespace DataAccess.Entities
         public string Description { get; set; } 
         public DateTime Deleted_At { get ; set ; }
         public ICollection<Technician> Technicians { get; set; }
+        public ICollection<TechnicianSkill> TechnicianSkills { get; set; }
 
     }
 }
