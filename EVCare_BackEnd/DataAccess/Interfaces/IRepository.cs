@@ -4,14 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Enums
+namespace DataAccess.Interfaces
 {
-    public enum Role
+    public interface IRepository
     {
-        Admin,
-        Staff,
-        Customer,
-        Technician
-
     }
 }

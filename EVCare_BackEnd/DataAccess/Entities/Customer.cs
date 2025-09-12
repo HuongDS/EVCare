@@ -13,7 +13,9 @@ namespace DataAccess.Entities
         public int Id { get; set; }
         public int AccountId { get; set; }
         public CustomerRankEnum Rank { get; set; }
-        public string Address { get; set; }
+        public string? Address { get; set; }
+        public Account Account { get; set; }
+        public ICollection<Vehicle> Vehicles { get; set; }
     }
 
 }
