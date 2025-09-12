@@ -7,7 +7,7 @@ using DataAccess.Entities;
 
 namespace DataAccess.Interfaces
 {
-    public interface IPartCategoryRepository : IGenericRepository<PartCategories>
+    public interface IPartCategoryRepository : IGenericRepository<PartCategory>
     {
     }
 }

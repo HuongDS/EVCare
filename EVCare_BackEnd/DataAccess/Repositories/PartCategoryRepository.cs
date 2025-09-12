@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class PartCategoryRepository : GenericRepository<PartCategories>, IPartCategoryRepository
+    public class PartCategoryRepository : GenericRepository<PartCategory>, IPartCategoryRepository
     {
-        public PartCategoryRepository(EVCareDbContext dbContext, DbSet<PartCategories> dbSet) : base(dbContext, dbSet)
+        public PartCategoryRepository(EVCareDbContext dbContext, DbSet<PartCategory> dbSet) : base(dbContext, dbSet)
         {
         }
     }
