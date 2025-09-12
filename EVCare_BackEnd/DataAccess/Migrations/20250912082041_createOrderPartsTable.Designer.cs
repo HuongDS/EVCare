@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250912082041_createOrderPartsTable")]
+    partial class createOrderPartsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,34 +138,6 @@ namespace DataAccess.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Alert", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Create_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Is_Read")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId");
-
-                    b.ToTable("Alerts");
-                });
-
             modelBuilder.Entity("DataAccess.Entities.Application", b =>
                 {
                     b.Property<int>("Id")
@@ -255,28 +230,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("AppointmentId");
 
                     b.ToTable("AppointmentServices");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Appointmentimage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId");
-
-                    b.ToTable("AppointmentImages");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
@@ -377,41 +330,6 @@ namespace DataAccess.Migrations
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Updated_At = new DateTime(2025, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Invoice", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Create_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Payment_Method")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Total_Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("Updated_At")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Order", b =>
@@ -1436,17 +1354,6 @@ namespace DataAccess.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Alert", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Appointment", "Appointment")
-                        .WithMany("Alerts")
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Appointment");
-                });
-
             modelBuilder.Entity("DataAccess.Entities.Application", b =>
                 {
                     b.HasOne("DataAccess.Entities.Employee", "Employee")
@@ -1504,17 +1411,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Appointmentimage", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Appointment", "Appointment")
-                        .WithMany("AppointmentImages")
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Appointment");
-                });
-
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
                 {
                     b.HasOne("DataAccess.Entities.Account", "Account")
@@ -1535,25 +1431,6 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Invoice", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Customer", "Customer")
-                        .WithMany("Invoices")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Entities.Order", "Order")
-                        .WithMany("Invoices")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Order", b =>
@@ -1747,10 +1624,6 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.Appointment", b =>
                 {
-                    b.Navigation("Alerts");
-
-                    b.Navigation("AppointmentImages");
-
                     b.Navigation("AppointmentServices");
 
                     b.Navigation("Order");
@@ -1761,8 +1634,6 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
                 {
                     b.Navigation("Appointments");
-
-                    b.Navigation("Invoices");
 
                     b.Navigation("Vehicles");
                 });
@@ -1782,8 +1653,6 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.Order", b =>
                 {
-                    b.Navigation("Invoices");
-
                     b.Navigation("OrderParts");
 
                     b.Navigation("TechnicianWorkingSessions");

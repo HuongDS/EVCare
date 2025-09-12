@@ -12,6 +12,7 @@ namespace DataAccess.Entities
         public int ReviewId { get; set; }
         public Review Review { get; set; }
         public int EmployeeId { get; set; }
+        public Employee Employee { get; set; }
         public int Rates { get; set; }
         public DateTime Create_At { get; set; }
 
