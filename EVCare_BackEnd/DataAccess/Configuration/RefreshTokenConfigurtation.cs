@@ -14,7 +14,7 @@ namespace DataAccess.Configuration
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.HasOne(x=>x.Account).WithMany(x=>x.RefreshTokens).HasForeignKey(x=>x.AccountId).OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(x => x.Account).WithMany(x => x.RefreshTokens).HasForeignKey(x => x.AccountId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
