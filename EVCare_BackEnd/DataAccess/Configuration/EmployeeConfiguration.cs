@@ -13,15 +13,15 @@ namespace DataAccess.Configuration
     {
         public void Configure(EntityTypeBuilder<Employee> builder)
         {
-           builder.HasKey(x => x.Id);
-              builder.HasOne(x => x.Account)
-                    .WithOne(x => x.Employee)
-                    .HasForeignKey<Employee>(x => x.AccountId)
-                    .OnDelete(DeleteBehavior.Cascade);
-            builder.HasData( new Employee
+            builder.HasKey(x => x.Id);
+            builder.HasOne(x => x.Account)
+                  .WithOne(x => x.Employee)
+                  .HasForeignKey<Employee>(x => x.AccountId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            builder.HasData(new Employee
             {
                 Id = 1,
-                AccountId = 1,  
+                AccountId = 1,
                 CCCD = "079123456789",
                 rate = 5,
                 BaseSalary = 12000000m,
