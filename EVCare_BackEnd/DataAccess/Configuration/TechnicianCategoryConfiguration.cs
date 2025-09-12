@@ -48,6 +48,6 @@ new TechnicianCategory
             );
         }
     }
-    
-    }
+
+}
 

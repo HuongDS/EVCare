@@ -11,7 +11,7 @@ namespace DataAccess
 {
     public class EVCareDbContext : DbContext, IEVCareDbContext
     {
-  
+
         public EVCareDbContext(DbContextOptions<EVCareDbContext> options) : base(options)
         {
         }

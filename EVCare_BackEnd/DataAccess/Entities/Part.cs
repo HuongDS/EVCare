@@ -7,7 +7,7 @@ using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
 {
-    public class Part : IEntity, IDelete, ICreate, IUpdate
+    public class Part : IEntity, IDelete, ICreate, IUpdate, ICategory
     {
         public int Id { get; set; }
         public int CategoryId { get; set; }
