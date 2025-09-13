@@ -16,7 +16,8 @@ namespace DataAccess.Configuration
         {
             builder.HasKey(x => x.Id);
             builder.HasOne(x => x.Employee).WithOne(x => x.Technician).HasForeignKey<Technician>(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x => x.TechnicianCategory).WithMany(x => x.Technicians).HasForeignKey(x => x.TechnicianCategoryId).OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne(x => x.TechnicianCategory).WithMany(x => x.Technicians).HasForeignKey(x => x.TechnicianCategoryId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(x=>x.TechnicianSkills).WithOne(x=>x.Technician).HasForeignKey(x=>x.TechnicianId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
