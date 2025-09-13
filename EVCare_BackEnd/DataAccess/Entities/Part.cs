@@ -11,6 +11,7 @@ namespace DataAccess.Entities
     {
         public int Id { get; set; }
         public int CategoryId { get; set; }
+        public PartCategory Category { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }
@@ -19,5 +20,6 @@ namespace DataAccess.Entities
         public DateTime Deleted_At { get; set; }
         public DateTime Create_At { get; set; }
         public DateTime Updated_At { get; set; }
+        public ICollection<OrderPart> OrderParts { get; set; }
     }
 }
