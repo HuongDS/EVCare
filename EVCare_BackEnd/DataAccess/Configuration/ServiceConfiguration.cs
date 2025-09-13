@@ -14,10 +14,7 @@ namespace DataAccess.Configuration
         public void Configure(EntityTypeBuilder<Service> builder)
         {
             builder.HasKey(s => s.Id);
-            builder.HasOne(s => s.Category)
-                   .WithMany(sc => sc.Services)
-                   .HasForeignKey(s => s.CategoryId)
-                   .OnDelete(DeleteBehavior.Cascade);
+          
             builder.HasData(
                 // 🔧 Plumbing
                 new Service

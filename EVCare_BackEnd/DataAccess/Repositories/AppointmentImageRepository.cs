@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class AppointmentImageRepository : GenericRepository<AppointmentImages>, IAppointmentImageRepository
+    public class AppointmentImageRepository : GenericRepository<Appointmentimage>, IAppointmentImageRepository
     {
-        public AppointmentImageRepository(EVCareDbContext dbContext, DbSet<AppointmentImages> dbSet) : base(dbContext, dbSet)
+        public AppointmentImageRepository(EVCareDbContext dbContext, DbSet<Appointmentimage> dbSet) : base(dbContext, dbSet)
         {
         }
     }
