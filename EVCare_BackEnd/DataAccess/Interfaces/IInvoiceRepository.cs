@@ -7,7 +7,7 @@ using DataAccess.Entities;
 
 namespace DataAccess.Interfaces
 {
-    public interface IInvoiceRepository : IGenericRepository<Invoices>
+    public interface IInvoiceRepository : IGenericRepository<Invoice>
     {
     }
 }

@@ -14,10 +14,7 @@ namespace DataAccess.Configuration
         public void Configure(EntityTypeBuilder<TechnicianSkill> builder)
         {
             builder.HasKey(x => new { x.ServiceCategoryId, x.TechnicianCategoryId });
-            builder.HasOne(ts => ts.ServiceCategories)
-                   .WithMany(sc => sc.TechnicianSkills)
-                   .HasForeignKey(ts => ts.ServiceCategoryId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            
             builder.HasOne(ts => ts.TechnicianCategories).WithMany(tc => tc.TechnicianSkills)
                    .HasForeignKey(ts => ts.TechnicianCategoryId)
                    .OnDelete(DeleteBehavior.Cascade);
