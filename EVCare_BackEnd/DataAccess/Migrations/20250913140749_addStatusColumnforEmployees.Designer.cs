@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250913140749_addStatusColumnforEmployees")]
+    partial class addStatusColumnforEmployees
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1215,7 +1218,7 @@ namespace DataAccess.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
-                    b.HasKey("TechnicianId", "TechnicianCategoryId", "ServiceId");
+                    b.HasKey("TechnicianId", "TechnicianCategoryId");
 
                     b.HasIndex("ServiceId");
 

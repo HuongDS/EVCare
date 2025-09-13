@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250913135720_addRelationShipServiceForTechnicianskills")]
+    partial class addRelationShipServiceForTechnicianskills
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -334,9 +337,6 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Deleted_At")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
 
@@ -358,7 +358,6 @@ namespace DataAccess.Migrations
                             BaseSalary = 12000000m,
                             CCCD = "079123456789",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
                             Updated_At = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             rate = 5
                         },
@@ -369,7 +368,6 @@ namespace DataAccess.Migrations
                             BaseSalary = 10000000m,
                             CCCD = "079987654321",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
                             Updated_At = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             rate = 4
                         },
@@ -380,7 +378,6 @@ namespace DataAccess.Migrations
                             BaseSalary = 15000000m,
                             CCCD = "079555666777",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
                             Updated_At = new DateTime(2025, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -1215,7 +1212,7 @@ namespace DataAccess.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
-                    b.HasKey("TechnicianId", "TechnicianCategoryId", "ServiceId");
+                    b.HasKey("TechnicianId", "TechnicianCategoryId");
 
                     b.HasIndex("ServiceId");
 
