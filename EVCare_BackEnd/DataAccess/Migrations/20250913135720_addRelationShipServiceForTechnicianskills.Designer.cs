@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    [Migration("20250913124339_DropServiceCategoryTable")]
-    partial class DropServiceCategoryTable
+    [Migration("20250913135720_addRelationShipServiceForTechnicianskills")]
+    partial class addRelationShipServiceForTechnicianskills
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1131,15 +1131,10 @@ namespace DataAccess.Migrations
                     b.Property<double>("ExpYear")
                         .HasColumnType("float");
 
-                    b.Property<int>("TechnicianCategoryId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId")
                         .IsUnique();
-
-                    b.HasIndex("TechnicianCategoryId");
 
                     b.ToTable("Technicians");
                 });
@@ -1208,13 +1203,18 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
                 {
-                    b.Property<int>("ServiceCategoryId")
+                    b.Property<int>("TechnicianId")
                         .HasColumnType("int");
 
                     b.Property<int>("TechnicianCategoryId")
                         .HasColumnType("int");
 
-                    b.HasKey("ServiceCategoryId", "TechnicianCategoryId");
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TechnicianId", "TechnicianCategoryId");
+
+                    b.HasIndex("ServiceId");
 
                     b.HasIndex("TechnicianCategoryId");
 
@@ -1554,24 +1554,32 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Entities.TechnicianCategory", "TechnicianCategory")
-                        .WithMany("Technicians")
-                        .HasForeignKey("TechnicianCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Employee");
-
-                    b.Navigation("TechnicianCategory");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
                 {
+                    b.HasOne("DataAccess.Entities.Service", "Service")
+                        .WithMany("TechnicianSkills")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DataAccess.Entities.TechnicianCategory", "TechnicianCategories")
                         .WithMany("TechnicianSkills")
                         .HasForeignKey("TechnicianCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("DataAccess.Entities.Technician", "Technician")
+                        .WithMany("TechnicianSkills")
+                        .HasForeignKey("TechnicianId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
+
+                    b.Navigation("Technician");
 
                     b.Navigation("TechnicianCategories");
                 });
@@ -1682,16 +1690,21 @@ namespace DataAccess.Migrations
                     b.Navigation("ReviewEmployees");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.Service", b =>
+                {
+                    b.Navigation("TechnicianSkills");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
                 {
+                    b.Navigation("TechnicianSkills");
+
                     b.Navigation("TechnicianWorkingSessions");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.TechnicianCategory", b =>
                 {
                     b.Navigation("TechnicianSkills");
-
-                    b.Navigation("Technicians");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Vehicle", b =>

@@ -11,6 +11,7 @@ namespace DataAccess.Entities
     public class Appointment : IEntity, ICreate, IDelete
     {
         public int Id { get; set; }
+        
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
         public int EmployeeId { get; set; }

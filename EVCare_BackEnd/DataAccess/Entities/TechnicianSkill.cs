@@ -11,7 +11,9 @@ namespace DataAccess.Entities
         public int TechnicianCategoryId { get; set; }
 
         public TechnicianCategory TechnicianCategories { get; set; }
-        public int ServiceCategoryId { get; set; }
-        //public ServiceCategory ServiceCategories { get; set; }
+        public int TechnicianId { get; set; }
+        public Technician Technician { get; set; }  
+        public int ServiceId { get; set; }  
+        public Service Service { get; set; }
     }
 }

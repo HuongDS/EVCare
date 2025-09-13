@@ -18,6 +18,7 @@ namespace DataAccess.Entities
         public DateTime Create_At { get; set; }
         public DateTime Updated_At { get; set; }
         public DateTime Deleted_At { get; set; }
+        public ICollection<TechnicianSkill> TechnicianSkills { get; set; }
     }
 
 }
