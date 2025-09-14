@@ -26,5 +26,11 @@ namespace Application.Service
             return _mapper.Map<IEnumerable<ServiceViewModel>>(services);
 
         }
+
+        public async Task<IEnumerable<ServiceViewModel>> GetServicesWithPaginationAsync(int payload, int payindex)
+        {
+            var services =  await _serviceRepository.GetWithPaginationAsync(payload, payindex);
+            return _mapper.Map<IEnumerable<ServiceViewModel>>(services);
+        }
     }
 }

@@ -13,7 +13,12 @@ namespace Application.Mapping
     {
         public ServiceProfile()
         {
-            CreateMap<DataAccess.Entities.Service,ServiceViewModel>().ReverseMap();
+            CreateMap<DataAccess.Entities.Service, ServiceViewModel>()
+                .ForMember(dest=>dest.IsDeleted,
+                otp=>otp.MapFrom(src=>src.Deleted_At!=DateTime.MinValue));
+
+
+            
         }
     }
 }

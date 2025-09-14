@@ -11,7 +11,7 @@ namespace Application.IService
     {
         Task<IEnumerable<ServiceViewModel>> GetAllServicesAsync();
         //Task<ServiceDto> GetServiceByIdAsync(int id);
-        //Task<IEnumerable<ServiceDto>> GetServicesWithPaginationAsync(int payload, int payindex);
+        Task<IEnumerable<ServiceViewModel>> GetServicesWithPaginationAsync(int payload, int payindex);
         //Task<ServiceDto> AddServiceAsync(CreateServiceDto createServiceDto);
         //Task<ServiceDto> UpdateServiceAsync(int id, UpdateServiceDto updateServiceDto);
         //Task DeleteServiceAsync(int id);
