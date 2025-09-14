@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,11 @@ namespace DataAccess.Repositories
     {
         public ServiceRepository(EVCareDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public Task<IEnumerable> GetServiceWithCategoryIdAndPagination(int catgoryId, int payload, int pageIndex)
+        {
+            throw new NotImplementedException();
         }
     }
 }

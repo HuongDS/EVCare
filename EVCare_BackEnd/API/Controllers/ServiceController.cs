@@ -24,6 +24,17 @@ namespace API.Controllers
                 message = "Successfully",
                 data = services
             });
-        }   
+        }
+        [HttpGet("pagination")]
+        public async Task<IActionResult> GetServicesWithPagination(int payload, int pageindex)
+        {
+            var services = await _service.GetServicesWithPaginationAsync(payload, pageindex);
+            return Ok(new
+            {
+                statusCode = 200,
+                message = "Successfully",
+                data = services
+            });
+        }
     }
 }
