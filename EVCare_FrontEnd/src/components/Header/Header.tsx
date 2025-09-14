@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 const Navbar = styled.header`
   height: 100px;
-  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -16,7 +15,8 @@ const Logo = styled.div`
   display: flex;
   align-items: center;
   img {
-    width: 100%;
+    height: 60px;
+    width: 200px;
     object-fit: cover;
     border-radius: 8px;
   }
@@ -29,7 +29,7 @@ const SearchBar = styled.div`
   height: 40px;
 
   input {
-    width: 83%;
+    width: 99%;
     height: 100%;
     padding: 0 50px 0 12px;
     border: 1px solid #ccc;
@@ -43,7 +43,7 @@ const SearchBar = styled.div`
     position: absolute;
     top: 50%;
     right: 8px;
-    transform: translateY(-49%);
+    transform: translateY(-50%);
     width: 35px;
     height: 35px;
     display: flex;
@@ -110,11 +110,11 @@ const Buttons = styled.div`
   justify-content: flex-end;
   gap: 10px;
   width: 20%;
-  margin-right: 50px;
+  margin-right: 20px;
 
   .btn {
-    width: 80px;
-    height: 30px;
+    width: 83px;
+    height: 35px;
     border-radius: 15px;
     border: 0.5px solid #ccc;
     font-family: "Outfit", sans-serif;
