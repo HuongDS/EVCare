@@ -1,0 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=Huninn&family=Outfit:wght@100..900&display=swap");
+
+.wrapperAboutUs {
+  font-family: "outfit", sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #ffffff;
+  margin-left: 200px;
+  margin-right: 182px;
+}
+
+.aboutUs {
+  flex: 1;
+  max-width: 600px;
+}
+
+.title {
+  font-size: 50px;
+  font-weight: 800;
+  margin-top: 100px;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  text-align: left;
+  letter-spacing: 2px;
+}
+
+.aboutUsText {
+  font-size: 40px;
+  font-weight: 600;
+  text-align: left;
+  margin: 0;
+}
+
+.highlightBlue {
+  color: #0056d2;
+  font-weight: 700;
+}
+
+.aboutUsDetail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 40%;
+  margin-left: 100px;
+}
+
+.aboutUsDetailNumber {
+  font-size: 100px;
+  font-weight: bold;
+  color: #000000;
+  margin-top: 0%;
+  margin-bottom: 0%;
+}
+
+.aboutUsDetailDescription {
+  font-size: 30px;
+  font-weight: 1000;
+  color: #00ad4e;
+  margin-top: 0%;
+  margin-bottom: 0%;
+}

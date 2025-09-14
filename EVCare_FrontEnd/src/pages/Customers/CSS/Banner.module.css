@@ -1,0 +1,48 @@
+@import url("https://fonts.googleapis.com/css2?family=Huninn&family=Outfit:wght@100..900&display=swap");
+
+.maintenanceBanner {
+  font-family: "Outfit", sans-serif;
+  color: white;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.bannerTitle {
+  font-size: 48px;
+  font-weight: 800;
+  margin: 0 20px;
+  margin-bottom: 30px;
+}
+
+.maintenanceBanner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("../../../assets/banner.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(5px);
+  transform: scale(1.2);
+  z-index: 1;
+}
+
+.maintenanceBanner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.maintenanceBanner > * {
+  position: relative;
+  z-index: 3;
+}
