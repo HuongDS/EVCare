@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250914051930_updateOrderAndAppointments1")]
+    partial class updateOrderAndAppointments1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,9 +224,6 @@ namespace DataAccess.Migrations
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -456,17 +456,12 @@ namespace DataAccess.Migrations
                     b.Property<int>("PartId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TechnicianId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("OrderId", "PartId", "TechnicianId");
+                    b.HasKey("OrderId", "PartId");
 
                     b.HasIndex("PartId");
-
-                    b.HasIndex("TechnicianId");
 
                     b.ToTable("OrderParts");
                 });
@@ -1489,17 +1484,9 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Entities.Technician", "Technician")
-                        .WithMany("OrderParts")
-                        .HasForeignKey("TechnicianId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Order");
 
                     b.Navigation("Part");
-
-                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Part", b =>
@@ -1716,8 +1703,6 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
                 {
-                    b.Navigation("OrderParts");
-
                     b.Navigation("TechnicianSkills");
 
                     b.Navigation("TechnicianWorkingSessions");
