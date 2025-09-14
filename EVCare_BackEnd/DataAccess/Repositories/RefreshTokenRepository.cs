@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class RefreshTokenRepository : GenericRepository<RefreshToken>, IRefreshTokenRepository
     {
-        public RefreshTokenRepository(EVCareDbContext dbContext, DbSet<RefreshToken> dbSet) : base(dbContext, dbSet)
+        public RefreshTokenRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }

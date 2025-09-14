@@ -4,15 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.IService;
+using AutoMapper;
 using DataAccess.Dtos.Service;
+using DataAccess.Interfaces;
 
 namespace Application.Service
 {
     public class ServiceService : IServiceService
     {
-        public Task<IEnumerable<ServiceViewModel>> GetAllServicesAsync()
+        private readonly IServiceRepository _serviceRepository;
+        private readonly IMapper _mapper;
+        public ServiceService(IServiceRepository serviceRepository, IMapper mapper)
         {
-            throw new NotImplementedException();
+            _serviceRepository = serviceRepository;
+            _mapper = mapper;
+          
+        }
+        public async Task<IEnumerable<ServiceViewModel>> GetAllServicesAsync()
+        {
+            var services = await _serviceRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<ServiceViewModel>>(services);
+
         }
     }
 }

@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class AppointmentRepository : GenericRepository<Appointment>, IAppointmentRepository
     {
-        public AppointmentRepository(EVCareDbContext dbContext, DbSet<Appointment> dbSet) : base(dbContext, dbSet)
+        public AppointmentRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }

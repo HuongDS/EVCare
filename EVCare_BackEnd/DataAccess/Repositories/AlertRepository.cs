@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class AlertRepository : GenericRepository<Alert>, IAlertRepository
     {
-        public AlertRepository(EVCareDbContext dbContext, DbSet<Alert> dbSet) : base(dbContext, dbSet)
+        public AlertRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }
