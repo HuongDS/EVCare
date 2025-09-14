@@ -13,10 +13,10 @@ namespace DataAccess.Entities
         public int EmployeeId { get; set; }
         public double ExpYear { get; set; }
         public Employee Employee { get; set; }
-        //public int TechnicianCategoryId { get; set; }
-     //   public TechnicianCategory TechnicianCategory { get; set; }
+   
         public ICollection<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }
         public ICollection<TechnicianSkill> TechnicianSkills { get; set; }
+        public ICollection<OrderPart> OrderParts { get; set; }
         public DateTime Created_At { get; set; }
 
     }
