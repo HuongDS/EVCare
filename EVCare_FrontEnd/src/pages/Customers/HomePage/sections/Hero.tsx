@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import carImg from "../../../../assets/VF3.png"; // thay đường dẫn hình xe của bạn
+import carImg from "../../../../assets/VF3.png";
 
 const HeroWrapper = styled.section`
   padding: 20px 0;
