@@ -3,7 +3,7 @@ import WhyEVCare from "./sections/WhyEVCare";
 import MaintenanceBanner from "./sections/MaintenanceBanner";
 import AboutUs from "./sections/AboutUs";
 import Brands from "./sections/Brands";
-
+import "bootstrap/dist/css/bootstrap.min.css";
 export default function HomePage() {
   return (
     <>
