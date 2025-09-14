@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class PartRepository : GenericRepository<Part>, IPartRepository
     {
-        public PartRepository(EVCareDbContext dbContext, DbSet<Part> dbSet) : base(dbContext, dbSet)
+        public PartRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }

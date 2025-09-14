@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class AccountRepository : GenericRepository<Account>, IAccountRepository
     {
-        public AccountRepository(EVCareDbContext dbContext, DbSet<Account> dbSet) : base(dbContext, dbSet)
+        public AccountRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }

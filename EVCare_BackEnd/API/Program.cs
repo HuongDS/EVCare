@@ -1,5 +1,11 @@
-﻿using DataAccess;
+﻿using Application.IService;
+using Application.Mapping;
+using Application.Service;
+using DataAccess;
+using DataAccess.Interfaces;
+using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,10 +23,13 @@ builder.Services.AddDbContext<EVCareDbContext>(options =>
             maxRetryDelay: TimeSpan.FromSeconds(30),
             errorNumbersToAdd: null); 
     }));
-
-
 builder.Services.AddScoped<IEVCareDbContext, EVCareDbContext>();
 
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+builder.Services.AddScoped<IServiceRepository,ServiceRepository>();
+builder.Services.AddScoped<IServiceService, ServiceService>();
+builder.Services.AddAutoMapper(typeof(ServiceProfile));
 
 var app = builder.Build();
 
