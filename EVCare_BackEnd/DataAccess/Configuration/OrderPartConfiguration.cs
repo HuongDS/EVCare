@@ -14,7 +14,7 @@ namespace DataAccess.Configuration
     {
         public void Configure(EntityTypeBuilder<OrderPart> builder)
         {
-            builder.HasKey(op => new { op.OrderId, op.PartId });
+            builder.HasKey(op => new { op.OrderId, op.PartId,op.TechnicianId });
         }
 
         
