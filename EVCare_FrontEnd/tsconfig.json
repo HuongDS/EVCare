@@ -3,5 +3,11 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "baseUrl": ".", // gốc của project (thường là thư mục chứa tsconfig.json)
+    "paths": {
+      "@/*": ["./src/*"] // alias @ trỏ về thư mục src
+    }
+  }
 }
