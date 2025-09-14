@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import "./App.css";
 import HomePage from "./pages/HomePage";
-import Header from "./components/Header";
+import Header from "./components/Header/Header";
 
 function App() {
   return (
