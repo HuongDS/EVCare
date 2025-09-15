@@ -29,6 +29,11 @@ namespace DataAccess.Repositories
 
         }
 
+        public async Task<IEnumerable<Service>> GetAllActiveServices()
+        {
+            return await _dbSet.Where(s => s.Deleted_At == DateTime.MinValue).AsNoTracking().ToListAsync();
+        }
+
         public Task<IEnumerable> GetServiceWithCategoryIdAndPagination(int catgoryId, int payload, int pageIndex)
         {
             throw new NotImplementedException();

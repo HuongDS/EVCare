@@ -15,41 +15,45 @@ namespace API.Controllers
         }
         //admin
         [HttpGet()]
-        public async Task<IActionResult> GetAllServices()
+        public async Task<IActionResult> GetAllServices(int? payload,int? pageindex)
         {
-            var services = await _service.GetAllServicesAsync();
-            return Ok(new
+            if(payload.HasValue && pageindex.HasValue)
             {
-                statusCode = 200,
-                message = "Successfully",
-                data = services
-            });
-        }
-        //admin
-        [HttpGet("pagination")]
-        public async Task<IActionResult> GetServicesWithPagination(int payload, int pageindex)
-        {
-            var services = await _service.GetServicesWithPaginationAsync(payload, pageindex);
-            return Ok(new
-            {
-                statusCode = 200,
-                message = "Successfully",
-                data = services
-            });
-        }
+                var services = await _service.GetServicesWithPaginationAsync(payload.Value, pageindex.Value);
+                return Ok(new
+                {
+                    statusCode = 200,
+                    message = "Successfully",
+                    data = services
+                });
 
-        
-        [HttpGet("active")]
-        public async Task<IActionResult> GetActiveServicesWithPagination(int payload,int pageindex)
-        {
-            var services = await _service.GetActiveServicesWithPaginationAsync(payload,pageindex);
-            return Ok(new
+            }
+            else
             {
-                statusCode = 200,
-                message = "Successfully",
-                data = services
-            });
-            
+                var services = await _service.GetAllServicesAsync();
+                return Ok(new
+                {
+                    statusCode = 200,
+                    message = "Successfully",
+                    data = services
+                });
+
+            }
+               
+        }
+        [HttpGet("active")]
+        public async Task<IActionResult> GetActiveServices(int? payload, int? pageindex)
+        {
+            if (payload.HasValue && pageindex.HasValue)
+            {
+                var services = await _service.GetActiveServicesWithPaginationAsync(payload.Value, pageindex.Value);
+                return Ok(new { statusCode = 200, message = "Successfully", data = services });
+            }
+            else
+            {
+                var services = await _service.GetAllActiveServicesAsync();
+                return Ok(new { statusCode = 200, message = "Successfully", data = services });
+            }
         }
     }
 }

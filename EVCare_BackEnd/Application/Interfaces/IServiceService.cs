@@ -8,7 +8,8 @@ using DataAccess.Dtos.Service;
 namespace Application.IService
 {
     public interface IServiceService
-    {
+    {   
+        Task<IEnumerable<ServiceViewModel>> GetAllActiveServicesAsync();
         Task <IEnumerable<ServiceViewModel>> GetActiveServicesWithPaginationAsync(int payload,int pageIndex);
         Task<IEnumerable<ServiceViewModel>> GetAllServicesAsync();
         //Task<ServiceDto> GetServiceByIdAsync(int id);
