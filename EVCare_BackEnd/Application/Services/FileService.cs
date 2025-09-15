@@ -61,5 +61,41 @@ namespace Application.Service
             throw new Exception("Upload failed");
 
         }
+
+        public async Task<List<FileUploadResult>> UploadImagesAsync(List<FileUploadModel> fileUploadModels)
+        {
+           if(fileUploadModels == null || fileUploadModels.Count == 0)
+            {
+                throw new Exception("No files to upload");
+            }
+           var uploadTasks = fileUploadModels.Select( async file =>
+           {
+               try
+               {
+                   var url = await UploadImageAsync(file);
+                   return new FileUploadResult
+                   {
+                       FileName = file.FileName,
+                       Url = url,
+                       ErrorMessage = null
+                   };
+
+               }
+               catch (Exception ex)
+               { 
+                     return new FileUploadResult
+                     {
+                          FileName = file.FileName,
+                          Url = null,
+                          ErrorMessage = ex.Message
+                     };
+               }
+                  
+            
+        }).ToList();
+           var results = await Task.WhenAll(uploadTasks);
+           return results.ToList();
+
+        }
     }
 }

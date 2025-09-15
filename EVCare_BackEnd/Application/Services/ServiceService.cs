@@ -27,6 +27,12 @@ namespace Application.Service
             return _mapper.Map<IEnumerable<ServiceViewModel>>(services);
         }
 
+        public async Task<IEnumerable<ServiceViewModel>> GetAllActiveServicesAsync()
+        {
+            var services =  await _serviceRepository.GetAllActiveServices();
+            return _mapper.Map<IEnumerable<ServiceViewModel>>(services);
+        }
+
         public async Task<IEnumerable<ServiceViewModel>> GetAllServicesAsync()
         {
             var services = await _serviceRepository.GetAllAsync();

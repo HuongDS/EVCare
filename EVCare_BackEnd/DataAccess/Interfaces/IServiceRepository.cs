@@ -13,5 +13,6 @@ namespace DataAccess.Interfaces
     {
         Task<IEnumerable> GetServiceWithCategoryIdAndPagination(int catgoryId, int payload, int pageIndex);
         Task<IEnumerable<Service>> GetActiveServiceWithPagination(int payload, int pageIndex);
+        Task <IEnumerable<Service>> GetAllActiveServices();
     }
 }
