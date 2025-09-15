@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Interfaces
+namespace Application.Services
 {
-    public interface IGenericCategoryRepository<T> where T : class, IEntity, ICategory 
+    public class AppointmentService
     {
     }
 }

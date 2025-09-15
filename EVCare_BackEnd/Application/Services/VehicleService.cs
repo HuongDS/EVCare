@@ -22,9 +22,17 @@ namespace Application.Services
         }
         public async Task<int> CreateVehicle(VehicleCreateModel model)
         {
-            var vehicle = _mapper.Map<Vehicle>(model);
-            var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
-            return createdVehicle.Id;
+            try
+            {
+                var vehicle = _mapper.Map<Vehicle>(model);
+                var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
+                return createdVehicle.Id;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
     }
 }

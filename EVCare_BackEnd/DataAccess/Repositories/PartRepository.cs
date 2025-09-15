@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class PartRepository : GenericRepository<Part>, IPartRepository
+    public class PartRepository : GenericCategoryRepository<Part>, IPartRepository
     {
         public PartRepository(EVCareDbContext dbContext) : base(dbContext)
         {
