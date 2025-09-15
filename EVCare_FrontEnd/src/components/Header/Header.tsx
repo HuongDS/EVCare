@@ -155,11 +155,11 @@ export default function Header() {
       </SearchBar>
 
       <Menu>
-        <a href="#" className="active">
+        <a href="/" className="active">
           Home
         </a>
         <a href="#">Service</a>
-        <a href="#">About</a>
+        <a href="/EVCare/about">About</a>
         <a href="#">Contact</a>
       </Menu>
 

@@ -14,6 +14,7 @@ const Container = styled.div`
 
 const Title = styled.h1`
   font-size: 50px;
+  font-weight: 800;
   margin-bottom: 40px;
   color: #00ad4e;
 `;
@@ -28,7 +29,7 @@ const CardsWrapper = styled.div`
 
 const Card = styled.div`
   width: 280px;
-  height: 287px;
+  height: 300px;
   background: #0039a6;
   padding: 20px;
   margin: 20px auto;
@@ -47,9 +48,10 @@ const Icon = styled.img`
 `;
 
 const TitleCard = styled.h2`
-  font-size: 15px;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: 700;
   color: #ffffff;
+  margin-bottom: 15px;
 `;
 
 export default function WhyEVCare() {
