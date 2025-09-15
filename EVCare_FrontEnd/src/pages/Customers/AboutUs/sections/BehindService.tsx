@@ -23,7 +23,7 @@ const DetailsDescription = styled.p`
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 0px;
-  color: #00ad4e;
+  color: #0039a6;
 `;
 
 const ContentWrapper = styled.div`
@@ -32,7 +32,8 @@ const ContentWrapper = styled.div`
   align-items: center;
   max-width: 900px;
   margin-top: 100px;
-  margin-left: 50px;
+  margin-left: 100px;
+  margin-right: 120px;
 `;
 
 const Title = styled.h1`
@@ -49,7 +50,7 @@ const Content = styled.p`
 `;
 
 const Highlight = styled.span`
-  color: #00ad4e;
+  color: #0039a6;
   font-weight: 700;
 `;
 

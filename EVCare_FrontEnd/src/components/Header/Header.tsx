@@ -160,7 +160,7 @@ export default function Header() {
         </a>
         <a href="#">Service</a>
         <a href="/EVCare/about">About</a>
-        <a href="#">Contact</a>
+        <a href="/EVCare/contact">Contact</a>
       </Menu>
 
       <Buttons>

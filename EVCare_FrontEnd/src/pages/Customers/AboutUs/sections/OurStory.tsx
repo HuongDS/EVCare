@@ -21,7 +21,7 @@ const Content = styled.p`
 `;
 
 const Highlight = styled.span`
-  color: #00ad4e;
+  color: #0039a6;
   font-weight: 700;
 `;
 
