@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application.Interfaces;
+using Application.IService;
 using Application.Mapping;
 using Application.Mappings;
 using Application.Service;
@@ -26,16 +27,17 @@ builder.Services.AddDbContext<EVCareDbContext>(options =>
             errorNumbersToAdd: null); 
     }));
 builder.Services.AddScoped<IEVCareDbContext, EVCareDbContext>();
-
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IServiceRepository,ServiceRepository>();
 builder.Services.AddScoped<IVehicleRepository,VehicleRepository>();
+builder.Services.AddScoped<IVehicleCategoryRepository,VehicleCategoryRepository>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<IVehicleCategoryService, VehicleCategoryService>();
 builder.Services.AddAutoMapper(typeof(ServiceProfile));
-builder.Services.AddAutoMapper(typeof(VehicleMapping));
-
+builder.Services.AddAutoMapper(typeof(VehicleProfile));
+builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -4,18 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using DataAccess.Dtos.Vehicle;
+using DataAccess.Dtos.VehicleCategory;
 using DataAccess.Entities;
 
 namespace Application.Mappings
 {
-    public class VehicleMapping : Profile
+    public class VehicleCategoryProfile : Profile
     {
-        public VehicleMapping()
+        public VehicleCategoryProfile()
         {
-            CreateMap<VehicleCreateModel, Vehicle>();
-
-
+            CreateMap<VehiclesCategory, VehicleCategoryViewModel>();
         }
     }
 }
