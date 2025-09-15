@@ -1,4 +1,4 @@
-import Button from "react-bootstrap/Button";
+// import Button from "react-bootstrap/Button";
 import styled from "styled-components";
 import bannerImage from "../../../../assets/banner.png";
 
@@ -49,6 +49,26 @@ const BannerTitle = styled.h1`
   margin-bottom: 30px;
 `;
 
+const CTAButton = styled.button`
+  width: 300px;
+  height: 50px;
+  margin-top: 30px;
+  font-family: "Outfit", sans-serif;
+  font-size: 30px;
+  font-weight: 600;
+  color: white;
+  border-radius: 20px;
+  border: 0;
+  background-color: #00ad4e;
+  // box-shadow: 5px 5px #ccc;
+
+  &:hover {
+    background-color: #0039a6;
+    transform: translateY(0px) translateX(0px);
+    box-shadow: none;
+  }
+`;
+
 export default function MaintenanceBanner() {
   return (
     <MaintenanceBannerWrapper>
@@ -56,9 +76,7 @@ export default function MaintenanceBanner() {
         <BannerTitle>
           Smart Maintenance Management for EV Service Centers
         </BannerTitle>
-        <Button size="lg" variant="primary" type="submit">
-          Book a Service
-        </Button>
+        <CTAButton>Book a Service</CTAButton>
       </div>
     </MaintenanceBannerWrapper>
   );
