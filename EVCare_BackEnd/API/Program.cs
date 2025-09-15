@@ -1,6 +1,8 @@
 ﻿using Application.IService;
 using Application.Mapping;
+using Application.Mappings;
 using Application.Service;
+using Application.Services;
 using DataAccess;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
@@ -27,9 +29,12 @@ builder.Services.AddScoped<IEVCareDbContext, EVCareDbContext>();
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IServiceRepository,ServiceRepository>();
+builder.Services.AddScoped<IVehicleRepository,VehicleRepository>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddAutoMapper(typeof(ServiceProfile));
+builder.Services.AddAutoMapper(typeof(VehicleMapping));
 
 var app = builder.Build();
 
