@@ -19,7 +19,7 @@ const Content = styled.p`
   text-align: justify;
 `;
 const Highlight = styled.span`
-  color: #00ad4e;
+  color: #0039a6;
   font-weight: 700;
 `;
 

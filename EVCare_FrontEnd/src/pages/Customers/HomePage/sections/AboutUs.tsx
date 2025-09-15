@@ -23,7 +23,7 @@ const DetailsDescription = styled.p`
   font-size: 25px;
   font-weight: 700;
   margin-bottom: 0px;
-  color: #4caf50;
+  color: #0039a6;
 `;
 
 const ContentWrapper = styled.div`
