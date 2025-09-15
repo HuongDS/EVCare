@@ -20,5 +20,9 @@
 		</PackageReference>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Dtos\Appointment\" />
+	</ItemGroup>
+
 
 </Project>

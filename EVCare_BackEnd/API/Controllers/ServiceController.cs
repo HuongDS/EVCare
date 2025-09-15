@@ -13,7 +13,7 @@ namespace API.Controllers
         {
             _service = service;
         }
-
+        //admin
         [HttpGet()]
         public async Task<IActionResult> GetAllServices()
         {
@@ -25,6 +25,7 @@ namespace API.Controllers
                 data = services
             });
         }
+        //admin
         [HttpGet("pagination")]
         public async Task<IActionResult> GetServicesWithPagination(int payload, int pageindex)
         {
@@ -35,6 +36,20 @@ namespace API.Controllers
                 message = "Successfully",
                 data = services
             });
+        }
+
+        
+        [HttpGet("active")]
+        public async Task<IActionResult> GetActiveServicesWithPagination(int payload,int pageindex)
+        {
+            var services = await _service.GetActiveServicesWithPaginationAsync(payload,pageindex);
+            return Ok(new
+            {
+                statusCode = 200,
+                message = "Successfully",
+                data = services
+            });
+            
         }
     }
 }

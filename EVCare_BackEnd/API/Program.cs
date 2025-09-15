@@ -26,9 +26,9 @@ builder.Services.AddDbContext<EVCareDbContext>(options =>
 builder.Services.AddScoped<IEVCareDbContext, EVCareDbContext>();
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
 builder.Services.AddScoped<IServiceRepository,ServiceRepository>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
+builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddAutoMapper(typeof(ServiceProfile));
 
 var app = builder.Build();
