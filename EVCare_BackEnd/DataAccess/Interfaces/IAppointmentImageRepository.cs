@@ -7,7 +7,7 @@ using DataAccess.Entities;
 
 namespace DataAccess.Interfaces
 {
-    public interface IAppointmentImageRepository : IGenericRepository<AppointmentImages>
+    public interface IAppointmentImageRepository : IGenericRepository<Appointmentimage>
     {
     }
 }

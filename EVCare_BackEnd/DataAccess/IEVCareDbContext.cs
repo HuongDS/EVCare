@@ -24,7 +24,7 @@ namespace DataAccess
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-        public DbSet<Application> Applications { get; set; }
+        public DbSet<DataAccess.Entities.Application> Applications { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<AppointmentService> AppointmentServices { get; set; }
         public DbSet<Review> Reviews { get; set; }

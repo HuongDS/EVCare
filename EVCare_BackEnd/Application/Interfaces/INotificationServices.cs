@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DataAccess.Entities;
 
-namespace DataAccess.Interfaces
+namespace Application.Interfaces
 {
-    public interface IInvoiceRepository : IGenericRepository<Invoice>
+    public interface INotificationServices
     {
+        Task<string> SendOTP(string email, int expires);
     }
 }

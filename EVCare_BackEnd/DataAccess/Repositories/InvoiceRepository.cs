@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class InvoiceRepository : GenericRepository<Invoices>, IInvoiceRepository
+    public class InvoiceRepository : GenericRepository<Invoice>, IInvoiceRepository
     {
-        public InvoiceRepository(EVCareDbContext dbContext, DbSet<Invoices> dbSet) : base(dbContext, dbSet)
+        public InvoiceRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }

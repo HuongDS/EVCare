@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class ServiceCategoryRepository : GenericRepository<ServiceCategory>, IServiceCategoryRepository
     {
-        public ServiceCategoryRepository(EVCareDbContext dbContext, DbSet<ServiceCategory> dbSet) : base(dbContext, dbSet)
+        public ServiceCategoryRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }

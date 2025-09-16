@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
-        public OrderRepository(EVCareDbContext dbContext, DbSet<Order> dbSet) : base(dbContext, dbSet)
+        public OrderRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }
