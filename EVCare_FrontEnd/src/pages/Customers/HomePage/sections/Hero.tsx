@@ -36,9 +36,7 @@ const HeroContent = styled.div`
   }
 `;
 
-const HeroImage = styled.div`
-  /* Phải: hình ảnh */
-`;
+const HeroImage = styled.div``;
 
 const CTAButton = styled.button`
   width: 300px;
