@@ -9,5 +9,6 @@ namespace DataAccess.Interfaces
 {
     public interface IVehicleGenericCategoryRepository : IGenericCategoryRepository<Vehicle>
     {
+        
     }
 }

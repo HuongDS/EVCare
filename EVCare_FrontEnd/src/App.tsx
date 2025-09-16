@@ -1,16 +1,15 @@
-import { Route, Routes } from "react-router-dom";
-import "./App.css";
-import HomePage from "./pages/HomePage";
-import Header from "./components/Header";
+import { RouterProvider } from "react-router-dom";
+import router from "./utils/router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
+const queryClient = new QueryClient();
 function App() {
   return (
-    <div>
-      <Header></Header>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-      </Routes>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={true} />
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   );
 }
 
