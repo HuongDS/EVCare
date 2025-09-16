@@ -15,6 +15,5 @@ namespace DataAccess.Dtos.Register
         public string lastName { get; set; }
         public string confirmPassword { get; set; }
         public string phone { get; set; }
-        public RoleEnum role { get; set; }
     }
 }
