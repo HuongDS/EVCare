@@ -9,5 +9,6 @@ namespace DataAccess.Interfaces
 {
     public interface IAppointmentImageRepository : IGenericRepository<Appointmentimage>
     {
+       public Task AddAppointmentImagesAsync(IEnumerable<Appointmentimage> appointmentImages);
     }
 }

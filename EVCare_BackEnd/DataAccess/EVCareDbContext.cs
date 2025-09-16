@@ -33,7 +33,7 @@ namespace DataAccess
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
-        public DbSet<ServiceCategory> ServiceCategories { get; set; }
+        //public DbSet<ServiceCategory> ServiceCategories { get; set; }
         public DbSet<AppointmentService> AppointmentServices { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<TechnicianSkill> TechnicianSkills { get; set; }
@@ -53,7 +53,7 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new TechnicianCategoryConfiguration());
             modelBuilder.ApplyConfiguration(new TechnicianConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
-            modelBuilder.ApplyConfiguration(new ServiceCategoryConfiguration());
+            //modelBuilder.ApplyConfiguration(new ServiceCategoryConfiguration());
             modelBuilder.ApplyConfiguration(new TechnicianSkillConfigruation());
             modelBuilder.ApplyConfiguration(new SalaryConfiguration());
             modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
