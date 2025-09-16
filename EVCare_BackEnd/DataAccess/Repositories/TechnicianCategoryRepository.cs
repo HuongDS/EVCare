@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class TechnicianCategoryRepository : GenericRepository<TechnicianCategory>, ITechnicianCategoryRepository
     {
-        public TechnicianCategoryRepository(EVCareDbContext dbContext, DbSet<TechnicianCategory> dbSet) : base(dbContext, dbSet)
+        public TechnicianCategoryRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }

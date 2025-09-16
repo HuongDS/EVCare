@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class InvoiceRepository : GenericRepository<Invoice>, IInvoiceRepository
     {
-        public InvoiceRepository(EVCareDbContext dbContext, DbSet<Invoice> dbSet) : base(dbContext, dbSet)
+        public InvoiceRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }

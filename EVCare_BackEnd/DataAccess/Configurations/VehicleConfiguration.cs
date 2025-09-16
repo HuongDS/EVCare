@@ -29,6 +29,7 @@ namespace DataAccess.Configuration
                 Id = 1,
                 CustomerId = 1,
                 CategoryId = 1,
+                LicensePlate= "59A-123.45",
                 Last_Appointment = new DateTime(2025, 02, 04),
             });
 
