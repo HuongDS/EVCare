@@ -16,7 +16,7 @@ namespace DataAccess.Repositories
         public GenericRepository(EVCareDbContext dbContext)
         {
             _dbContext = dbContext;
-            _dbSet = dbContext.Set<T>();
+            _dbSet = _dbContext.Set<T>();
         }
         public async Task<IEnumerable<T>> GetAllAsync()
         {

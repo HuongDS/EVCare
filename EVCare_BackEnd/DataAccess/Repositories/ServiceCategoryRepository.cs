@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class ApplicationRepository : GenericRepository<DataAccess.Entities.Application>, IApplicationRepository
+    public class ServiceCategoryRepository : GenericRepository<ServiceCategory>, IServiceCategoryRepository
     {
-        public ApplicationRepository(EVCareDbContext dbContext) : base(dbContext)
+        public ServiceCategoryRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }
