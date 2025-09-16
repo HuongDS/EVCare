@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class EmployeeRepository : GenericRepository<Employee>, IEmployeeRepository
     {
-        public EmployeeRepository(EVCareDbContext dbContext, DbSet<Employee> dbSet) : base(dbContext, dbSet)
+        public EmployeeRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }

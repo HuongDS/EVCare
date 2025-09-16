@@ -18,7 +18,7 @@ namespace DataAccess
 
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<VehiclesCategory> VehiclesCategories { get; set; }
-        public DbSet<Application> Applications { get; set; }
+        public DbSet<DataAccess.Entities.Application> Applications { get; set; }
         public DbSet<PartCategory> PartCategories { get; set; }
         public DbSet<Part> Parts { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
@@ -37,11 +37,11 @@ namespace DataAccess
         public DbSet<AppointmentService> AppointmentServices { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<TechnicianSkill> TechnicianSkills { get; set; }
-        public DbSet<ReviewEmployee>ReviewEmployees { get; set; }
+        public DbSet<ReviewEmployee> ReviewEmployees { get; set; }
         public DbSet<OrderPart> OrderParts { get; set; }
-        public DbSet<TechnicianWorkingSession>TechnicianWorkingSessions { get; set; }
+        public DbSet<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
-       
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new VehicleCategoryConfiguration());

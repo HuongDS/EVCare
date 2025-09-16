@@ -13,10 +13,10 @@ namespace DataAccess.Repositories
         protected readonly EVCareDbContext _dbContext;
         protected readonly DbSet<T> _dbSet;
 
-        public GenericRepository(EVCareDbContext dbContext, DbSet<T> dbSet)
+        public GenericRepository(EVCareDbContext dbContext)
         {
             _dbContext = dbContext;
-            _dbSet = dbSet;
+            _dbSet = _dbContext.Set<T>();
         }
         public async Task<IEnumerable<T>> GetAllAsync()
         {

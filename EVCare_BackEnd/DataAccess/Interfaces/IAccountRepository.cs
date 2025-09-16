@@ -9,5 +9,7 @@ namespace DataAccess.Interfaces
 {
     public interface IAccountRepository : IGenericRepository<Account>
     {
+        Task<Account?> GetAccountByEmail(string email);
+        Task<Account?> GetAccountByPhoneAsync(string phone);
     }
 }

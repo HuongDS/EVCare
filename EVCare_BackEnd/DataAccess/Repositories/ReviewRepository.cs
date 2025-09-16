@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class ReviewRepository : GenericRepository<Review>, IReviewRepository
     {
-        public ReviewRepository(EVCareDbContext dbContext, DbSet<Review> dbSet) : base(dbContext, dbSet)
+        public ReviewRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }
