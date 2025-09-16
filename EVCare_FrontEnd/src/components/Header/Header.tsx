@@ -165,8 +165,8 @@ export default function Header() {
           Home
         </Link>
         <Link to="/service">Service</Link>
-        <Link to="#">About</Link>
-        <Link to="#">Contact</Link>
+        <Link to="/about">About</Link>
+        <Link to="/contact">Contact</Link>
       </Menu>
 
       <Buttons>
