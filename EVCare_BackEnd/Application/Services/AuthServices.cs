@@ -84,8 +84,7 @@ namespace Application.Services
         {
             var data = await _otpServices.GetObjectData<RegisterRequestDto>(email);
             if (data is null)
-                throw new Exception("OTP expired or not found");
-            Enum.TryParse<RoleEnum>(data.role.ToString(), true, out var rl);
+                throw new Exception(Message.OTP_INVALID);
             var hashPassword = BCrypt.Net.BCrypt.HashPassword(data.password);
             var newAccount = new Account
             {
@@ -95,7 +94,7 @@ namespace Application.Services
                 Create_At = DateTime.UtcNow,
                 Updated_At = DateTime.UtcNow,
                 Deleted_At = DateTime.MinValue,
-                Role = rl,
+                Role = RoleEnum.Customer,
                 First_Name = data.firstName.Trim(),
                 Last_Name = data.lastName.Trim(),
             };
@@ -154,7 +153,6 @@ namespace Application.Services
                     phone = "default phone number",
                     password = defaultPassword,
                     confirmPassword = defaultPassword,
-                    role = RoleEnum.Customer,
                 };
                 await RegisterAsync(RegisterData);
                 account = await _accountRepository.GetAccountByEmail(email);
