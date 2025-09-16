@@ -11,7 +11,7 @@ namespace DataAccess.Entities
     {
         public int Id { get; set; }
         public int AppointmentId { get; set; }
-        public Appointment Appointment { get; set; }
+        public Appointment? Appointment { get; set; }
         public string Image { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace DataAccess
 {
@@ -23,6 +24,7 @@ namespace DataAccess
         public DbSet<Salary> Salaries { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Appointmentimage> AppointmentImages { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Application> Applications { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
@@ -34,7 +36,7 @@ namespace DataAccess
         public DbSet<OrderPart> OrderParts { get; set; }
         public DbSet<Alert> Alerts { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
-
+        DatabaseFacade Database { get; }
         public Task<int> SaveChangesAsync();
     }
 }
