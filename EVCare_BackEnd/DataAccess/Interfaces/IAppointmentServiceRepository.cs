@@ -3,7 +3,7 @@
 namespace DataAccess.Interfaces
 {
     public interface IAppointmentServiceRepository 
-    { 
-        Task AddAsync(AppointmentService entity);
+    {
+        public Task AddAppointmentServicesAsync(IEnumerable<AppointmentService> appointmentServices);
     }
 }

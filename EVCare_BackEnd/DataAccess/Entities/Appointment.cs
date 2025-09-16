@@ -15,7 +15,7 @@ namespace DataAccess.Entities
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
         public int? EmployeeId { get; set; }
-        public Employee Employee { get; set; }
+        public Employee? Employee { get; set; }
         public int VehicleId { get; set; }
         public Vehicle Vehicle { get; set; }
         public int? OrderId { get; set; }
