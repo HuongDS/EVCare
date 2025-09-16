@@ -219,13 +219,13 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Deleted_At")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrderId")
+                    b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -1202,11 +1202,15 @@ namespace DataAccess.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Last_Appointment")
+                    b.Property<DateTime?>("Last_Appointment")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("Last_Kilometer")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("LicensePlate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1223,7 +1227,8 @@ namespace DataAccess.Migrations
                             CategoryId = 1,
                             CustomerId = 1,
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Last_Appointment = new DateTime(2025, 2, 4, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Last_Appointment = new DateTime(2025, 2, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LicensePlate = "59A-123.45"
                         });
                 });
 
@@ -1301,8 +1306,7 @@ namespace DataAccess.Migrations
                     b.HasOne("DataAccess.Entities.Employee", "Employee")
                         .WithMany("Appointments")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("DataAccess.Entities.Vehicle", "Vehicle")
                         .WithMany("Appointments")

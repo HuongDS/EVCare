@@ -8,15 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class GenericCategoryRepository<T> : IGenericCategoryRepository<T> where T : class, ICategory, IEntity
+    public class GenericCategoryRepository<T> : GenericRepository<T>, IGenericCategoryRepository<T> where T : class, ICategory, IEntity
     {
-        protected readonly EVCareDbContext _dbContext;
-        protected readonly DbSet<T> _dbSet;
-        public GenericCategoryRepository(EVCareDbContext dbContext, DbSet<T> dbSet)
+        public GenericCategoryRepository(EVCareDbContext dbContext) : base(dbContext)
         {
-            _dbContext = dbContext;
-            _dbSet = dbSet;
         }
+
         public async Task<IEnumerable<T>> GetByCategoryIdAsync(int categoryId)
         {
             return await _dbSet.Where(e => e.CategoryId == categoryId).ToListAsync();

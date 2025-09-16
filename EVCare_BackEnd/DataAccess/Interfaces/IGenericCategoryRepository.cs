@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Interfaces
 {
-    public interface IGenericCategoryRepository<T> where T : class, IEntity, ICategory
+    public interface IGenericCategoryRepository<T> where T : class, IEntity, ICategory 
     {
     }
 }

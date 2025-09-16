@@ -11,8 +11,14 @@ namespace DataAccess.Repositories
 {
     public class AppointmentImageRepository : GenericRepository<Appointmentimage>, IAppointmentImageRepository
     {
-        public AppointmentImageRepository(EVCareDbContext dbContext, DbSet<Appointmentimage> dbSet) : base(dbContext, dbSet)
+        public AppointmentImageRepository(EVCareDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task AddAppointmentImagesAsync(IEnumerable<Appointmentimage> appointmentImages)
+        {
+            await _dbContext.AppointmentImages.AddRangeAsync(appointmentImages);
+           // return await _dbContext.SaveChangesAsync() > 0;
         }
     }
 }

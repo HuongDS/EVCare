@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
 {
     public class VehicleRepository : GenericRepository<Vehicle>, IVehicleRepository
     {
-        public VehicleRepository(EVCareDbContext dbContext, DbSet<Vehicle> dbSet) : base(dbContext, dbSet)
+        public VehicleRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
     }
