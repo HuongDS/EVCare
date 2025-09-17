@@ -2,6 +2,10 @@
 using System.Security.Authentication;
 using System.Text;
 using Application.Interfaces;
+using Application.IService;
+using Application.Mapping;
+using Application.Mappings;
+using Application.Service;
 using Application.Services;
 using DataAccess;
 using DataAccess.Entities;
@@ -63,7 +67,7 @@ builder.Services.AddDbContext<EVCareDbContext>(options =>
     }));
 
 // DbContext
-builder.Services.AddScoped<IEVCareDbContext, EVCareDbContext>();
+//builder.Services.AddScoped<IEVCareDbContext, EVCareDbContext>();
 
 // Repositories
 builder.Services.AddScoped<IGenericRepository<Account>, GenericRepository<Account>>();
@@ -76,12 +80,29 @@ builder.Services.AddScoped<IGenericRepository<Employee>, GenericRepository<Emplo
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IGenericRepository<Technician>, GenericRepository<Technician>>();
 builder.Services.AddScoped<ITechnicianRepository, TechnicianRepository>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IAppointmentServiceRepository, AppointmentServiceRepository>();
+builder.Services.AddScoped<IAppointmentImageRepository, AppointmentImageRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthServices, AuthServices>();
 builder.Services.AddScoped<ITokenServices, TokenServices>();
 builder.Services.AddScoped<INotificationServices, NotificationServices>();
 builder.Services.AddScoped<IOtpServices, OtpServices>();
+builder.Services.AddScoped<IServiceService, ServiceService>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<IVehicleCategoryService, VehicleCategoryService>();
+builder.Services.AddScoped<IAppointmentService, Application.Services.AppointmentService>();
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(ServiceProfile));
+builder.Services.AddAutoMapper(typeof(VehicleProfile));
+builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
+builder.Services.AddAutoMapper(typeof(AppointmentProfile));
 
 // Add Cors
 builder.Services.AddCors(options =>
