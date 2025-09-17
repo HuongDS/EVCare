@@ -11,8 +11,13 @@ namespace DataAccess.Repositories
 {
     public class CustomerRepository : GenericRepository<Customer>, ICustomerRepository
     {
-        public CustomerRepository(EVCareDbContext dbContext, DbSet<Customer> dbSet) : base(dbContext, dbSet)
+        public CustomerRepository(EVCareDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<Customer?> GetCustomerByAccountId(int accountId)
+        {
+            return await _dbSet.FirstOrDefaultAsync(c => c.AccountId == accountId);
         }
     }
 }

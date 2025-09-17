@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import Authentication from "../../pages/Shared/Auth/Authentication";
 
+
 const Navbar = styled.header`
   height: 100px;
   display: flex;
@@ -160,9 +161,7 @@ export default function Header() {
   return (
     <Navbar className="navbar">
       <Logo>
-        <Link to="/">
-          <img src={logo} alt="EVCare logo" />
-        </Link>
+        <img src={logo} alt="EVCare logo" />
       </Logo>
 
       <SearchBar>
@@ -173,12 +172,12 @@ export default function Header() {
       </SearchBar>
 
       <Menu>
-        <Link to="/" className="active">
+        <a href="#" className="active">
           Home
-        </Link>
-        <Link to="/service">Service</Link>
-        <Link to="/about">About</Link>
-        <Link to="/contact">Contact</Link>
+        </a>
+        <a href="#">Service</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
       </Menu>
 
       <Buttons>

@@ -7,7 +7,8 @@ using DataAccess.Entities;
 
 namespace DataAccess.Interfaces
 {
-    public interface IVehiclesCategoryRepository : IGenericRepository<VehiclesCategory>
+    public interface IVehicleCategoryRepository : IGenericRepository<VehiclesCategory>
     {
+        Task<IEnumerable<VehiclesCategory>> GetActiveCategoriesAsync();
     }
 }
