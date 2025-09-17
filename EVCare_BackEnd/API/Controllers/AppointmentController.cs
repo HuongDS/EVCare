@@ -1,4 +1,6 @@
-﻿using Application.Interfaces;
+﻿using API.Filters;
+using Application.Dtos;
+using Application.Interfaces;
 using DataAccess.Dtos.Appointment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +19,7 @@ namespace API.Controllers
             _appointmentService = appointmentService;
         }
         [Authorize(Roles = "Staff")]
-        [HttpPost]
+        [HttpPost("staff")]
         public async Task<IActionResult> CreateAppointment(AppointmentCreateModel model)
         {
             try
@@ -40,6 +42,87 @@ namespace API.Controllers
                 });
             }
         }
+        [Authorize(Roles = "Staff")]
+        [HttpPut("staff")]
+        public async Task<IActionResult> UpdateAppointment(AppointmentUpdateModel model)
+        {
+            try
+            {
+                var result = await _appointmentService.UpdateAppointment(model);
+                return Ok(new ResponseDto<bool>
+                {
+                    statusCode = 200,
+                    message = "Appointment updated successfully",
+                    data = result
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                    data = null
+                });
+
+            }
+        }
+
+        [HttpDelete("{appointmentId}")]
+        [ServiceFilter(typeof(SetCustomerIdFilter))]
+        [ServiceFilter(typeof(AppointmentOwnershipFilter))]
+        public async Task<IActionResult> DeleteAppointment(int appointmentId)
+        {
+            try
+            {
+                var result = await _appointmentService.DeleteAppointment(appointmentId);
+                return Ok(new ResponseDto<bool>
+                {
+                    statusCode = 200,
+                    message = "Appointment canceled successfully",
+                    data = result
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+
+        [HttpGet("{appointmentId}")]
+        //[ServiceFilter(typeof(SetCustomerIdFilter))]
+        //[ServiceFilter(typeof(AppointmentAuthorizationFilter))]
+        public async Task<IActionResult> GetAppointmentDetailByAppointmetId(int appointmentId)
+        {
+            try
+            {
+                // This is a placeholder for actual implementation
+                var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
+
+                return Ok(new ResponseDto<AppointmentViewDetailModel>
+                {
+                    statusCode = 200,
+                    message = "Appointments retrieved successfully",
+                    data = appointment // Replace null with actual appointments data
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+
 
     }
 }
