@@ -8,21 +8,27 @@ const ContactWrapper = styled.div`
 
 const ColumnsWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   width: 100%;
   flex-wrap: wrap;
-  padding-left: 200px;
-  padding-right: 200px;
+  padding-left: 10%;
+  padding-right: 10%;
 `;
 
 const LeftColumn = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
   min-width: 250px;
 `;
 
 const RightColumns = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   flex: 1;
   gap: 20px;
   min-width: 500px;
@@ -42,10 +48,10 @@ const Column = styled.div`
 `;
 
 const Title = styled.h1`
-  margin-top: 100px;
+  align-self: center;
   font-size: 70px;
   font-weight: 800;
-  margin-bottom: 30px;
+  color: #00ad4e;
 `;
 
 const Subtitle = styled.h2`
@@ -61,14 +67,14 @@ const ContactInfo = styled.p`
 const ContactContent = styled.p`
   font-size: 25px;
   margin-bottom: 20px;
+
+  text-align: justify;
 `;
 
 const Image = styled.img`
   width: 100%;
   max-width: 400px;
   border-radius: 10px;
-  margin-top: 20px;
-  margin-left: auto;
   align-self: center;
 `;
 
@@ -88,7 +94,7 @@ export default function Contact() {
           <TopRightColumns>
             <Column>
               <Subtitle>
-                <i className="bi bi-envelope"></i> Email
+                <i className="bi bi-envelope-fill"></i> Email
               </Subtitle>
               <ContactInfo>evcare@gmail.com</ContactInfo>
 
@@ -104,7 +110,9 @@ export default function Contact() {
               </Subtitle>
               <ContactInfo>EVcare Vietnam</ContactInfo>
 
-              <Subtitle>Address</Subtitle>
+              <Subtitle>
+                <i className="bi bi-geo-alt-fill"></i> Address
+              </Subtitle>
               <ContactInfo>Thu Duc, HCM</ContactInfo>
             </Column>
           </TopRightColumns>
