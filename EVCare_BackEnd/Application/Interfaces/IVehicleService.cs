@@ -9,7 +9,9 @@ namespace Application.IService
 {
     public interface IVehicleService
     {
-        Task<int> CreateVehicle(VehicleCreateModel model);
+        Task<int> CreateVehicle(VehicleCreateModel model,int customerId);
+        Task<IEnumerable<VehicleViewModel>> GetVehiclesByCustomerId(int customerId);
+        Task<int> UpdateVehicleCustomer(VehicleCustomerUpdateModel model);
 
     }
 }

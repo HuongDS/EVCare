@@ -14,6 +14,9 @@ namespace Application.Mappings
         public VehicleProfile()
         {
             CreateMap<VehicleCreateModel, Vehicle>();
+            CreateMap<VehicleCustomerUpdateModel, Vehicle>();
+            CreateMap<Vehicle, VehicleViewModel>()
+                .ForMember(dest=>dest.CategoryName,otp=>otp.MapFrom(src=>src.Category.Name));
 
 
         }
