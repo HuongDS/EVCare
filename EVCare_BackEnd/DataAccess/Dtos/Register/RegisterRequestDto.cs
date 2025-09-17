@@ -13,7 +13,6 @@ namespace DataAccess.Dtos.Register
         public string password { get; set; }
         public string firstName { get; set; }
         public string lastName { get; set; }
-        public string confirmPassword { get; set; }
         public string phone { get; set; }
     }
 }
