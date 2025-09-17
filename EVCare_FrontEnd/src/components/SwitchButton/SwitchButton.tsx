@@ -9,7 +9,6 @@ const Wrapper = styled.div`
   height: 35px;
   border-radius: 5px;
   width: 60%;
-  margin-left: 22%;
 `;
 
 const Button = styled.button`
