@@ -16,6 +16,7 @@ const router = createBrowserRouter(
         { path: "/service", element: <Test /> },
       ],
     },
+    { path: "/*", element: <NotFound /> },
   ],
   { basename: "EVCare" }
 );
