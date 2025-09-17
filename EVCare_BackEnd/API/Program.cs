@@ -142,45 +142,45 @@ builder.Services.AddAuthentication(opt =>
     };
 })
     .AddGoogle(opt =>
-{
-    opt.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    opt.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    opt.CallbackPath = "/google-callback";
-});
+    {
+        opt.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        opt.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+        opt.CallbackPath = "/google-callback";
+    });
 
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "EVCare API", Version = "v1" });
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Nhập 'Bearer {token}' vào đây"
-    });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});
+//builder.Services.AddSwaggerGen(options =>
+//{
+//    options.SwaggerDoc("v1", new OpenApiInfo { Title = "EVCare API", Version = "v1" });
+//    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+//    {
+//        Name = "Authorization",
+//        Type = SecuritySchemeType.Http,
+//        Scheme = "bearer",
+//        BearerFormat = "JWT",
+//        In = ParameterLocation.Header,
+//        Description = "Nhập 'Bearer {token}' vào đây"
+//    });
+//    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+//    {
+//        {
+//            new OpenApiSecurityScheme
+//            {
+//                Reference = new OpenApiReference
+//                {
+//                    Type = ReferenceType.SecurityScheme,
+//                    Id = "Bearer"
+//                }
+//            },
+//            Array.Empty<string>()
+//        }
+//    });
+//});
 
 builder.Services.AddAuthorization();
 
 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
-//Redis
+////Redis
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var redisConfig = builder.Configuration.GetConnectionString("Redis");

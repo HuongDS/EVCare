@@ -1,7 +1,3 @@
-import TextFieldWithIcon from "./TextFieldWithIcon/TextFieldWithIcon";
-
 export default function Test() {
-  return (
-    <TextFieldWithIcon icon={<i className="bi bi-search"></i>} type="email" />
-  );
+  return <div>KHÔNG CODE VÀO ĐÂY</div>;
 }

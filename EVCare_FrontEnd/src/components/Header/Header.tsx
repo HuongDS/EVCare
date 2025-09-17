@@ -1,8 +1,5 @@
 import logo from "../../assets/EVCare.png";
 import styled from "styled-components";
-import { useState } from "react";
-import SignIn from "../../pages/Shared/SignIn/SignIn";
-import { Link } from "react-router";
 
 const Navbar = styled.header`
   height: 100px;
@@ -144,13 +141,10 @@ const Buttons = styled.div`
   }
 `;
 export default function Header() {
-  const [showSignIn, setShowSignIn] = useState(false);
   return (
     <Navbar className="navbar">
       <Logo>
-        <Link to="/">
-          <img src={logo} alt="EVCare logo" />
-        </Link>
+        <img src={logo} alt="EVCare logo" />
       </Logo>
 
       <SearchBar>
@@ -161,22 +155,18 @@ export default function Header() {
       </SearchBar>
 
       <Menu>
-        <Link to="/" className="active">
+        <a href="#" className="active">
           Home
-        </Link>
-        <Link to="/service">Service</Link>
-        <Link to="/about">About</Link>
-        <Link to="/contact">Contact</Link>
+        </a>
+        <a href="#">Service</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
       </Menu>
 
       <Buttons>
-        <button className="btn btn-outline" onClick={() => setShowSignIn(true)}>
-          Sign In
-        </button>
+        <button className="btn btn-outline">Sign In</button>
         <button className="btn btn-fill">Sign Up</button>
       </Buttons>
-
-      <SignIn show={showSignIn} handleClose={() => setShowSignIn(false)} />
     </Navbar>
   );
 }
