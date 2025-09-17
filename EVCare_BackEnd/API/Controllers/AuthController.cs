@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using DataAccess.Dtos.Others;
 using Application.Services;
+using DataAccess.Dtos.Employees;
+using Microsoft.AspNetCore.Authorization;
+using DataAccess.Enums;
 
 namespace API.Controllers
 {
@@ -59,7 +62,16 @@ namespace API.Controllers
                 });
             }
             var res = await _authServices.VerifyRegisterAsync(email, otp);
+            await _authServices.RegisterCustomerAsync(res);
             return Ok(res);
+        }
+        [HttpPost("/register-for-employee")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RegisterForEmployee(EmployeeRegisterDto data)
+        {
+            var account = await _authServices.RegisterAccountAsync(data.accountInfo);
+            await _authServices.RegisterEmployeeOrTechnicianAsync(account, data);
+            return Ok();
         }
         [HttpPost("/login")]
         public async Task<IActionResult> Login(LoginRequestDto data)
