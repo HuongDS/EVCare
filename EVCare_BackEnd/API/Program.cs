@@ -79,6 +79,7 @@ builder.Services.AddAutoMapper(typeof(AppointmentProfile));
 builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
 builder.Services.AddScoped<SetCustomerIdFilter>();
 builder.Services.AddScoped<AuthorizeCustomerOrAdminFilter>();
+builder.Services.AddScoped<AppointmentOwnershipFilter>();
 // Add Cors
 builder.Services.AddCors(options =>
 {
