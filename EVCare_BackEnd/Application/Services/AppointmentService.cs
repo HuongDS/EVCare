@@ -32,6 +32,44 @@ namespace Application.Services
             return appointment.Id;
 
         }
-       
+
+        public async Task<bool> DeleteAppointment(int appointmentId)
+        {
+            var appointment = await _appointmentRepository.GetByIdAsync(appointmentId);
+            if(appointment == null)
+            {
+                throw new Exception("Appointment not found");
+            }
+            appointment.Status= DataAccess.Enums.AppointmentStatusEnum.Canceled;
+            await _appointmentRepository.UpdateAsync(appointment);
+            return true;
+        }
+
+        public async Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId)
+        {
+            try
+            {
+                var result = await _appointmentRepository.GetAppointmentWithDetails(appointmentIdId);
+                if(result == null) throw new Exception("Appointment not found");
+                return result;
+
+            }
+            catch
+            {
+                throw new Exception("Appointment not found");
+            }
+        }
+
+        public async Task<bool> UpdateAppointment(AppointmentUpdateModel model)
+        {
+            var appointment = await _appointmentRepository.GetByIdAsync(model.AppointmentId);
+            if(appointment == null)
+            {
+                throw new Exception("Appointment not found");
+            }   
+            _mapper.Map(model, appointment);
+            await _appointmentRepository.UpdateAsync(appointment);
+            return true;
+        }
     }
 }
