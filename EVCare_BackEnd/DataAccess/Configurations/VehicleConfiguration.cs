@@ -23,12 +23,13 @@ namespace DataAccess.Configuration
                 .WithMany(x => x.Vehicles)
                 .HasForeignKey(x => x.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+            builder.HasIndex(x=> x.LicensePlate).IsUnique();
             builder.HasData(new Vehicle
             {
                 Id = 1,
                 CustomerId = 1,
                 CategoryId = 1,
+                LicensePlate= "59A-123.45",
                 Last_Appointment = new DateTime(2025, 02, 04),
             });
 

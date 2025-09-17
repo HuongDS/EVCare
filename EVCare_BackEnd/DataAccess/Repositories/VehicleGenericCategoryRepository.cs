@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class VehicleGenericCategoryRepository : GenericCategoryRepository<Vehicle>, IVehicleGenericCategoryRepository
 {
-    public VehicleGenericCategoryRepository(EVCareDbContext dbContext, DbSet<Vehicle> dbSet) : base(dbContext, dbSet)
+    public VehicleGenericCategoryRepository(EVCareDbContext dbContext) : base(dbContext)
     {
     }
 }

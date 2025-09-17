@@ -11,8 +11,19 @@ namespace DataAccess.Repositories
 {
     public class AccountRepository : GenericRepository<Account>, IAccountRepository
     {
-        public AccountRepository(EVCareDbContext dbContext, DbSet<Account> dbSet) : base(dbContext, dbSet)
+        public AccountRepository(EVCareDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<Account?> GetAccountByEmail(string email)
+        {
+            var entity = await _dbSet.FirstOrDefaultAsync(e => e.Email.Equals(email));
+            return entity;
+        }
+        public async Task<Account?> GetAccountByPhoneAsync(string phone)
+        {
+            var entity = await _dbSet.FirstOrDefaultAsync(e => e.Phone.Equals(phone));
+            return entity;
         }
     }
 }
