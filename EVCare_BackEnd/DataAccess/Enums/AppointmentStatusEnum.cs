@@ -8,9 +8,8 @@ namespace DataAccess.Enums
 {
     public enum AppointmentStatusEnum
     {
-        Pending,
-        Confirmed,
-        InProgress,
+
+        Peding,
         Done,
         Canceled
     }

@@ -10,5 +10,8 @@ namespace Application.Interfaces
     public interface IAppointmentService
     {
         Task<int> CreateAppointment(AppointmentCreateModel model);  
+        Task<bool> UpdateAppointment(AppointmentUpdateModel model);
+        Task<bool> DeleteAppointment(int appointmentId);
+        Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId);
     }
 }
