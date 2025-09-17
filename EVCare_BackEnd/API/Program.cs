@@ -77,6 +77,10 @@ builder.Services.AddScoped<IGenericRepository<RefreshToken>, GenericRepository<R
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IGenericRepository<Customer>, GenericRepository<Customer>>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IGenericRepository<Employee>, GenericRepository<Employee>>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IGenericRepository<Technician>, GenericRepository<Technician>>();
+builder.Services.AddScoped<ITechnicianRepository, TechnicianRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
@@ -138,11 +142,11 @@ builder.Services.AddAuthentication(opt =>
     };
 })
     .AddGoogle(opt =>
-{
-    opt.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    opt.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    opt.CallbackPath = "/google-callback";
-});
+    {
+        opt.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        opt.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+        opt.CallbackPath = "/google-callback";
+    });
 
 //builder.Services.AddSwaggerGen(options =>
 //{
@@ -174,12 +178,22 @@ builder.Services.AddAuthentication(opt =>
 
 builder.Services.AddAuthorization();
 
-//Redis
+System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
+////Redis
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var configuration = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379"; // default
-    return ConnectionMultiplexer.Connect(configuration);
+    var redisConfig = builder.Configuration.GetConnectionString("Redis");
+    var options = ConfigurationOptions.Parse(redisConfig);
+
+    options.Ssl = true;
+    options.AbortOnConnectFail = false;
+    options.SslHost = "exotic-dogfish-51279.upstash.io";
+
+    return ConnectionMultiplexer.Connect(options);
 });
+
+
 
 var app = builder.Build();
 
