@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -12,6 +13,9 @@ using Application.Infrastructures;
 using Application.Interfaces;
 using Application.Parttern;
 using Azure;
+using DataAccess.Dtos.Accounts;
+using DataAccess.Dtos.Customers;
+using DataAccess.Dtos.Employees;
 using DataAccess.Dtos.Others;
 using DataAccess.Dtos.Register;
 using DataAccess.Entities;
@@ -32,10 +36,13 @@ namespace Application.Services
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IOtpServices _otpServices;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly ITechnicianRepository _technicianRepository;
 
         public AuthServices(IAccountRepository accountRepository, ITokenServices tokenServices
             , IConfiguration configuration, IRefreshTokenRepository refreshTokenRepository,
-            ICustomerRepository customerRepository, IOtpServices otpServices)
+            ICustomerRepository customerRepository, IOtpServices otpServices,
+            IEmployeeRepository employeeRepository, ITechnicianRepository technicianRepository)
         {
             this._accountRepository = accountRepository;
             this._tokenServices = tokenServices;
@@ -43,8 +50,29 @@ namespace Application.Services
             this._refreshTokenRepository = refreshTokenRepository;
             this._customerRepository = customerRepository;
             this._otpServices = otpServices;
+            this._employeeRepository = employeeRepository;
+            this._technicianRepository = technicianRepository;
         }
         public async Task<ResponseDto<RegisterResponseDto>> RegisterAsync(RegisterRequestDto data)
+        {
+            try
+            {
+                await ValidateInfo(data);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            await _otpServices.SaveOtpAsync(data);
+            return new ResponseDto<RegisterResponseDto>
+            {
+                statusCode = 201,
+                message = Message.OTP_HAS_BEEN_SENT,
+                data = null
+            };
+        }
+        public async Task<RegisterRequestDto> ValidateInfo(RegisterRequestDto data)
         {
             var checkEmailExist = await _accountRepository.GetAccountByEmail(data.email);
             var checkPhoneExist = await _accountRepository.GetAccountByPhoneAsync(data.phone);
@@ -67,24 +95,28 @@ namespace Application.Services
             {
                 throw new Exception(Message.WEAK_PASSWORD);
             }
-            if (!data.password.Equals(data.confirmPassword))
-            {
-                throw new Exception(Message.PASSWORD_MISMATCH);
-            }
-
-            await _otpServices.SaveOtpAsync(data);
-            return new ResponseDto<RegisterResponseDto>
-            {
-                statusCode = 201,
-                message = Message.OTP_HAS_BEEN_SENT,
-                data = null
-            };
+            return data;
         }
-        public async Task<ResponseDto<RegisterResponseDto>> VerifyRegisterAsync(string email, string otp)
+        public async Task<AccountResponseDto> VerifyRegisterAsync(string email, string otp)
         {
             var data = await _otpServices.GetObjectData<RegisterRequestDto>(email);
             if (data is null)
                 throw new Exception(Message.OTP_INVALID);
+            else
+            {
+                return await RegisterAccountAsync(data);
+            }
+        }
+        public async Task<AccountResponseDto> RegisterAccountAsync(RegisterRequestDto data)
+        {
+            try
+            {
+                await ValidateInfo(data);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
             var hashPassword = BCrypt.Net.BCrypt.HashPassword(data.password);
             var newAccount = new Account
             {
@@ -99,23 +131,51 @@ namespace Application.Services
                 Last_Name = data.lastName.Trim(),
             };
             await _accountRepository.AddAsync(newAccount);
+            var createdAccount = await _accountRepository.GetAccountByEmail(newAccount.Email);
+            return new AccountResponseDto
+            {
+                accountId = createdAccount.Id,
+            };
+        }
+        public async Task RegisterCustomerAsync(AccountResponseDto account)
+        {
             var newCustomer = new Customer
             {
-                AccountId = newAccount.Id,
+                AccountId = account.accountId,
                 Rank = CustomerRankEnum.Regular,
             };
             await _customerRepository.AddAsync(newCustomer);
-            return new ResponseDto<RegisterResponseDto>
+        }
+        public async Task RegisterEmployeeOrTechnicianAsync(AccountResponseDto account, EmployeeRegisterDto data)
+        {
+            var entityAccount = await _accountRepository.GetByIdAsync(account.accountId);
+            entityAccount.Role = data.role;
+            await _accountRepository.UpdateAsync(entityAccount);
+
+            var newEmployee = new Employee
             {
-                statusCode = 200,
-                message = Message.REGISTER_SUCCESS,
-                data = new RegisterResponseDto
+                AccountId = account.accountId,
+                CCCD = data.CCCD,
+                Status = EmployeeStatusEnum.Available,
+                BaseSalary = data.baseSalary,
+                Deleted_At = DateTime.MinValue,
+                Updated_At = DateTime.UtcNow,
+            };
+            await _employeeRepository.AddAsync(newEmployee);
+
+            if (data.role == RoleEnum.Technician)
+            {
+                var employee = await _employeeRepository.GetEmployeeByAccountId(account.accountId);
+                var newTechnician = new Technician
                 {
-                    email = newAccount.Email,
-                    phone = newAccount.Phone,
-                }
+                    EmployeeId = employee.Id,
+                    ExpYear = data.expYear,
+                    Created_At = DateTime.UtcNow,
+                };
+                await _technicianRepository.AddAsync(newTechnician);
             };
         }
+
         public async Task<ResponseDto<LoginResponseDto>> LoginAsync(LoginRequestDto data, HttpContext context)
         {
             var account = await _accountRepository.GetAccountByEmail(data.email);
@@ -152,7 +212,6 @@ namespace Application.Services
                     email = email,
                     phone = "default phone number",
                     password = defaultPassword,
-                    confirmPassword = defaultPassword,
                 };
                 await RegisterAsync(RegisterData);
                 account = await _accountRepository.GetAccountByEmail(email);
