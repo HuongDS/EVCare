@@ -1,4 +1,5 @@
 ﻿using Application.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ namespace API.Controllers
             _service = service;
         }
         //admin
+        [Authorize(Roles = "Admin")]
         [HttpGet()]
         public async Task<IActionResult> GetAllServices(int? payload,int? pageindex)
         {

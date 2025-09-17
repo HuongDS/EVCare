@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Dtos.Vehicle
 {
-    public class VehicleCreateModel
+    public class VehicleViewModel
     {
-        public int CategoryId { get; set; }
+        public int Id { get; set; }
+        public string CategoryName { get; set; }
         public string LicensePlate { get; set; }
-    
-        
+        public string? Image { get; set; }
+
     }
 }

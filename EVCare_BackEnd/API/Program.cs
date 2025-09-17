@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Security.Authentication;
 using System.Text;
+using API.Filters;
 using Application.Interfaces;
 using Application.IService;
 using Application.Mapping;
@@ -54,6 +55,7 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentServiceRepository, AppointmentServiceRepository>();
 builder.Services.AddScoped<IAppointmentImageRepository, AppointmentImageRepository>();
 
+
 // Services
 builder.Services.AddScoped<IAuthServices, AuthServices>();
 builder.Services.AddScoped<ITokenServices, TokenServices>();
@@ -69,7 +71,10 @@ builder.Services.AddAutoMapper(typeof(ServiceProfile));
 builder.Services.AddAutoMapper(typeof(VehicleProfile));
 builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 builder.Services.AddAutoMapper(typeof(AppointmentProfile));
-
+//Action Filter
+builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
+builder.Services.AddScoped<SetCustomerIdFilter>();
+builder.Services.AddScoped<AuthorizeCustomerOrAdminFilter>();
 // Add Cors
 builder.Services.AddCors(options =>
 {
