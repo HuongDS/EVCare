@@ -5,18 +5,20 @@ const BehindServiceWrapper = styled.div`
   padding: 50px 0;
   text-align: left;
   display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 `;
 
 const DetailsNumberWrapper = styled.p`
   font-size: 100px;
   font-weight: bold;
   display: flex;
+  flex-direction: column;
 `;
 
 const DetailsNumber = styled.p`
   font-size: 100px;
   font-weight: 1000;
-  margin-bottom: 0px;
 `;
 
 const DetailsDescription = styled.p`
@@ -30,22 +32,17 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 900px;
-  margin-top: 100px;
-  margin-left: 100px;
-  margin-right: 120px;
+  max-width: 50%;
 `;
 
 const Title = styled.h1`
-  font-size: 50px;
+  font-size: 400%;
   font-weight: 800;
 `;
 
 const Content = styled.p`
   font-size: 25px;
   margin-bottom: 20px;
-  margin-left: 200px;
-  margin-right: 200px;
   text-align: justify;
 `;
 
@@ -69,8 +66,7 @@ export default function BehindService() {
           customers.
         </Content>
       </ContentWrapper>
-      <DetailsNumberWrapper></DetailsNumberWrapper>
-      <div>
+      <DetailsNumberWrapper>
         <DetailsNumber>5000+</DetailsNumber>
         <DetailsDescription>EVs successfully maintained</DetailsDescription>
         <DetailsNumber>50+</DetailsNumber>
@@ -79,7 +75,7 @@ export default function BehindService() {
         </DetailsDescription>
         <DetailsNumber>10</DetailsNumber>
         <DetailsDescription>Years of trusted experience</DetailsDescription>
-      </div>
+      </DetailsNumberWrapper>
     </BehindServiceWrapper>
   );
 }
