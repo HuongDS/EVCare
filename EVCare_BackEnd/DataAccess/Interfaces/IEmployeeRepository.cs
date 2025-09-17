@@ -9,6 +9,5 @@ namespace DataAccess.Interfaces
 {
     public interface IEmployeeRepository : IGenericRepository<Employee>
     {
-        Task<Employee?> GetEmployeeByAccountId(int accountId);
     }
 }

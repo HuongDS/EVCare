@@ -94,6 +94,7 @@ namespace API.Controllers
                 });
             }
         }
+        [HttpGet("{vehicleId}")]
         public async Task<IActionResult> GetVehicleById(int vehicleId)
         {
             return Ok();
