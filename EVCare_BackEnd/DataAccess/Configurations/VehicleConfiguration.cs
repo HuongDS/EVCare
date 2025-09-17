@@ -23,7 +23,7 @@ namespace DataAccess.Configuration
                 .WithMany(x => x.Vehicles)
                 .HasForeignKey(x => x.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+            builder.HasIndex(x=> x.LicensePlate).IsUnique();
             builder.HasData(new Vehicle
             {
                 Id = 1,
