@@ -42,13 +42,52 @@ namespace API.Controllers
                 });
             }
         }
+        [HttpPost("customer")]
+        [ServiceFilter(typeof(SetCustomerIdFilter))]
+        public async Task<IActionResult> CreateAppointmentForCustomer(AppointmentCustomerCreateModel model)
+        {
+            try
+            {
+
+
+                var newModel = new AppointmentCreateModel
+                {
+                    CustomerId = (int)HttpContext.Items["CustomerId"],
+                    Appointment_Date = model.Appointment_Date,
+                    ImagesUrls = model.ImagesUrls,
+                    Note = model.Note,
+                    ServiceIds = model.ServiceIds,
+                    VehicleId = model.VehicleId
+
+                };
+                var appointmentId = await _appointmentService.CreateAppointment(newModel);
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Message = "Appointment created successfully",
+                    AppointmentId = appointmentId
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    StatusCode = 400,
+                    message = "Something went wrong",
+                });
+            }
+        }
+
         [Authorize(Roles = "Staff")]
         [HttpPut("staff")]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
         public async Task<IActionResult> UpdateAppointment(AppointmentUpdateModel model)
         {
             try
             {
-                var result = await _appointmentService.UpdateAppointment(model);
+                var employeeId = (int)HttpContext.Items["EmployeeId"];
+                var result = await _appointmentService.UpdateAppointment(model,employeeId);
                 return Ok(new ResponseDto<bool>
                 {
                     statusCode = 200,
@@ -96,8 +135,8 @@ namespace API.Controllers
         }
 
         [HttpGet("{appointmentId}")]
-        //[ServiceFilter(typeof(SetCustomerIdFilter))]
-        //[ServiceFilter(typeof(AppointmentAuthorizationFilter))]
+        [ServiceFilter(typeof(SetCustomerIdFilter))]
+        [ServiceFilter(typeof(AppointmentAuthorizationFilter))]
         public async Task<IActionResult> GetAppointmentDetailByAppointmetId(int appointmentId)
         {
             try
@@ -122,6 +161,7 @@ namespace API.Controllers
                 });
             }
         }
+
 
 
     }
