@@ -84,6 +84,7 @@ builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
 builder.Services.AddScoped<SetCustomerIdFilter>();
 builder.Services.AddScoped<AuthorizeCustomerOrAdminFilter>();
 builder.Services.AddScoped<AppointmentOwnershipFilter>();
+builder.Services.AddScoped<SetEmployeeIdFilter>();
 // Add Cors
 builder.Services.AddCors(options =>
 {
