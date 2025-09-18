@@ -11,5 +11,6 @@ namespace DataAccess.Dtos.Appointment
     {
         public int AppointmentId { get; set; }
         public AppointmentStatusEnum Status { get; set; }
+       
     }
 }
