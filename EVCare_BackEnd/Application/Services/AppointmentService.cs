@@ -33,6 +33,8 @@ namespace Application.Services
 
         }
 
+       
+
         public async Task<bool> DeleteAppointment(int appointmentId)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(appointmentId);
@@ -60,7 +62,7 @@ namespace Application.Services
             }
         }
 
-        public async Task<bool> UpdateAppointment(AppointmentUpdateModel model)
+        public async Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(model.AppointmentId);
             if(appointment == null)
@@ -68,6 +70,7 @@ namespace Application.Services
                 throw new Exception("Appointment not found");
             }   
             _mapper.Map(model, appointment);
+            appointment.EmployeeId = employeeId;
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
         }

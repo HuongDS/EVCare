@@ -8,15 +8,17 @@ using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
 {
-    public class Order : IEntity, ICreate
+    public class Order : IEntity, ICreate, IUpdate
     {
         public int Id { get; set; }
         public int AppointmentId { get; set; }
         public Appointment Appointment { get; set; }
         public OrderStatusEnum Status { get; set; }
         public DateTime Create_At { get; set; }
+
         public ICollection<OrderPart> OrderParts { get; set; }
         public ICollection<Invoice> Invoices { get; set; }
         public ICollection<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }
+        public DateTime Updated_At { get ; set; }
     }
 }
