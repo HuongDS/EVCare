@@ -58,8 +58,11 @@ builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentServiceRepository, AppointmentServiceRepository>();
 builder.Services.AddScoped<IAppointmentImageRepository, AppointmentImageRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IGenericRepository<DataAccess.Entities.Order>, GenericRepository<DataAccess.Entities.Order>>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
 
 
 // Services
@@ -72,8 +75,13 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IVehicleCategoryService, VehicleCategoryService>();
 builder.Services.AddScoped<IAppointmentService, Application.Services.AppointmentService>();
+
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
+
+builder.Services.AddScoped<IOrderService, OrderService>();
+
+
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(ServiceProfile));
 builder.Services.AddAutoMapper(typeof(VehicleProfile));
