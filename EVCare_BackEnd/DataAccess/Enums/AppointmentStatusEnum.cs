@@ -10,6 +10,7 @@ namespace DataAccess.Enums
     {
         Pending,
         Confirmed,
+        CheckedIn,
         InProgress,
         Done,
         Canceled

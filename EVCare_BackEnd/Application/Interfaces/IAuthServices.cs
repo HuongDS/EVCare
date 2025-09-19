@@ -26,6 +26,6 @@ namespace Application.Interfaces
         Task RegisterEmployeeOrTechnicianAsync(AccountResponseDto account, EmployeeRegisterDto data);
         Task ResetPassword(ResetPasswordRequestDto data);
         Task<RegisterRequestDto> ValidateInfo(RegisterRequestDto data);
-        Task<AccountResponseDto> VerifyRegisterAsync(string email, string otp);
+        Task<AccountResponseDto> VerifyRegisterAsync(string email);
     }
 }

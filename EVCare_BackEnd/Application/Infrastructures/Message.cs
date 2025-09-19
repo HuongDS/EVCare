@@ -18,6 +18,7 @@ namespace Application.Infrastructures
         public const string REFRESH_TOKEN_SUCCESS = "Token refreshed successfully.";
         public const string OTP_HAS_BEEN_SENT = "OTP sent. Please verify.";
         public const string OTP_INVALID = "OTP is invalid.";
+        public const string SOMETHING_WENT_WRONG = "Something went wrong. Please try again later.";
 
         // Account
         public const string ACCOUNT_NOT_FOUND = "Account not found.";
@@ -40,5 +41,17 @@ namespace Application.Infrastructures
         // Order 
         public const string ORDER_NOT_FOUND = "Order not found.";
         public const string ORDER_CREATED_SUCCESS = "Order created successfully.";
+        public const string ORDER_STATUS_UPDATED_SUCCESS = "Order status updated successfully.";
+
+        // OrderParts
+        public const string ORDER_PARTS_ADDED_SUCCESS = "Parts added to order successfully.";
+
+        // Parts
+        public const string PART_NOT_FOUND = "Part not found.";
+
+        // Appointment
+        public const string APPOINTMENT_CREATED_SUCCESS = "Appointment created successfully.";
+        public const string APPOINTMENT_STATUS_UPDATED_SUCCESS = "Appointment status updated successfully.";
+        public const string APPOINTMENTS_FETCHED_SUCCESS = "Appointments fetched successfully.";
     }
 }

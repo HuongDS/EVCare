@@ -7,8 +7,8 @@ using DataAccess.Entities;
 
 namespace DataAccess.Interfaces
 {
-    public interface IPartRepository : IGenericRepository<Part>, IGenericCategoryRepository<Part>
+    public interface IOrderPartRepository
     {
-        Task UpdateStockPartAsync(int partID, int quantity);
+        Task AddRangeAsync(List<OrderPart> orderParts);
     }
 }
