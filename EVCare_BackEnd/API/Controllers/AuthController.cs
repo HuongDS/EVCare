@@ -1,4 +1,4 @@
-﻿using Application.Dtos;
+using Application.Dtos;
 using Application.Dtos.Login;
 using Application.Infrastructures;
 using Application.Interfaces;
@@ -8,11 +8,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using DataAccess.Dtos.Others;
 using Application.Services;
+using DataAccess.Dtos.Employees;
+using Microsoft.AspNetCore.Authorization;
+using DataAccess.Enums;
 
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthServices _authServices;
@@ -39,27 +42,36 @@ namespace API.Controllers
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = ex.Message.Equals(Message.ACCOUNT_EXISTS) ? 409 : 400,
+                    statusCode = ex.Message.Equals(Message.ACCOUNT_EXISTS) ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                     data = null
                 });
             }
         }
         [HttpPost("/verify-otp-register")]
-        public async Task<IActionResult> VerifyOtpRegister(string email, string otp)
+        public async Task<IActionResult> VerifyOtpRegister(VerifyOTPRequestDto data)
         {
-            var response = await _otpServices.VerifyOtpAsync(email, otp);
+            var response = await _otpServices.VerifyOtpAsync(data.email, data.otp);
             if (!response)
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = 400,
+                    statusCode = HttpStatus.BAD_REQUEST,
                     message = Message.OTP_INVALID,
                     data = null
                 });
             }
-            var res = await _authServices.VerifyRegisterAsync(email, otp);
+            var res = await _authServices.VerifyRegisterAsync(data.email);
+            await _authServices.RegisterCustomerAsync(res);
             return Ok(res);
+        }
+        [HttpPost("/register-for-employee")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RegisterForEmployee(EmployeeRegisterDto data)
+        {
+            var account = await _authServices.RegisterAccountAsync(data.accountInfo);
+            await _authServices.RegisterEmployeeOrTechnicianAsync(account, data);
+            return Ok(account);
         }
         [HttpPost("/login")]
         public async Task<IActionResult> Login(LoginRequestDto data)
@@ -73,7 +85,7 @@ namespace API.Controllers
             {
                 return Unauthorized(new ResponseDto<object>
                 {
-                    statusCode = ex.Message.Equals(Message.ACCOUNT_NOT_FOUND) ? 404 : 401,
+                    statusCode = ex.Message.Equals(Message.ACCOUNT_NOT_FOUND) ? HttpStatus.NOT_FOUND : HttpStatus.UNAUTHORIZED,
                     message = ex.Message,
                     data = null
                 });
@@ -91,7 +103,7 @@ namespace API.Controllers
             {
                 return Unauthorized(new ResponseDto<object>
                 {
-                    statusCode = ex.Message.Equals(Message.ACCOUNT_NOT_FOUND) ? 404 : 401,
+                    statusCode = ex.Message.Equals(Message.ACCOUNT_NOT_FOUND) ? HttpStatus.NOT_FOUND : HttpStatus.UNAUTHORIZED,
                     message = ex.Message,
                     data = null
                 });
@@ -103,7 +115,7 @@ namespace API.Controllers
             await _authServices.LogoutAsync(HttpContext);
             return new ResponseDto<object>
             {
-                statusCode = 200,
+                statusCode = HttpStatus.OK,
                 message = Message.LOGOUT_SUCCESS,
                 data = null
             };
@@ -120,7 +132,7 @@ namespace API.Controllers
             {
                 return Unauthorized(new ResponseDto<object>
                 {
-                    statusCode = ex.Message.Equals(Message.ACCOUNT_NOT_FOUND) ? 404 : 401,
+                    statusCode = ex.Message.Equals(Message.ACCOUNT_NOT_FOUND) ? HttpStatus.NOT_FOUND : HttpStatus.UNAUTHORIZED,
                     message = ex.Message,
                     data = null
                 });
@@ -133,7 +145,7 @@ namespace API.Controllers
             await _otpServices.SaveOtpAsync(email, otp, 5);
             return Ok(new ResponseDto<object>
             {
-                statusCode = 200,
+                statusCode = HttpStatus.OK,
                 message = Message.OTP_HAS_BEEN_SENT,
                 data = null
             });
@@ -146,7 +158,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = 400,
+                    statusCode = HttpStatus.BAD_REQUEST,
                     message = Message.OTP_INVALID,
                     data = null
                 });
@@ -156,7 +168,7 @@ namespace API.Controllers
                 await _authServices.ResetPassword(data);
                 return Ok(new ResponseDto<object>
                 {
-                    statusCode = 200,
+                    statusCode = HttpStatus.OK,
                     message = Message.PASSWORD_RESET_SUCCESS,
                     data = null
                 });
@@ -165,7 +177,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = ex.Message.Equals(Message.ACCOUNT_NOT_FOUND) ? 404 : 400,
+                    statusCode = ex.Message.Equals(Message.ACCOUNT_NOT_FOUND) ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                     data = null
                 });

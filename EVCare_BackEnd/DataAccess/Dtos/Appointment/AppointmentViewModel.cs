@@ -18,7 +18,5 @@ namespace DataAccess.Dtos.Appointment
         public string VehicleImageUrl { get; set; }
         public AppointmentStatusEnum Status { get; set; }
 
-
-
     }
 }
