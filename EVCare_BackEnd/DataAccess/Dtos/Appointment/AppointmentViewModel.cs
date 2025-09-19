@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Enums;
+using Microsoft.Identity.Client;
+
 
 namespace DataAccess.Dtos.Appointment
 {
@@ -11,10 +13,10 @@ namespace DataAccess.Dtos.Appointment
     {
         public int Id { get; set; }
         public DateTime AppointmentDate { get; set; }
-
         public string VehicleName { get; set; }
         public List<string> Services { get; set; }
         public string VehicleImageUrl { get; set; }
         public AppointmentStatusEnum Status { get; set; }
     }
 }
+
