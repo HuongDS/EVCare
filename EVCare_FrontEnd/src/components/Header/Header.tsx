@@ -1,8 +1,9 @@
 import logo from "../../assets/EVCare.png";
 import styled from "styled-components";
 import { useState } from "react";
-import SignIn from "../../pages/Shared/SignIn/SignIn";
 import { Link } from "react-router";
+import Authentication from "../../pages/Shared/Auth/Authentication";
+
 
 const Navbar = styled.header`
   height: 100px;
@@ -11,15 +12,21 @@ const Navbar = styled.header`
   align-items: center;
   font-family: "Outfit", sans-serif;
   background: linear-gradient(to bottom, #ebffe7, #f9fff8);
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 1rem;
+  }
 `;
 
 const Logo = styled.div`
   width: 15%;
+  min-width: 200px;
   display: flex;
   align-items: center;
   img {
     height: 60px;
-    width: 200px;
+    width: 300%;
     object-fit: cover;
     border-radius: 8px;
   }
@@ -29,7 +36,7 @@ const SearchBar = styled.div`
   flex: 1;
   max-width: 400px;
   position: relative;
-  height: 40px;
+  height: 50%;
 
   input {
     width: 99%;
@@ -65,14 +72,20 @@ const SearchBar = styled.div`
     background: #1877f2;
     color: white;
   }
+
+  @media (max-width: 768px) {
+    order: 3;
+    width: 100%;
+    margin-top: 1rem;
+  }
 `;
 
 const Menu = styled.nav`
   width: 35%;
   display: flex;
-  justify-content: center;
-  gap: 30px;
-  font-size: 1.3em;
+  justify-content: flex-end;
+  gap: 5%;
+  font-size: clamp(1.3rem, 0.9rem, 0.875rem);
   a {
     position: relative;
     text-decoration: none;
@@ -106,14 +119,22 @@ const Menu = styled.nav`
   .active {
     color: black;
   }
+
+  @media (max-width: 768px) {
+    order: 2;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
 `;
 
 const Buttons = styled.div`
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
   width: 20%;
-  margin-right: 20px;
+  margin-right: 5%;
 
   .btn {
     width: 83px;
@@ -125,15 +146,6 @@ const Buttons = styled.div`
     font-weight: bold;
   }
 
-  .btn-outline {
-    background-color: white;
-  }
-
-  .btn-outline:hover {
-    background-color: #1877f2;
-    color: white;
-  }
-
   .btn-fill {
     background-color: #00ad4e;
     color: white;
@@ -143,14 +155,13 @@ const Buttons = styled.div`
     background-color: #1877f2;
   }
 `;
+
 export default function Header() {
-  const [showSignIn, setShowSignIn] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   return (
     <Navbar className="navbar">
       <Logo>
-        <Link to="/">
-          <img src={logo} alt="EVCare logo" />
-        </Link>
+        <img src={logo} alt="EVCare logo" />
       </Logo>
 
       <SearchBar>
@@ -161,22 +172,21 @@ export default function Header() {
       </SearchBar>
 
       <Menu>
-        <Link to="/" className="active">
+        <a href="#" className="active">
           Home
-        </Link>
-        <Link to="/service">Service</Link>
-        <Link to="/about">About</Link>
-        <Link to="/contact">Contact</Link>
+        </a>
+        <a href="#">Service</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
       </Menu>
 
       <Buttons>
-        <button className="btn btn-outline" onClick={() => setShowSignIn(true)}>
-          Sign In
+        <button className="btn btn-fill" onClick={() => setShowAuth(true)}>
+          Sign Up
         </button>
-        <button className="btn btn-fill">Sign Up</button>
       </Buttons>
 
-      <SignIn show={showSignIn} handleClose={() => setShowSignIn(false)} />
+      <Authentication show={showAuth} handleClose={() => setShowAuth(false)} />
     </Navbar>
   );
 }
