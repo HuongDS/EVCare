@@ -4,12 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Dtos;
+using DataAccess.Dtos.OrderParts;
 using DataAccess.Dtos.Orders;
+using DataAccess.Entities;
 
 namespace Application.Interfaces
 {
     public interface IOrderService
     {
+        Task<ResponseDto<OrderPartsViewDto>> AddPartsToOrder(List<OrderPartAddDto> data, int orderId);
         Task<ResponseDto<OrderResponseDto>> CreateOrderAsync(OrderCreateRequestDto data);
+        Task<ResponseDto<OrderResponseDto>> UpdateStatusOrderAsync(OrderUpdateStatusDto data);
     }
 }

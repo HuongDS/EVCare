@@ -19,6 +19,7 @@ namespace Application.Interfaces
         Task<ResponseDto<LoginResponseDto>> RefreshAsync(HttpContext context);
         Task<ResponseDto<RegisterResponseDto>> RegisterAsync(RegisterRequestDto data);
         Task ResetPassword(ResetPasswordRequestDto data);
-        Task<ResponseDto<RegisterResponseDto>> VerifyRegisterAsync(string email, string otp);
+        Task<RegisterRequestDto> ValidateInfo(RegisterRequestDto data);
+        Task<AccountResponseDto> VerifyRegisterAsync(string email);
     }
 }
