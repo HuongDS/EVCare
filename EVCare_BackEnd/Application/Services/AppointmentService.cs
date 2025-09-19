@@ -70,18 +70,16 @@ namespace Application.Services
                 pageIndex = pageIndex,
                 pageSize = pageSize
             };
-
-
-       
+        }
 
         public async Task<bool> DeleteAppointment(int appointmentId)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(appointmentId);
-            if(appointment == null)
+            if (appointment == null)
             {
                 throw new Exception("Appointment not found");
             }
-            appointment.Status= DataAccess.Enums.AppointmentStatusEnum.Canceled;
+            appointment.Status = DataAccess.Enums.AppointmentStatusEnum.Canceled;
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
         }
@@ -91,7 +89,7 @@ namespace Application.Services
             try
             {
                 var result = await _appointmentRepository.GetAppointmentWithDetails(appointmentIdId);
-                if(result == null) throw new Exception("Appointment not found");
+                if (result == null) throw new Exception("Appointment not found");
                 return result;
 
             }
@@ -109,11 +107,12 @@ namespace Application.Services
                 return result;
 
             }
-            catch (Exception e) {
-               
+            catch (Exception e)
+            {
+
                 throw new Exception("Error retrieving appointment history");
             }
-            
+
         }
 
         public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex)
@@ -134,10 +133,10 @@ namespace Application.Services
         public async Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(model.AppointmentId);
-            if(appointment == null)
+            if (appointment == null)
             {
                 throw new Exception("Appointment not found");
-            }   
+            }
             _mapper.Map(model, appointment);
             appointment.EmployeeId = employeeId;
             await _appointmentRepository.UpdateAsync(appointment);
