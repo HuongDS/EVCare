@@ -33,5 +33,12 @@ namespace Application.Infrastructures
         public const string WEAK_PASSWORD = "Password is too weak. It must be at least 8 characters, at least 1 letter, 1 number and 1 special character.";
         public const string INVALID_EMAIL = "Email is not valid.";
         public const string INVALID_PHONE = "Phone number is not valid.";
+
+        // Appointment
+        public const string APPOINTMENT_NOT_FOUND = "Appointment not found.";
+
+        // Order 
+        public const string ORDER_NOT_FOUND = "Order not found.";
+        public const string ORDER_CREATED_SUCCESS = "Order created successfully.";
     }
 }
