@@ -10,13 +10,17 @@ namespace DataAccess.Dtos.Appointment
 {
     public class AppointmentViewDto
     {
-        public int Id { get; set; }
-        public DateTime AppointmentDate { get; set; }
-        
-        public string VehicleName { get; set; }
-        public List<string>Services { get; set; }
-        public string VehicleImageUrl { get; set; }
-        public AppointmentStatusEnum Status { get; set; }
+        public int appointmentID { get; set; }
+        public string customerName { get; set; }
+        public string vehiclePlate { get; set; }
+        public string customerPhone { get; set; }
+        public string vehicleModel { get; set; }
+        public string note { get; set; }
+        public DateTime appointmentDate { get; set; }
+        public string status { get; set; }
+        public IEnumerable<string> services { get; set; }
+        public string employeeName { get; set; }
+        public IEnumerable<string> techinicianNames { get; set; }
 
     }
 }
