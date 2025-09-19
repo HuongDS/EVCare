@@ -22,9 +22,19 @@ namespace Application.Mappings
             .ForMember(dest => dest.AppointmentImages, opt =>
                 opt.MapFrom(src => src.ImagesUrls != null
                     ? src.ImagesUrls.Select(url => new Appointmentimage { Image = url })
-                    : new List<Appointmentimage>()));
+                    : new List<Appointmentimage>()))
+             .ForMember(dest => dest.Alerts, opt => opt.MapFrom(src => new List<Alert>
+             {
+                 new Alert
+                {
+                    Message=$"New appointment created for customer ID: {src.CustomerId} on {src.Appointment_Date}",
+                    Create_At= DateTime.UtcNow,
+                    Is_Read=false
+                }
+             }));
+            CreateMap<AppointmentUpdateModel, Appointment>();
 
-            CreateMap<Appointment, AppointmentViewModel>()
+CreateMap<Appointment, AppointmentViewModel>()
                 .ForMember(dest => dest.techinicianNames, opt =>
                 opt.MapFrom<TechnicianNameResolver>())
                 .ForMember(dest => dest.services, opt =>

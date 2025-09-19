@@ -33,7 +33,8 @@ namespace DataAccess
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
-        //public DbSet<ServiceCategory> ServiceCategories { get; set; }
+        public DbSet<ServiceCenter> ServiceCenters {  get; set; }
+        public DbSet<CenterUnavailableDays> CenterUnavailableDays { get; set; }
         public DbSet<AppointmentService> AppointmentServices { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<TechnicianSkill> TechnicianSkills { get; set; }

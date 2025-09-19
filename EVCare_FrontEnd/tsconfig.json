@@ -5,9 +5,9 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": ".", // gốc của project (thường là thư mục chứa tsconfig.json)
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"] // alias @ trỏ về thư mục src
     }
   }
 }

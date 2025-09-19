@@ -20,11 +20,12 @@ namespace Application.Services
             _vehicleRepository = vehicleRepository;
             _mapper = mapper;
         }
-        public async Task<int> CreateVehicle(VehicleCreateModel model)
+        public async Task<int> CreateVehicle(VehicleCreateModel model, int customerId)
         {
             try
             {
                 var vehicle = _mapper.Map<Vehicle>(model);
+                vehicle.CustomerId = customerId;
                 var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
                 return createdVehicle.Id;
             }
@@ -33,6 +34,49 @@ namespace Application.Services
                 throw new Exception(ex.Message);
             }
             
+        }
+
+        public Task<VehicleDetailViewModel> GetVehicleDetailById(int vehicleId)
+        {
+            try
+            {
+                var vehicle =  _vehicleRepository.GetVehicleDetailById(vehicleId);
+                return _mapper.Map<Task<VehicleDetailViewModel>>(vehicle);
+
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<IEnumerable<VehicleViewModel>> GetVehiclesByCustomerId(int customerId)
+        {
+            try
+            {
+                var vehicles = await _vehicleRepository.GetVehiclesByCustomerId(customerId);
+                return _mapper.Map<IEnumerable<VehicleViewModel>>(vehicles);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<int> UpdateVehicleCustomer(VehicleCustomerUpdateModel model)
+        {
+            try
+            {
+                var vehicle =await _vehicleRepository.GetByIdAsync(model.Id);
+                vehicle = _mapper.Map(model, vehicle);
+
+                var createdVehicle = await _vehicleRepository.UpdateAsync(vehicle);
+                return createdVehicle.Id;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

@@ -1,82 +1,93 @@
 import styled from "styled-components";
 
-const BehindServiceWrapper = styled.div`
+const WrapperAboutUs = styled.div`
   font-family: "Outfit", sans-serif;
-  padding: 50px 0;
-  text-align: left;
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #ffffff;
+  margin-left: 200px;
+  margin-right: 182px;
 `;
 
-const DetailsNumberWrapper = styled.p`
-  font-size: 100px;
-  font-weight: bold;
-  display: flex;
+const AboutUsTextWrapper = styled.div`
+  flex: 1;
+  max-width: 600px;
 `;
 
-const DetailsNumber = styled.p`
-  font-size: 100px;
-  font-weight: 1000;
-  margin-bottom: 0px;
-`;
-
-const DetailsDescription = styled.p`
-  font-size: 25px;
-  font-weight: 700;
-  margin-bottom: 0px;
-  color: #0039a6;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 900px;
-  margin-top: 150px;
-  margin-left: 50px;
-`;
-
-const Title = styled.h1`
+const Title = styled.h2`
   font-size: 50px;
   font-weight: 800;
+  margin-top: 100px;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  text-align: left;
+  letter-spacing: 2px;
+`;
+
+const AboutUsText = styled.p`
+  font-size: 40px;
+  font-weight: 600;
+  text-align: left;
+  margin: 0;
 `;
 
 const HighlightBlue = styled.span`
-  color: #0039a6;
+  color: #0056d2;
   font-weight: 700;
 `;
 
-const Content = styled.p`
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  margin-left: 200px;
-  margin-right: 200px;
-  text-align: justify;
+const AboutUsDetail = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 40%;
+  margin-left: 100px;
+`;
+
+const AboutUsDetailNumber = styled.p`
+  font-size: 100px;
+  font-weight: bold;
+  color: #000000;
+  margin-top: 0;
+  margin-bottom: 0;
+`;
+
+const AboutUsDetailDescription = styled.p`
+  font-size: 30px;
+  font-weight: 1000;
+  color: #00ad4e;
+  margin-top: 0;
+  margin-bottom: 0;
 `;
 
 export default function AboutUs() {
   return (
-    <BehindServiceWrapper>
-      <ContentWrapper>
-        <Title>About Us</Title>
-        <Content>
+    <WrapperAboutUs>
+      <AboutUsTextWrapper>
+        <Title>ABOUT US</Title>
+        <AboutUsText>
           We are committed to delivering <HighlightBlue>reliable</HighlightBlue>
           , <HighlightBlue>transparent</HighlightBlue>, and{" "}
           <HighlightBlue>tech-driven</HighlightBlue> EV maintenance services,
           ensuring every journey is safe and worry-free.
-        </Content>
-      </ContentWrapper>
-      <DetailsNumberWrapper></DetailsNumberWrapper>
-      <div>
-        <DetailsNumber>5000+</DetailsNumber>
-        <DetailsDescription>EVs successfully maintained</DetailsDescription>
-        <DetailsNumber>50+</DetailsNumber>
-        <DetailsDescription>
-          Certified and skilled technicians
-        </DetailsDescription>
-        <DetailsNumber>10</DetailsNumber>
-        <DetailsDescription>Years of trusted experience</DetailsDescription>
-      </div>
-    </BehindServiceWrapper>
+        </AboutUsText>
+      </AboutUsTextWrapper>
+
+      <AboutUsDetail>
+        <AboutUsDetailNumber>5,000+</AboutUsDetailNumber>
+        <AboutUsDetailDescription>
+          Electric Vehicles Serviced
+        </AboutUsDetailDescription>
+        <AboutUsDetailNumber>50+</AboutUsDetailNumber>
+        <AboutUsDetailDescription>
+          Certified Technicians
+        </AboutUsDetailDescription>
+        <AboutUsDetailNumber>10</AboutUsDetailNumber>
+        <AboutUsDetailDescription>
+          Years of Trusted Service
+        </AboutUsDetailDescription>
+      </AboutUsDetail>
+    </WrapperAboutUs>
   );
 }
