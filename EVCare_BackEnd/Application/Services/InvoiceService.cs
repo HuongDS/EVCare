@@ -38,7 +38,7 @@ namespace Application.Services
             return _vnPayService.CreatePaymentUrl(context,model);
         }
 
-        public void PaymentCallback(IQueryCollection query)
+        public async Task PaymentCallback(IQueryCollection query)
         {
             var result = _vnPayService.PaymentExecute(query);
             if(result == null || result.VnPayResponseCode!="00")
@@ -48,6 +48,7 @@ namespace Application.Services
             }
             else
             {
+                return null;
              //   var invoice = _invoiceRepository.GetInvoiceById(result.OrderId);
                 //if (invoice == null)
                 //{
