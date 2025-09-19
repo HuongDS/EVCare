@@ -17,7 +17,7 @@ namespace DataAccess.Entities
         public DateTime Create_At { get; set; }
 
         public ICollection<OrderPart> OrderParts { get; set; }
-        public ICollection<Invoice> Invoices { get; set; }
+        public Invoice? Invoice { get; set; }
         public ICollection<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }
         public DateTime Updated_At { get ; set; }
     }

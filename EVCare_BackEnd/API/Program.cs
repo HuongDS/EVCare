@@ -58,6 +58,8 @@ builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentServiceRepository, AppointmentServiceRepository>();
 builder.Services.AddScoped<IAppointmentImageRepository, AppointmentImageRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
 
 // Services
@@ -70,6 +72,8 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IVehicleCategoryService, VehicleCategoryService>();
 builder.Services.AddScoped<IAppointmentService, Application.Services.AppointmentService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(ServiceProfile));
 builder.Services.AddAutoMapper(typeof(VehicleProfile));
@@ -81,6 +85,9 @@ builder.Services.AddScoped<SetCustomerIdFilter>();
 builder.Services.AddScoped<AuthorizeCustomerOrAdminFilter>();
 builder.Services.AddScoped<AppointmentOwnershipFilter>();
 builder.Services.AddScoped<SetEmployeeIdFilter>();
+
+
+
 // Add Cors
 builder.Services.AddCors(options =>
 {

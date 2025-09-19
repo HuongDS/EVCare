@@ -62,6 +62,36 @@ namespace Application.Services
             }
         }
 
+        public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentHistoryByCustomerId(int customerId)
+        {
+            try
+            {
+                var result = await _appointmentRepository.GetAppointmentsByCustomerId(customerId);
+                return result;
+
+            }
+            catch (Exception e) {
+               
+                throw new Exception("Error retrieving appointment history");
+            }
+            
+        }
+
+        public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex)
+        {
+            try
+            {
+                int pageSize = payload ?? 10;
+                int pageIndex = pageindex ?? 1;
+                return await _appointmentRepository.GetAppointmentsWithPagination(pageSize, pageIndex);
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error retrieving appointments with pagination");
+            }
+        }
+
         public async Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(model.AppointmentId);
