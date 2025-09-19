@@ -51,28 +51,28 @@ namespace Application.Services
             var bytes = RandomNumberGenerator.GetBytes(64);
             return Convert.ToBase64String(bytes);
         }
-        public ClaimsPrincipal? GetClaimsPrincipalFromExpiredToken(string token)
-        {
-            var parameters = new TokenValidationParameters
-            {
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
-                ValidateLifetime = false // allow read expired tokens
-            };
+        //public ClaimsPrincipal? GetClaimsPrincipalFromExpiredToken(string token)
+        //{
+        //    var parameters = new TokenValidationParameters
+        //    {
+        //        ValidateAudience = false,
+        //        ValidateIssuer = false,
+        //        ValidateIssuerSigningKey = true,
+        //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+        //        ValidateLifetime = false // allow read expired tokens
+        //    };
 
-            var handler = new JwtSecurityTokenHandler();
-            try
-            {
-                var principal = handler.ValidateToken(token, parameters, out _);
-                return principal;
-            }
-            catch
-            {
-                return null;
-            }
-        }
+        //    var handler = new JwtSecurityTokenHandler();
+        //    try
+        //    {
+        //        var principal = handler.ValidateToken(token, parameters, out _);
+        //        return principal;
+        //    }
+        //    catch
+        //    {
+        //        return null;
+        //    }
+        //}
         public string HashToken(string token)
         {
             using var h = SHA256.Create();

@@ -26,37 +26,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "EVCare API", Version = "v1" });
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = @"JWT Authorization header using the Bearer scheme. 
-                        Enter 'Bearer' [space] and then your token in the text input below.
-                        Example: 'Bearer 12345abcdef'",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header
-            },
-            new List<string>()
-        }
-    });
-});
 builder.Services.AddDbContext<EVCareDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlServerOptionsAction: sqlOptions =>
     {
@@ -89,6 +58,9 @@ builder.Services.AddScoped<IAppointmentServiceRepository, AppointmentServiceRepo
 builder.Services.AddScoped<IAppointmentImageRepository, AppointmentImageRepository>();
 builder.Services.AddScoped<IGenericRepository<DataAccess.Entities.Order>, GenericRepository<DataAccess.Entities.Order>>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderPartRepository, OrderPartRepository>();
+builder.Services.AddScoped<IGenericCategoryRepository<Part>, GenericCategoryRepository<Part>>();
+builder.Services.AddScoped<IPartRepository, PartRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthServices, AuthServices>();

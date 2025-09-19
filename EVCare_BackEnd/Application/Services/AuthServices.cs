@@ -97,7 +97,7 @@ namespace Application.Services
             }
             return data;
         }
-        public async Task<AccountResponseDto> VerifyRegisterAsync(string email, string otp)
+        public async Task<AccountResponseDto> VerifyRegisterAsync(string email)
         {
             var data = await _otpServices.GetObjectData<RegisterRequestDto>(email);
             if (data is null)
@@ -175,7 +175,6 @@ namespace Application.Services
                 await _technicianRepository.AddAsync(newTechnician);
             };
         }
-
         public async Task<ResponseDto<LoginResponseDto>> LoginAsync(LoginRequestDto data, HttpContext context)
         {
             var account = await _accountRepository.GetAccountByEmail(data.email);
