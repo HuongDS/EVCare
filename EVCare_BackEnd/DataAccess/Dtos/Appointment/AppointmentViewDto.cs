@@ -8,7 +8,7 @@ using Microsoft.Identity.Client;
 
 namespace DataAccess.Dtos.Appointment
 {
-    public class AppointmentViewModel
+    public class AppointmentViewDto
     {
         public int Id { get; set; }
         public DateTime AppointmentDate { get; set; }
@@ -17,8 +17,6 @@ namespace DataAccess.Dtos.Appointment
         public List<string>Services { get; set; }
         public string VehicleImageUrl { get; set; }
         public AppointmentStatusEnum Status { get; set; }
-
-
 
     }
 }
