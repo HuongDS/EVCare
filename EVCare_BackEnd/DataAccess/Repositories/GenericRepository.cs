@@ -12,6 +12,7 @@ namespace DataAccess.Repositories
     {
         protected readonly EVCareDbContext _dbContext;
         protected readonly DbSet<T> _dbSet;
+        
 
         public GenericRepository(EVCareDbContext dbContext)
         {

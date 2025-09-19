@@ -15,6 +15,44 @@ namespace DataAccess.Repositories
         public AppointmentRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
+
+        public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsByCustomerId(int customerId)
+        {
+
+            return await _dbContext.Appointments.Where(a => a.CustomerId == customerId)
+                .Include(a => a.Vehicle).ThenInclude(v => v.Category)
+                .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
+                .Select(a => new AppointmentViewModel
+                {
+                    Id = a.Id,
+                    AppointmentDate = a.Appointment_Date,
+                    Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
+                    Status = a.Status,
+                    VehicleName = a.Vehicle.Category.Name,
+                    VehicleImageUrl = a.Vehicle.Image
+                }).ToListAsync();
+               
+        }
+
+        public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex)
+        {
+            return await _dbContext.Appointments.Include(a => a.Vehicle).ThenInclude(v => v.Category)
+                .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
+                .OrderBy(a => a.Id)
+                .Skip((pageindex - 1) * payload)
+                .Take(payload)
+                .Select(a => new AppointmentViewModel
+                {
+                    Id = a.Id,
+                    AppointmentDate = a.Appointment_Date,
+                    Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
+                    Status = a.Status,
+                    VehicleName = a.Vehicle.Category.Name,
+                    VehicleImageUrl = a.Vehicle.Image
+                }).ToListAsync();
+
+        }
+
         public async Task<AppointmentViewDetailModel> GetAppointmentWithDetails(int appointmentId)
         {
             return await _dbContext.Appointments
@@ -24,6 +62,7 @@ namespace DataAccess.Repositories
                 .Include(a => a.Employee).ThenInclude(e => e.Account)
                 .Include(a => a.AppointmentImages)
                 .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service) 
+                
                 .Select(a => new AppointmentViewDetailModel
                 {
                     Id = a.Id,

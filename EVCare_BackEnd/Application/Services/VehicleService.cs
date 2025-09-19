@@ -36,6 +36,20 @@ namespace Application.Services
             
         }
 
+        public Task<VehicleDetailViewModel> GetVehicleDetailById(int vehicleId)
+        {
+            try
+            {
+                var vehicle =  _vehicleRepository.GetVehicleDetailById(vehicleId);
+                return _mapper.Map<Task<VehicleDetailViewModel>>(vehicle);
+
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         public async Task<IEnumerable<VehicleViewModel>> GetVehiclesByCustomerId(int customerId)
         {
             try

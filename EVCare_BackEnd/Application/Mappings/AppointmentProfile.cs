@@ -32,6 +32,8 @@ namespace Application.Mappings
                 }
              }));
             CreateMap<AppointmentUpdateModel, Appointment>();
+            
+               
         }
     }
 }

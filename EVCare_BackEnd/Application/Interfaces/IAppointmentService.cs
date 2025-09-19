@@ -13,6 +13,7 @@ namespace Application.Interfaces
         Task<bool> UpdateAppointment(AppointmentUpdateModel model,int employeeId);
         Task<bool> DeleteAppointment(int appointmentId);
         Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId);
-       
+        Task<IEnumerable<AppointmentViewModel>> GetAppointmentHistoryByCustomerId(int customerId);
+        Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex);
     }
 }

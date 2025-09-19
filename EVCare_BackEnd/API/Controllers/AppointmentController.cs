@@ -162,7 +162,81 @@ namespace API.Controllers
             }
         }
 
+        [HttpGet("history")]
+        [ServiceFilter(typeof(SetCustomerIdFilter))]
 
+        public async Task<IActionResult> GetAppointmentHistory()
+        {
+            try
+            {
+                int customerId = (int)HttpContext.Items["CustomerId"];
+                
+                var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
+                return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
+                {
+                    statusCode = 200,
+                    message = "Appointments retrieved successfully",
+                    data = appointments 
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                    
+                });
+            }
+        }
+
+        [HttpGet("staff/history/{customerId}")]
+        [Authorize(Roles ="Staff")]
+        public async Task<IActionResult> GetAppointmentHistoryByCustomerId(int customerId)
+        {
+            try
+            {
+                
+                var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
+                return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
+                {
+                    statusCode = 200,
+                    message = "Appointments retrieved successfully",
+                    data = appointments
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                });
+            }
+        }
+        [HttpGet("appointments/paged")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult>GetAppointmentsWithPagination(int? payload,int? pageindex)
+        {
+            try
+            {
+                var appointments = await _appointmentService.GetAppointmentsWithPagination(payload,pageindex);
+                return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
+                {
+                    statusCode = 200,
+                    message = "Appointments retrieved successfully",
+                    data = appointments
+                });
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                });
+            }
+        }
 
     }
 }

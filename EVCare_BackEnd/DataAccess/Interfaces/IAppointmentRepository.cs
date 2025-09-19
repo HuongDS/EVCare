@@ -10,6 +10,8 @@ namespace DataAccess.Interfaces
 {
     public interface IAppointmentRepository : IGenericRepository<Appointment>
     {
+        public Task<IEnumerable<AppointmentViewModel>> GetAppointmentsByCustomerId(int customerId);
+        public Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex);
         public Task<AppointmentViewDetailModel> GetAppointmentWithDetails(int appointmentId);
     }
 }

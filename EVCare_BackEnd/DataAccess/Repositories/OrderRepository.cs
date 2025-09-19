@@ -14,5 +14,12 @@ namespace DataAccess.Repositories
         public OrderRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
+        public async Task<int> GetCustomerIdByOrderId(int orderId)
+        {
+            return await _dbContext.Orders.Where(o => o.Id == orderId)
+                .Include(o=>o.Appointment)
+                .Select(o => o.Appointment.CustomerId)
+                .FirstOrDefaultAsync();
+        }
     }
 }
