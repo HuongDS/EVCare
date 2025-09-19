@@ -7,10 +7,12 @@ using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using AutoMapper;
+using DataAccess.Dtos.OrderParts;
 using DataAccess.Dtos.Orders;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using StackExchange.Redis;
 using Order = DataAccess.Entities.Order;
 
@@ -21,12 +23,17 @@ namespace Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IMapper _mapper;
+        private readonly IOrderPartRepository _orderPartRepository;
+        private readonly IPartRepository _partRepository;
 
-        public OrderService(IOrderRepository orderRepository, IAppointmentRepository appointmentRepository, IMapper mapper)
+        public OrderService(IOrderRepository orderRepository, IAppointmentRepository appointmentRepository,
+            IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository)
         {
             _orderRepository = orderRepository;
             _appointmentRepository = appointmentRepository;
             _mapper = mapper;
+            _orderPartRepository = orderPartRepository;
+            _partRepository = partRepository;
         }
         public async Task<ResponseDto<OrderResponseDto>> CreateOrderAsync(OrderCreateRequestDto data)
         {
@@ -42,6 +49,52 @@ namespace Application.Services
                 statusCode = 200,
                 message = Message.ORDER_CREATED_SUCCESS,
                 data = _mapper.Map<OrderResponseDto>(addedEntity)
+            };
+        }
+        public async Task<ResponseDto<OrderPartsViewDto>> AddPartsToOrder(List<OrderPartAddDto> data, int orderId)
+        {
+            var checkOrderID = await _orderRepository.GetByIdAsync(orderId);
+            if (checkOrderID is null)
+            {
+                throw new Exception(Message.ORDER_NOT_FOUND);
+            }
+            var orderParts = _mapper.Map<List<OrderPart>>(data);
+
+            try
+            {
+                foreach (var item in orderParts)
+                {
+                    await _partRepository.UpdateStockPartAsync(item.PartId, item.Quantity);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            await _orderPartRepository.AddRangeAsync(orderParts);
+            var listParts = _mapper.Map<OrderPartsViewDto>(data);
+            return new ResponseDto<OrderPartsViewDto>
+            {
+                statusCode = 200,
+                message = Message.ORDER_PARTS_ADDED_SUCCESS,
+                data = listParts,
+            };
+        }
+        public async Task<ResponseDto<OrderResponseDto>> UpdateStatusOrderAsync(OrderUpdateStatusDto data)
+        {
+            var order = await _orderRepository.GetByIdAsync(data.orderID);
+            if (order is null)
+            {
+                throw new Exception(Message.ORDER_NOT_FOUND);
+            }
+            order.Status = data.status;
+            await _orderRepository.UpdateAsync(order);
+            return new ResponseDto<OrderResponseDto>
+            {
+                statusCode = 200,
+                message = Message.ORDER_STATUS_UPDATED_SUCCESS,
+                data = _mapper.Map<OrderResponseDto>(order)
             };
         }
     }

@@ -14,5 +14,20 @@ namespace DataAccess.Repositories
         public PartRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
+        public async Task UpdateStockPartAsync(int partID, int quantity)
+        {
+            var part = await GetByIdAsync(partID);
+            if (part is null)
+            {
+                throw new Exception($"Part with id = {partID} not found");
+            }
+            var stock = part.Stock;
+            if (stock < quantity)
+            {
+                throw new Exception($"Insufficient stock (stock = {stock})");
+            }
+            part.Stock = stock - quantity;
+            await UpdateAsync(part);
+        }
     }
 }

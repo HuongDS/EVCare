@@ -62,6 +62,9 @@ builder.Services.AddScoped<IAppointmentImageRepository, AppointmentImageReposito
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IGenericRepository<DataAccess.Entities.Order>, GenericRepository<DataAccess.Entities.Order>>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderPartRepository, OrderPartRepository>();
+builder.Services.AddScoped<IGenericCategoryRepository<Part>, GenericCategoryRepository<Part>>();
+builder.Services.AddScoped<IPartRepository, PartRepository>();
 
 
 
