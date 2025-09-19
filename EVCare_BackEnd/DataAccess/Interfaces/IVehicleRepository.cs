@@ -11,6 +11,8 @@ namespace DataAccess.Interfaces
     public interface IVehicleRepository : IGenericRepository<Vehicle>
     {
         Task<int> GetCustomerIdByVehicleId(int vehicleId);
+        Task<VehicleDetailViewModel> GetVehicleDetailById(int vehicleId);
         Task<IEnumerable<Vehicle>> GetVehiclesByCustomerId(int customerId);
+        
     }
 }

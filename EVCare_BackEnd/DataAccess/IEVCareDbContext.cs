@@ -11,6 +11,8 @@ namespace DataAccess
 {
     public interface IEVCareDbContext
     {
+        public DbSet<ServiceCenter> ServiceCenters { get; set; }
+        public DbSet<CenterUnavailableDays> CenterUnavailableDays { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<VehiclesCategory> VehiclesCategories { get; set; }
         public DbSet<TechnicianSkill> TechnicianSkills { get; set; }
