@@ -95,9 +95,29 @@ namespace API.Controllers
             }
         }
         [HttpGet("{vehicleId}")]
-        public async Task<IActionResult> GetVehicleById(int vehicleId)
+        [ServiceFilter(typeof(SetCustomerIdFilter))]
+        [ServiceFilter(typeof(AuthorizeVehicleOwnerFilter))]
+        public async Task<IActionResult> GetVehicleDetailById(int vehicleId)
         {
-            return Ok();
+            try
+            {
+                var vehicle = await _vehicleService.GetVehicleDetailById(vehicleId);
+                return Ok(new ResponseDto<VehicleDetailViewModel>
+                {
+                    statusCode = 200,
+                    message = "Success",
+                    data = vehicle
+                });
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
         }
     }
 }

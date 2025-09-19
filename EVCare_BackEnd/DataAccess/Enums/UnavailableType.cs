@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Enums
 {
-    public enum AppointmentStatusEnum
+    public enum UnavailableType
     {
-
-        Peding,
-        InProgress,
-        Done,
-        Canceled
+        Holiday = 0,
+        OverCapacity = 1,
+        Maintenance = 2
     }
 }

@@ -4,14 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Enums
+namespace DataAccess.Dtos.OrderPart
 {
-    public enum AppointmentStatusEnum
+    public class OrderPartViewModel
     {
 
-        Peding,
-        InProgress,
-        Done,
-        Canceled
     }
 }
