@@ -11,7 +11,7 @@ namespace Application.Interfaces
     public interface IInvoiceService 
     {
         public Task<string> CreatePaymentUrl(HttpContext context,InvoiceCreateModel model);
-        public void PaymentCallback(IQueryCollection query);
+        public Task PaymentCallback(IQueryCollection query);
 
 
     }
