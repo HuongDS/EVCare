@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Resolver
 {
-    public class TechnicianNameResolver : IValueResolver<Appointment, AppointmentViewModel, IEnumerable<string>>
+    public class TechnicianNameResolver : IValueResolver<Appointment, AppointmentViewDto, IEnumerable<string>>
     {
         private readonly EVCareDbContext _context;
         public TechnicianNameResolver(EVCareDbContext context)
@@ -20,7 +20,7 @@ namespace Application.Resolver
             _context = context;
         }
 
-        public IEnumerable<string> Resolve(Appointment source, AppointmentViewModel destination, IEnumerable<string> destMember, ResolutionContext context)
+        public IEnumerable<string> Resolve(Appointment source, AppointmentViewDto destination, IEnumerable<string> destMember, ResolutionContext context)
         {
             var technicians = _context.Technicians
                 .Include(t => t.Employee)

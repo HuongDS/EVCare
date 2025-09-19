@@ -13,8 +13,8 @@ namespace Application.Interfaces
     public interface IAppointmentService
     {
         Task<int> CreateAppointment(AppointmentCreateModel model);
-        Task<PageResultDto<AppointmentViewModel>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, DateOnly currentDate, int pageSize, int pageIndex);
-        Task<PageResultDto<AppointmentViewModel>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex);
+        Task<PageResultDto<AppointmentViewDto>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, DateOnly currentDate, int pageSize, int pageIndex);
+        Task<PageResultDto<AppointmentViewDto>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex);
         Task<int> UpdateAppointmentStatus(AppointmentUpdateDto data);
     }
 }

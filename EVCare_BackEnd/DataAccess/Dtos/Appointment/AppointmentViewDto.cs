@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Dtos.Appointment
 {
-    public class AppointmentViewModel
+    public class AppointmentViewDto
     {
         public int appointmentID { get; set; }
         public string customerName { get; set; }

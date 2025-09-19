@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Resolver
 {
-    public class CustomerNameResolver : IValueResolver<Appointment, AppointmentViewModel, string>
+    public class CustomerNameResolver : IValueResolver<Appointment, AppointmentViewDto, string>
     {
         private readonly EVCareDbContext _context;
 
@@ -20,7 +20,7 @@ namespace Application.Resolver
             _context = context;
         }
 
-        public string Resolve(Appointment source, AppointmentViewModel destination, string destMember, ResolutionContext context)
+        public string Resolve(Appointment source, AppointmentViewDto destination, string destMember, ResolutionContext context)
         {
             var customer = _context.Customers.Include(c => c.Account).FirstOrDefault(c => c.Id == source.CustomerId);
             return customer.Account.First_Name + customer.Account.Last_Name;

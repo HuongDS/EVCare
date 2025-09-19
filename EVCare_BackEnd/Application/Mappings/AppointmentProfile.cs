@@ -24,7 +24,7 @@ namespace Application.Mappings
                     ? src.ImagesUrls.Select(url => new Appointmentimage { Image = url })
                     : new List<Appointmentimage>()));
 
-            CreateMap<Appointment, AppointmentViewModel>()
+            CreateMap<Appointment, AppointmentViewDto>()
                 .ForMember(dest => dest.techinicianNames, opt =>
                 opt.MapFrom<TechnicianNameResolver>())
                 .ForMember(dest => dest.services, opt =>

@@ -46,24 +46,24 @@ namespace Application.Services
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, DateOnly currentDate, int pageSize, int pageIndex)
+        public async Task<PageResultDto<AppointmentViewDto>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, DateOnly currentDate, int pageSize, int pageIndex)
         {
             var (appointments, totalItems, totalPages) = await _appointmentRepository.GetAppointmentByEmployeeIDAsync(employeeID, status, currentDate, pageSize, pageIndex);
-            return new PageResultDto<AppointmentViewModel>
+            return new PageResultDto<AppointmentViewDto>
             {
-                items = _mapper.Map<IEnumerable<AppointmentViewModel>>(appointments),
+                items = _mapper.Map<IEnumerable<AppointmentViewDto>>(appointments),
                 totalItems = totalItems,
                 totalPages = totalPages,
                 pageIndex = pageIndex,
                 pageSize = pageSize
             };
         }
-        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex)
+        public async Task<PageResultDto<AppointmentViewDto>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex)
         {
             var (appointments, totalItems, totalPages) = await _appointmentRepository.GetAppointmentByEmployeeIDAsync(employeeID, status, pageSize, pageIndex);
-            return new PageResultDto<AppointmentViewModel>
+            return new PageResultDto<AppointmentViewDto>
             {
-                items = _mapper.Map<IEnumerable<AppointmentViewModel>>(appointments),
+                items = _mapper.Map<IEnumerable<AppointmentViewDto>>(appointments),
                 totalItems = totalItems,
                 totalPages = totalPages,
                 pageIndex = pageIndex,
