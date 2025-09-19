@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Resolver
 {
-    public class ServiceNameResolver : IValueResolver<Appointment, AppointmentViewModel, IEnumerable<string>>
+    public class ServiceNameResolver : IValueResolver<Appointment, AppointmentViewDto, IEnumerable<string>>
     {
         private readonly EVCareDbContext _context;
         public ServiceNameResolver(EVCareDbContext context)
         {
             _context = context;
         }
-        public IEnumerable<string> Resolve(Appointment source, AppointmentViewModel destination, IEnumerable<string> destMember, ResolutionContext context)
+        public IEnumerable<string> Resolve(Appointment source, AppointmentViewDto destination, IEnumerable<string> destMember, ResolutionContext context)
         {
             var service = _context.AppointmentServices.Include(s => s.Service)
                 .Where(s => s.AppointmentId == source.Id)
