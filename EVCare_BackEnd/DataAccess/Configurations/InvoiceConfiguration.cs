@@ -19,8 +19,8 @@ namespace DataAccess.Configuration
                    .HasForeignKey(i => i.CustomerId)
                    .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(i => i.Order)
-                .WithMany(Order => Order.Invoices)
-                .HasForeignKey(i => i.OrderId)
+                .WithOne(Order => Order.Invoice)
+                .HasForeignKey<Invoice>(i => i.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

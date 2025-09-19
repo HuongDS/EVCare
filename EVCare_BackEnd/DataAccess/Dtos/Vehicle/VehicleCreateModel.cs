@@ -10,7 +10,7 @@ namespace DataAccess.Dtos.Vehicle
     {
         public int CategoryId { get; set; }
         public string LicensePlate { get; set; }
-        public int CustomerId { get; set; }
+    
         
     }
 }

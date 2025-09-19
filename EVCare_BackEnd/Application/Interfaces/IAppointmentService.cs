@@ -12,9 +12,16 @@ namespace Application.Interfaces
 {
     public interface IAppointmentService
     {
-        Task<int> CreateAppointment(AppointmentCreateModel model);
+
         Task<PageResultDto<AppointmentViewModel>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, DateOnly currentDate, int pageSize, int pageIndex);
         Task<PageResultDto<AppointmentViewModel>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex);
         Task<int> UpdateAppointmentStatus(AppointmentUpdateDto data);
+        Task<int> CreateAppointment(AppointmentCreateModel model);  
+        Task<bool> UpdateAppointment(AppointmentUpdateModel model,int employeeId);
+        Task<bool> DeleteAppointment(int appointmentId);
+        Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId);
+        Task<IEnumerable<AppointmentViewModel>> GetAppointmentHistoryByCustomerId(int customerId);
+        Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex);
+
     }
 }

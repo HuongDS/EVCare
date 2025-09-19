@@ -14,10 +14,9 @@ namespace DataAccess.Repositories
         public EmployeeRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
-        public async Task<Employee?> GetEmployeeByAccountId(int accountId)
+        public async Task<Employee> GetEmployeeByAccountId(int userId)
         {
-            var entity = await _dbSet.Include(e => e.Account).FirstOrDefaultAsync(e => e.AccountId == accountId);
-            return entity;
+            return await _dbContext.Employees.Include(e => e.Account).FirstOrDefaultAsync(e => e.AccountId == userId);
         }
     }
 }
