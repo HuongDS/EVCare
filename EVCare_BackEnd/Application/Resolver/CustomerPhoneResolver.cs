@@ -10,7 +10,7 @@ using DataAccess.Entities;
 
 namespace Application.Resolver
 {
-    public class CustomerPhoneResolver : IValueResolver<Appointment, AppointmentViewModel, string>
+    public class CustomerPhoneResolver : IValueResolver<Appointment, AppointmentViewDto, string>
     {
         private readonly EVCareDbContext _context;
 
@@ -18,7 +18,7 @@ namespace Application.Resolver
         {
             _context = context;
         }
-        public string Resolve(Appointment source, AppointmentViewModel destination, string destMember, ResolutionContext context)
+        public string Resolve(Appointment source, AppointmentViewDto destination, string destMember, ResolutionContext context)
         {
             var customer = _context.Customers.FirstOrDefault(c => c.Id == source.CustomerId);
             return customer?.Account.Phone ?? string.Empty;
