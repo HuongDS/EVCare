@@ -282,6 +282,32 @@ namespace DataAccess.Migrations
                     b.ToTable("AppointmentImages");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.CenterUnavailableDays", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CenterUnavailableDays");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -408,6 +434,9 @@ namespace DataAccess.Migrations
                     b.Property<int>("Payment_Method")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Total_Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -418,7 +447,8 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .IsUnique();
 
                     b.ToTable("Invoices");
                 });
@@ -439,6 +469,9 @@ namespace DataAccess.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated_At")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -1049,6 +1082,39 @@ namespace DataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.ServiceCenter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("CloseTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan>("OpenTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("WorkSlot")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServiceCenters");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
                 {
                     b.Property<int>("Id")
@@ -1210,13 +1276,16 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("LicensePlate")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("LicensePlate")
+                        .IsUnique();
 
                     b.ToTable("Vehicles");
 
@@ -1382,8 +1451,8 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("DataAccess.Entities.Order", "Order")
-                        .WithMany("Invoices")
-                        .HasForeignKey("OrderId")
+                        .WithOne("Invoice")
+                        .HasForeignKey("DataAccess.Entities.Invoice", "OrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1615,7 +1684,7 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.Order", b =>
                 {
-                    b.Navigation("Invoices");
+                    b.Navigation("Invoice");
 
                     b.Navigation("OrderParts");
 

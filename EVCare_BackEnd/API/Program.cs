@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Security.Authentication;
 using System.Text;
+using API.Filters;
 using Application.Interfaces;
 using Application.IService;
 using Application.Mapping;
@@ -26,6 +27,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddDbContext<EVCareDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlServerOptionsAction: sqlOptions =>
     {
@@ -56,11 +58,15 @@ builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentServiceRepository, AppointmentServiceRepository>();
 builder.Services.AddScoped<IAppointmentImageRepository, AppointmentImageRepository>();
+
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IGenericRepository<DataAccess.Entities.Order>, GenericRepository<DataAccess.Entities.Order>>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderPartRepository, OrderPartRepository>();
 builder.Services.AddScoped<IGenericCategoryRepository<Part>, GenericCategoryRepository<Part>>();
 builder.Services.AddScoped<IPartRepository, PartRepository>();
+
+
 
 // Services
 builder.Services.AddScoped<IAuthServices, AuthServices>();
@@ -72,13 +78,26 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IVehicleCategoryService, VehicleCategoryService>();
 builder.Services.AddScoped<IAppointmentService, Application.Services.AppointmentService>();
+
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
+
 builder.Services.AddScoped<IOrderService, OrderService>();
+
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(ServiceProfile));
 builder.Services.AddAutoMapper(typeof(VehicleProfile));
 builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 builder.Services.AddAutoMapper(typeof(AppointmentProfile));
+//Action Filter
+builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
+builder.Services.AddScoped<SetCustomerIdFilter>();
+builder.Services.AddScoped<AuthorizeCustomerOrAdminFilter>();
+builder.Services.AddScoped<AppointmentOwnershipFilter>();
+builder.Services.AddScoped<SetEmployeeIdFilter>();
+
+
 
 // Add Cors
 builder.Services.AddCors(options =>
@@ -113,11 +132,11 @@ builder.Services.AddAuthentication(opt =>
     };
 })
     .AddGoogle(opt =>
-{
-    opt.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    opt.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    opt.CallbackPath = "/google-callback";
-});
+    {
+        opt.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        opt.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+        opt.CallbackPath = "/google-callback";
+    });
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -151,7 +170,7 @@ builder.Services.AddAuthorization();
 
 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
-//Redis
+////Redis
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var redisConfig = builder.Configuration.GetConnectionString("Redis");

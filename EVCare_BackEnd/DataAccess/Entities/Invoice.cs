@@ -17,6 +17,7 @@ namespace DataAccess.Entities
         public Order Order { get; set; }
         public decimal Total_Price { get; set; }
         public PaymentMethodEnum Payment_Method { get; set; }
+        public PaymentStatusEnum Status { get; set; }
         public DateTime Create_At { get; set; }
         public DateTime Updated_At { get; set; }
     }

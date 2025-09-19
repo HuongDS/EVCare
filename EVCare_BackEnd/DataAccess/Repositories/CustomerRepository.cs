@@ -14,5 +14,10 @@ namespace DataAccess.Repositories
         public CustomerRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
+
+        public async Task<Customer?> GetCustomerByAccountId(int accountId)
+        {
+            return await _dbSet.FirstOrDefaultAsync(c => c.AccountId == accountId);
+        }
     }
 }
