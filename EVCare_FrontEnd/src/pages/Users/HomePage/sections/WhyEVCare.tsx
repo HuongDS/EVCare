@@ -3,19 +3,18 @@ import pic from "../../../../assets/User-check.png";
 
 const Container = styled.div`
   font-family: "Outfit", sans-serif;
-  padding: 40px;
+  /* padding: 40px; */
   background-color: #e7f0e6;
+  margin: 0 5%;
   text-align: center;
-  margin-left: 182px;
-  margin-right: 182px;
   border-radius: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 const Title = styled.h1`
-  font-size: 50px;
+  font-size: 3em;
   font-weight: 800;
-  margin-bottom: 40px;
+  padding: 2%;
   color: #00ad4e;
 `;
 
@@ -23,21 +22,23 @@ const CardsWrapper = styled.div`
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 20px;
   flex-wrap: wrap;
 `;
 
 const Card = styled.div`
-  width: 280px;
-  height: 300px;
+  width: 20%;
+  height: auto;
   background: #0039a6;
   padding: 20px;
   margin: 20px auto;
-  font-size: 20px;
+  font-size: 1.1rem;
   border-radius: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   color: white;
   text-align: center;
+  p {
+    text-align: justify;
+  }
 `;
 
 const Icon = styled.img`
@@ -45,10 +46,11 @@ const Icon = styled.img`
   height: 50px;
   margin-bottom: 20px;
   color: #ffffff;
+  background-color: #ffffff;
 `;
 
 const TitleCard = styled.h2`
-  font-size: 24px;
+  font-size: 1.3rem;
   font-weight: 700;
   color: #ffffff;
   margin-bottom: 15px;

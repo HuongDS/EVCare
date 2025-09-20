@@ -53,7 +53,6 @@ const Brands = () => (
         <img src={bydLogo} alt="BYD" />
       </Slide>
 
-      {/* Lặp lại để tạo vòng lặp */}
       <Slide>
         <img src={vinfastlogo} alt="Vinfast" />
       </Slide>
@@ -64,7 +63,6 @@ const Brands = () => (
         <img src={bydLogo} alt="BYD" />
       </Slide>
 
-      {/* Nhân đôi toàn bộ logo */}
       <Slide>
         <img src={vinfastlogo} alt="Vinfast" />
       </Slide>
