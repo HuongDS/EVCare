@@ -9,8 +9,8 @@ const HeroWrapper = styled.section`
 `;
 
 const HeroContent = styled.div`
-  margin-top: 50px;
-  margin-left: 80px;
+  margin-top: 5%;
+  margin-left: 10%;
   display: flex;
   flex-direction: column;
   h1 {
@@ -34,13 +34,38 @@ const HeroContent = styled.div`
     font-size: large;
     color: #00ad4e;
   }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.5em;
+      text-align: justify;
+    }
+
+    p {
+      font-size: 1em;
+      text-align: justify;
+    }
+    button {
+      font-size: 1.3em;
+      width: 50%;
+    }
+    max-width: 95%;
+    height: auto;
+  }
 `;
 
-const HeroImage = styled.div``;
+const HeroImage = styled.div`
+  img {
+    @media (max-width: 768px) {
+      max-width: 95%;
+      height: auto;
+    }
+  }
+`;
 
 const CTAButton = styled.button`
-  width: 300px;
-  height: 50px;
+  width: 40%;
+  height: auto;
   margin-top: 30px;
   margin-left: 20%;
   font-family: "Outfit", sans-serif;
@@ -75,8 +100,6 @@ const Hero = () => {
         </p>
 
         <CTAButton>Book a Service</CTAButton>
-
-        <a href="#explore">Explore more ↓</a>
       </HeroContent>
 
       <HeroImage>

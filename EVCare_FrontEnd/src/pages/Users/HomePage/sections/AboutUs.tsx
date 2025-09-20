@@ -2,9 +2,15 @@ import styled from "styled-components";
 
 const BehindServiceWrapper = styled.div`
   font-family: "Outfit", sans-serif;
-  padding: 50px 0;
+  /* padding: 50px 0; */
   text-align: left;
   display: flex;
+  align-items: center;
+  padding: 0 5%;
+  @media (max-width: 768px) {
+    max-width: 95%;
+    height: auto;
+  }
 `;
 
 const DetailsNumberWrapper = styled.p`
@@ -30,9 +36,6 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 900px;
-  margin-top: 150px;
-  margin-left: 50px;
 `;
 
 const Title = styled.h1`
@@ -47,10 +50,8 @@ const HighlightBlue = styled.span`
 
 const Content = styled.p`
   font-size: 28px;
+  width: 60%;
   font-weight: 700;
-  margin-bottom: 20px;
-  margin-left: 200px;
-  margin-right: 200px;
   text-align: justify;
 `;
 
@@ -66,17 +67,18 @@ export default function AboutUs() {
           ensuring every journey is safe and worry-free.
         </Content>
       </ContentWrapper>
-      <DetailsNumberWrapper></DetailsNumberWrapper>
-      <div>
-        <DetailsNumber>5000+</DetailsNumber>
-        <DetailsDescription>EVs successfully maintained</DetailsDescription>
-        <DetailsNumber>50+</DetailsNumber>
-        <DetailsDescription>
-          Certified and skilled technicians
-        </DetailsDescription>
-        <DetailsNumber>10</DetailsNumber>
-        <DetailsDescription>Years of trusted experience</DetailsDescription>
-      </div>
+      <DetailsNumberWrapper>
+        <div>
+          <DetailsNumber>5000+</DetailsNumber>
+          <DetailsDescription>EVs successfully maintained</DetailsDescription>
+          <DetailsNumber>50+</DetailsNumber>
+          <DetailsDescription>
+            Certified and skilled technicians
+          </DetailsDescription>
+          <DetailsNumber>10</DetailsNumber>
+          <DetailsDescription>Years of trusted experience</DetailsDescription>
+        </div>
+      </DetailsNumberWrapper>
     </BehindServiceWrapper>
   );
 }

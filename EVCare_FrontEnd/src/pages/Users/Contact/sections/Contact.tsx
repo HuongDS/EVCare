@@ -101,7 +101,7 @@ export default function Contact() {
               <Subtitle>
                 <i className="bi bi-telephone-fill"></i> Hotline
               </Subtitle>
-              <ContactInfo>+1234567890</ContactInfo>
+              <ContactInfo>(+84) 0123.456.789</ContactInfo>
             </Column>
 
             <Column>

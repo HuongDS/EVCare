@@ -23,11 +23,10 @@ const Content = styled.div`
   max-width: 70%;
   margin: 0 auto 2%;
   gap: 20px;
-  
 `;
 
 const List = styled.div`
-  max-width: 75%;
+  max-width: 100%;
   font-size: 25px;
   display: flex;
   flex-direction: row;
@@ -35,7 +34,7 @@ const List = styled.div`
   gap: 20px;
   flex-wrap: wrap;
   align-items: center;
-  margin: 1% auto;
+  /* margin: 1% auto; */
 `;
 const Card = styled.div`
   font-size: 20px;
