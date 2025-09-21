@@ -60,6 +60,7 @@ builder.Services.AddScoped<IAppointmentServiceRepository, AppointmentServiceRepo
 builder.Services.AddScoped<IAppointmentImageRepository, AppointmentImageRepository>();
 builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IBlockedDateRepository, BlockedDateRepository>();
 builder.Services.AddScoped<IGenericRepository<DataAccess.Entities.Order>, GenericRepository<DataAccess.Entities.Order>>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
@@ -78,7 +79,7 @@ builder.Services.AddScoped<IAppointmentService, Application.Services.Appointment
 
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
-
+builder.Services.AddScoped<IBlockedDateService, BlockedDateService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 
 
