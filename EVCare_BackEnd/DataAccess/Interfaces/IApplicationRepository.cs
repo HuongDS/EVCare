@@ -9,5 +9,6 @@ namespace DataAccess.Interfaces
 {
     public interface IApplicationRepository : IGenericRepository<DataAccess.Entities.Application>
     {
+        Task<bool> GetApplicationByEmployeeIDAndDateOffAsync(int employeeId, DateTime dateOff);
     }
 }
