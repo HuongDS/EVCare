@@ -43,6 +43,20 @@ namespace DataAccess.Repositories
             return await PaginationHelper.PaginationAsync(appointments, pageSize, pageIndex);
         }
 
+        public async Task<int> CountAppointmentsPerDay(int customerId)
+        {
+            var today = DateTime.Now;
+            return await _dbSet.CountAsync(x=>x.CustomerId == customerId && x.Create_At == today); 
+            
+
+        }
+
+        public async Task<int> CountAppointmnetToday()
+        {
+            var today = DateTime.Now;
+            return await _dbSet.CountAsync(x => x.Create_At == today);
+        }
+
         public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsByCustomerId(int customerId)
         {
 
