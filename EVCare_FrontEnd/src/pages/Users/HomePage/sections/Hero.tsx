@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import carImg from "../../../../assets/VF3.png";
+import { useNavigate } from "react-router";
 
 const HeroWrapper = styled.section`
   padding: 20px 0;
@@ -85,6 +86,7 @@ const CTAButton = styled.button`
 `;
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <HeroWrapper>
       <HeroContent>
@@ -99,7 +101,9 @@ const Hero = () => {
           every time.
         </p>
 
-        <CTAButton>Book a Service</CTAButton>
+        <CTAButton onClick={() => navigate("/service")}>
+          Book a Service
+        </CTAButton>
       </HeroContent>
 
       <HeroImage>
