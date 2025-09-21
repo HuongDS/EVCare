@@ -19,5 +19,8 @@ namespace DataAccess.Interfaces
         public Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex);
         public Task<AppointmentViewDetailModel> GetAppointmentWithDetails(int appointmentId);
 
+        public Task<int> CountAppointmentsPerDay(int customerId);
+        public Task<int> CountAppointmnetToday();
+
     }
 }
