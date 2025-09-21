@@ -17,23 +17,58 @@ namespace Application.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IServiceCenterRepository _serviceCenterRepository;
    
         private readonly IMapper _mapper;
-        public AppointmentService(IAppointmentRepository appointmentRepository, IMapper mapper)
+        public AppointmentService(IAppointmentRepository appointmentRepository, IMapper mapper, IServiceCenterRepository serviceCenterRepository)
         {
             _appointmentRepository = appointmentRepository;
             _mapper = mapper;
+            _serviceCenterRepository = serviceCenterRepository;
         }
 
         public async Task<int> CreateAppointment(AppointmentCreateModel model)
         {
+            // check số lần đặt của khách hàng
+            // check ngày hôm đó
             var appointment = _mapper.Map<Appointment>(model);
-           await  _appointmentRepository.AddAsync(appointment);
+            if (await CheckCustomerCreate(appointment))
+            {
+                return -1;
+
+            }
+            if(await CheckAppointmentsToday())
+            {
+                return -1;
+            }
+            await  _appointmentRepository.AddAsync(appointment);
             return appointment.Id;
 
         }
 
-       
+        private async Task<bool> CheckAppointmentsToday()
+        {
+            int appointments = await _appointmentRepository.CountAppointmnetToday();
+            int capacity = await _serviceCenterRepository.GetAppactityOfServiceCenter();
+            if (appointments > capacity) {
+               return false;
+            
+            }
+            return true;
+        }
+
+        private async Task<bool> CheckCustomerCreate(Appointment appointment)
+        {
+            int appointments = await _appointmentRepository.CountAppointmentsPerDay(appointment.Id);
+            int dailyLimit = await _serviceCenterRepository.GetLimitBookingOfServiceCenter();
+            if (appointments > dailyLimit)
+            {
+
+                return false;
+            }
+            return true;
+
+        }
 
         public async Task<bool> DeleteAppointment(int appointmentId)
         {
