@@ -241,8 +241,7 @@ namespace Application.Services
             response.message = Message.LOGIN_SUCCESS;
             response.data = new LoginResponseDto
             {
-                accessToken = accessToken,
-                refreshToken = refreshToken,
+                accessToken = accessToken
             };
 
             return response;
@@ -273,7 +272,7 @@ namespace Application.Services
             var token = context.Request.Cookies[cookieName];
             if (token is null)
             {
-                throw new Exception("No refresh token provided.");
+                throw new Exception(Message.REFRESH_TOKEN_NOT_PROVIDED);
             }
 
             var hash = _tokenServices.HashToken(token);
@@ -281,6 +280,11 @@ namespace Application.Services
             if (refreshToken is null)
             {
                 throw new Exception(Message.UNAUTHORIZED);
+            }
+
+            if (refreshToken.ExpiryDate < DateTime.UtcNow)
+            {
+                throw new Exception(Message.REFRESH_TOKEN_EXPIRED);
             }
 
             var account = await _accountRepository.GetByIdAsync(refreshToken.AccountId);
@@ -306,8 +310,7 @@ namespace Application.Services
             SetRefreshCookie(context, newRefresh, expires);
             response.data = new LoginResponseDto
             {
-                accessToken = newAccessToken,
-                refreshToken = newRefresh
+                accessToken = newAccessToken
             };
             return response;
         }

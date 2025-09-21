@@ -21,7 +21,7 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IOrderRepository _orderRepository;
-        public InvoiceService(IVnPayService vnPayService,IMapper mapper,IInvoiceRepository invoiceRepository,IOrderRepository orderRepository)
+        public InvoiceService(IVnPayService vnPayService, IMapper mapper, IInvoiceRepository invoiceRepository, IOrderRepository orderRepository)
         {
             _vnPayService = vnPayService;
             _mapper = mapper;
@@ -35,21 +35,21 @@ namespace Application.Services
             invoice.CustomerId = customerId;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
             _invoiceRepository.AddAsync(invoice);
-            return _vnPayService.CreatePaymentUrl(context,model);
+            return _vnPayService.CreatePaymentUrl(context, model);
         }
 
         public async Task PaymentCallback(IQueryCollection query)
         {
             var result = _vnPayService.PaymentExecute(query);
-            if(result == null || result.VnPayResponseCode!="00")
+            if (result == null || result.VnPayResponseCode != "00")
             {
                 throw new Exception("Payment failed or invalid response");
 
             }
             else
             {
-                return null;
-             //   var invoice = _invoiceRepository.GetInvoiceById(result.OrderId);
+                //return null;
+                //   var invoice = _invoiceRepository.GetInvoiceById(result.OrderId);
                 //if (invoice == null)
                 //{
                 //    throw new Exception("Invoice not found");

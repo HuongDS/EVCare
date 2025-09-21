@@ -15,10 +15,14 @@ namespace Application.Infrastructures
         public const string INTERNAL_SERVER_ERROR = "Internal server error.";
         public const string BAD_REQUEST = "Bad request.";
         public const string NOT_FOUND = "Resource not found.";
-        public const string REFRESH_TOKEN_SUCCESS = "Token refreshed successfully.";
         public const string OTP_HAS_BEEN_SENT = "OTP sent. Please verify.";
         public const string OTP_INVALID = "OTP is invalid.";
         public const string SOMETHING_WENT_WRONG = "Something went wrong. Please try again later.";
+
+        // RefreshToken
+        public const string REFRESH_TOKEN_SUCCESS = "Token refreshed successfully.";
+        public const string REFRESH_TOKEN_EXPIRED = "Refresh token has expired. Please login again.";
+        public const string REFRESH_TOKEN_NOT_PROVIDED = "No refresh token provided.";
 
         // Account
         public const string ACCOUNT_NOT_FOUND = "Account not found.";
