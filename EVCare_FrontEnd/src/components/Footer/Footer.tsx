@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import logo from "../../assets/EVCare.png";
 import { FooterWrapper, Brand, Links, Contact } from "./Footer.styled";
 
@@ -10,9 +11,9 @@ export default function Footer() {
 
       <Links>
         <h4>Links</h4>
-        <a href="#">Home</a>
-        <a href="#">Service</a>
-        <a href="#">About us</a>
+        <Link to="/">Home</Link>
+        <Link to="/service">Service</Link>
+        <Link to="/about">About us</Link>
       </Links>
 
       <Contact>
