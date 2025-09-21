@@ -41,6 +41,9 @@ namespace Application.Infrastructures
 
         // Appointment
         public const string APPOINTMENT_NOT_FOUND = "Appointment not found.";
+        public const string APPOINTMENT_CREATED_SUCCESS = "Appointment created successfully.";
+        public const string APPOINTMENT_STATUS_UPDATED_SUCCESS = "Appointment status updated successfully.";
+        public const string APPOINTMENTS_FETCHED_SUCCESS = "Appointments fetched successfully.";
 
         // Order 
         public const string ORDER_NOT_FOUND = "Order not found.";
@@ -53,9 +56,10 @@ namespace Application.Infrastructures
         // Parts
         public const string PART_NOT_FOUND = "Part not found.";
 
-        // Appointment
-        public const string APPOINTMENT_CREATED_SUCCESS = "Appointment created successfully.";
-        public const string APPOINTMENT_STATUS_UPDATED_SUCCESS = "Appointment status updated successfully.";
-        public const string APPOINTMENTS_FETCHED_SUCCESS = "Appointments fetched successfully.";
+        // Application
+        public const string APPLICATION_NOT_FOUND = "Application not found.";
+        public const string APPLICATION_SENT_SUCCESS = "Application sent successfully.";
+        public const string APPLICATION_ALREADY_EXISTS = "You have already sent an application for this date off.";
+
     }
 }
