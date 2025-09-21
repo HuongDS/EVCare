@@ -12,6 +12,7 @@ namespace DataAccess.Enums
         Processing,
         Paused,
         Completed,
+        WaitingForPayment,
         Canceled
     }
 }

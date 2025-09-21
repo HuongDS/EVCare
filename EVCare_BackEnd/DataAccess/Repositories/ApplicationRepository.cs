@@ -14,5 +14,10 @@ namespace DataAccess.Repositories
         public ApplicationRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
+        public async Task<bool> GetApplicationByEmployeeIDAndDateOffAsync(int employeeId, DateTime dateOff)
+        {
+            var application = await _dbSet.FirstOrDefaultAsync(a => a.EmployeeId == employeeId && a.DateOff.Date == dateOff.Date);
+            return application == null;
+        }
     }
 }
