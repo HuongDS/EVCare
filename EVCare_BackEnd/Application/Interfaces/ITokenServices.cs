@@ -12,7 +12,7 @@ namespace Application.Interfaces
     {
         string GenerateAccessToken(Account account);
         string GenerateRefreshToken();
-        ClaimsPrincipal? GetClaimsPrincipalFromExpiredToken(string token);
+        //ClaimsPrincipal? GetClaimsPrincipalFromExpiredToken(string token);
         DateTime GetExpireDays();
         string HashToken(string token);
     }
