@@ -34,12 +34,12 @@ namespace Application.Services
             var appointment = _mapper.Map<Appointment>(model);
             if (await CheckCustomerCreate(appointment))
             {
-                return -1;
+                throw new Exception("You’ve reached your booking limit.");
 
             }
             if(await CheckAppointmentsToday())
             {
-                return -1;
+                throw new Exception("This day is fully booked");
             }
             await  _appointmentRepository.AddAsync(appointment);
             return appointment.Id;

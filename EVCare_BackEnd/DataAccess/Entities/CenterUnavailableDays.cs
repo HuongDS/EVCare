@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Enums;
+using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
 {
-    public class CenterUnavailableDays
+    public class CenterUnavailableDays : IEntity
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }   

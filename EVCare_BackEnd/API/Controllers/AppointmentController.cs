@@ -61,7 +61,7 @@ namespace API.Controllers
 
                 };
                 var appointmentId = await _appointmentService.CreateAppointment(newModel);
-                if (appointmentId == -1) throw new Exception("This day is fully booked, or you’ve reached your booking limit.");
+               
                 return Ok(new
                 {
                     StatusCode = 200,

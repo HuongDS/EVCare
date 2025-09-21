@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.BlockedDate;
+using DataAccess.Entities;
 
-namespace Application.Interfaces
+namespace DataAccess.Interfaces
 {
-    public interface IBlockedDateService
+    public interface IBlockedDateRepository : IGenericRepository<CenterUnavailableDays>
     {
         public Task<IEnumerable<BlockedDateViewModel>> GetBlockedDateFromToday();
-
     }
 }
