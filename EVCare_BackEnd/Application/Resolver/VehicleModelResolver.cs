@@ -7,6 +7,7 @@ using AutoMapper;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Entities;
 using DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Resolver
 {
@@ -20,7 +21,7 @@ namespace Application.Resolver
         }
         public string Resolve(Appointment source, AppointmentViewDto destination, string destMember, ResolutionContext context)
         {
-            var vehicle = _context.Vehicles.FirstOrDefault(v => v.Id == source.VehicleId);
+            var vehicle = _context.Vehicles.Include(v => v.Category).FirstOrDefault(v => v.Id == source.VehicleId);
             return vehicle != null ? vehicle.Category.Name : string.Empty;
         }
     }
