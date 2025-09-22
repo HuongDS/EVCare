@@ -44,6 +44,7 @@ namespace Application.Infrastructures
         public const string APPOINTMENT_CREATED_SUCCESS = "Appointment created successfully.";
         public const string APPOINTMENT_STATUS_UPDATED_SUCCESS = "Appointment status updated successfully.";
         public const string APPOINTMENTS_FETCHED_SUCCESS = "Appointments fetched successfully.";
+        public const string APPOINTMENT_UPDATED_SUCCESS = "Appointment updated successfully.";
 
         // Order 
         public const string ORDER_NOT_FOUND = "Order not found.";
@@ -60,6 +61,11 @@ namespace Application.Infrastructures
         public const string APPLICATION_NOT_FOUND = "Application not found.";
         public const string APPLICATION_SENT_SUCCESS = "Application sent successfully.";
         public const string APPLICATION_ALREADY_EXISTS = "You have already sent an application for this date off.";
+
+        // Slots
+        public const string CHECK_SLOT_SUCCESS = "Check slots successfully";
+        public const string SLOT_FULL = "All slots are full. Please try again later.";
+        public const string ASSIGNED_TECHNICIAN_SUCCESSFUL = "Technician assigned to order successfully.";
 
     }
 }
