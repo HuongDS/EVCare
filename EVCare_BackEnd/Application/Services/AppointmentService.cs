@@ -63,7 +63,7 @@ namespace Application.Services
 
         private async Task<bool> CheckCustomerCreate(Appointment appointment)
         {
-            int appointments = await _appointmentRepository.CountAppointmentsPerDay(appointment.Id);
+            int appointments = await _appointmentRepository.CountAppointmentsPerDay(appointment.CustomerId);
             int dailyLimit = await _serviceCenterRepository.GetLimitBookingOfServiceCenter();
             if (appointments > dailyLimit)
             {
