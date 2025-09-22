@@ -7,8 +7,8 @@ using DataAccess.Entities;
 
 namespace DataAccess.Interfaces
 {
-    public interface ITechnicianRepository : IGenericRepository<Technician>
+    public interface IServiceCenterRepository : IGenericRepository<ServiceCenter>
     {
-        Task<Technician> GetTechnicianByEmployeeID(int employeeID);
+        Task<int> GetSlotLimitAsync();
     }
 }

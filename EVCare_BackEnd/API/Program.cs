@@ -66,6 +66,8 @@ builder.Services.AddScoped<IGenericCategoryRepository<Part>, GenericCategoryRepo
 builder.Services.AddScoped<IPartRepository, PartRepository>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IAlertRepository, AlertRepository>();
+builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
+builder.Services.AddScoped<ITechnicianWorkingSessionRepository, TechnicianWorkingSessionRepository>();
 
 
 
@@ -84,6 +86,7 @@ builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAlertServices, AlertServices>();
 builder.Services.AddScoped<IApplicationServices, ApplicationServices>();
+builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
 
 
 // AutoMapper
@@ -91,12 +94,14 @@ builder.Services.AddAutoMapper(typeof(ServiceProfile));
 builder.Services.AddAutoMapper(typeof(VehicleProfile));
 builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 builder.Services.AddAutoMapper(typeof(AppointmentProfile));
+
 //Action Filter
 builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
 builder.Services.AddScoped<SetCustomerIdFilter>();
 builder.Services.AddScoped<AuthorizeCustomerOrAdminFilter>();
 builder.Services.AddScoped<AppointmentOwnershipFilter>();
 builder.Services.AddScoped<SetEmployeeIdFilter>();
+builder.Services.AddScoped<GetAccountIdFilter>();
 
 
 

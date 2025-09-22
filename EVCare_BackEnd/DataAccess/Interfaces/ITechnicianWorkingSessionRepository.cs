@@ -7,8 +7,8 @@ using DataAccess.Entities;
 
 namespace DataAccess.Interfaces
 {
-    public interface ITechnicianRepository : IGenericRepository<Technician>
+    public interface ITechnicianWorkingSessionRepository
     {
-        Task<Technician> GetTechnicianByEmployeeID(int employeeID);
+        Task AssignTechnicianToOrder(TechnicianWorkingSession data);
     }
 }

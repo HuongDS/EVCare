@@ -21,6 +21,7 @@ namespace DataAccess.Dtos.Appointment
         public IEnumerable<string> services { get; set; }
         public string employeeName { get; set; }
         public IEnumerable<string> techinicianNames { get; set; }
+        public IEnumerable<string> imgUrls { get; set; }
 
     }
 }

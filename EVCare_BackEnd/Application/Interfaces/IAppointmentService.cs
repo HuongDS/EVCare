@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Dtos;
+using DataAccess.Dtos.Applications;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
@@ -22,6 +24,8 @@ namespace Application.Interfaces
         Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId);
         Task<IEnumerable<AppointmentViewModel>> GetAppointmentHistoryByCustomerId(int customerId);
         Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex);
-
+        Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex);
+        Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex);
+        Task<ResponseDto<AppointmentViewDto>> UpdateAppointmentDateAsync(DateTime date, int appointmentId);
     }
 }
