@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using System.Threading.Tasks;
+using Application.Interfaces;
 using DataAccess.Dtos.Invoice;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,14 @@ namespace API.Controllers
             _invoiceService = invoiceService;
         }
 
+
+
         [HttpPost("create-payment-url")]
-        public IActionResult CreatePaymentUrl(InvoiceCreateModel model)
+        public async Task<IActionResult> CreatePaymentUrl(InvoiceCreateModel model)
         {
             try
             {
-                var paymentUrl =  _invoiceService.CreatePaymentUrl(HttpContext, model);
+                var paymentUrl =  await _invoiceService.CreatePaymentUrl(HttpContext, model);
                 return Ok(new
                 {
                     statusCode = 200,
@@ -39,12 +42,12 @@ namespace API.Controllers
         }
 
         [HttpGet("payment-callback")]
-        public IActionResult PaymentCallback()
+        public async Task<IActionResult> PaymentCallback()
         {
 
             try
             {
-                _invoiceService.PaymentCallback(Request.Query);
+               await  _invoiceService.PaymentCallback(Request.Query);
                 return Ok(new
                 {
                     statusCode = 200,
