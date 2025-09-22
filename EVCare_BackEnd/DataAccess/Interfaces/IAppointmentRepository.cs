@@ -23,5 +23,7 @@ namespace DataAccess.Interfaces
         Task<Appointment> GetAppointmentByOrderIdAsync(int orderId);
         Task<(IEnumerable<Appointment>, int, int)> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex);
         Task<Appointment> UpdateAppointmentDate(DateTime date, int appointmentId);
+        public Task<int> CountAppointmentsPerDay(int customerId);
+        public Task<int> CountAppointmnetToday();
     }
 }

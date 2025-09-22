@@ -10,5 +10,7 @@ namespace DataAccess.Interfaces
     public interface IServiceCenterRepository : IGenericRepository<ServiceCenter>
     {
         Task<int> GetSlotLimitAsync();
+        public Task<int> GetLimitBookingOfServiceCenter();
+        public Task<int> GetAppactityOfServiceCenter();
     }
 }

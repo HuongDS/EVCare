@@ -1,79 +1,6 @@
-// Footer.tsx
-import styled from "styled-components";
+import { Link } from "react-router";
 import logo from "../../assets/EVCare.png";
-
-const FooterWrapper = styled.footer`
-  background: linear-gradient(to top, #ebffe7, #f9fff8);
-  padding: 40px 60px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 40px;
-  font-family: "Outfit", sans-serif;
-`;
-
-const Brand = styled.div`
-  width: 20%;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  img {
-    width: 100%;
-    object-fit: contain;
-    transform: scale(2);
-  }
-  span {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #00994d;
-  }
-`;
-
-const Links = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  h4 {
-    margin-bottom: 6px;
-    font-size: 1.2rem;
-    font-weight: 600;
-  }
-
-  a {
-    text-decoration: none;
-    color: #2f2f2f;
-    font-size: 1rem;
-    &:hover {
-      text-shadow: 2px 2px #ccc;
-    }
-  }
-`;
-
-const Contact = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  h4 {
-    margin-bottom: 6px;
-    font-size: 1.2rem;
-    font-weight: 600;
-  }
-
-  .item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 1rem;
-    color: #2f2f2f;
-
-    i {
-      color: #00ad4e;
-      font-size: 1.2rem;
-    }
-  }
-`;
+import { FooterWrapper, Brand, Links, Contact } from "./Footer.styled";
 
 export default function Footer() {
   return (
@@ -84,9 +11,9 @@ export default function Footer() {
 
       <Links>
         <h4>Links</h4>
-        <a href="#">Home</a>
-        <a href="#">Service</a>
-        <a href="#">About us</a>
+        <Link to="/">Home</Link>
+        <Link to="/service">Service</Link>
+        <Link to="/about">About us</Link>
       </Links>
 
       <Contact>
