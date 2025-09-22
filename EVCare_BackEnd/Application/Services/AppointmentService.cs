@@ -34,12 +34,12 @@ namespace Application.Services
             // check ngày hôm đó
             var appointment = _mapper.Map<Appointment>(model);
 
-            if (await CheckCustomerCreate(appointment))
+            if ((await CheckCustomerCreate(appointment))==false)
             {
                 throw new Exception("You’ve reached your booking limit.");
 
             }
-            if(await CheckAppointmentsToday())
+            if((await CheckAppointmentsToday())==false)
             {
                 throw new Exception("This day is fully booked");
             }
@@ -71,6 +71,7 @@ namespace Application.Services
                 return false;
             }
             return true;
+        }
 
 
         public async Task<int> UpdateAppointmentStatus(AppointmentUpdateDto data)
