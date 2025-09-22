@@ -5,9 +5,12 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "baseUrl": ".", // gốc của project (thường là thư mục chứa tsconfig.json)
+    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "skipLibCheck": true,
     "paths": {
-      "@/*": ["./src/*"] // alias @ trỏ về thư mục src
+      "@/*": ["./src/*"]
     }
   }
 }

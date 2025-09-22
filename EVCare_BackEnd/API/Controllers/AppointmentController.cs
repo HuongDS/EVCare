@@ -149,6 +149,7 @@ namespace API.Controllers
 
                 };
                 var appointmentId = await _appointmentService.CreateAppointment(newModel);
+               
                 return Ok(new
                 {
                     StatusCode = 200,
@@ -162,7 +163,7 @@ namespace API.Controllers
                 return BadRequest(new
                 {
                     StatusCode = 400,
-                    message = "Something went wrong",
+                    message = ex.Message,
                 });
             }
         }
