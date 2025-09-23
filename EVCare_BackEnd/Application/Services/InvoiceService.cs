@@ -28,6 +28,17 @@ namespace Application.Services
             _invoiceRepository = invoiceRepository;
             _orderRepository = orderRepository;
         }
+
+        public async Task<int> CreateInvoice(InvoiceCreateModel model)
+        {
+            var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
+            var invoice = _mapper.Map<Invoice>(model);
+            invoice.CustomerId = customerId;
+            invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+            await _invoiceRepository.AddAsync(invoice);
+            return invoice.Id;
+        }
+
         public async Task<string> CreatePaymentUrl(HttpContext context, InvoiceCreateModel model)
         {
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
@@ -42,18 +53,13 @@ namespace Application.Services
         {
             var result = _vnPayService.PaymentExecute(query);
             var invoice = await _invoiceRepository.GetInvoiceById(int.Parse(result.OrderId));
-            // var invoice;
-            
-
             if (result == null || result.VnPayResponseCode != "00")
             {
                 await _invoiceRepository.DeleteAsync(invoice.Id);
                 throw new Exception("Payment failed or invalid response");
-
             }
             else
             {
-
                 if (invoice == null)
                 {
                     throw new Exception("Invoice not found");
