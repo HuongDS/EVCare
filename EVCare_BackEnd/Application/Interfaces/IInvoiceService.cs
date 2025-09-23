@@ -10,6 +10,7 @@ namespace Application.Interfaces
 {
     public interface IInvoiceService 
     {
+        Task <int> CreateInvoice(InvoiceCreateModel model);
         public Task<string> CreatePaymentUrl(HttpContext context,InvoiceCreateModel model);
         public Task PaymentCallback(IQueryCollection query);
 
