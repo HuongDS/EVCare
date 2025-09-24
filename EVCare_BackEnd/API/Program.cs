@@ -2,6 +2,7 @@
 using System.Security.Authentication;
 using System.Text;
 using API.Filters;
+using API.Middlewares;
 using Application.Interfaces;
 using Application.IService;
 using Application.Mapping;
@@ -210,6 +211,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
+app.UseMiddleware<BannedMiddleware>();
 
 app.UseHttpsRedirection();
 
