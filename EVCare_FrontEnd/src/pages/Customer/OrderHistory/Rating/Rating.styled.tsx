@@ -1,30 +1,19 @@
 import styled from "styled-components";
 
-export const RatingWrapper = styled.div`
+export const DetailWrapper = styled.div`
   font-family: "Outfit", sans-serif;
   padding: 50px 0;
   display: flex;
   justify-content: center;
 `;
 
-export const Title = styled.h1`
-  font-weight: 600;
-  font-size: 30px;
-  text-align: center;
-`;
-export const TitleID = styled.h1`
-  font-weight: 600;
-  font-size: 1em;
-  text-align: center;
-`;
-
 export const Button = styled.button`
   display: block;
   width: 300px;
   height: 50px;
-  margin: 30px auto;
+  margin: 10px auto;
   font-family: "Outfit", sans-serif;
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 600;
   color: white;
   border-radius: 20px;
@@ -34,6 +23,12 @@ export const Button = styled.button`
 
   &:hover {
     background-color: #0039a6;
+  }
+
+  @media (max-width: 480px) {
+    width: 220px;
+    height: 45px;
+    font-size: 20px;
   }
 `;
 
@@ -53,77 +48,70 @@ export const Wrapper = styled.div<{ isOpen: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
   z-index: 1001;
 `;
 
-export const RatingModal = styled.div<{ isOpen: boolean }>`
+export const OrderModal = styled.div<{ isOpen: boolean }>`
   background: #fff;
-  padding: 30px 40px;
+  width: 600px;
+  max-width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px 40px;
   border-radius: 12px;
-  width: 500px;
-  max-width: 90%;
   display: flex;
   flex-direction: column;
   transform: ${({ isOpen }) => (isOpen ? "scale(1)" : "scale(0.8)")};
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
   z-index: 1002;
-  position: relative;
+  box-sizing: border-box;
+
+  @media (max-width: 480px) {
+    padding: 20px;
+    width: 90%;
+  }
 `;
 
-export const Legend = styled.p`
-  font-size: 18px;
+export const Title = styled.h1`
   font-weight: 600;
+  font-size: 20px;
+  text-align: center;
+`;
+
+export const TitleID = styled.h2`
+  font-weight: 800;
+  font-size: 14px;
+  text-align: left;
   margin: 0;
 `;
 
-export const RowWapper = styled.div``;
-export const RowInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-export const RowDateLocation = styled.div`
-  display: flex;
-  gap: 20px;
+export const Section = styled.div`
   margin-top: 10px;
-  align-items: center;
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background: #fafafa;
+  width: 100%;
+  box-sizing: border-box;
 
   @media (max-width: 480px) {
-    flex-direction: column;
+    padding: 12px;
   }
 `;
 
 export const StaffRow = styled.div`
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr; /* 2 cột bằng nhau */
   gap: 20px;
-  margin-bottom: 2%;
+  margin-bottom: 12px;
   align-items: center;
 
   @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* stack cột khi màn hình nhỏ */
+    gap: 8px;
   }
-`;
-
-export const LocationBox = styled.div`
-  background: #f2f4f3;
-  border-radius: 8px;
-  padding: 10px 14px;
-  width: 100%;
-`;
-
-export const Icon = styled.i`
-  padding-right: 5%;
-`;
-
-export const ReviewBox = styled.textarea`
-  width: 100%;
-  min-height: 120px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin-top: 8px;
-  resize: vertical;
 `;
 
 export const ServiceList = styled.div`
@@ -138,5 +126,41 @@ export const ServiceItemBox = styled.div`
   font-family: "Outfit", sans-serif;
 `;
 
-export const RowService = styled.div``;
-export const RowReview = styled.div``;
+export const ReviewBox = styled.textarea`
+  width: 100%;
+  min-height: 120px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  font-family: "Outfit", sans-serif;
+`;
+
+export const Icon = styled.i`
+  margin-right: 6px;
+`;
+
+export const Row = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 cột bằng nhau */
+  gap: 20px;
+  margin-top: 10px;
+  align-items: center;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr; /* stack cột khi màn hình nhỏ */
+    gap: 10px;
+  }
+`;
+
+export const LocationBox = styled.div`
+  background: #f2f4f3;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  min-width: 120px;
+  text-align: left;
+  margin-top: 9.5%;
+`;
