@@ -15,6 +15,7 @@
     "@tanstack/react-query-devtools": "5.87.4",
     "antd": "5.27.3",
     "bootstrap": "5.3.8",
+    "lucide-react": "^0.544.0",
     "react": "19.1.1",
     "react-bootstrap": "2.10.10",
     "react-dom": "19.1.1",
