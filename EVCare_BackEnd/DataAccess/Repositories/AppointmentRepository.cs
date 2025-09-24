@@ -188,11 +188,20 @@ namespace DataAccess.Repositories
                      Date = g.Key
 
                  }).ToListAsync();
+            var map = grouped.ToDictionary(x => x.Date, x => x.Count);
+            var filled = Enumerable.Range(0, days)
+                .Select(day => today.AddDays(day))
+                .Select(d => new AppointmentDailyCountModel
+                {
+                    Date = d,
+                    Count = map.TryGetValue(d, out var count) ? count : 0
+                }).ToList();
+
 
             return new CenterDailyCapacityModel
             {
                 Capacity = capacity,
-                AppointmentDailyCountModels = grouped
+                AppointmentDailyCountModels = filled
             };
 
         }
