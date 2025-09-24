@@ -8,6 +8,8 @@ import NotFound from "../components/NotFound";
 import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail";
 import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
 import ServiceList from "../pages/Users/Services/ServiceList";
+import PageNotFound from "../components/Layouts/PageNotFound";
+import Test from "../components/Test";
 const router = createBrowserRouter(
   [
     {
@@ -20,9 +22,10 @@ const router = createBrowserRouter(
         { path: "contact", element: <ContactUs /> },
         { path: "orderDetail", element: <OrderDetail /> },
         { path: "rating", element: <Rating /> },
+        { path: "test", element: <Test /> },
       ],
     },
-    { path: "/*", element: <NotFound /> },
+    { path: "/*", element: <PageNotFound /> },
   ],
   { basename: "EVCare" }
 );

@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Dtos;
+using Application.Infrastructures;
 using Application.Interfaces;
 using AutoMapper;
 using DataAccess;
+using DataAccess.Dtos.Applications;
 using DataAccess.Dtos.Appointment;
+using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
 using DataAccess.Enums;
 using DataAccess.Helpers;
 using DataAccess.Interfaces;
+using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
@@ -34,12 +39,12 @@ namespace Application.Services
             // check ngày hôm đó
             var appointment = _mapper.Map<Appointment>(model);
 
-            if (await CheckCustomerCreate(appointment))
+            if ((await CheckCustomerCreate(appointment))==false)
             {
                 throw new Exception("You’ve reached your booking limit.");
 
             }
-            if(await CheckAppointmentsToday())
+            if((await CheckAppointmentsToday())==false)
             {
                 throw new Exception("This day is fully booked");
             }
@@ -63,7 +68,7 @@ namespace Application.Services
 
         private async Task<bool> CheckCustomerCreate(Appointment appointment)
         {
-            int appointments = await _appointmentRepository.CountAppointmentsPerDay(appointment.Id);
+            int appointments = await _appointmentRepository.CountAppointmentsPerDay(appointment.CustomerId);
             int dailyLimit = await _serviceCenterRepository.GetLimitBookingOfServiceCenter();
             if (appointments > dailyLimit)
             {
@@ -71,6 +76,7 @@ namespace Application.Services
                 return false;
             }
             return true;
+        }
 
 
         public async Task<int> UpdateAppointmentStatus(AppointmentUpdateDto data)
@@ -181,6 +187,62 @@ namespace Application.Services
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
 
+        }
+        public async Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex)
+        {
+            var currentDay = DateTime.UtcNow;
+            var (appointments, totalItems, totalPages) = await _appointmentRepository.GetAppointmentInDayWithPaginationAsync(currentDay, pageSize, pageIndex);
+            var appointmentDtos = _mapper.Map<IEnumerable<AppointmentViewDto>>(appointments);
+            var pageResult = new PageResultDto<AppointmentViewDto>
+            {
+                items = appointmentDtos,
+                totalItems = totalItems,
+                totalPages = totalPages,
+                pageIndex = pageIndex,
+                pageSize = pageSize
+            };
+            return new ResponseDto<PageResultDto<AppointmentViewDto>>
+            {
+                statusCode = HttpStatus.OK,
+                message = Message.APPOINTMENTS_FETCHED_SUCCESS,
+                data = pageResult
+            };
+        }
+        public async Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex)
+        {
+            var (appointments, totalItems, totalPages) = await _appointmentRepository.GetAppointmentBeforeDayAsync(date, pageSize, pageIndex);
+            var appointmentDtos = _mapper.Map<IEnumerable<AppointmentViewDto>>(appointments);
+            var pageResult = new PageResultDto<AppointmentViewDto>
+            {
+                items = appointmentDtos,
+                totalItems = totalItems,
+                totalPages = totalPages,
+                pageIndex = pageIndex,
+                pageSize = pageSize
+            };
+            return new ResponseDto<PageResultDto<AppointmentViewDto>>
+            {
+                statusCode = HttpStatus.OK,
+                message = Message.APPOINTMENTS_FETCHED_SUCCESS,
+                data = pageResult
+            };
+        }
+        public async Task<ResponseDto<AppointmentViewDto>> UpdateAppointmentDateAsync(DateTime date, int appointmentId)
+        {
+            var res = await _appointmentRepository.UpdateAppointmentDate(date, appointmentId);
+            var appointmentDto = _mapper.Map<AppointmentViewDto>(res);
+            return new ResponseDto<AppointmentViewDto>
+            {
+                statusCode = HttpStatus.OK,
+                message = Message.APPOINTMENT_UPDATED_SUCCESS,
+                data = appointmentDto
+            };
+        }
+
+        public async Task<CenterDailyCapacityModel> GetAppointmentWithCountDaily()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            return await _appointmentRepository.GetAppointmentWithDailyCount(30, today);
         }
     }
 }

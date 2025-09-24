@@ -21,6 +21,7 @@
     "bootstrap": "5.3.8",
     "bootstrap-icons": "1.13.1",
     "dayjs": "1.11.18",
+    "lucide-react": "^0.544.0",
     "react": "19.1.1",
     "react-bootstrap": "2.10.10",
     "react-dom": "19.1.1",
