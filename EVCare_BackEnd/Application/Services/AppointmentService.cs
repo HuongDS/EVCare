@@ -10,6 +10,7 @@ using AutoMapper;
 using DataAccess;
 using DataAccess.Dtos.Applications;
 using DataAccess.Dtos.Appointment;
+using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
 using DataAccess.Enums;
@@ -236,6 +237,12 @@ namespace Application.Services
                 message = Message.APPOINTMENT_UPDATED_SUCCESS,
                 data = appointmentDto
             };
+        }
+
+        public async Task<CenterDailyCapacityModel> GetAppointmentWithCountDaily()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            return await _appointmentRepository.GetAppointmentWithDailyCount(30, today);
         }
     }
 }
