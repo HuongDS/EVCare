@@ -44,6 +44,10 @@ const Box = styled.div`
   width: 100%;
   max-width: 230px;
 
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
   @media (max-width: 768px) {
     font-size: 1em;
     max-width: 100%;
