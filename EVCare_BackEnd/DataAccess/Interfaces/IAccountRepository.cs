@@ -11,5 +11,6 @@ namespace DataAccess.Interfaces
     {
         Task<Account?> GetAccountByEmail(string email);
         Task<Account?> GetAccountByPhoneAsync(string phone);
+        Task<bool> CheckAccountIsBanned(int accountId);
     }
 }
