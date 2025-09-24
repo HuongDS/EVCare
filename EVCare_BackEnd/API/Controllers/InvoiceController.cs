@@ -1,4 +1,6 @@
-﻿using Application.Interfaces;
+﻿using System.Threading.Tasks;
+using Application.Dtos;
+using Application.Interfaces;
 using DataAccess.Dtos.Invoice;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,23 +16,39 @@ namespace API.Controllers
         {
             _invoiceService = invoiceService;
         }
-
-        [HttpPost("create-payment-url")]
-        public IActionResult CreatePaymentUrl(InvoiceCreateModel model)
+        
+        [HttpPost]
+        public async Task<IActionResult> CreateInvoice(InvoiceCreateModel model)
         {
             try
             {
-                var paymentUrl =  _invoiceService.CreatePaymentUrl(HttpContext, model);
-                return Ok(new
+                if(model.Payment_Method == DataAccess.Enums.PaymentMethodEnum.CreditCard)
                 {
-                    statusCode = 200,
-                    message = "Payment URL created successfully",
-                    data = paymentUrl
-                });
+                    var paymentUrl = await _invoiceService.CreatePaymentUrl(HttpContext, model);
+                    return Ok(new ResponseDto<string>
+                    {
+                        statusCode = 200,
+                        message = "Payment URL created successfully",
+                        data = paymentUrl
+                    });
+
+                }
+                else
+                {
+                    var invoiceId = await _invoiceService.CreateInvoice(model);
+                    return Ok(new ResponseDto<int>
+                    {
+                        statusCode = 200,
+                        message = "Create successfully",
+                        data = invoiceId
+
+                    });
+                }
+               
             }
             catch (Exception ex)
             {
-                return BadRequest(new
+                return BadRequest(new ResponseDto<Object>
                 {
                     statusCode = 400,
                     message = ex.Message
@@ -39,12 +57,12 @@ namespace API.Controllers
         }
 
         [HttpGet("payment-callback")]
-        public IActionResult PaymentCallback()
+        public async Task<IActionResult> PaymentCallback()
         {
 
             try
             {
-                _invoiceService.PaymentCallback(Request.Query);
+               await  _invoiceService.PaymentCallback(Request.Query);
                 return Ok(new
                 {
                     statusCode = 200,

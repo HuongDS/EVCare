@@ -14,5 +14,14 @@ namespace DataAccess.Repositories
         public TechnicianRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
+        public async Task<Technician> GetTechnicianByEmployeeID(int employeeID)
+        {
+            var entity = await _dbContext.Technicians.FirstOrDefaultAsync(t => t.EmployeeId == employeeID);
+            if (entity == null)
+            {
+                throw new Exception($"Entity with EmployeeId = {employeeID} is not found.");
+            }
+            return entity;
+        }
     }
 }
