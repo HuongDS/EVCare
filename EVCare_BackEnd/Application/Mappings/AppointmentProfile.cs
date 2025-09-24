@@ -56,7 +56,9 @@ namespace Application.Mappings
                             .ForMember(dest => dest.note, opt =>
                             opt.MapFrom(src => src.Note))
                             .ForMember(dest => dest.employeeName, opt =>
-                            opt.MapFrom<EmployeeNameResolver>());
+                            opt.MapFrom<EmployeeNameResolver>())
+                            .ForMember(dest => dest.imgUrls, opt =>
+                            opt.MapFrom<AppointmentImageResolver>());
         }
     }
 }

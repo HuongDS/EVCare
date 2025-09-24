@@ -7,6 +7,7 @@ using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Entities;
 using DataAccess.Enums;
+using DataAccess.Dtos.CenterCare;
 
 namespace DataAccess.Interfaces
 {
@@ -18,9 +19,13 @@ namespace DataAccess.Interfaces
         public Task<IEnumerable<AppointmentViewModel>> GetAppointmentsByCustomerId(int customerId);
         public Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex);
         public Task<AppointmentViewDetailModel> GetAppointmentWithDetails(int appointmentId);
-
+        Task<int> GetCurrentSlotAsync();
+        Task<(IEnumerable<Appointment>, int, int)> GetAppointmentInDayWithPaginationAsync(DateTime date, int pageSize, int pageIndex);
+        Task<Appointment> GetAppointmentByOrderIdAsync(int orderId);
+        Task<(IEnumerable<Appointment>, int, int)> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex);
+        Task<Appointment> UpdateAppointmentDate(DateTime date, int appointmentId);
         public Task<int> CountAppointmentsPerDay(int customerId);
         public Task<int> CountAppointmnetToday();
-
+        Task<CenterDailyCapacityModel> GetAppointmentWithDailyCount(int v, DateOnly today);
     }
 }

@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Dtos.Applications
 {
-    public class ApplicationCreateDto
+    public class ApplicationEmployeeCreateDto
     {
-        public int employeeID { get; set; }
-        //public DateTime dateOffFrom { get; set; }
-        //public DateTime dateOffTo { get; set; }
         public DateTime dateOff { get; set; }
         public string reason { get; set; }
     }
