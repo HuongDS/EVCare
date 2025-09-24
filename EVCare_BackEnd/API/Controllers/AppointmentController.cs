@@ -6,6 +6,7 @@ using DataAccess.Dtos.Appointment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using DataAccess.Dtos.CenterCare;
 
 namespace API.Controllers
 {
@@ -327,7 +328,7 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("/get-appointment-in-current-day")]
+        [HttpGet("/get-appointment-in-current-day")]
         [Authorize(Roles = "Staff")]
         public async Task<IActionResult> GetAppointmentInCurrentDay(int pageSize, int pageIndex)
         {
@@ -346,7 +347,7 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("/get-appointment-before-day")]
+        [HttpGet("/get-appointment-before-day")]
         [Authorize(Roles = "Staff")]
         public async Task<IActionResult> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex)
         {
@@ -365,5 +366,36 @@ namespace API.Controllers
                 });
             }
         }
+
+        [HttpGet("daily-count")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDailyCounts()
+        {
+            try
+            {
+                var dates = await _appointmentService.GetAppointmentWithCountDaily();
+                return Ok(new ResponseDto<CenterDailyCapacityModel>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = dates
+
+                });
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<Object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+
+                });
+
+            }
+        }
+
+
+
     }
 }

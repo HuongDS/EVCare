@@ -45,6 +45,7 @@ namespace Application.Infrastructures
         public const string APPOINTMENT_STATUS_UPDATED_SUCCESS = "Appointment status updated successfully.";
         public const string APPOINTMENTS_FETCHED_SUCCESS = "Appointments fetched successfully.";
         public const string APPOINTMENT_UPDATED_SUCCESS = "Appointment updated successfully.";
+        public const string APPOINTMENT_GET_SUCCESS = "Appointment get successfully";
 
         // Order 
         public const string ORDER_NOT_FOUND = "Order not found.";

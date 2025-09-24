@@ -1,6 +1,7 @@
 ﻿using Application.Dtos;
 using Application.Interfaces;
 using DataAccess.Dtos.BlockedDate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         //trả về những ngày đã bị block tính từ hôm nay
         public async Task<IActionResult> GetBlockedDate()
         {
@@ -42,6 +44,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles ="Staff,Admin")]
         public async Task<IActionResult> PostBlockedDate(BlockedDatePostModel model)
         {
             try
@@ -49,7 +52,7 @@ namespace API.Controllers
                 int postId = await _blockedDateService.CreatePost(model);
                 return Ok(new ResponseDto<int>
                 {
-                    statusCode = 200,
+                    statusCode = 201,
                     message = "Create sucessfully",
                     data = postId
                 });
