@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Application.Dtos;
 using DataAccess.Dtos.Applications;
 using DataAccess.Dtos.Appointment;
+using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
 using DataAccess.Enums;
@@ -27,5 +28,6 @@ namespace Application.Interfaces
         Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex);
         Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex);
         Task<ResponseDto<AppointmentViewDto>> UpdateAppointmentDateAsync(DateTime date, int appointmentId);
+        Task<CenterDailyCapacityModel> GetAppointmentWithCountDaily();
     }
 }

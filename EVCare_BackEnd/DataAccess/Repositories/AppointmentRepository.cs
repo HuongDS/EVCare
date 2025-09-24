@@ -9,6 +9,7 @@ using DataAccess.Entities;
 using DataAccess.Enums;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using DataAccess.Dtos.CenterCare;
 
 namespace DataAccess.Repositories
 {
@@ -169,6 +170,40 @@ namespace DataAccess.Repositories
             _dbContext.Update(appointment);
             await _dbContext.SaveChangesAsync();
             return appointment;
+        }
+
+        public async Task<CenterDailyCapacityModel> GetAppointmentWithDailyCount(int days, DateOnly today)
+        {
+            var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
+            var capacity = center.Capacity;
+            var start = today.ToDateTime(TimeOnly.MinValue);
+            var end = today.AddDays(days).ToDateTime(TimeOnly.MinValue);
+
+            var grouped = await _dbContext.Appointments.AsNoTracking()
+                .Where(a => a.Appointment_Date >= start && a.Appointment_Date < end)
+                .GroupBy(a => DateOnly.FromDateTime(a.Appointment_Date)).
+                 Select(g => new AppointmentDailyCountModel
+                 {
+                     Count = g.Count(),
+                     Date = g.Key
+
+                 }).ToListAsync();
+            var map = grouped.ToDictionary(x => x.Date, x => x.Count);
+            var filled = Enumerable.Range(0, days)
+                .Select(day => today.AddDays(day))
+                .Select(d => new AppointmentDailyCountModel
+                {
+                    Date = d,
+                    Count = map.TryGetValue(d, out var count) ? count : 0
+                }).ToList();
+
+
+            return new CenterDailyCapacityModel
+            {
+                Capacity = capacity,
+                AppointmentDailyCountModels = filled
+            };
+
         }
     }
 }

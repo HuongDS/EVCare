@@ -16,6 +16,7 @@ namespace API.Controllers
         {
             _invoiceService = invoiceService;
         }
+        
         [HttpPost]
         public async Task<IActionResult> CreateInvoice(InvoiceCreateModel model)
         {
