@@ -7,6 +7,7 @@ using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Entities;
 using DataAccess.Enums;
+using DataAccess.Dtos.CenterCare;
 
 namespace DataAccess.Interfaces
 {
@@ -25,5 +26,6 @@ namespace DataAccess.Interfaces
         Task<Appointment> UpdateAppointmentDate(DateTime date, int appointmentId);
         public Task<int> CountAppointmentsPerDay(int customerId);
         public Task<int> CountAppointmnetToday();
+        Task<CenterDailyCapacityModel> GetAppointmentWithDailyCount(int v, DateOnly today);
     }
 }
