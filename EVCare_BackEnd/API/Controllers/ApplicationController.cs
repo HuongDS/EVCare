@@ -1,4 +1,5 @@
-﻿using Application.Dtos;
+﻿using API.Filters;
+using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Applications;
@@ -22,12 +23,19 @@ namespace API.Controllers
 
         [HttpPost("/send-application")]
         [Authorize(Roles = "Staff, Technician")]
-        public async Task<IActionResult> SendApplicationAsync(ApplicationCreateDto data)
+        [ServiceFilter(typeof(GetAccountIdFilter))]
+        public async Task<IActionResult> SendApplicationAsync(ApplicationEmployeeCreateDto data)
         {
             try
             {
-
-                var result = await _applicationServices.SendApplicationAsync(data);
+                var employeeId = (int)HttpContext.Items["EmployeeId"];
+                var createData = new ApplicationCreateDto
+                {
+                    employeeID = employeeId,
+                    dateOff = data.dateOff,
+                    reason = data.reason
+                };
+                var result = await _applicationServices.SendApplicationAsync(createData);
                 return Ok(result);
             }
             catch (Exception ex)

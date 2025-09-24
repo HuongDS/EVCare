@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces;
+using AutoMapper;
 using DataAccess.Dtos.BlockedDate;
+using DataAccess.Entities;
 using DataAccess.Interfaces;
 
 namespace Application.Services
@@ -12,9 +14,19 @@ namespace Application.Services
     public class BlockedDateService : IBlockedDateService
     {
         private readonly IBlockedDateRepository _blockedDateRepository;
-        public BlockedDateService(IBlockedDateRepository blockedDateRepository)
+        private readonly IMapper _mapper;
+        public BlockedDateService(IBlockedDateRepository blockedDateRepository,IMapper mapper)
         {
-            _blockedDateRepository = blockedDateRepository; 
+            _blockedDateRepository = blockedDateRepository;
+            _mapper = mapper;
+        }
+
+        public async Task<int> CreatePost(BlockedDatePostModel model)
+        {
+            var date = _mapper.Map<CenterUnavailableDays>(model);
+            var blockedDate = await _blockedDateRepository.AddAsync(date);
+            return blockedDate.Id;
+
         }
 
         public async Task<IEnumerable<BlockedDateViewModel>> GetBlockedDateFromToday()

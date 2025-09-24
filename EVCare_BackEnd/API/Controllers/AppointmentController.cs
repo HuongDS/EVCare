@@ -1,11 +1,12 @@
 ﻿using Application.Infrastructures;
-﻿using API.Filters;
+using API.Filters;
 using Application.Dtos;
 using Application.Interfaces;
 using DataAccess.Dtos.Appointment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using DataAccess.Dtos.CenterCare;
 
 namespace API.Controllers
 {
@@ -68,11 +69,21 @@ namespace API.Controllers
         }
         [HttpPost("/get-appointments-indate-employee")]
         [Authorize(Roles = "Staff, Technician")]
-        public async Task<IActionResult> GetAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeDto data)
+        [ServiceFilter(typeof(GetAccountIdFilter))]
+        public async Task<IActionResult> GetAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeFromEmployeeDto data)
         {
             try
             {
-                var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(data.employeeID, data.status, data.currentDate, data.pageSize, data.pageIndex);
+                var employeeId = (int)HttpContext.Items["EmployeeId"];
+                var newReq = new AppointmentGetByEmployeeDto
+                {
+                    employeeID = employeeId,
+                    status = data.status,
+                    currentDate = data.currentDate,
+                    pageSize = data.pageSize,
+                    pageIndex = data.pageIndex
+                };
+                var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(newReq.employeeID, newReq.status, newReq.currentDate, newReq.pageSize, newReq.pageIndex);
                 return Ok(new
                 {
                     StatusCode = HttpStatus.OK,
@@ -91,11 +102,19 @@ namespace API.Controllers
         }
         [HttpPost("/get-all-appointments")]
         [Authorize(Roles = "Staff, Technician")]
-        public async Task<IActionResult> GetAllAppointmentByEmployeeIDAsync(AppointmentGetAllByEmployeeDto data)
+        public async Task<IActionResult> GetAllAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeFromEmployeeDto data)
         {
             try
             {
-                var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(data.employeeID, data.status, data.pageSize, data.pageIndex);
+                var employeeId = (int)HttpContext.Items["EmployeeId"];
+                var newReq = new AppointmentGetByEmployeeDto
+                {
+                    employeeID = employeeId,
+                    status = data.status,
+                    pageSize = data.pageSize,
+                    pageIndex = data.pageIndex
+                };
+                var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(newReq.employeeID, newReq.status, newReq.pageSize, newReq.pageIndex);
                 return Ok(new
                 {
                     StatusCode = HttpStatus.OK,
@@ -158,7 +177,7 @@ namespace API.Controllers
             try
             {
                 var employeeId = (int)HttpContext.Items["EmployeeId"];
-                var result = await _appointmentService.UpdateAppointment(model,employeeId);
+                var result = await _appointmentService.UpdateAppointment(model, employeeId);
                 return Ok(new ResponseDto<bool>
                 {
                     statusCode = 200,
@@ -241,13 +260,13 @@ namespace API.Controllers
             try
             {
                 int customerId = (int)HttpContext.Items["CustomerId"];
-                
+
                 var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
                 {
                     statusCode = 200,
                     message = "Appointments retrieved successfully",
-                    data = appointments 
+                    data = appointments
                 });
             }
             catch (Exception ex)
@@ -256,18 +275,18 @@ namespace API.Controllers
                 {
                     statusCode = 400,
                     message = ex.Message,
-                    
+
                 });
             }
         }
 
         [HttpGet("staff/history/{customerId}")]
-        [Authorize(Roles ="Staff")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> GetAppointmentHistoryByCustomerId(int customerId)
         {
             try
             {
-                
+
                 var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
                 {
@@ -287,11 +306,11 @@ namespace API.Controllers
         }
         [HttpGet("appointments/paged")]
         [Authorize(Roles = "Staff")]
-        public async Task<IActionResult>GetAppointmentsWithPagination(int? payload,int? pageindex)
+        public async Task<IActionResult> GetAppointmentsWithPagination(int? payload, int? pageindex)
         {
             try
             {
-                var appointments = await _appointmentService.GetAppointmentsWithPagination(payload,pageindex);
+                var appointments = await _appointmentService.GetAppointmentsWithPagination(payload, pageindex);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
                 {
                     statusCode = 200,
@@ -299,7 +318,8 @@ namespace API.Controllers
                     data = appointments
                 });
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
@@ -308,5 +328,74 @@ namespace API.Controllers
                 });
             }
         }
+        [HttpGet("/get-appointment-in-current-day")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> GetAppointmentInCurrentDay(int pageSize, int pageIndex)
+        {
+            try
+            {
+                var appointments = await _appointmentService.GetAppointmentInCurrentDay(pageSize, pageIndex);
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+        [HttpGet("/get-appointment-before-day")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex)
+        {
+            try
+            {
+                var appointments = await _appointmentService.GetAppointmentBeforeDayAsync(date, pageSize, pageIndex);
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+
+        [HttpGet("daily-count")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDailyCounts()
+        {
+            try
+            {
+                var dates = await _appointmentService.GetAppointmentWithCountDaily();
+                return Ok(new ResponseDto<CenterDailyCapacityModel>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = dates
+
+                });
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<Object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+
+                });
+
+            }
+        }
+
+
+
     }
 }

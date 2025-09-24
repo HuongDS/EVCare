@@ -44,6 +44,9 @@ namespace Application.Services
             }
             var newOrder = _mapper.Map<Order>(data);
             var addedEntity = await _orderRepository.AddAsync(newOrder);
+            var appointment = await _appointmentRepository.GetByIdAsync(data.appointmentID);
+            appointment.OrderId = addedEntity.Id;
+            await _appointmentRepository.UpdateAsync(appointment);
             return new ResponseDto<OrderResponseDto>
             {
                 statusCode = 200,
