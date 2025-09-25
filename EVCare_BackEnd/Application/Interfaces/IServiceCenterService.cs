@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DataAccess.Dtos.Alerts;
+using DataAccess.Dtos.Others;
 
 namespace Application.Interfaces
 {
-    public interface IAlertServices
+    public interface IServiceCenterService
     {
-        Task AddConfirmAlertAsync(AlertCreateDto data);
+        Task<ServiceCenterViewDto> GetCenterInformationAsync();
     }
 }
