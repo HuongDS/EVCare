@@ -56,8 +56,18 @@ export default function RatingComponent() {
       { id: 3, name: "Battery Replacement" },
     ],
     staffs: [
-      { id: 1, role: "Service Staff", name: "Alex", rating: 0 },
-      { id: 2, role: "Technical Staff", name: "Alice", rating: 0 },
+      {
+        id: 1,
+        role: "Service Staff",
+        name: "Alex",
+        rating: 0,
+      },
+      {
+        id: 2,
+        role: "Technical Staff",
+        name: "Alice",
+        rating: 0,
+      },
     ],
     review: "",
     rating: 0,
@@ -74,7 +84,10 @@ export default function RatingComponent() {
     if (!open) setVisible(false);
   };
 
-  const handleStaffRatingChange = (id: number, value: number | null) => {
+  const handleStaffRatingChange = (
+    id: number,
+    value: number | null
+  ) => {
     if (value === null) return;
     setOrder((prev) => ({
       ...prev,
@@ -85,14 +98,20 @@ export default function RatingComponent() {
   };
 
   const handleServiceRatingChange = (
-    event: React.SyntheticEvent<Element, Event>,
+    _: React.SyntheticEvent<Element, Event>,
     value: number | null
   ) => {
-    setOrder((prev) => ({ ...prev, rating: value ?? 0 }));
+    setOrder((prev) => ({
+      ...prev,
+      rating: value ?? 0,
+    }));
   };
 
   const handleReviewChange = (value: string) => {
-    setOrder((prev) => ({ ...prev, review: value }));
+    setOrder((prev) => ({
+      ...prev,
+      review: value,
+    }));
   };
 
   const handleSend = () => {
@@ -107,7 +126,10 @@ export default function RatingComponent() {
 
       {visible && (
         <Wrapper isOpen={open}>
-          <Backdrop isOpen={open} onClick={closeModal} />
+          <Backdrop
+            isOpen={open}
+            onClick={closeModal}
+          />
           <OrderModal
             isOpen={open}
             onClick={(e) => e.stopPropagation()}
@@ -121,13 +143,21 @@ export default function RatingComponent() {
               <Title>Staff Ratings</Title>
               {order.staffs.map((staff) => (
                 <StaffRow key={staff.id}>
-                  <NameBox label={staff.role} name={staff.name} />
-                  <div style={{ marginTop: "8.5%" }}>
+                  <NameBox
+                    label={staff.role}
+                    name={staff.name}
+                  />
+                  <div
+                    style={{ marginTop: "8.5%" }}
+                  >
                     <Rating
                       name={`rating-${staff.id}`}
                       value={staff.rating}
                       onChange={(_, value) =>
-                        handleStaffRatingChange(staff.id, value)
+                        handleStaffRatingChange(
+                          staff.id,
+                          value
+                        )
                       }
                     />
                   </div>
@@ -135,7 +165,10 @@ export default function RatingComponent() {
               ))}
 
               <Row style={{ marginTop: "10px" }}>
-                <NameBox label="Date" name={order.date} />
+                <NameBox
+                  label="Date"
+                  name={order.date}
+                />
                 <LocationBox>
                   <Icon className="bi bi-geo-alt-fill" />
                   {order.location}
@@ -147,19 +180,28 @@ export default function RatingComponent() {
             <Section>
               <Title>Services</Title>{" "}
               <StaffRow
-                style={{ marginTop: "15px", gridTemplateColumns: "1fr" }}
+                style={{
+                  marginTop: "15px",
+                  gridTemplateColumns: "1fr",
+                }}
               >
-                <div style={{ textAlign: "center" }}>
+                <div
+                  style={{ textAlign: "center" }}
+                >
                   <Rating
                     name="service-rating"
                     value={order.rating}
-                    onChange={handleServiceRatingChange}
+                    onChange={
+                      handleServiceRatingChange
+                    }
                   />
                 </div>
               </StaffRow>
               <ServiceList>
                 {order.services.map((s) => (
-                  <ServiceItemBox key={s.id}>{s.name}</ServiceItemBox>
+                  <ServiceItemBox key={s.id}>
+                    {s.name}
+                  </ServiceItemBox>
                 ))}
               </ServiceList>
               {/* Tổng rating dịch vụ */}
@@ -170,13 +212,24 @@ export default function RatingComponent() {
               <Title>Review</Title>
               <ReviewBox
                 value={order.review}
-                onChange={(e) => handleReviewChange(e.target.value)}
+                onChange={(e) =>
+                  handleReviewChange(
+                    e.target.value
+                  )
+                }
                 placeholder="Write your review here..."
               />
             </Section>
 
-            <div style={{ margin: "0", textAlign: "center" }}>
-              <Button onClick={handleSend}>Send</Button>
+            <div
+              style={{
+                margin: "0",
+                textAlign: "center",
+              }}
+            >
+              <Button onClick={handleSend}>
+                Send
+              </Button>
             </div>
           </OrderModal>
         </Wrapper>
