@@ -69,7 +69,6 @@ export const OrderModal = styled.div<{ isOpen: boolean }>`
   z-index: 1002;
   box-sizing: border-box;
   scrollbar-gutter: stable;
-
   @media (max-width: 480px) {
     padding: 20px;
     width: 90%;
