@@ -34,7 +34,7 @@ namespace Application.Services
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
-            _invoiceRepository.AddAsync(invoice);
+            await _invoiceRepository.AddAsync(invoice);
             return _vnPayService.CreatePaymentUrl(context, model);
         }
 

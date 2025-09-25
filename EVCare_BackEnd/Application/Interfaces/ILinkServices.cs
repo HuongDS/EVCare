@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DataAccess.Dtos.Alerts;
 
 namespace Application.Interfaces
 {
-    public interface IAlertServices
+    public interface ILinkServices
     {
-        Task AddConfirmAlertAsync(AlertCreateDto data);
+        (string, string) GenerateActionLinks(int appointmentId, int customerId);
     }
 }
