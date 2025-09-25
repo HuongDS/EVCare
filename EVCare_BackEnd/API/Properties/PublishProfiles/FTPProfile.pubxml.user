@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAPlwuSVRqlUi0cez8AILIgwAAAAACAAAAAAAQZgAAAAEAACAAAABXZ73FLN4uV8ux/6mN/6cOPmR5e40qg7bKTxYEK/QegQAAAAAOgAAAAAIAACAAAACxbY5ezu9K7kQ1xZqQjZeeSBDrK2C0GFrQp0tC69xXyjAAAAArs0tqZP7BjoA2Ns6c9NJ+jzyDe/63ypz/aFhO5dOQ01armWNpEiIUnOhsJ/lyfahAAAAA4gfBfb0KC4EWOG4+nYRQ2KC7jVPy8TFpDMFeWCELUA5wkxGh2luhmJN/EZxuhcqMxKzAEDJXniky8J112Flyeg==</EncryptedPassword>
+    <_PublishTargetUrl>ftp://Top1SWP.somee.com/www.Top1SWP.somee.com/</_PublishTargetUrl>
+    <History>True|2025-09-25T01:25:54.0521894Z||;False|2025-09-25T08:21:51.8434690+07:00||;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="API.deps.json">
+      <publishTime>09/25/2025 08:23:15</publishTime>
+    </File>
+    <File Include="API.dll">
+      <publishTime>09/25/2025 08:23:14</publishTime>
+    </File>
+    <File Include="API.exe">
+      <publishTime>09/25/2025 08:23:14</publishTime>
+    </File>
+    <File Include="API.pdb">
+      <publishTime>09/25/2025 08:23:14</publishTime>
+    </File>
+    <File Include="API.runtimeconfig.json">
+      <publishTime>09/25/2025 08:15:32</publishTime>
+    </File>
+    <File Include="API.staticwebassets.endpoints.json">
+      <publishTime>09/25/2025 08:15:39</publishTime>
+    </File>
+    <File Include="Application.dll">
+      <publishTime>09/25/2025 08:15:31</publishTime>
+    </File>
+    <File Include="Application.pdb">
+      <publishTime>09/25/2025 08:15:31</publishTime>
+    </File>
+    <File Include="appsettings.Development.json">
+      <publishTime>09/12/2025 12:36:30</publishTime>
+    </File>
+    <File Include="appsettings.json">
+      <publishTime>09/25/2025 07:17:01</publishTime>
+    </File>
+    <File Include="AutoMapper.dll">
+      <publishTime>09/30/2022 16:45:38</publishTime>
+    </File>
+    <File Include="AutoMapper.Extensions.Microsoft.DependencyInjection.dll">
+      <publishTime>09/30/2022 17:07:30</publishTime>
+    </File>
+    <File Include="Azure.Core.dll">
+      <publishTime>02/26/2024 22:24:40</publishTime>
+    </File>
+    <File Include="Azure.Identity.dll">
+      <publishTime>06/10/2024 23:43:48</publishTime>
+    </File>
+    <File Include="BCrypt.Net-Next.dll">
+      <publishTime>03/03/2022 23:10:20</publishTime>
+    </File>
+    <File Include="CloudinaryDotNet.dll">
+      <publishTime>08/25/2025 20:35:36</publishTime>
+    </File>
+    <File Include="DataAccess.dll">
+      <publishTime>09/25/2025 08:15:30</publishTime>
+    </File>
+    <File Include="DataAccess.pdb">
+      <publishTime>09/25/2025 08:15:30</publishTime>
+    </File>
+    <File Include="Google.Apis.Auth.dll">
+      <publishTime>09/12/2025 22:41:52</publishTime>
+    </File>
+    <File Include="Google.Apis.Core.dll">
+      <publishTime>09/12/2025 22:41:50</publishTime>
+    </File>
+    <File Include="Google.Apis.dll">
+      <publishTime>09/12/2025 22:41:50</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.Authentication.Google.dll">
+      <publishTime>11/01/2023 08:08:42</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.Authentication.JwtBearer.dll">
+      <publishTime>11/01/2023 08:08:28</publishTime>
+    </File>
+    <File Include="Microsoft.Bcl.AsyncInterfaces.dll">
+      <publishTime>10/18/2022 23:14:58</publishTime>
+    </File>
+    <File Include="Microsoft.Data.SqlClient.dll">
+      <publishTime>08/28/2024 01:22:48</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Abstractions.dll">
+      <publishTime>08/20/2025 12:25:54</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.dll">
+      <publishTime>08/20/2025 12:26:30</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Relational.dll">
+      <publishTime>08/20/2025 12:26:50</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.SqlServer.dll">
+      <publishTime>08/20/2025 12:27:06</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Caching.Abstractions.dll">
+      <publishTime>08/20/2025 05:14:08</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Caching.Memory.dll">
+      <publishTime>08/20/2025 05:18:12</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Configuration.Abstractions.dll">
+      <publishTime>08/20/2025 05:14:00</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.DependencyInjection.Abstractions.dll">
+      <publishTime>08/20/2025 05:12:48</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.DependencyInjection.dll">
+      <publishTime>08/20/2025 05:13:30</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Logging.Abstractions.dll">
+      <publishTime>08/20/2025 05:17:56</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Logging.dll">
+      <publishTime>08/20/2025 05:18:10</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Options.dll">
+      <publishTime>08/20/2025 05:16:56</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Primitives.dll">
+      <publishTime>08/20/2025 05:13:06</publishTime>
+    </File>
+    <File Include="Microsoft.Identity.Client.dll">
+      <publishTime>06/07/2024 05:09:28</publishTime>
+    </File>
+    <File Include="Microsoft.Identity.Client.Extensions.Msal.dll">
+      <publishTime>06/07/2024 05:14:52</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Abstractions.dll">
+      <publishTime>08/16/2025 04:52:18</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.JsonWebTokens.dll">
+      <publishTime>08/16/2025 04:52:40</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Logging.dll">
+      <publishTime>08/16/2025 04:51:08</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Protocols.dll">
+      <publishTime>10/17/2023 08:57:30</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Protocols.OpenIdConnect.dll">
+      <publishTime>10/17/2023 09:06:50</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Tokens.dll">
+      <publishTime>08/16/2025 04:51:28</publishTime>
+    </File>
+    <File Include="Microsoft.OpenApi.dll">
+      <publishTime>03/06/2024 23:00:56</publishTime>
+    </File>
+    <File Include="Microsoft.SqlServer.Server.dll">
+      <publishTime>01/28/2022 00:19:08</publishTime>
+    </File>
+    <File Include="Microsoft.Win32.SystemEvents.dll">
+      <publishTime>10/23/2021 06:40:24</publishTime>
+    </File>
+    <File Include="Newtonsoft.Json.dll">
+      <publishTime>03/08/2023 14:09:54</publishTime>
+    </File>
+    <File Include="NotificationApi.Server.dll">
+      <publishTime>03/18/2025 00:26:32</publishTime>
+    </File>
+    <File Include="Pipelines.Sockets.Unofficial.dll">
+      <publishTime>05/04/2023 21:36:38</publishTime>
+    </File>
+    <File Include="runtimes/browser/lib/net8.0/System.Text.Encodings.Web.dll">
+      <publishTime>08/20/2025 05:14:14</publishTime>
+    </File>
+    <File Include="runtimes/unix/lib/net6.0/Microsoft.Data.SqlClient.dll">
+      <publishTime>08/28/2024 01:22:48</publishTime>
+    </File>
+    <File Include="runtimes/unix/lib/net6.0/System.Drawing.Common.dll">
+      <publishTime>10/23/2021 06:51:42</publishTime>
+    </File>
+    <File Include="runtimes/win-arm/native/Microsoft.Data.SqlClient.SNI.dll">
+      <publishTime>08/12/2023 01:56:28</publishTime>
+    </File>
+    <File Include="runtimes/win-arm64/native/Microsoft.Data.SqlClient.SNI.dll">
+      <publishTime>08/12/2023 01:56:28</publishTime>
+    </File>
+    <File Include="runtimes/win-x64/native/Microsoft.Data.SqlClient.SNI.dll">
+      <publishTime>08/12/2023 01:56:18</publishTime>
+    </File>
+    <File Include="runtimes/win-x86/native/Microsoft.Data.SqlClient.SNI.dll">
+      <publishTime>08/12/2023 01:56:18</publishTime>
+    </File>
+    <File Include="runtimes/win/lib/net6.0/Microsoft.Data.SqlClient.dll">
+      <publishTime>08/28/2024 01:23:00</publishTime>
+    </File>
+    <File Include="runtimes/win/lib/net6.0/Microsoft.Win32.SystemEvents.dll">
+      <publishTime>10/23/2021 06:40:18</publishTime>
+    </File>
+    <File Include="runtimes/win/lib/net6.0/System.Drawing.Common.dll">
+      <publishTime>10/23/2021 06:48:10</publishTime>
+    </File>
+    <File Include="runtimes/win/lib/net6.0/System.Runtime.Caching.dll">
+      <publishTime>10/23/2021 06:52:44</publishTime>
+    </File>
+    <File Include="runtimes/win/lib/net6.0/System.Security.Cryptography.ProtectedData.dll">
+      <publishTime>10/23/2021 06:51:04</publishTime>
+    </File>
+    <File Include="runtimes/win/lib/net6.0/System.Windows.Extensions.dll">
+      <publishTime>10/23/2021 06:49:58</publishTime>
+    </File>
+    <File Include="runtimes/win/lib/net7.0/System.Management.dll">
+      <publishTime>05/24/2023 21:40:18</publishTime>
+    </File>
+    <File Include="StackExchange.Redis.dll">
+      <publishTime>09/10/2025 17:17:32</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.Swagger.dll">
+      <publishTime>05/21/2024 23:42:50</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.SwaggerGen.dll">
+      <publishTime>05/21/2024 23:42:58</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.SwaggerUI.dll">
+      <publishTime>05/21/2024 23:42:50</publishTime>
+    </File>
+    <File Include="System.ClientModel.dll">
+      <publishTime>01/04/2024 00:43:00</publishTime>
+    </File>
+    <File Include="System.CodeDom.dll">
+      <publishTime>10/18/2022 23:16:40</publishTime>
+    </File>
+    <File Include="System.Configuration.ConfigurationManager.dll">
+      <publishTime>08/20/2022 02:58:02</publishTime>
+    </File>
+    <File Include="System.Diagnostics.DiagnosticSource.dll">
+      <publishTime>08/20/2025 05:17:02</publishTime>
+    </File>
+    <File Include="System.Drawing.Common.dll">
+      <publishTime>10/23/2021 06:49:12</publishTime>
+    </File>
+    <File Include="System.Formats.Asn1.dll">
+      <publishTime>08/20/2025 05:12:48</publishTime>
+    </File>
+    <File Include="System.IdentityModel.Tokens.Jwt.dll">
+      <publishTime>08/16/2025 04:51:28</publishTime>
+    </File>
+    <File Include="System.IO.Pipelines.dll">
+      <publishTime>08/20/2025 05:14:24</publishTime>
+    </File>
+    <File Include="System.Management.dll">
+      <publishTime>05/24/2023 21:46:16</publishTime>
+    </File>
+    <File Include="System.Memory.Data.dll">
+      <publishTime>04/08/2021 23:45:54</publishTime>
+    </File>
+    <File Include="System.Runtime.Caching.dll">
+      <publishTime>10/23/2021 06:52:02</publishTime>
+    </File>
+    <File Include="System.Security.Cryptography.ProtectedData.dll">
+      <publishTime>10/23/2021 06:51:04</publishTime>
+    </File>
+    <File Include="System.Security.Permissions.dll">
+      <publishTime>10/23/2021 06:49:50</publishTime>
+    </File>
+    <File Include="System.Text.Encodings.Web.dll">
+      <publishTime>08/20/2025 05:13:14</publishTime>
+    </File>
+    <File Include="System.Text.Json.dll">
+      <publishTime>08/20/2025 05:15:52</publishTime>
+    </File>
+    <File Include="System.Windows.Extensions.dll">
+      <publishTime>10/23/2021 06:49:44</publishTime>
+    </File>
+    <File Include="web.config">
+      <publishTime>09/25/2025 08:23:15</publishTime>
+    </File>
+  </ItemGroup>
+</Project>
