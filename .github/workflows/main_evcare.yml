@@ -22,7 +22,7 @@ jobs:
 
       # Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore EVCare_BackEnd/EVCare.sln
+        run: dotnet restore EVCare_BackEnd/EVCare_BackEnd.sln
 
       # Build solution
       - name: Build with dotnet
@@ -65,4 +65,5 @@ jobs:
           app-name: 'EVCare'
           slot-name: 'Production'
           package: .
+
 
