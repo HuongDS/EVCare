@@ -59,7 +59,7 @@ namespace API.Controllers
                 data = null
             });
         }
-        [HttpPost("/update-appointment-date")]
+        [HttpPost("update-appointment-date")]
         public async Task<IActionResult> UpdateAppointmentDate(AppointmentUpdateDateDto data)
         {
             try

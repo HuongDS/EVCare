@@ -28,7 +28,7 @@ namespace API.Controllers
             _notificationServices = notificationServices;
             _otpServices = otpServices;
         }
-        [HttpPost("/register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequestDto data)
         {
             try
@@ -48,7 +48,7 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("/verify-otp-register")]
+        [HttpPost("verify-otp-register")]
         public async Task<IActionResult> VerifyOtpRegister(VerifyOTPRequestDto data)
         {
             var response = await _otpServices.VerifyOtpAsync(data.email, data.otp);
@@ -65,7 +65,7 @@ namespace API.Controllers
             await _authServices.RegisterCustomerAsync(res);
             return Ok(res);
         }
-        [HttpPost("/register-for-employee")]
+        [HttpPost("register-for-employee")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RegisterForEmployee(EmployeeRegisterDto data)
         {
@@ -73,7 +73,7 @@ namespace API.Controllers
             await _authServices.RegisterEmployeeOrTechnicianAsync(account, data);
             return Ok(account);
         }
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequestDto data)
         {
             try
@@ -91,7 +91,7 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("/login-google")]
+        [HttpPost("login-google")]
         public async Task<IActionResult> GoogleCallback([FromBody] string IdToken)
         {
             try
@@ -109,7 +109,7 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("/logout")]
+        [HttpPost("logout")]
         public async Task<ResponseDto<object>> Logout()
         {
             await _authServices.LogoutAsync(HttpContext);
@@ -120,7 +120,7 @@ namespace API.Controllers
                 data = null
             };
         }
-        [HttpPost("/refresh")]
+        [HttpPost("refresh")]
         public async Task<IActionResult> RefreshTokenAsync()
         {
             try
@@ -138,7 +138,7 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("/sent-otp")]
+        [HttpPost("sent-otp")]
         public async Task<IActionResult> SendOTP(string email)
         {
             var otp = await _notificationServices.SendOTP(email, 5);
@@ -150,7 +150,7 @@ namespace API.Controllers
                 data = null
             });
         }
-        [HttpPost("/reset-password")]
+        [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto data)
         {
             var response = await _otpServices.VerifyOtpAsync(data.email, data.otp);
