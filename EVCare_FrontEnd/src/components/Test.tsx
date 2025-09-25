@@ -1,5 +1,3 @@
-import { useState } from "react";
-import BookingForm from "../pages/Customer/Booking/BookingForm";
 import StatusTag from "./StatusTags/StatusTag";
 
 export default function Test() {
