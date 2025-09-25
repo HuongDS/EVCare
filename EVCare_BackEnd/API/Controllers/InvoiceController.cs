@@ -27,7 +27,7 @@ namespace API.Controllers
                     var paymentUrl = await _invoiceService.CreatePaymentUrl(HttpContext, model);
                     return Ok(new ResponseDto<string>
                     {
-                        statusCode = 200,
+                        statusCode = 201,
                         message = "Payment URL created successfully",
                         data = paymentUrl
                     });
@@ -38,7 +38,7 @@ namespace API.Controllers
                     var invoiceId = await _invoiceService.CreateInvoice(model);
                     return Ok(new ResponseDto<int>
                     {
-                        statusCode = 200,
+                        statusCode = 201,
                         message = "Create successfully",
                         data = invoiceId
 

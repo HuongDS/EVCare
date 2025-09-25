@@ -5,6 +5,7 @@ using API.Filters;
 using API.Middlewares;
 using Application.Interfaces;
 using Application.IService;
+using Application.Jobs;
 using Application.Mapping;
 using Application.Mappings;
 using Application.Service;
@@ -13,6 +14,7 @@ using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -111,6 +113,8 @@ builder.Services.AddScoped<AppointmentOwnershipFilter>();
 builder.Services.AddScoped<SetEmployeeIdFilter>();
 builder.Services.AddScoped<GetAccountIdFilter>();
 
+//Background Job
+builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
 
 
 // Add Cors
@@ -197,23 +201,38 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     return ConnectionMultiplexer.Connect(options);
 });
 
-
+//hangfire
+builder.Services.AddHangfire(cfg => cfg
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new Hangfire.SqlServer.SqlServerStorageOptions { PrepareSchemaIfNecessary = true }));
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
-
+app.UseHangfireDashboard("/hangfire");
+var tzVn = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
+       "cancel-expired-appointments-daily-7am",
+       job => job.CancelAppointment(),
+        Cron.Daily(7),
+       tzVn
+    );
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseMiddleware<BannedMiddleware>();
 
-app.UseHttpsRedirection();
+
 
 app.UseAuthorization();
 
