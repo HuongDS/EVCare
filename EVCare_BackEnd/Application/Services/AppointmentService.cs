@@ -243,6 +243,7 @@ namespace Application.Services
             {
                 throw new Exception("Appointment not found");
             }
+        }
 
         public async Task<CenterDailyCapacityModel> GetAppointmentWithCountDaily()
         {

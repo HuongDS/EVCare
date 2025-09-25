@@ -500,13 +500,13 @@ namespace API.Controllers
                 });
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return BadRequest(new ResponseDto<Object>
+                return BadRequest(new ResponseDto<object>
                 {
                     statusCode = 400,
-                    message = ex.Message
-
+                    message = ex.Message,
+                    data = null
                 });
 
             }
