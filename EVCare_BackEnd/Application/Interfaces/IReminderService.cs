@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Dtos.Vehicle
+namespace Application.Interfaces
 {
-    public class VehicleStaffUpdateModel
+    public interface IReminderService
     {
-        public int MyProperty { get; set; }
-
+        Task CheckRemindersAsync();
     }
 }
