@@ -59,6 +59,7 @@ export const OrderModal = styled.div<{ isOpen: boolean }>`
   max-height: 90vh;
   overflow-y: auto;
   padding: 20px 40px;
+  padding-right: 0;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -67,6 +68,7 @@ export const OrderModal = styled.div<{ isOpen: boolean }>`
   transition: transform 0.3s ease, opacity 0.3s ease;
   z-index: 1002;
   box-sizing: border-box;
+  scrollbar-gutter: stable;
 
   @media (max-width: 480px) {
     padding: 20px;
@@ -74,15 +76,22 @@ export const OrderModal = styled.div<{ isOpen: boolean }>`
   }
 `;
 
+export const MainTitle = styled.h1`
+  font-weight: 600;
+  font-size: 2em;
+  text-align: center;
+`;
+
 export const Title = styled.h1`
   font-weight: 600;
-  font-size: 20px;
+  font-size: 1.3em;
   text-align: center;
+  color: #00ad4e;
 `;
 
 export const TitleID = styled.h2`
   font-weight: 800;
-  font-size: 14px;
+  font-size: 1em;
   text-align: left;
   margin: 0;
 `;
@@ -163,4 +172,10 @@ export const LocationBox = styled.div`
   min-width: 120px;
   text-align: left;
   margin-top: 9.5%;
+`;
+
+export const ModalContent = styled.div`
+  overflow-y: auto;
+  max-height: 90vh;
+  padding-right: 15px;
 `;
