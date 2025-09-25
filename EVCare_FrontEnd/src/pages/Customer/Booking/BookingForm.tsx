@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
 import styled from "styled-components";
-import { AiOutlineCloseCircle } from "react-icons/ai";
 import {
   PiNumberCircleOneFill,
   PiNumberCircleTwoFill,
