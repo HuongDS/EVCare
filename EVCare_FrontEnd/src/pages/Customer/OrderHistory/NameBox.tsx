@@ -25,6 +25,7 @@ const Label = styled.div`
   font-size: 0.7em;
   font-weight: 500;
   text-align: left;
+  opacity: 0.5;
 
   @media (max-width: 768px) {
     font-size: 13px;
