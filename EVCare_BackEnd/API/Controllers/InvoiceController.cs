@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Application.Dtos;
 using DataAccess.Dtos.Invoice;
 using DataAccess.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +30,7 @@ namespace API.Controllers
             _serviceCenterService = serviceCenterService;
             _orderService = orderService;
         }
-
+        [Authorize(Roles ="Staff")]
         [HttpPost]
         public async Task<IActionResult> CreateInvoice(InvoiceCreateModel model)
         {
@@ -41,7 +42,7 @@ namespace API.Controllers
                     await _invoiceService.SendMailToPayAsync(paymentUrl, model);
                     return Ok(new ResponseDto<string>
                     {
-                        statusCode = 200,
+                        statusCode = 201,
                         message = "Payment URL created successfully",
                         data = paymentUrl
                     });
@@ -52,7 +53,7 @@ namespace API.Controllers
                     var invoiceId = await _invoiceService.CreateInvoice(model);
                     return Ok(new ResponseDto<int>
                     {
-                        statusCode = 200,
+                        statusCode = 201,
                         message = "Create successfully",
                         data = invoiceId
 
