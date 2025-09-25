@@ -8,6 +8,6 @@ namespace Application.Dtos.Login
 {
     public class LoginResponseDto
     {
-        public string accessToken { get; set; }
+        public string? accessToken { get; set; }
     }
 }
