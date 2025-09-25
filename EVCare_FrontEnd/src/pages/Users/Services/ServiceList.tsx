@@ -35,6 +35,7 @@ import {
   FooterCTA,
   GetInTouchButton,
 } from "./ServiceList.styled";
+import BookingForm from "../../Customer/Booking/BookingForm";
 
 const ServiceList = () => {
   const [services] = useState([
@@ -223,6 +224,7 @@ const ServiceList = () => {
 
   const [sortBy, setSortBy] = useState<SortBy>("default");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [showForm, setShowForm] = useState(false);
 
   const sortServices = (
     services: Service[],
@@ -261,28 +263,22 @@ const ServiceList = () => {
   };
 
   const handleBookService = () => {
-    console.log("Booking service");
-    // API call
-    alert("Đặt lịch dịch vụ");
+    setShowForm(true);
   };
 
   const handleGetInTouch = () => {
     console.log("Get in touch clicked");
-    // API call
-    alert("Liên hệ với chúng tôi");
   };
 
   return (
     <PageContainer>
       <Container>
-        {/* Header */}
         <HeaderSection>
           <ServiceLabel>OUR SERVICES</ServiceLabel>
           <MainTitle>Maintenance Your Vehicle</MainTitle>
           <BookButton onClick={handleBookService}>Book a Service →</BookButton>
         </HeaderSection>
 
-        {/* Sort Controls */}
         <SortSection>
           <SortLabel>Sort by:</SortLabel>
           <ButtonGroup>
@@ -309,7 +305,6 @@ const ServiceList = () => {
           </ButtonGroup>
         </SortSection>
 
-        {/* Services Grid */}
         <Row>
           {sortedServices.map((service) => {
             const IconComponent = service.icon;
@@ -347,7 +342,6 @@ const ServiceList = () => {
           })}
         </Row>
 
-        {/* Footer CTA */}
         <FooterCTA>
           <GetInTouchButton onClick={handleGetInTouch}>
             <FaPhone />
@@ -355,6 +349,7 @@ const ServiceList = () => {
           </GetInTouchButton>
         </FooterCTA>
       </Container>
+      <BookingForm show={showForm} handleClose={() => setShowForm(false)} />
     </PageContainer>
   );
 };

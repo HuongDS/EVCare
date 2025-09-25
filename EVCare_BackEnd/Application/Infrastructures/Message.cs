@@ -48,6 +48,8 @@ namespace Application.Infrastructures
         public const string APPOINTMENT_CANNOT_BE_CONFIRMED = "Appointment cannot be confirmed. Please check the appointment details.";
         public const string APPOINTMENT_CONFIRMED_SUCCESS = "Appointment confirmed successfully.";
         public const string APPOINTMENT_CANNOT_BE_CANCELED = "Appointment cannot be canceled. Please check the appointment details.";
+        public const string APPOINTMENT_GET_SUCCESS = "Appointment get successfully";
+
 
         // Order 
         public const string ORDER_NOT_FOUND = "Order not found.";

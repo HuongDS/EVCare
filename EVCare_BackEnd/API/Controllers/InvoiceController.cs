@@ -1,5 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Services;
+﻿using System.Threading.Tasks;
+using Application.Dtos;
 using DataAccess.Dtos.Invoice;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
@@ -28,35 +30,76 @@ namespace API.Controllers
             _orderService = orderService;
         }
 
+
         [HttpPost("create-payment-url")]
-        public async Task<IActionResult> CreatePaymentUrl(InvoiceCreateModel model)
+public async Task<IActionResult> CreatePaymentUrl(InvoiceCreateModel model)
+{
+    try
+    {
+        var paymentUrl = await _invoiceService.CreatePaymentUrl(HttpContext, model);
+        var centerInfo = await _serviceCenterService.GetCenterInformationAsync();
+        var (listOrderParts, total) = await _orderService.GetOrderPartViewModelsAsync(model.OrderId);
+        var appointmentId = await _orderService.GetAppointmentIdByOrderIdAsync(model.OrderId);
+        var appointmentInfo = await _appointmentService.GetAppointmentInforToAsync(appointmentId);
+        var invoiceData = new InvoiceMailDto
+        {
+            centerInfo = centerInfo,
+            orderParts = listOrderParts,
+            appointmentInfo = appointmentInfo,
+            linkToPay = paymentUrl,
+            totalAmount = total
+        };
+        await _notificationServices.SendInvoiceToCustomer(invoiceData);
+        return Ok(new
+        {
+            statusCode = 200,
+            message = "Payment URL created successfully",
+            data = paymentUrl
+        });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new
+        {
+            statusCode = 400,
+            message = ex.Message
+        });
+    }
+}
+
+        
+        [HttpPost]
+        public async Task<IActionResult> CreateInvoice(InvoiceCreateModel model)
         {
             try
             {
-                var paymentUrl = await _invoiceService.CreatePaymentUrl(HttpContext, model);
-                var centerInfo = await _serviceCenterService.GetCenterInformationAsync();
-                var (listOrderParts, total) = await _orderService.GetOrderPartViewModelsAsync(model.OrderId);
-                var appointmentId = await _orderService.GetAppointmentIdByOrderIdAsync(model.OrderId);
-                var appointmentInfo = await _appointmentService.GetAppointmentInforToAsync(appointmentId);
-                var invoiceData = new InvoiceMailDto
+                if(model.Payment_Method == DataAccess.Enums.PaymentMethodEnum.CreditCard)
                 {
-                    centerInfo = centerInfo,
-                    orderParts = listOrderParts,
-                    appointmentInfo = appointmentInfo,
-                    linkToPay = paymentUrl,
-                    totalAmount = total
-                };
-                await _notificationServices.SendInvoiceToCustomer(invoiceData);
-                return Ok(new
+                    var paymentUrl = await _invoiceService.CreatePaymentUrl(HttpContext, model);
+                    return Ok(new ResponseDto<string>
+                    {
+                        statusCode = 200,
+                        message = "Payment URL created successfully",
+                        data = paymentUrl
+                    });
+
+                }
+                else
                 {
-                    statusCode = 200,
-                    message = "Payment URL created successfully",
-                    data = paymentUrl
-                });
+                    var invoiceId = await _invoiceService.CreateInvoice(model);
+                    return Ok(new ResponseDto<int>
+                    {
+                        statusCode = 200,
+                        message = "Create successfully",
+                        data = invoiceId
+
+                    });
+                }
+               
             }
             catch (Exception ex)
             {
-                return BadRequest(new
+                return BadRequest(new ResponseDto<Object>
                 {
                     statusCode = 400,
                     message = ex.Message
@@ -65,12 +108,12 @@ namespace API.Controllers
         }
 
         [HttpGet("payment-callback")]
-        public IActionResult PaymentCallback()
+        public async Task<IActionResult> PaymentCallback()
         {
 
             try
             {
-                _invoiceService.PaymentCallback(Request.Query);
+               await  _invoiceService.PaymentCallback(Request.Query);
                 return Ok(new
                 {
                     statusCode = 200,
