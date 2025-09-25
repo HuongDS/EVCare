@@ -7,6 +7,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: windows-latest
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
     - name: Checkout source code
@@ -40,3 +43,4 @@ jobs:
         app-name: 'EVCare'
         slot-name: 'Production'
         package: ./publish
+
