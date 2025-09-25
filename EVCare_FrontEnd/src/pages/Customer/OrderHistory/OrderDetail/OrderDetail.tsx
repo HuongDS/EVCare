@@ -48,7 +48,7 @@ export default function OrderDetail() {
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const orderStatus: OrderStatus = "done";
+  const orderStatus: OrderStatus = "cancel";
 
   const customer: Customer = {
     name: "Picasso",
