@@ -1,5 +1,3 @@
-import React from "react";
-
 import type { StatusText } from "./StatusText";
 import { StatusColors } from "./StatusText";
 import styled from "styled-components";
