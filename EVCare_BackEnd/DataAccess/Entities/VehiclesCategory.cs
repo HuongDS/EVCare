@@ -10,8 +10,8 @@ namespace DataAccess.Entities
     public class VehiclesCategory : IEntity, IDelete
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public DateTime Deleted_At { get; set; }
-        public ICollection<Vehicle> Vehicles { get; set; }
+        public ICollection<Vehicle>? Vehicles { get; set; }
     }
 }
