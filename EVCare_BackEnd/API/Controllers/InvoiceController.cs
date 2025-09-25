@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using Application.Interfaces;
+using Application.Services;
+using System.Threading.Tasks;
 using Application.Dtos;
-using Application.Interfaces;
 using DataAccess.Dtos.Invoice;
+using DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,19 +14,31 @@ namespace API.Controllers
     public class InvoiceController : ControllerBase
     {
         private readonly IInvoiceService _invoiceService;
-        public InvoiceController(IInvoiceService invoiceService)
+        private readonly INotificationServices _notificationServices;
+        private readonly IAppointmentService _appointmentService;
+        private readonly IServiceCenterService _serviceCenterService;
+        private readonly IOrderService _orderService;
+
+        public InvoiceController(IInvoiceService invoiceService, INotificationServices notificationServices,
+            IAppointmentService appointmentService, IServiceCenterService serviceCenterService,
+            IOrderService orderService)
         {
             _invoiceService = invoiceService;
+            _notificationServices = notificationServices;
+            _appointmentService = appointmentService;
+            _serviceCenterService = serviceCenterService;
+            _orderService = orderService;
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> CreateInvoice(InvoiceCreateModel model)
         {
             try
             {
-                if(model.Payment_Method == DataAccess.Enums.PaymentMethodEnum.CreditCard)
+                if (model.Payment_Method == DataAccess.Enums.PaymentMethodEnum.CreditCard)
                 {
                     var paymentUrl = await _invoiceService.CreatePaymentUrl(HttpContext, model);
+                    await _invoiceService.SendMailToPayAsync(paymentUrl, model);
                     return Ok(new ResponseDto<string>
                     {
                         statusCode = 200,
@@ -44,7 +58,7 @@ namespace API.Controllers
 
                     });
                 }
-               
+
             }
             catch (Exception ex)
             {
@@ -62,7 +76,7 @@ namespace API.Controllers
 
             try
             {
-               await  _invoiceService.PaymentCallback(Request.Query);
+                await _invoiceService.PaymentCallback(Request.Query);
                 return Ok(new
                 {
                     statusCode = 200,

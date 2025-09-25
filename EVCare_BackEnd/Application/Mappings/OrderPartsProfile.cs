@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Resolver;
 using AutoMapper;
+using DataAccess.Dtos.OrderPart;
 using DataAccess.Dtos.OrderParts;
 using DataAccess.Entities;
 

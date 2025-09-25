@@ -15,5 +15,7 @@ namespace Application.Interfaces
         //ClaimsPrincipal? GetClaimsPrincipalFromExpiredToken(string token);
         DateTime GetExpireDays();
         string HashToken(string token);
+        string Issue(int customerId, int appointmentId, string action, TimeSpan ttl);
+        (bool, int, int, string, string) Validate(string token);
     }
 }
