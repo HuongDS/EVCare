@@ -49,6 +49,7 @@ namespace Application.Services
             return _vnPayService.CreatePaymentUrl(context, model);
         }
 
+
         public async Task PaymentCallback(IQueryCollection query)
         {
             var result = _vnPayService.PaymentExecute(query);
