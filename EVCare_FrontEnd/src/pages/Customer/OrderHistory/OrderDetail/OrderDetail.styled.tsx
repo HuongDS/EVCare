@@ -11,6 +11,7 @@ export const Title = styled.h1`
   font-weight: 600;
   font-size: 30px;
   text-align: center;
+  color: #00ad4e;
 
   @media (max-width: 768px) {
     font-size: 24px;
@@ -25,6 +26,7 @@ export const TitleID = styled.h1`
   font-weight: 600;
   font-size: 1em;
   text-align: center;
+  margin-bottom: 0;
 `;
 
 export const Button = styled.button`
@@ -74,10 +76,12 @@ export const Wrapper = styled.div<{ isOpen: boolean }>`
 
 export const OrderModal = styled.div<{ isOpen: boolean }>`
   background: #fff;
-  padding: 30px 40px;
+  padding: 20px 40px;
+  padding-right: 0;
   border-radius: 12px;
   width: 600px;
   max-width: 95%;
+  scrollbar-gutter: stable;
 
   display: flex;
   flex-direction: column;
@@ -273,4 +277,10 @@ export const Section = styled.div`
   @media (max-width: 480px) {
     padding: 12px;
   }
+`;
+
+export const ModalContent = styled.div`
+  overflow-y: auto;
+  max-height: 90vh;
+  padding-right: 15px;
 `;
