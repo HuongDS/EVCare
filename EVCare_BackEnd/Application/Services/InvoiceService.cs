@@ -28,6 +28,17 @@ namespace Application.Services
             _invoiceRepository = invoiceRepository;
             _orderRepository = orderRepository;
         }
+
+        public async Task<int> CreateInvoice(InvoiceCreateModel model)
+        {
+            var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
+            var invoice = _mapper.Map<Invoice>(model);
+            invoice.CustomerId = customerId;
+            invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+            await _invoiceRepository.AddAsync(invoice);
+            return invoice.Id;
+        }
+
         public async Task<string> CreatePaymentUrl(HttpContext context, InvoiceCreateModel model)
         {
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
@@ -41,22 +52,21 @@ namespace Application.Services
         public async Task PaymentCallback(IQueryCollection query)
         {
             var result = _vnPayService.PaymentExecute(query);
+            var invoice = await _invoiceRepository.GetInvoiceById(int.Parse(result.OrderId));
             if (result == null || result.VnPayResponseCode != "00")
             {
+                await _invoiceRepository.DeleteAsync(invoice.Id);
                 throw new Exception("Payment failed or invalid response");
-
             }
             else
             {
-                //return null;
-                //   var invoice = _invoiceRepository.GetInvoiceById(result.OrderId);
-                //if (invoice == null)
-                //{
-                //    throw new Exception("Invoice not found");
-                //}
-                //invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
-                //invoice.PaymentDate = DateTime.Now;
-                //_invoiceRepository.UpdateAsync(invoice);
+                if (invoice == null)
+                {
+                    throw new Exception("Invoice not found");
+                }
+                invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+
+               await _invoiceRepository.UpdateAsync(invoice);
 
             }
         }

@@ -6,11 +6,14 @@ using DataAccess.Dtos.Appointment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
 using DataAccess.Enums;
 using Microsoft.AspNetCore.Http.HttpResults;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Application.Services;
 using Newtonsoft.Json.Linq;
+using DataAccess.Dtos.CenterCare;
+
 
 namespace API.Controllers
 {
@@ -479,6 +482,34 @@ namespace API.Controllers
                 message = $"New appointment on {appointment.AppointmentDate.ToString("dd/mm/yyyy")} has been canceled."
             });
             return Ok(res);
+        }
+
+        [HttpGet("daily-count")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDailyCounts()
+        {
+            try
+            {
+                var dates = await _appointmentService.GetAppointmentWithCountDaily();
+                return Ok(new ResponseDto<CenterDailyCapacityModel>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = dates
+
+                });
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<Object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+
+                });
+
+            }
         }
     }
 }
