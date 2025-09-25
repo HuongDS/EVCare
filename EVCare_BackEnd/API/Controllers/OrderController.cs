@@ -24,7 +24,7 @@ namespace API.Controllers
             _orderService = orderService;
             _technicianRepository = technicianRepository;
         }
-        [HttpPost("/create-order")]
+        [HttpPost("create-order")]
         [Authorize(Roles = "Staff")]
         public async Task<IActionResult> CreateOrder(OrderCreateRequestDto data)
         {
@@ -43,7 +43,7 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("/add-parts-to-order")]
+        [HttpPost("add-parts-to-order")]
         [Authorize(Roles = "Technician")]
         [ServiceFilter(typeof(SetEmployeeIdFilter))]
         public async Task<IActionResult> AddPartsToOrder(OrderPartsAddDto data)
@@ -74,7 +74,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("/update-order-status")]
+        [HttpPost("update-order-status")]
         [Authorize(Roles = "Staff, Technician")]
         public async Task<IActionResult> UpdateOrderStatus(OrderUpdateStatusDto data)
         {

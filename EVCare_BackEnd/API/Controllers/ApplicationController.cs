@@ -21,7 +21,7 @@ namespace API.Controllers
             this._applicationServices = applicationServices;
         }
 
-        [HttpPost("/send-application")]
+        [HttpPost("send-application")]
         [Authorize(Roles = "Staff, Technician")]
         [ServiceFilter(typeof(GetAccountIdFilter))]
         public async Task<IActionResult> SendApplicationAsync(ApplicationEmployeeCreateDto data)

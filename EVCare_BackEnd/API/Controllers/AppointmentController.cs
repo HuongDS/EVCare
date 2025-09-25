@@ -59,7 +59,7 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("/update-appointment-status")]
+        [HttpPost("update-appointment-status")]
         [Authorize(Roles = "Staff, Technician")]
         public async Task<IActionResult> UpdateAppointmentStatus(AppointmentUpdateDto data)
         {
@@ -82,7 +82,7 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("/get-appointments-indate-employee")]
+        [HttpPost("get-appointments-indate-employee")]
         [Authorize(Roles = "Staff, Technician")]
         [ServiceFilter(typeof(GetAccountIdFilter))]
         public async Task<IActionResult> GetAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeFromEmployeeDto data)
@@ -115,7 +115,7 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("/get-all-appointments")]
+        [HttpPost("get-all-appointments")]
         [Authorize(Roles = "Staff, Technician")]
         public async Task<IActionResult> GetAllAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeFromEmployeeDto data)
         {
@@ -348,7 +348,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("/get-appointment-in-current-day")]
+        [HttpPost("get-appointment-in-current-day")]
         [Authorize(Roles = "Staff")]
         public async Task<IActionResult> GetAppointmentInCurrentDay(int pageSize, int pageIndex)
         {
@@ -368,7 +368,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("/get-appointment-before-day")]
+        [HttpPost("get-appointment-before-day")]
         [Authorize(Roles = "Staff")]
         public async Task<IActionResult> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex)
         {
@@ -388,7 +388,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("/customer-confirm-appointment")]
+        [HttpGet("customer-confirm-appointment")]
         [AllowAnonymous]
         public async Task<IActionResult> UpdateConfirmAppointmentDateAsync([FromQuery] string token)
         {
@@ -436,7 +436,7 @@ namespace API.Controllers
             return Ok(res);
         }
 
-        [HttpGet("/customer-cancel-appointment")]
+        [HttpGet("customer-cancel-appointment")]
         [AllowAnonymous]
         public async Task<IActionResult> UpdateCancelAppointmentDateAsync([FromQuery] string token)
         {
