@@ -1,4 +1,5 @@
-﻿using Application.Dtos;
+﻿using API.Filters;
+using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.OrderParts;
@@ -44,6 +45,7 @@ namespace API.Controllers
         }
         [HttpPost("/add-parts-to-order")]
         [Authorize(Roles = "Technician")]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
         public async Task<IActionResult> AddPartsToOrder(OrderPartsAddDto data)
         {
             try

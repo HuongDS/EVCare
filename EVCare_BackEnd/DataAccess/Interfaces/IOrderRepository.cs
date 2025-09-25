@@ -9,6 +9,7 @@ namespace DataAccess.Interfaces
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {
+        Task<int> GetAppointmentIdByOrderId(int orderId);
         public Task<int> GetCustomerIdByOrderId(int orderId);
     }
 }
