@@ -17,9 +17,14 @@ namespace DataAccess.Repositories
         public async Task<int> GetCustomerIdByOrderId(int orderId)
         {
             return await _dbContext.Orders.Where(o => o.Id == orderId)
-                .Include(o=>o.Appointment)
+                .Include(o => o.Appointment)
                 .Select(o => o.Appointment.CustomerId)
                 .FirstOrDefaultAsync();
+        }
+        public async Task<int> GetAppointmentIdByOrderId(int orderId)
+        {
+            var entity = await _dbContext.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.Id == orderId);
+            return entity.AppointmentId;
         }
     }
 }

@@ -13,16 +13,16 @@ namespace DataAccess.Entities
     {
         public int Id { get; set; }
         public RoleEnum Role { get; set; }
-        public string Email { get; set; }
-        public string First_Name { get; set; }
-        public string Last_Name { get; set; }
-        public string Phone { get; set; }
-        public string Hash_Password { get; set; }
+        public string? Email { get; set; }
+        public string? First_Name { get; set; }
+        public string? Last_Name { get; set; }
+        public string? Phone { get; set; }
+        public string? Hash_Password { get; set; }
         public DateTime Create_At { get; set; }
         public DateTime Updated_At { get; set; }
         public DateTime Deleted_At { get; set; }
         public Customer? Customer { get; set; }
         public Employee? Employee { get; set; }
-        public ICollection<RefreshToken> RefreshTokens { get; set; }
+        public ICollection<RefreshToken>? RefreshTokens { get; set; }
     }
 }

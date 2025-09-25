@@ -97,6 +97,8 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAlertServices, AlertServices>();
 builder.Services.AddScoped<IApplicationServices, ApplicationServices>();
 builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
+builder.Services.AddScoped<ILinkServices, LinkServices>();
+builder.Services.AddScoped<IServiceCenterService, ServiceCenterService>();
 
 
 // AutoMapper

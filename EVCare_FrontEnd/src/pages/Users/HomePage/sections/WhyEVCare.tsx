@@ -46,7 +46,7 @@ const Icon = styled.img`
   height: 50px;
   margin-bottom: 20px;
   color: #ffffff;
-  background-color: #ffffff;
+  /* background-color: #ffffff; */
 `;
 
 const TitleCard = styled.h2`
