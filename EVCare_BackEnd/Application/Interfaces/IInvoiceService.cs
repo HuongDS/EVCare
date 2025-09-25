@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Interfaces
 {
-    public interface IInvoiceService 
+    public interface IInvoiceService
     {
-        public Task<string> CreatePaymentUrl(HttpContext context,InvoiceCreateModel model);
+        Task<int> CreateInvoice(InvoiceCreateModel model);
+        public Task<string> CreatePaymentUrl(HttpContext context, InvoiceCreateModel model);
         public Task PaymentCallback(IQueryCollection query);
-
-
+        Task SendMailToPayAsync(string paymentUrl, InvoiceCreateModel model);
     }
 }

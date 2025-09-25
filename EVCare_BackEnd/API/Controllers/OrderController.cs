@@ -1,8 +1,11 @@
-﻿using Application.Dtos;
+﻿using API.Filters;
+using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.OrderParts;
 using DataAccess.Dtos.Orders;
+using DataAccess.Interfaces;
+using DataAccess.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +17,12 @@ namespace API.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly ITechnicianRepository _technicianRepository;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, ITechnicianRepository technicianRepository)
         {
             _orderService = orderService;
+            _technicianRepository = technicianRepository;
         }
         [HttpPost("/create-order")]
         [Authorize(Roles = "Staff")]
@@ -40,11 +45,22 @@ namespace API.Controllers
         }
         [HttpPost("/add-parts-to-order")]
         [Authorize(Roles = "Technician")]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
         public async Task<IActionResult> AddPartsToOrder(OrderPartsAddDto data)
         {
             try
             {
-                var response = await _orderService.AddPartsToOrder(data.listParts, data.orderId);
+                var employeeId = (int)HttpContext.Items["EmployeeId"];
+                var technician = await _technicianRepository.GetTechnicianByEmployeeID(employeeId);
+                var technicianId = technician.Id;
+                var newAddList = data.listParts.Select(part => new OrderPartAddDto
+                {
+                    partID = part.partID,
+                    quantity = part.quantity,
+                    technicianId = technicianId,
+                    orderId = data.orderId
+                }).ToList();
+                var response = await _orderService.AddPartsToOrder(newAddList, data.orderId);
                 return Ok(response);
             }
             catch (Exception ex)

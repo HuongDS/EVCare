@@ -56,7 +56,31 @@ namespace Application.Mappings
                             .ForMember(dest => dest.note, opt =>
                             opt.MapFrom(src => src.Note))
                             .ForMember(dest => dest.employeeName, opt =>
-                            opt.MapFrom<EmployeeNameResolver>());
+                            opt.MapFrom<EmployeeNameResolver>())
+                            .ForMember(dest => dest.imgUrls, opt =>
+                            opt.MapFrom<AppointmentImageResolver>());
+
+            CreateMap<AppointmentViewDetailModel, AppointmentInforToSentDto>()
+                .ForMember(dest => dest.CustomerName, opt =>
+                opt.MapFrom(src => src.CustomerName))
+                .ForMember(dest => dest.email, opt =>
+                opt.MapFrom(src => src.CustomerEmail))
+                .ForMember(dest => dest.AppointmentDate, opt =>
+                opt.MapFrom(src => src.AppointmentDate))
+                .ForMember(dest => dest.CenterName, opt =>
+                opt.MapFrom<CenterNameResolver>())
+                .ForMember(dest => dest.CenterAddress, opt =>
+                opt.MapFrom<CenterAddressResolver>())
+                .ForMember(dest => dest.Note, opt =>
+                opt.MapFrom(src => src.Note))
+                .ForMember(dest => dest.ServiceList, opt =>
+                opt.MapFrom<AppointmentServiceResolver>())
+                .ForMember(dest => dest.ConfirmUrl, opt =>
+                opt.Ignore())
+                .ForMember(dest => dest.CancelUrl, opt =>
+                opt.Ignore())
+                .ForMember(dest => dest.customerId, opt =>
+                opt.MapFrom<CustomerIdResolver>());
         }
     }
 }
