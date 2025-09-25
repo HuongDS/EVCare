@@ -28,6 +28,8 @@ namespace Application.Interfaces
         Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex);
         Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex);
         Task<ResponseDto<AppointmentViewDto>> UpdateAppointmentDateAsync(DateTime date, int appointmentId);
+        Task<AppointmentInforToSentDto> GetAppointmentInforToAsync(int appointmentId);
         Task<CenterDailyCapacityModel> GetAppointmentWithCountDaily();
+
     }
 }
