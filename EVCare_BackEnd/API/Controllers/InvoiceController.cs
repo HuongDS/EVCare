@@ -63,7 +63,7 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ResponseDto<Object>
+                return BadRequest(new ResponseDto<object>
                 {
                     statusCode = 400,
                     message = ex.Message
