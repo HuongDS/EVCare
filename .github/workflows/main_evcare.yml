@@ -30,7 +30,7 @@ jobs:
 
       # Publish project
       - name: dotnet publish
-        run: dotnet publish EVCare_BackEnd/API/API.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp --no-build
+        run: dotnet publish EVCare_BackEnd/API/API.csproj -c Release -o ./publish --no-build
 
       # Upload artifact
       - name: Upload artifact for deployment job
@@ -65,5 +65,6 @@ jobs:
           app-name: 'EVCare'
           slot-name: 'Production'
           package: .
+
 
 
