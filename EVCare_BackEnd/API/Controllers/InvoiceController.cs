@@ -2,6 +2,7 @@
 using Application.Dtos;
 using Application.Interfaces;
 using DataAccess.Dtos.Invoice;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace API.Controllers
         {
             _invoiceService = invoiceService;
         }
-        
+        [Authorize(Roles ="Staff")]
         [HttpPost]
         public async Task<IActionResult> CreateInvoice(InvoiceCreateModel model)
         {
