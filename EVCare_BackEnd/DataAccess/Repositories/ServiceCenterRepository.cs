@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Others;
 using DataAccess.Entities;
 
 using DataAccess.Interfaces;
@@ -27,7 +28,7 @@ namespace DataAccess.Repositories
                 return entity.WorkSlot;
             }
         }
-         public async Task<int> GetAppactityOfServiceCenter()
+        public async Task<int> GetAppactityOfServiceCenter()
         {
             var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
             return center.Capacity;
@@ -39,6 +40,10 @@ namespace DataAccess.Repositories
             var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
             return center.DailyBookingLimit;
 
+        }
+        public async Task<ServiceCenter> GetCenterInforAsync()
+        {
+            return await _dbContext.ServiceCenters.AsNoTracking().FirstOrDefaultAsync();
         }
     }
 }

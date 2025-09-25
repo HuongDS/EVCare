@@ -26,6 +26,10 @@ namespace DataAccess.Repositories
                 throw new Exception($"Entity with id = {appointmentID} is not found.");
             }
             entity.Status = status;
+            if (status == AppointmentStatusEnum.Canceled)
+            {
+                entity.Deleted_At = DateTime.Now;
+            }
             _dbContext.Update(entity);
             await _dbContext.SaveChangesAsync();
         }
@@ -52,8 +56,6 @@ namespace DataAccess.Repositories
                 && x.Create_At >= today
                 && x.Create_At < tomorrow
             );
-
-
         }
 
         public async Task<int> CountAppointmnetToday()
@@ -106,7 +108,7 @@ namespace DataAccess.Repositories
 
         public async Task<AppointmentViewDetailModel> GetAppointmentWithDetails(int appointmentId)
         {
-            return await _dbContext.Appointments
+            return await _dbContext.Appointments.AsNoTracking()
                 .Where(a => a.Id == appointmentId)
                 .Include(a => a.Vehicle).ThenInclude(v => v.Category)
                 .Include(a => a.Customer).ThenInclude(c => c.Account)
