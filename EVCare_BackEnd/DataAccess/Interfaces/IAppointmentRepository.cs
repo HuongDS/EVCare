@@ -27,5 +27,6 @@ namespace DataAccess.Interfaces
         public Task<int> CountAppointmentsPerDay(int customerId);
         public Task<int> CountAppointmnetToday();
         Task<CenterDailyCapacityModel> GetAppointmentWithDailyCount(int v, DateOnly today);
+        Task CancelAppointment();
     }
 }
