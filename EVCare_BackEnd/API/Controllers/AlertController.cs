@@ -7,5 +7,10 @@ namespace API.Controllers
     [ApiController]
     public class AlertController : ControllerBase
     {
+        [HttpGet]
+        public Task<IActionResult> GetAlertByAccountId(int accountId)
+        {
+            return null;
+        }
     }
 }
