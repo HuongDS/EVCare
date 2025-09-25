@@ -3,19 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Others;
+using DataAccess.Entities;
+
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class ServiceCenterRepository : IServiceCenterRepository
+    public class ServiceCenterRepository : GenericRepository<ServiceCenter>, IServiceCenterRepository
     {
-        private readonly EVCareDbContext _dbContext;
-        public ServiceCenterRepository(EVCareDbContext dbContext)
+        public ServiceCenterRepository(EVCareDbContext dbContext) : base(dbContext)
         {
-            _dbContext = dbContext;
         }
-
+        public async Task<int> GetSlotLimitAsync()
+        {
+            var entity = await _dbSet.FirstOrDefaultAsync();
+            if (entity == null)
+            {
+                throw new Exception($"Entity is not found.");
+            }
+            else
+            {
+                return entity.WorkSlot;
+            }
+        }
         public async Task<int> GetAppactityOfServiceCenter()
         {
             var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
@@ -27,6 +39,11 @@ namespace DataAccess.Repositories
         {
             var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
             return center.DailyBookingLimit;
+
+        }
+        public async Task<ServiceCenter> GetCenterInforAsync()
+        {
+            return await _dbContext.ServiceCenters.AsNoTracking().FirstOrDefaultAsync();
         }
     }
 }

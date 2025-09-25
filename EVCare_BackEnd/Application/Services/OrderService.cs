@@ -7,6 +7,7 @@ using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using AutoMapper;
+using DataAccess.Dtos.OrderPart;
 using DataAccess.Dtos.OrderParts;
 using DataAccess.Dtos.Orders;
 using DataAccess.Entities;
@@ -44,6 +45,9 @@ namespace Application.Services
             }
             var newOrder = _mapper.Map<Order>(data);
             var addedEntity = await _orderRepository.AddAsync(newOrder);
+            var appointment = await _appointmentRepository.GetByIdAsync(data.appointmentID);
+            appointment.OrderId = addedEntity.Id;
+            await _appointmentRepository.UpdateAsync(appointment);
             return new ResponseDto<OrderResponseDto>
             {
                 statusCode = 200,
@@ -96,6 +100,29 @@ namespace Application.Services
                 message = Message.ORDER_STATUS_UPDATED_SUCCESS,
                 data = _mapper.Map<OrderResponseDto>(order)
             };
+        }
+        public async Task<(StringBuilder, decimal)> GetOrderPartViewModelsAsync(int orderId)
+        {
+            var orderparts = await _orderPartRepository.GetOrderPartViewModelAsync(orderId);
+            var orderPartRows = new StringBuilder();
+            decimal total = 0;
+            foreach (var op in orderparts)
+            {
+                orderPartRows.Append($@"
+                <tr>
+                    <td style=""padding:10px; border:1px solid #ddd;"">{op.partID}</td>
+                    <td style=""padding:10px; border:1px solid #ddd;"">{op.partName}</td>
+                    <td style=""padding:10px; border:1px solid #ddd; text-align:center;"">{op.quantity}</td>
+                    <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{op.price:N0}</td>
+                    <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{(op.quantity * op.price):N0}</td>
+                </tr>");
+                total += op.quantity * op.price;
+            }
+            return (orderPartRows, total);
+        }
+        public async Task<int> GetAppointmentIdByOrderIdAsync(int orderId)
+        {
+            return await _orderRepository.GetAppointmentIdByOrderId(orderId);
         }
     }
 }

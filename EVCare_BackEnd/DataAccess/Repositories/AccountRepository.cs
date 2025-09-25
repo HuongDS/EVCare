@@ -15,6 +15,12 @@ namespace DataAccess.Repositories
         {
         }
 
+        public async Task<bool> CheckAccountIsBanned(int accountId)
+        {
+            var account = await _dbSet.FindAsync(accountId);
+            return (account.Deleted_At != DateTime.MinValue);
+        }
+
         public async Task<Account?> GetAccountByEmail(string email)
         {
             var entity = await _dbSet.FirstOrDefaultAsync(e => e.Email.Equals(email));

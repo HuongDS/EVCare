@@ -9,5 +9,6 @@ namespace DataAccess.Interfaces
 {
     public interface ITechnicianRepository : IGenericRepository<Technician>
     {
+        Task<Technician> GetTechnicianByEmployeeID(int employeeID);
     }
 }

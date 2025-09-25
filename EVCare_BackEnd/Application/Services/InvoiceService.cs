@@ -21,42 +21,84 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IOrderRepository _orderRepository;
-        public InvoiceService(IVnPayService vnPayService, IMapper mapper, IInvoiceRepository invoiceRepository, IOrderRepository orderRepository)
+        private readonly INotificationServices _notificationServices;
+        private readonly IAppointmentService _appointmentService;
+        private readonly IServiceCenterService _serviceCenterService;
+        private readonly IOrderService _orderService;
+
+        public InvoiceService(IVnPayService vnPayService, IMapper mapper,
+            IInvoiceRepository invoiceRepository
+            , IOrderRepository orderRepository,
+            INotificationServices notificationServices,
+            IAppointmentService appointmentService,
+            IServiceCenterService serviceCenterService,
+            IOrderService orderService)
         {
             _vnPayService = vnPayService;
             _mapper = mapper;
             _invoiceRepository = invoiceRepository;
             _orderRepository = orderRepository;
+            _notificationServices = notificationServices;
+            _appointmentService = appointmentService;
+            _serviceCenterService = serviceCenterService;
+            _orderService = orderService;
         }
+
+        public async Task<int> CreateInvoice(InvoiceCreateModel model)
+        {
+            var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
+            var invoice = _mapper.Map<Invoice>(model);
+            invoice.CustomerId = customerId;
+            invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+            await _invoiceRepository.AddAsync(invoice);
+            return invoice.Id;
+        }
+
         public async Task<string> CreatePaymentUrl(HttpContext context, InvoiceCreateModel model)
         {
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
-            _invoiceRepository.AddAsync(invoice);
+            await _invoiceRepository.AddAsync(invoice);
             return _vnPayService.CreatePaymentUrl(context, model);
+        }
+
+        public async Task SendMailToPayAsync(string paymentUrl, InvoiceCreateModel model)
+        {
+            var centerInfo = await _serviceCenterService.GetCenterInformationAsync();
+            var (listOrderParts, total) = await _orderService.GetOrderPartViewModelsAsync(model.OrderId);
+            var appointmentId = await _orderService.GetAppointmentIdByOrderIdAsync(model.OrderId);
+            var appointmentInfo = await _appointmentService.GetAppointmentInforToAsync(appointmentId);
+            var invoiceData = new InvoiceMailDto
+            {
+                centerInfo = centerInfo,
+                orderParts = listOrderParts,
+                appointmentInfo = appointmentInfo,
+                linkToPay = paymentUrl,
+                totalAmount = total
+            };
+            await _notificationServices.SendInvoiceToCustomer(invoiceData);
         }
 
         public async Task PaymentCallback(IQueryCollection query)
         {
             var result = _vnPayService.PaymentExecute(query);
+            var invoice = await _invoiceRepository.GetInvoiceById(int.Parse(result.OrderId));
             if (result == null || result.VnPayResponseCode != "00")
             {
+                await _invoiceRepository.DeleteAsync(invoice.Id);
                 throw new Exception("Payment failed or invalid response");
-
             }
             else
             {
-                //return null;
-                //   var invoice = _invoiceRepository.GetInvoiceById(result.OrderId);
-                //if (invoice == null)
-                //{
-                //    throw new Exception("Invoice not found");
-                //}
-                //invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
-                //invoice.PaymentDate = DateTime.Now;
-                //_invoiceRepository.UpdateAsync(invoice);
+                if (invoice == null)
+                {
+                    throw new Exception("Invoice not found");
+                }
+                invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+
+                await _invoiceRepository.UpdateAsync(invoice);
 
             }
         }

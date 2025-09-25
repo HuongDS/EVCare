@@ -2,6 +2,7 @@
 using System.Security.Authentication;
 using System.Text;
 using API.Filters;
+using API.Middlewares;
 using Application.Interfaces;
 using Application.IService;
 using Application.Mapping;
@@ -70,6 +71,8 @@ builder.Services.AddScoped<IGenericCategoryRepository<Part>, GenericCategoryRepo
 builder.Services.AddScoped<IPartRepository, PartRepository>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IAlertRepository, AlertRepository>();
+builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
+builder.Services.AddScoped<ITechnicianWorkingSessionRepository, TechnicianWorkingSessionRepository>();
 
 
 
@@ -91,6 +94,9 @@ builder.Services.AddScoped<IBlockedDateService, BlockedDateService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAlertServices, AlertServices>();
 builder.Services.AddScoped<IApplicationServices, ApplicationServices>();
+builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
+builder.Services.AddScoped<ILinkServices, LinkServices>();
+builder.Services.AddScoped<IServiceCenterService, ServiceCenterService>();
 
 
 // AutoMapper
@@ -98,12 +104,14 @@ builder.Services.AddAutoMapper(typeof(ServiceProfile));
 builder.Services.AddAutoMapper(typeof(VehicleProfile));
 builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 builder.Services.AddAutoMapper(typeof(AppointmentProfile));
+
 //Action Filter
 builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
 builder.Services.AddScoped<SetCustomerIdFilter>();
 builder.Services.AddScoped<AuthorizeCustomerOrAdminFilter>();
 builder.Services.AddScoped<AppointmentOwnershipFilter>();
 builder.Services.AddScoped<SetEmployeeIdFilter>();
+builder.Services.AddScoped<GetAccountIdFilter>();
 
 
 
@@ -205,6 +213,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
+app.UseMiddleware<BannedMiddleware>();
 
 app.UseHttpsRedirection();
 

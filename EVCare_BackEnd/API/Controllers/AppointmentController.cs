@@ -1,5 +1,5 @@
 ﻿using Application.Infrastructures;
-﻿using API.Filters;
+using API.Filters;
 using Application.Dtos;
 using Application.Interfaces;
 using DataAccess.Dtos.Appointment;
@@ -7,17 +7,33 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+using DataAccess.Enums;
+using Microsoft.AspNetCore.Http.HttpResults;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Application.Services;
+using Newtonsoft.Json.Linq;
+using DataAccess.Dtos.CenterCare;
+
+
 namespace API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
-        public AppointmentController(IAppointmentService appointmentService)
+        private readonly INotificationServices _notificationServices;
+        private readonly ITokenServices _tokenServices;
+        private readonly IAlertServices _alertServices;
+
+        public AppointmentController(IAppointmentService appointmentService, INotificationServices notificationServices,
+            ITokenServices tokenServices, IAlertServices alertServices)
         {
             _appointmentService = appointmentService;
+            _notificationServices = notificationServices;
+            _tokenServices = tokenServices;
+            _alertServices = alertServices;
         }
         [Authorize(Roles = "Staff")]
         [HttpPost("staff")]
@@ -68,11 +84,21 @@ namespace API.Controllers
         }
         [HttpPost("/get-appointments-indate-employee")]
         [Authorize(Roles = "Staff, Technician")]
-        public async Task<IActionResult> GetAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeDto data)
+        [ServiceFilter(typeof(GetAccountIdFilter))]
+        public async Task<IActionResult> GetAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeFromEmployeeDto data)
         {
             try
             {
-                var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(data.employeeID, data.status, data.currentDate, data.pageSize, data.pageIndex);
+                var employeeId = (int)HttpContext.Items["EmployeeId"];
+                var newReq = new AppointmentGetByEmployeeDto
+                {
+                    employeeID = employeeId,
+                    status = data.status,
+                    currentDate = data.currentDate,
+                    pageSize = data.pageSize,
+                    pageIndex = data.pageIndex
+                };
+                var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(newReq.employeeID, newReq.status, newReq.currentDate, newReq.pageSize, newReq.pageIndex);
                 return Ok(new
                 {
                     StatusCode = HttpStatus.OK,
@@ -91,11 +117,19 @@ namespace API.Controllers
         }
         [HttpPost("/get-all-appointments")]
         [Authorize(Roles = "Staff, Technician")]
-        public async Task<IActionResult> GetAllAppointmentByEmployeeIDAsync(AppointmentGetAllByEmployeeDto data)
+        public async Task<IActionResult> GetAllAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeFromEmployeeDto data)
         {
             try
             {
-                var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(data.employeeID, data.status, data.pageSize, data.pageIndex);
+                var employeeId = (int)HttpContext.Items["EmployeeId"];
+                var newReq = new AppointmentGetByEmployeeDto
+                {
+                    employeeID = employeeId,
+                    status = data.status,
+                    pageSize = data.pageSize,
+                    pageIndex = data.pageIndex
+                };
+                var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(newReq.employeeID, newReq.status, newReq.pageSize, newReq.pageIndex);
                 return Ok(new
                 {
                     StatusCode = HttpStatus.OK,
@@ -112,14 +146,14 @@ namespace API.Controllers
                 });
             }
         }
+
         [HttpPost("customer")]
+        [Authorize(Roles = "Customer")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
         public async Task<IActionResult> CreateAppointmentForCustomer(AppointmentCustomerCreateModel model)
         {
             try
             {
-
-
                 var newModel = new AppointmentCreateModel
                 {
                     CustomerId = (int)HttpContext.Items["CustomerId"],
@@ -131,7 +165,8 @@ namespace API.Controllers
 
                 };
                 var appointmentId = await _appointmentService.CreateAppointment(newModel);
-               
+                var appointmentDetails = await _appointmentService.GetAppointmentByiD(appointmentId);
+                await _notificationServices.SendAppointmentInforAsync(appointmentDetails);
                 return Ok(new
                 {
                     StatusCode = 200,
@@ -158,7 +193,7 @@ namespace API.Controllers
             try
             {
                 var employeeId = (int)HttpContext.Items["EmployeeId"];
-                var result = await _appointmentService.UpdateAppointment(model,employeeId);
+                var result = await _appointmentService.UpdateAppointment(model, employeeId);
                 return Ok(new ResponseDto<bool>
                 {
                     statusCode = 200,
@@ -179,6 +214,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize(Roles = "Staff")]
         [HttpDelete("{appointmentId}")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
         [ServiceFilter(typeof(AppointmentOwnershipFilter))]
@@ -205,6 +241,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("{appointmentId}")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
         [ServiceFilter(typeof(AppointmentAuthorizationFilter))]
@@ -233,21 +270,21 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("history")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
-
         public async Task<IActionResult> GetAppointmentHistory()
         {
             try
             {
                 int customerId = (int)HttpContext.Items["CustomerId"];
-                
+
                 var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
                 {
                     statusCode = 200,
                     message = "Appointments retrieved successfully",
-                    data = appointments 
+                    data = appointments
                 });
             }
             catch (Exception ex)
@@ -256,18 +293,18 @@ namespace API.Controllers
                 {
                     statusCode = 400,
                     message = ex.Message,
-                    
+
                 });
             }
         }
 
         [HttpGet("staff/history/{customerId}")]
-        [Authorize(Roles ="Staff")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> GetAppointmentHistoryByCustomerId(int customerId)
         {
             try
             {
-                
+
                 var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
                 {
@@ -285,13 +322,14 @@ namespace API.Controllers
                 });
             }
         }
+
         [HttpGet("appointments/paged")]
         [Authorize(Roles = "Staff")]
-        public async Task<IActionResult>GetAppointmentsWithPagination(int? payload,int? pageindex)
+        public async Task<IActionResult> GetAppointmentsWithPagination(int? payload, int? pageindex)
         {
             try
             {
-                var appointments = await _appointmentService.GetAppointmentsWithPagination(payload,pageindex);
+                var appointments = await _appointmentService.GetAppointmentsWithPagination(payload, pageindex);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
                 {
                     statusCode = 200,
@@ -299,7 +337,8 @@ namespace API.Controllers
                     data = appointments
                 });
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
@@ -308,5 +347,170 @@ namespace API.Controllers
                 });
             }
         }
+
+        [HttpPost("/get-appointment-in-current-day")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> GetAppointmentInCurrentDay(int pageSize, int pageIndex)
+        {
+            try
+            {
+                var appointments = await _appointmentService.GetAppointmentInCurrentDay(pageSize, pageIndex);
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+
+        [HttpPost("/get-appointment-before-day")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex)
+        {
+            try
+            {
+                var appointments = await _appointmentService.GetAppointmentBeforeDayAsync(date, pageSize, pageIndex);
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+
+        [HttpGet("/customer-confirm-appointment")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UpdateConfirmAppointmentDateAsync([FromQuery] string token)
+        {
+            var payload = _tokenServices.Validate(token);
+            if (!payload.Item1 || payload.Item4 != "confirm")
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = Message.INVALID_TOKEN,
+                    data = null
+                });
+            }
+
+            var appointmentId = payload.Item3;
+            var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
+            if (appointment == null)
+            {
+                return NotFound(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.NOT_FOUND,
+                    message = Message.APPOINTMENT_NOT_FOUND,
+                    data = null
+                });
+            }
+            if (appointment.Status != AppointmentStatusEnum.Pending)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = Message.APPOINTMENT_CANNOT_BE_CONFIRMED,
+                    data = null
+                });
+            }
+            var res = await _appointmentService.UpdateAppointmentStatus(new AppointmentUpdateDto
+            {
+                appointmentID = appointmentId,
+                status = AppointmentStatusEnum.Confirmed
+            });
+            await _alertServices.AddConfirmAlertAsync(new DataAccess.Dtos.Alerts.AlertCreateDto
+            {
+                appointmentId = appointmentId,
+                message = $"New appointment on {appointment.AppointmentDate.ToString("dd/mm/yyyy")} has been confirmed."
+            });
+            return Ok(res);
+        }
+
+        [HttpGet("/customer-cancel-appointment")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UpdateCancelAppointmentDateAsync([FromQuery] string token)
+        {
+            var payload = _tokenServices.Validate(token);
+            if (!payload.Item1 || payload.Item4 != "cancel")
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = Message.INVALID_TOKEN,
+                    data = null
+                });
+            }
+
+            var appointmentId = payload.Item3;
+            var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
+            if (appointment == null)
+            {
+                return NotFound(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.NOT_FOUND,
+                    message = Message.APPOINTMENT_NOT_FOUND,
+                    data = null
+                });
+            }
+            if (appointment.Status != AppointmentStatusEnum.Pending)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = Message.APPOINTMENT_CANNOT_BE_CANCELED,
+                    data = null
+                });
+            }
+            var res = await _appointmentService.UpdateAppointmentStatus(new AppointmentUpdateDto
+            {
+                appointmentID = appointmentId,
+                status = AppointmentStatusEnum.Canceled
+            });
+            await _alertServices.AddConfirmAlertAsync(new DataAccess.Dtos.Alerts.AlertCreateDto
+            {
+                appointmentId = appointmentId,
+                message = $"New appointment on {appointment.AppointmentDate.ToString("dd/mm/yyyy")} has been canceled."
+            });
+            return Ok(res);
+        }
+
+        [HttpGet("daily-count")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDailyCounts()
+        {
+            try
+            {
+                var dates = await _appointmentService.GetAppointmentWithCountDaily();
+                return Ok(new ResponseDto<CenterDailyCapacityModel>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = dates
+
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                    data = null
+                });
+
+            }
+        }
     }
 }
+

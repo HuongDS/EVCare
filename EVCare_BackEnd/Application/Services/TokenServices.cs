@@ -16,9 +16,11 @@ namespace Application.Services
     public class TokenServices : ITokenServices
     {
         private readonly IConfiguration _configuration;
+        private readonly string _secretKey;
         public TokenServices(IConfiguration configuration)
         {
             _configuration = configuration;
+            _secretKey = configuration["ActionToken:Secret"]!;
         }
         public string GenerateAccessToken(Account account)
         {
@@ -51,28 +53,6 @@ namespace Application.Services
             var bytes = RandomNumberGenerator.GetBytes(64);
             return Convert.ToBase64String(bytes);
         }
-        //public ClaimsPrincipal? GetClaimsPrincipalFromExpiredToken(string token)
-        //{
-        //    var parameters = new TokenValidationParameters
-        //    {
-        //        ValidateAudience = false,
-        //        ValidateIssuer = false,
-        //        ValidateIssuerSigningKey = true,
-        //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
-        //        ValidateLifetime = false // allow read expired tokens
-        //    };
-
-        //    var handler = new JwtSecurityTokenHandler();
-        //    try
-        //    {
-        //        var principal = handler.ValidateToken(token, parameters, out _);
-        //        return principal;
-        //    }
-        //    catch
-        //    {
-        //        return null;
-        //    }
-        //}
         public string HashToken(string token)
         {
             using var h = SHA256.Create();
@@ -82,6 +62,50 @@ namespace Application.Services
         public DateTime GetExpireDays()
         {
             return DateTime.UtcNow.AddDays(int.Parse(_configuration["Jwt:RefreshTokenDays"] ?? "7"));
+        }
+        public string Issue(int customerId, int appointmentId, string action, TimeSpan ttl)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var jti = Guid.NewGuid().ToString();
+            var now = DateTime.UtcNow;
+            var claims = new[]
+            {
+                new Claim("cid", customerId.ToString()),
+                new Claim("aid", appointmentId.ToString()),
+                new Claim("act", action),
+                new Claim(JwtRegisteredClaimNames.Jti, jti)
+            };
+            var token = new JwtSecurityToken(
+                    issuer: null, audience: null, claims: claims, notBefore: now, expires: now.Add(ttl), signingCredentials: cred
+                );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        public (bool, int, int, string, string) Validate(string token)
+        {
+            var parameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey)),
+                ClockSkew = TimeSpan.Zero
+            };
+            var handler = new JwtSecurityTokenHandler();
+            try
+            {
+                var principal = handler.ValidateToken(token, parameters, out var _);
+                var cid = int.Parse(principal.Claims.First(c => c.Type == "cid").Value);
+                var aid = int.Parse(principal.Claims.First(c => c.Type == "aid").Value);
+                var act = principal.Claims.First(c => c.Type == "act").Value;
+                var jti = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Jti).Value;
+                return (true, cid, aid, act, jti);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Invalid token. {e.Message}");
+            }
         }
     }
 }
