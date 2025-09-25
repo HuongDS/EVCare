@@ -18,6 +18,8 @@ import {
   Icon,
   Row,
   LocationBox,
+  MainTitle,
+  ModalContent,
 } from "./Rating.styled";
 
 interface Staff {
@@ -135,6 +137,7 @@ export default function RatingComponent() {
             onClick={(e) => e.stopPropagation()}
             onTransitionEnd={handleAnimationEnd}
           >
+
             <Title>Review</Title>
             <TitleID>ID: {order.id}</TitleID>
 
@@ -231,6 +234,74 @@ export default function RatingComponent() {
                 Send
               </Button>
             </div>
+            <ModalContent>
+              <MainTitle>Review</MainTitle>
+              <TitleID>ID: {order.id}</TitleID>
+
+              {/* Staff Ratings Section */}
+              <Section>
+                <Title>Staff Ratings</Title>
+                {order.staffs.map((staff) => (
+                  <StaffRow key={staff.id}>
+                    <NameBox label={staff.role} name={staff.name} />
+                    <div style={{ marginTop: "8.5%", textAlign: "center" }}>
+                      <Rating
+                        name={`rating-${staff.id}`}
+                        value={staff.rating}
+                        onChange={(_, value) =>
+                          handleStaffRatingChange(staff.id, value)
+                        }
+                      />
+                    </div>
+                  </StaffRow>
+                ))}
+
+                <Row style={{ marginTop: "10px" }}>
+                  <NameBox label="Date" name={order.date} />
+                  <LocationBox>
+                    <Icon className="bi bi-geo-alt-fill" />
+                    {order.location}
+                  </LocationBox>
+                </Row>
+              </Section>
+
+              {/* Services Section */}
+              <Section>
+                <Title>Services</Title>{" "}
+                <StaffRow
+                  style={{ marginTop: "15px", gridTemplateColumns: "1fr" }}
+                >
+                  <div style={{ textAlign: "center" }}>
+                    <Rating
+                      name="service-rating"
+                      value={order.rating}
+                      onChange={handleServiceRatingChange}
+                    />
+                  </div>
+                </StaffRow>
+                <ServiceList>
+                  {order.services.map((s) => (
+                    <ServiceItemBox key={s.id}>{s.name}</ServiceItemBox>
+                  ))}
+                </ServiceList>
+                {/* Tổng rating dịch vụ */}
+              </Section>
+
+              {/* Review Section */}
+              <Section>
+                <Title>Review</Title>
+                <ReviewBox
+                  value={order.review}
+                  onChange={(e) => handleReviewChange(e.target.value)}
+                  placeholder="Write your review here..."
+                />
+              </Section>
+
+              <div style={{ margin: "0", textAlign: "center" }}>
+                <Button onClick={handleSend}>Send</Button>
+              </div>
+            </ModalContent>
+
           </OrderModal>
         </Wrapper>
       )}
