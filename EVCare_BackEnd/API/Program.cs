@@ -221,13 +221,15 @@ RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
        tzVn
     );
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
-app.UseSwagger();
-app.UseSwaggerUI();
+var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");
+
+if (swaggerEnabled)
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+//app.UseSwagger();
+//app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
