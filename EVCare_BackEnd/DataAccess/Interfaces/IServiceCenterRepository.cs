@@ -12,5 +12,6 @@ namespace DataAccess.Interfaces
         Task<int> GetSlotLimitAsync();
         public Task<int> GetLimitBookingOfServiceCenter();
         public Task<int> GetAppactityOfServiceCenter();
+        Task<ServiceCenter> GetCenterInforAsync();
     }
 }
