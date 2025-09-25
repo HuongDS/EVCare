@@ -13,9 +13,9 @@ namespace DataAccess.Dtos.Appointment
     {
         public int Id { get; set; }
         public DateTime AppointmentDate { get; set; }
-        public string VehicleName { get; set; }
-        public List<string> Services { get; set; }
-        public string VehicleImageUrl { get; set; }
+        public string? VehicleName { get; set; }
+        public List<string>? Services { get; set; }
+        public string? VehicleImageUrl { get; set; }
         public AppointmentStatusEnum Status { get; set; }
     }
 }
