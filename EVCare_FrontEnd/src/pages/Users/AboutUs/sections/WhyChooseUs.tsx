@@ -3,39 +3,39 @@ import styled from "styled-components";
 const WhyChooseUsWrapper = styled.div`
   font-family: "Outfit", sans-serif;
   text-align: center;
-  padding-bottom: 50px;
+  padding-bottom: 5vw;
   max-width: 100%;
   display: flex;
   flex-direction: column;
 `;
 
 const Title = styled.h1`
-  font-size: 50px;
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 800;
 `;
 
 const Content = styled.div`
-  font-size: 25px;
+  font-size: clamp(1rem, 2vw, 2rem);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   max-width: 70%;
-  margin: 0 auto 2%;
+  margin: 0 auto 5%;
   gap: 20px;
 `;
 
 const List = styled.div`
   max-width: 100%;
-  font-size: 25px;
+  font-size: clamp(1rem, 2vw, 1.5rem);
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  gap: 20px;
+  gap: 2vw;
   flex-wrap: wrap;
   align-items: center;
-  /* margin: 1% auto; */
 `;
+
 const Card = styled.div`
   font-size: 20px;
   border: 0.5px solid #003aa618;
@@ -52,7 +52,7 @@ const Card = styled.div`
   transition: transform 0.3s ease;
   &:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -87,25 +87,25 @@ export default function WhyChooseUs() {
       </Content>
       <List>
         <Card>
-          <CardTitle>Expert Team</CardTitle>{" "}
+          <CardTitle>Expert Team</CardTitle>
           <CardContent>Over 50 highly trained EV technicians.</CardContent>
         </Card>
         <Card>
-          <CardTitle>Advanced Technology</CardTitle>{" "}
+          <CardTitle>Advanced Technology</CardTitle>
           <CardContent>
             A smart management system that ensures transparency in every
             process.
           </CardContent>
         </Card>
         <Card>
-          <CardTitle>Proven Experience</CardTitle>{" "}
+          <CardTitle>Proven Experience</CardTitle>
           <CardContent>
             10 years of service, maintaining over 5,000 EVs from leading brands
             like VinFast, Tesla, and BYD.
           </CardContent>
         </Card>
         <Card>
-          <CardTitle>Customer-Centered</CardTitle>{" "}
+          <CardTitle>Customer-Centered</CardTitle>
           <CardContent>
             We prioritize your safety and satisfaction above all else.
           </CardContent>
