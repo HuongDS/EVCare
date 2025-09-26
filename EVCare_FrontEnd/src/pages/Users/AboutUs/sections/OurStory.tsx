@@ -1,25 +1,24 @@
 import styled from "styled-components";
 import ourStoryImg from "../../../../assets/OurStoryImg.jpg";
+
 const OurVisionWrapper = styled.div`
   font-family: "Outfit", sans-serif;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-evenly;
-  padding: 1% 0 1% 0;
-`;
-
-const Box = styled.div`
-  height: auto;
-  width: auto;
-  padding: 2% 5% 2% 5%;
+  align-items: center;
+  padding-top: 5vw;
+  gap: 2vw;
 `;
 
 const Title = styled.h1`
-  font-size: 50px;
+  font-size: clamp(3rem, 6vw, 5rem);
   font-weight: 800;
+  text-align: center;
 `;
 
-const Content = styled.p`
-  font-size: 25px;
+const Content = styled.div`
+  font-size: clamp(1.2rem, 2vw, 2.5rem);
   text-align: justify;
   max-width: 50%;
   display: flex;
@@ -33,33 +32,30 @@ const Highlight = styled.span`
 `;
 
 const Image = styled.img`
-  width: 100%;
-  max-width: 30%;
+  max-width: 25%;
   border-radius: 20px;
   align-self: center;
-  justify-content: center;
 `;
 
 const Story = styled.p`
-  align-self: bottom;
+  margin-top: 2rem;
 `;
+
 export default function OurStory() {
   return (
-    <Box>
-      <OurVisionWrapper>
-        <Image src={ourStoryImg} />
-        <Content>
-          <Title>Our Story</Title>
-          <Story>
-            <Highlight>EV Care</Highlight> was founded to deliver smart and
-            modern maintenance solutions for the fast-growing EV industry. We
-            provide a <Highlight>transparent system</Highlight> that{" "}
-            <Highlight>saves time and cost</Highlight>, connecting{" "}
-            <Highlight>skilled technicians</Highlight> with customers to ensure{" "}
-            <Highlight>safe and efficient</Highlight> vehicle care.
-          </Story>
-        </Content>
-      </OurVisionWrapper>
-    </Box>
+    <OurVisionWrapper>
+      <Image src={ourStoryImg} />
+      <Content>
+        <Title>Our Story</Title>
+        <Story>
+          <Highlight>EV Care</Highlight> was founded to deliver smart and modern
+          maintenance solutions for the fast-growing EV industry. We provide a{" "}
+          <Highlight>transparent system</Highlight> that{" "}
+          <Highlight>saves time and cost</Highlight>, connecting{" "}
+          <Highlight>skilled technicians</Highlight> with customers to ensure{" "}
+          <Highlight>safe and efficient</Highlight> vehicle care.
+        </Story>
+      </Content>
+    </OurVisionWrapper>
   );
 }
