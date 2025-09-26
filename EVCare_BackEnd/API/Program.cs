@@ -91,7 +91,7 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
 builder.Services.AddScoped<IBlockedDateService, BlockedDateService>();
-
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAlertServices, AlertServices>();
 builder.Services.AddScoped<IApplicationServices, ApplicationServices>();
@@ -109,10 +109,11 @@ builder.Services.AddAutoMapper(typeof(AppointmentProfile));
 //Action Filter
 builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
 builder.Services.AddScoped<SetCustomerIdFilter>();
-builder.Services.AddScoped<AuthorizeCustomerOrAdminFilter>();
+builder.Services.AddScoped<AuthorizeCustomerOrStaffFilter>();
 builder.Services.AddScoped<AppointmentOwnershipFilter>();
 builder.Services.AddScoped<SetEmployeeIdFilter>();
 builder.Services.AddScoped<GetAccountIdFilter>();
+builder.Services.AddScoped<AuthorizeCustomerAndStaffThroughAccountIdFilter>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
