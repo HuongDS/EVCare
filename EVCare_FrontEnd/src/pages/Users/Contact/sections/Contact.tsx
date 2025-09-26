@@ -3,7 +3,7 @@ import EVcar from "../../../../assets/EVcar.webp";
 
 const ContactWrapper = styled.div`
   font-family: "Outfit", sans-serif;
-  padding: 110px 50px;
+  padding: 10vw 5%;
 `;
 
 const ColumnsWrapper = styled.div`
@@ -11,8 +11,7 @@ const ColumnsWrapper = styled.div`
   justify-content: space-evenly;
   width: 100%;
   flex-wrap: wrap;
-  padding-left: 10%;
-  padding-right: 10%;
+  gap: 3vw;
 `;
 
 const LeftColumn = styled.div`
@@ -22,6 +21,7 @@ const LeftColumn = styled.div`
   align-content: center;
   justify-content: center;
   min-width: 250px;
+  padding-right: 2vw;
 `;
 
 const RightColumns = styled.div`
@@ -30,14 +30,14 @@ const RightColumns = styled.div`
   align-items: center;
   justify-content: center;
   flex: 1;
-  gap: 20px;
-  min-width: 500px;
+  gap: 2vw;
+  min-width: 300px;
 `;
 
 const TopRightColumns = styled.div`
   display: flex;
-  justify-content: flex-end;
-  gap: 100px;
+  justify-content: flex-start;
+  gap: 5vw;
   flex-wrap: wrap;
 `;
 
@@ -49,33 +49,34 @@ const Column = styled.div`
 
 const Title = styled.h1`
   align-self: center;
-  font-size: 70px;
+  font-size: clamp(3rem, 6vw, 5rem);
   font-weight: 800;
   color: #00ad4e;
 `;
 
 const Subtitle = styled.h2`
-  font-size: 25px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
   margin-bottom: 10px;
+  color: #00ad4e;
 `;
 
 const ContactInfo = styled.p`
-  font-size: 20px;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
   margin-bottom: 20px;
 `;
 
 const ContactContent = styled.p`
-  font-size: 25px;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
   margin-bottom: 20px;
-
   text-align: justify;
 `;
 
 const Image = styled.img`
   width: 100%;
-  max-width: 400px;
+  max-width: 75%;
   border-radius: 10px;
   align-self: center;
+  margin-top: 2vw;
 `;
 
 export default function Contact() {
