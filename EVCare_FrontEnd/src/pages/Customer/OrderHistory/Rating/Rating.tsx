@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Rating from "@mui/material/Rating";
 import NameBox from "../NameBox";
-import CloseButton from "react-bootstrap/CloseButton";
+// import CloseButton from "react-bootstrap/CloseButton";
 
 import {
   DetailWrapper,
@@ -19,7 +19,6 @@ import {
   Icon,
   Row,
   LocationBox,
-  MainTitle,
   ModalContent,
 } from "./Rating.styled";
 
@@ -59,8 +58,18 @@ export default function RatingComponent() {
       { id: 3, name: "Battery Replacement" },
     ],
     staffs: [
-      { id: 1, role: "Service Staff", name: "Alex", rating: 0 },
-      { id: 2, role: "Technical Staff", name: "Alice", rating: 0 },
+      {
+        id: 1,
+        role: "Service Staff",
+        name: "Alex",
+        rating: 0,
+      },
+      {
+        id: 2,
+        role: "Technical Staff",
+        name: "Alice",
+        rating: 0,
+      },
     ],
     review: "",
     rating: 0,
@@ -88,14 +97,20 @@ export default function RatingComponent() {
   };
 
   const handleServiceRatingChange = (
-    event: React.SyntheticEvent<Element, Event>,
+    _: React.SyntheticEvent<Element, Event>,
     value: number | null
   ) => {
-    setOrder((prev) => ({ ...prev, rating: value ?? 0 }));
+    setOrder((prev) => ({
+      ...prev,
+      rating: value ?? 0,
+    }));
   };
 
   const handleReviewChange = (value: string) => {
-    setOrder((prev) => ({ ...prev, review: value }));
+    setOrder((prev) => ({
+      ...prev,
+      review: value,
+    }));
   };
 
   const handleSend = () => {
@@ -116,13 +131,79 @@ export default function RatingComponent() {
             onClick={(e) => e.stopPropagation()}
             onTransitionEnd={handleAnimationEnd}
           >
-            <CloseButton
-              onClick={closeModal}
-              style={{ position: "absolute", top: 30, right: 10 }}
-            />
-            {/* Header */}
-            <MainTitle>Review</MainTitle>
+            <Title>Review</Title>
             <TitleID>ID: {order.id}</TitleID>
+
+            {/* Staff Ratings Section */}
+            <Section>
+              <Title>Staff Ratings</Title>
+              {order.staffs.map((staff) => (
+                <StaffRow key={staff.id}>
+                  <NameBox label={staff.role} name={staff.name} />
+                  <div style={{ marginTop: "8.5%" }}>
+                    <Rating
+                      name={`rating-${staff.id}`}
+                      value={staff.rating}
+                      onChange={(_, value) =>
+                        handleStaffRatingChange(staff.id, value)
+                      }
+                    />
+                  </div>
+                </StaffRow>
+              ))}
+
+              <Row style={{ marginTop: "10px" }}>
+                <NameBox label="Date" name={order.date} />
+                <LocationBox>
+                  <Icon className="bi bi-geo-alt-fill" />
+                  {order.location}
+                </LocationBox>
+              </Row>
+            </Section>
+
+            {/* Services Section */}
+            <Section>
+              <Title>Services</Title>{" "}
+              <StaffRow
+                style={{
+                  marginTop: "15px",
+                  gridTemplateColumns: "1fr",
+                }}
+              >
+                <div style={{ textAlign: "center" }}>
+                  <Rating
+                    name="service-rating"
+                    value={order.rating}
+                    onChange={handleServiceRatingChange}
+                  />
+                </div>
+              </StaffRow>
+              <ServiceList>
+                {order.services.map((s) => (
+                  <ServiceItemBox key={s.id}>{s.name}</ServiceItemBox>
+                ))}
+              </ServiceList>
+              {/* Tổng rating dịch vụ */}
+            </Section>
+
+            {/* Review Section */}
+            <Section>
+              <Title>Review</Title>
+              <ReviewBox
+                value={order.review}
+                onChange={(e) => handleReviewChange(e.target.value)}
+                placeholder="Write your review here..."
+              />
+            </Section>
+
+            <div
+              style={{
+                margin: "0",
+                textAlign: "center",
+              }}
+            >
+              <Button onClick={handleSend}>Send</Button>
+            </div>
             <ModalContent>
               {/* Staff Ratings Section */}
               <Section>

@@ -49,7 +49,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Hash_Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Last_Name")
@@ -187,7 +186,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Reason")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1281,6 +1279,12 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime?>("NextServiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReminderIntervalMonths")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -1300,7 +1304,8 @@ namespace DataAccess.Migrations
                             CustomerId = 1,
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Last_Appointment = new DateTime(2025, 2, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            LicensePlate = "59A-123.45"
+                            LicensePlate = "59A-123.45",
+                            ReminderIntervalMonths = 0
                         });
                 });
 

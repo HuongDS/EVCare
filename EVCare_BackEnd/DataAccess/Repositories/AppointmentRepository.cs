@@ -207,5 +207,16 @@ namespace DataAccess.Repositories
             };
 
         }
+
+        public async Task CancelAppointment()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            await _dbContext.Appointments
+                .Where(a => DateOnly.FromDateTime(a.Appointment_Date) < today && a.Status== AppointmentStatusEnum.Pending)
+                .ExecuteUpdateAsync(s => s
+                .SetProperty(x=>x.Status,AppointmentStatusEnum.Canceled)   
+                );
+
+        }
     }
 }
