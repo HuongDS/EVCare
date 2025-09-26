@@ -72,7 +72,7 @@ namespace API.Controllers
             }
         }
         [HttpGet("customer/{customerId}")]
-        [ServiceFilter(typeof(AuthorizeCustomerOrAdminFilter))]
+        [ServiceFilter(typeof(AuthorizeCustomerOrStaffFilter))]
         public async Task<IActionResult> GetVehiclesByCustomerId(int customerId)
         {
             try
