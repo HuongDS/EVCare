@@ -16,6 +16,7 @@ export type LoginResponseDto = {
 };
 
 export type User = {
+  accountId: number;
   email: string;
   role: RoleEnum;
 };
@@ -26,6 +27,7 @@ export type AuthState = {
 };
 
 export type JwtPayLoad = {
+  nameid: number;
   email: string;
   role: RoleEnum;
   exp: number;

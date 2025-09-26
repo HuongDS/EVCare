@@ -69,6 +69,7 @@ export default function Authentication({
       saveTokens(token);
       const payload = decodeJwt(token);
       const user: User = {
+        accountId: Number(payload.nameid),
         email: payload.email,
         role: payload.role,
       };
