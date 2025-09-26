@@ -78,5 +78,8 @@ namespace Application.Infrastructures
 
         //Service Category
         public const string SERVICE_CATEGORY_GET_SUCCESSSFULLY = "Get Service category successfully";
+
+        //Vehicle
+        public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
     }
 }
