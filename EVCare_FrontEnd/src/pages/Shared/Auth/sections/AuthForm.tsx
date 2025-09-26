@@ -25,6 +25,7 @@ interface AuthFormProps {
   lastName: string;
   setLastName: (v: string) => void;
   handleSignUp: () => void;
+  handleLogin: () => void;
 }
 
 export default function AuthForm({
@@ -40,6 +41,7 @@ export default function AuthForm({
   lastName,
   setLastName,
   handleSignUp,
+  handleLogin,
 }: AuthFormProps) {
   return (
     <FormWrapper>
@@ -94,7 +96,12 @@ export default function AuthForm({
         </Link>
       )}
 
-      <SubmitBtn type="submit" onClick={isSignUp ? handleSignUp : undefined}>
+      <SubmitBtn
+        type="button"
+        onClick={
+          isSignUp ? handleSignUp : handleLogin
+        }
+      >
         {isSignUp ? "Sign Up" : "Sign In"}
       </SubmitBtn>
 
@@ -110,8 +117,15 @@ export default function AuthForm({
           color: "black",
         }}
       >
-        <FcGoogle style={{ marginRight: "20px", fontSize: "25px" }} />
-        {isSignUp ? "Sign Up with Google" : "Sign In with Google"}
+        <FcGoogle
+          style={{
+            marginRight: "20px",
+            fontSize: "25px",
+          }}
+        />
+        {isSignUp
+          ? "Sign Up with Google"
+          : "Sign In with Google"}
       </SubmitBtn>
     </FormWrapper>
   );
