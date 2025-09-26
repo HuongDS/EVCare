@@ -116,6 +116,7 @@ builder.Services.AddScoped<GetAccountIdFilter>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
+builder.Services.AddScoped<IReminderService, ReminderService>();
 
 
 // Add Cors
@@ -219,6 +220,13 @@ RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
        job => job.CancelAppointment(),
         Cron.Daily(7),
        tzVn
+    );
+RecurringJob.AddOrUpdate<IReminderService>(
+    "reminder-service",
+     job=>job.SendEmailRemindersAsync(),
+     Cron.Daily(10),
+     tzVn
+    
     );
 // Configure the HTTP request pipeline.
 var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");

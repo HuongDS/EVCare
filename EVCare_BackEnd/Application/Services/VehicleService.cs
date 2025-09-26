@@ -78,5 +78,21 @@ namespace Application.Services
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<int> UpdateVehicleStaff(VehicleStaffUpdateModel model)
+        {
+            try
+            {
+                var vehicle = await _vehicleRepository.GetByIdAsync(model.Id);
+                vehicle = _mapper.Map(model, vehicle);
+
+                var createdVehicle = await _vehicleRepository.UpdateAsync(vehicle);
+                return createdVehicle.Id;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

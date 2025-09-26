@@ -13,6 +13,6 @@ namespace Application.IService
         Task<VehicleDetailViewModel> GetVehicleDetailById(int vehicleId);
         Task<IEnumerable<VehicleViewModel>> GetVehiclesByCustomerId(int customerId);
         Task<int> UpdateVehicleCustomer(VehicleCustomerUpdateModel model);
-
+        Task<int> UpdateVehicleStaff(VehicleStaffUpdateModel model);
     }
 }
