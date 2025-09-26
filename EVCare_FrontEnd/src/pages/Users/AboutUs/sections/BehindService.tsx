@@ -9,21 +9,42 @@ const BehindServiceWrapper = styled.div`
   justify-content: space-evenly;
   align-items: center;
   gap: 3vw;
+
+  @media (max-width: 390px) {
+    padding: 3vw 0;
+    gap: 2vw;
+  }
 `;
 
 const DetailsNumberWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: start;
+  height: auto;
+
+  @media (max-width: 768px) {
+    align-items: start;
+    text-align: center;
+    flex-direction: row;
+    gap: 2rem;
+  }
+
+  @media (max-width: 390px) {
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 375px) {
+    gap: 1rem;
+  }
 `;
 
 const DetailsNumber = styled.p`
-  font-size: clamp(4rem, 10vw, 8rem);
+  font-size: clamp(2.3rem, 8vw, 7rem);
   font-weight: 1000;
 `;
 
 const DetailsDescription = styled.p`
-  font-size: clamp(1.2rem, 2vw, 2.5rem);
+  font-size: clamp(1rem, 2vw, 2.5rem);
   font-weight: 700;
   margin-top: 0;
   color: #0039a6;
@@ -34,6 +55,10 @@ const ContentWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   max-width: 50%;
+
+  @media (max-width: 768px) {
+    max-width: 85%;
+  }
 `;
 
 const Title = styled.h1`
@@ -42,7 +67,7 @@ const Title = styled.h1`
 `;
 
 const Content = styled.p`
-  font-size: clamp(1.2rem, 2vw, 2.5rem);
+  font-size: clamp(1rem, 2vw, 2.5rem);
   margin-bottom: 20px;
   text-align: justify;
 `;
@@ -52,10 +77,29 @@ const Highlight = styled.span`
   font-weight: 700;
 `;
 
+const DetailWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    margin-bottom: 2rem;
+    margin-left: 1rem;
+    align-items: center;
+  }
+
+  @media (max-width: 375px) {
+    margin-bottom: 1.6rem;
+    align-items: center;
+  }
+`;
+
 export default function BehindService() {
   return (
-    <BehindServiceWrapper>
-      <ContentWrapper>
+    <BehindServiceWrapper data-aos="fade-up">
+      <ContentWrapper data-aos="fade-up" data-aos-delay="200">
         <Title>Behind Service</Title>
         <Content>
           Behind every smart maintenance service is a{" "}
@@ -67,15 +111,22 @@ export default function BehindService() {
           customers.
         </Content>
       </ContentWrapper>
-      <DetailsNumberWrapper>
-        <DetailsNumber>5000+</DetailsNumber>
-        <DetailsDescription>EVs successfully maintained</DetailsDescription>
-        <DetailsNumber>50+</DetailsNumber>
-        <DetailsDescription>
-          Certified and skilled technicians
-        </DetailsDescription>
-        <DetailsNumber>10</DetailsNumber>
-        <DetailsDescription>Years of trusted experience</DetailsDescription>
+
+      <DetailsNumberWrapper data-aos="fade-up" data-aos-delay="400">
+        <DetailWrapper>
+          <DetailsNumber>5000+</DetailsNumber>
+          <DetailsDescription>EVs successfully maintained</DetailsDescription>
+        </DetailWrapper>
+        <DetailWrapper>
+          <DetailsNumber>50+</DetailsNumber>
+          <DetailsDescription>
+            Certified and skilled technicians
+          </DetailsDescription>
+        </DetailWrapper>
+        <DetailWrapper>
+          <DetailsNumber>10</DetailsNumber>
+          <DetailsDescription>Years of trusted experience</DetailsDescription>
+        </DetailWrapper>
       </DetailsNumberWrapper>
     </BehindServiceWrapper>
   );

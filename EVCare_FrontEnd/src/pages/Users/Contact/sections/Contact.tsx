@@ -83,7 +83,7 @@ export default function Contact() {
   return (
     <ContactWrapper>
       <ColumnsWrapper>
-        <LeftColumn>
+        <LeftColumn data-aos="fade-up">
           <Title>Contact Us</Title>
           <ContactContent>
             If you have any questions, feedback, or need assistance, please feel
@@ -92,7 +92,7 @@ export default function Contact() {
         </LeftColumn>
 
         <RightColumns>
-          <TopRightColumns>
+          <TopRightColumns data-aos="fade-up" data-aos-delay="200">
             <Column>
               <Subtitle>
                 <i className="bi bi-envelope-fill"></i> Email
@@ -118,7 +118,12 @@ export default function Contact() {
             </Column>
           </TopRightColumns>
 
-          <Image src={EVcar} alt="EVcar" />
+          <Image
+            data-aos="fade-up"
+            data-aos-delay="300"
+            src={EVcar}
+            alt="EVcar"
+          />
         </RightColumns>
       </ColumnsWrapper>
     </ContactWrapper>

@@ -12,15 +12,15 @@ const OurVisionWrapper = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: clamp(3rem, 6vw, 5rem);
+  font-size: clamp(2.5rem, 6vw, 5rem);
   font-weight: 800;
   text-align: center;
 `;
 
 const Content = styled.div`
-  font-size: clamp(1.2rem, 2vw, 2.5rem);
+  font-size: clamp(1rem, 2vw, 2.5rem);
   text-align: justify;
-  max-width: 50%;
+  max-width: 53%;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -38,14 +38,14 @@ const Image = styled.img`
 `;
 
 const Story = styled.p`
-  margin-top: 2rem;
+  margin-top: 1rem;
 `;
 
 export default function OurStory() {
   return (
-    <OurVisionWrapper>
+    <OurVisionWrapper data-aos="fade-up">
       <Image src={ourStoryImg} />
-      <Content>
+      <Content data-aos="fade-up" data-aos-delay="200">
         <Title>Our Story</Title>
         <Story>
           <Highlight>EV Care</Highlight> was founded to deliver smart and modern

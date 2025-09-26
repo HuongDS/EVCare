@@ -48,11 +48,11 @@ const Card = styled.div`
   text-align: center;
   max-width: 300px;
   min-height: 250px;
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
 
-  transition: transform 0.3s ease;
   &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-100px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -78,7 +78,7 @@ const CardContent = styled.div`
 
 export default function WhyChooseUs() {
   return (
-    <WhyChooseUsWrapper>
+    <WhyChooseUsWrapper data-aos="fade-up">
       <Title>Why Choose Us</Title>
       <Content>
         With the rapid growth of the EV industry, proper and timely maintenance
@@ -86,25 +86,25 @@ export default function WhyChooseUs() {
         Here’s why customers trust us:
       </Content>
       <List>
-        <Card>
+        <Card data-aos="fade-up" data-aos-delay="100">
           <CardTitle>Expert Team</CardTitle>
           <CardContent>Over 50 highly trained EV technicians.</CardContent>
         </Card>
-        <Card>
+        <Card data-aos="fade-up" data-aos-delay="200">
           <CardTitle>Advanced Technology</CardTitle>
           <CardContent>
             A smart management system that ensures transparency in every
             process.
           </CardContent>
         </Card>
-        <Card>
+        <Card data-aos="fade-up" data-aos-delay="300">
           <CardTitle>Proven Experience</CardTitle>
           <CardContent>
             10 years of service, maintaining over 5,000 EVs from leading brands
             like VinFast, Tesla, and BYD.
           </CardContent>
         </Card>
-        <Card>
+        <Card data-aos="fade-up" data-aos-delay="400">
           <CardTitle>Customer-Centered</CardTitle>
           <CardContent>
             We prioritize your safety and satisfaction above all else.
