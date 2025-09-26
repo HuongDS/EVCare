@@ -1,4 +1,6 @@
 import { useState } from "react";
+import CloseButton from "react-bootstrap/CloseButton";
+
 import {
   DetailWrapper,
   Button,
@@ -48,7 +50,7 @@ export default function OrderDetail() {
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const orderStatus: OrderStatus = "done";
+  const orderStatus: OrderStatus = "cancel";
 
   const customer: Customer = {
     name: "Picasso",
@@ -95,21 +97,24 @@ export default function OrderDetail() {
             onClick={(e) => e.stopPropagation()}
             onTransitionEnd={handleAnimationEnd}
           >
+            {/* Header */}
+            <Row
+              style={{
+                justifyContent: "space-between",
+                marginBottom: "10px",
+              }}
+            >
+              <CloseButton
+                onClick={closeModal}
+                style={{ position: "absolute", top: 28, right: 10 }}
+              />
+              <TitleID>ID: #12345</TitleID>
+              <Status>
+                Status:{" "}
+                <StatusBadge status={orderStatus}>{orderStatus}</StatusBadge>
+              </Status>
+            </Row>
             <ModalContent>
-              {/* Header */}
-              <Row
-                style={{
-                  justifyContent: "space-between",
-                  marginBottom: "10px",
-                }}
-              >
-                <TitleID>ID: #12345</TitleID>
-                <Status>
-                  Status:{" "}
-                  <StatusBadge status={orderStatus}>{orderStatus}</StatusBadge>
-                </Status>
-              </Row>
-
               {/* Customer + Staff Info */}
               <Section>
                 <Title>Information</Title>

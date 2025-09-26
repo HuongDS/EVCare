@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Rating from "@mui/material/Rating";
 import NameBox from "../NameBox";
+import CloseButton from "react-bootstrap/CloseButton";
 
 import {
   DetailWrapper,
@@ -115,10 +116,14 @@ export default function RatingComponent() {
             onClick={(e) => e.stopPropagation()}
             onTransitionEnd={handleAnimationEnd}
           >
+            <CloseButton
+              onClick={closeModal}
+              style={{ position: "absolute", top: 30, right: 10 }}
+            />
+            {/* Header */}
+            <MainTitle>Review</MainTitle>
+            <TitleID>ID: {order.id}</TitleID>
             <ModalContent>
-              <MainTitle>Review</MainTitle>
-              <TitleID>ID: {order.id}</TitleID>
-
               {/* Staff Ratings Section */}
               <Section>
                 <Title>Staff Ratings</Title>
