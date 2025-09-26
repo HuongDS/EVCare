@@ -18,6 +18,8 @@ namespace DataAccess.Entities
         public string? Image { get; set; }
         public decimal? Last_Kilometer { get; set; }
         public DateTime? Last_Appointment { get; set; }
+        public int ReminderIntervalMonths { get;set; }
+        public DateTime? NextServiceDate { get; set; }
         public DateTime Deleted_At { get; set; }
         public ICollection<Appointment> Appointments { get; set; }
     }

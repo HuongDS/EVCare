@@ -5,6 +5,7 @@ using API.Filters;
 using API.Middlewares;
 using Application.Interfaces;
 using Application.IService;
+using Application.Jobs;
 using Application.Mapping;
 using Application.Mappings;
 using Application.Service;
@@ -13,6 +14,7 @@ using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -59,9 +61,8 @@ builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentServiceRepository, AppointmentServiceRepository>();
 builder.Services.AddScoped<IAppointmentImageRepository, AppointmentImageRepository>();
-
 builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
-
+builder.Services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IBlockedDateRepository, BlockedDateRepository>();
 builder.Services.AddScoped<IGenericRepository<DataAccess.Entities.Order>, GenericRepository<DataAccess.Entities.Order>>();
@@ -88,7 +89,7 @@ builder.Services.AddScoped<IVehicleCategoryService, VehicleCategoryService>();
 builder.Services.AddScoped<IAppointmentService, Application.Services.AppointmentService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
-
+builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
 builder.Services.AddScoped<IBlockedDateService, BlockedDateService>();
 
 builder.Services.AddScoped<IOrderService, OrderService>();
@@ -113,6 +114,8 @@ builder.Services.AddScoped<AppointmentOwnershipFilter>();
 builder.Services.AddScoped<SetEmployeeIdFilter>();
 builder.Services.AddScoped<GetAccountIdFilter>();
 
+//Background Job
+builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
 
 
 // Add Cors
@@ -199,23 +202,42 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     return ConnectionMultiplexer.Connect(options);
 });
 
-
+//hangfire
+builder.Services.AddHangfire(cfg => cfg
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new Hangfire.SqlServer.SqlServerStorageOptions { PrepareSchemaIfNecessary = true }));
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
-
+app.UseHangfireDashboard("/hangfire");
+var tzVn = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
+       "cancel-expired-appointments-daily-7am",
+       job => job.CancelAppointment(),
+        Cron.Daily(7),
+       tzVn
+    );
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");
+
+if (swaggerEnabled)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+//app.UseSwagger();
+//app.UseSwaggerUI();
+app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseMiddleware<BannedMiddleware>();
 
-app.UseHttpsRedirection();
+
 
 app.UseAuthorization();
 
