@@ -8,9 +8,12 @@ using Application.Interfaces;
 using AutoMapper;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.Invoice;
+using DataAccess.Dtos.Vehicle;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using NotificationApi.Server;
 using NotificationApi.Server.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.Services
 {
@@ -131,6 +134,38 @@ namespace Application.Services
                 }
             };
             await notificationApi.Send(notification);
+        }
+
+        public async Task SendEmailToRemider(VehicleReminderDto model)
+        {
+            var key03 = _configuration["NotificationAPI:key03"];
+            var key04 = _configuration["NotificationAPI:key04"];
+            var notificationApi = new NotificationApiServer(
+                    key03!,
+                    key04!,
+                    true
+                  );
+            var user = new NotificationUser
+            {
+                Id = model.Email,
+                Email = model.Email
+            };
+            var notification = new SendNotificationData
+            {
+                NotificationId = "service_appointment_reminder",
+                User = user,
+                TemplateId = "service_appointment_reminder",
+                MergeTags = new Dictionary<string, object>
+                {
+                    { "CustomerName",  model.CustomerName },
+                    { "LicensePlate", model.LicensePlate },
+                    { "BookingUrl", "Evcare" },
+                    { "Hotline", model.HotLine },
+                    { "CompanyName", model.ServiceCenterName }
+                }
+            };
+            await notificationApi.Send(notification);
+
         }
     }
 }
