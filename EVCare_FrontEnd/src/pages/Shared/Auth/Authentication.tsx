@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import logo from "../../../assets/EVCare.png";
 import SwitchButton from "../../../components/SwitchButton/SwitchButton";
 import {
@@ -14,14 +14,25 @@ import {
   ERROR_MESSAGE,
   SUCCESS_MESSAGE,
 } from "../../../constants/messages/Message";
-import type { LoginRequestDto } from "../../../models/AuthModel/authModel";
-import { login, saveTokens } from "../../../services/authService";
+import type {
+  LoginRequestDto,
+  RegisterRequestDto,
+  VerifyOTPDto,
+} from "../../../models/AuthModel/authModel";
+import {
+  login,
+  register,
+  saveTokens,
+  verifyOtp,
+} from "../../../services/authService";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 import { decodeJwt } from "../../../token/jwtDecode";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../states/store";
 import { loginSuccess } from "../../../states/authSlice";
 import type { User } from "../../../models/AuthModel/authModel";
+import { LENGTH } from "../../../constants/Code/Constants";
+import { OTP_REGEX } from "../../../constants/regexs/OTPRegex";
 
 interface AuthProps {
   show: boolean;
@@ -38,11 +49,16 @@ export default function Authentication({ show, handleClose }: AuthProps) {
   const [confirm, setConfirm] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState<string[]>(() =>
+    Array(LENGTH.OTP_LENGTH).fill("")
+  ); // lazy init
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleLogin = async () => {
+  // login
+  const handleLogin = useCallback(async () => {
     const loginData: LoginRequestDto = {
       email: email,
       password: password,
@@ -67,25 +83,62 @@ export default function Authentication({ show, handleClose }: AuthProps) {
       alert("Success");
     } catch (err) {
       if (err instanceof Error) {
-        alert("error");
         console.error("Login error:", err.message);
       } else {
         console.error("Login error:", err);
       }
     }
-  };
+  }, [email, password, dispatch]);
 
-  const handleSignUp = () => {
-    // TODO: gọi API gửi OTP tới email ở đây
+  const handleSignUp = useCallback(async () => {
+    if (password !== confirm) {
+      alert(ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME);
+      return;
+    }
+    const registerData: RegisterRequestDto = {
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone,
+    };
+    await register(registerData);
     setIsOTP(true);
-  };
+  }, [email, password, firstName, lastName, phone, confirm]);
 
-  const handleVerifyOTP = () => {
-    // TODO: verify OTP API call
+  const handleVerifyOTP = useCallback(async () => {
+    const code = otp.join("");
+    if (code.length != LENGTH.OTP_LENGTH || !OTP_REGEX.test(code)) {
+      alert(`OTP must be ${LENGTH.OTP_LENGTH} numbers`);
+      return;
+    }
+    try {
+      const data: VerifyOTPDto = {
+        email: email,
+        otp: code,
+      };
+      const response = await verifyOtp(data);
+      if (response.statusCode != HTTP_STATUS.CREATED) {
+        throw new Error(ERROR_MESSAGE.OTP_WRONG);
+      }
+    } catch (error) {
+      console.log(error);
+    }
     alert(SUCCESS_MESSAGE.REGISTER_SUCCESS);
     setIsOTP(false);
     handleClose();
-  };
+  }, [email, otp, handleClose]);
+
+  // header text
+  const headerText = useMemo(
+    () =>
+      isOTP
+        ? AUTH_FORM_MESSAGE.VERIFY
+        : isSignUp
+        ? AUTH_FORM_MESSAGE.REGISTER
+        : AUTH_FORM_MESSAGE.WELCOME_BACK,
+    [isOTP, isSignUp]
+  );
 
   return (
     <StyledModal show={show} onHide={handleClose} centered>
@@ -94,13 +147,7 @@ export default function Authentication({ show, handleClose }: AuthProps) {
       </SideImage>
       <FormContainer $isSignUp={isSignUp}>
         <HeaderBox>
-          <h1>
-            {isOTP
-              ? AUTH_FORM_MESSAGE.VERIFY
-              : isSignUp
-              ? AUTH_FORM_MESSAGE.REGISTER
-              : AUTH_FORM_MESSAGE.WELCOME_BACK}
-          </h1>
+          <h1>{headerText}</h1>
           {!isOTP ? (
             <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} />
           ) : undefined}
@@ -119,11 +166,17 @@ export default function Authentication({ show, handleClose }: AuthProps) {
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
+            phone={phone}
+            setPhone={setPhone}
             handleSignUp={handleSignUp}
             handleLogin={handleLogin}
           />
         ) : (
-          <OTPForm handleVerifyOTP={handleVerifyOTP} />
+          <OTPForm
+            otp={otp}
+            setOtp={setOtp}
+            handleVerifyOTP={handleVerifyOTP}
+          />
         )}
       </FormContainer>
     </StyledModal>
