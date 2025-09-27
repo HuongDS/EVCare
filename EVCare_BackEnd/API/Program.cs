@@ -212,6 +212,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 
     // debug error
     // Log để bắt lỗi chính xác nếu còn "SocketClosed"
+    var mux = ConnectionMultiplexer.Connect(options);
     mux.ConnectionFailed += (s, a) =>
         Console.Error.WriteLine($"[Redis] Failed: {a.EndPoint} {a.FailureType} {a.Exception?.Message}");
     mux.ConnectionRestored += (s, a) =>
