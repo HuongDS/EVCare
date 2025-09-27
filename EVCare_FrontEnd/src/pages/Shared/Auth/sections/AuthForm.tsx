@@ -76,7 +76,7 @@ export default function AuthForm({
           <TextFieldWithIcon
             icon={<FiKey />}
             type="Confirm Password"
-            text={confirm}
+            text={password}
             setText={setConfirm}
           />
         )}
@@ -96,12 +96,7 @@ export default function AuthForm({
         </Link>
       )}
 
-      <SubmitBtn
-        type="button"
-        onClick={
-          isSignUp ? handleSignUp : handleLogin
-        }
-      >
+      <SubmitBtn type="button" onClick={isSignUp ? handleSignUp : handleLogin}>
         {isSignUp ? "Sign Up" : "Sign In"}
       </SubmitBtn>
 
@@ -123,9 +118,7 @@ export default function AuthForm({
             fontSize: "25px",
           }}
         />
-        {isSignUp
-          ? "Sign Up with Google"
-          : "Sign In with Google"}
+        {isSignUp ? "Sign Up with Google" : "Sign In with Google"}
       </SubmitBtn>
     </FormWrapper>
   );

@@ -7,7 +7,7 @@ interface OTPFormProps {
 export default function OTPForm({ handleVerifyOTP }: OTPFormProps) {
   return (
     <FormWrapper>
-      <p>Enter the 4-digit code sent to your email:</p>
+      <p>Enter the 6-digit code sent to your email:</p>
       <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
         {Array(6)
           .fill(0)

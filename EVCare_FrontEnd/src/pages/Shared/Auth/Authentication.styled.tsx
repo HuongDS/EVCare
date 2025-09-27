@@ -6,7 +6,7 @@ export const StyledModal = styled(Modal)`
     max-width: 60%;
     height: 90vh;
 
-    @media (max-width: 768px) {
+    @media (max-width: 1045px) {
       max-width: 95%;
       height: auto;
     }
@@ -20,7 +20,7 @@ export const StyledModal = styled(Modal)`
     overflow: hidden;
     flex-direction: row;
 
-    @media (max-width: 768px) {
+    @media (max-width: 1045px) {
       flex-direction: column;
     }
   }
@@ -47,7 +47,7 @@ export const SideImage = styled.div<{ $isSignUp: boolean }>`
     object-fit: cover;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1045px) {
     position: relative;
     width: 100%;
     height: 200px;
@@ -68,7 +68,7 @@ export const FormContainer = styled(Modal.Body)<{ $isSignUp: boolean }>`
   z-index: 2;
   transition: right 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 
-  @media (max-width: 768px) {
+  @media (max-width: 1045px) {
     position: relative;
     width: 100%;
     right: 0;
@@ -151,7 +151,7 @@ export const NameGroup = styled.div`
     width: 100%;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1045px) {
     flex-direction: column;
     gap: 1rem;
   }
