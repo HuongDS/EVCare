@@ -153,13 +153,14 @@ namespace Application.Services
             }
 
         }
-        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex)
+        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex,string? customerName)
         {
             try
             {
                 int pageSize = payload ?? 10;
                 int pageIndex = pageindex ?? 1;
-                return await _appointmentRepository.GetAppointmentsWithPagination(pageSize, pageIndex);
+                string customername = customerName ?? "";
+                return await _appointmentRepository.GetAppointmentsWithPagination(pageSize, pageIndex,customername);
 
             }
             catch (Exception e)
