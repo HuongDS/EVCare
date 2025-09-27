@@ -31,6 +31,8 @@ const Field = styled.div`
 const FieldGroup = styled.div<{ $hasText: boolean }>`
   position: relative;
   margin-left: 2%;
+  width: 100%;
+
   span {
     position: absolute;
     left: 0;
@@ -42,6 +44,7 @@ const FieldGroup = styled.div<{ $hasText: boolean }>`
   }
 
   input {
+    width: 100%;
     margin-top: 10px;
     font-size: 18px;
     padding: 2px 0;

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.IService;
 using AutoMapper;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Service;
 using DataAccess.Interfaces;
 
@@ -21,15 +22,15 @@ namespace Application.Service
           
         }
 
-        public async Task<IEnumerable<ServiceViewModel>> GetActiveServicesWithPaginationAsync(int payload,int pageIndex)
+        public async Task<PageResultDto<ServiceViewModel>> GetActiveServicesWithPaginationAsync(string k, int payload,int pageIndex)
         {
-            var services =  await _serviceRepository.GetActiveServiceWithPagination(payload,pageIndex);
-            return _mapper.Map<IEnumerable<ServiceViewModel>>(services);
+            return await _serviceRepository.GetActiveServiceAndKeywordWithPagination(k,payload,pageIndex);
+           
         }
 
-        public async Task<IEnumerable<ServiceViewModel>> GetAllActiveServicesAsync()
+        public async Task<IEnumerable<ServiceViewModel>> GetAllActiveServicesAsync(string keyword)
         {
-            var services =  await _serviceRepository.GetAllActiveServices();
+            var services =  await _serviceRepository.GetAllActiveServices(keyword);
             return _mapper.Map<IEnumerable<ServiceViewModel>>(services);
         }
 
@@ -40,10 +41,10 @@ namespace Application.Service
 
         }
 
-        public async Task<IEnumerable<ServiceViewModel>> GetServicesWithPaginationAsync(int payload, int payindex)
+        public async Task<PageResultDto<ServiceViewModel>> GetServicesWithPaginationAsync(string keyword, int payload, int payindex)
         {
-            var services =  await _serviceRepository.GetWithPaginationAsync(payload, payindex);
-            return _mapper.Map<IEnumerable<ServiceViewModel>>(services);
+            return await _serviceRepository.GetServiceAndKeywordWithPagination(keyword,payload, payindex);
+            
         }
     }
 }

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { HiOutlineMail } from "react-icons/hi";
-import { FiKey } from "react-icons/fi";
-import { FcGoogle } from "react-icons/fc";
+import { FiKey, FiPhone } from "react-icons/fi";
+// import { FcGoogle } from "react-icons/fc";
 import TextFieldWithIcon from "../../../../components/TextFieldWithIcon/TextFieldWithIcon";
 import TextFieldAnimation from "../../../../components/TextField/TextFieldAnimation";
 import {
@@ -11,6 +11,7 @@ import {
   Divider,
   NameGroup,
 } from "../Authentication.styled";
+import GoogleButton from "../google/GoogleButton";
 
 interface AuthFormProps {
   isSignUp: boolean;
@@ -24,6 +25,8 @@ interface AuthFormProps {
   setFirstName: (v: string) => void;
   lastName: string;
   setLastName: (v: string) => void;
+  phone: string;
+  setPhone: (v: string) => void;
   handleSignUp: () => void;
   handleLogin: () => void;
 }
@@ -39,6 +42,8 @@ export default function AuthForm({
   firstName,
   setFirstName,
   lastName,
+  phone,
+  setPhone,
   setLastName,
   handleSignUp,
   handleLogin,
@@ -75,9 +80,17 @@ export default function AuthForm({
         {isSignUp && (
           <TextFieldWithIcon
             icon={<FiKey />}
-            type="Confirm Password"
+            type="Password"
             text={confirm}
             setText={setConfirm}
+          />
+        )}
+        {isSignUp && (
+          <TextFieldWithIcon
+            icon={<FiPhone />}
+            type="Phone Number"
+            text={phone}
+            setText={setPhone}
           />
         )}
       </FieldGroup>
@@ -96,12 +109,7 @@ export default function AuthForm({
         </Link>
       )}
 
-      <SubmitBtn
-        type="button"
-        onClick={
-          isSignUp ? handleSignUp : handleLogin
-        }
-      >
+      <SubmitBtn type="button" onClick={isSignUp ? handleSignUp : handleLogin}>
         {isSignUp ? "Sign Up" : "Sign In"}
       </SubmitBtn>
 
@@ -113,19 +121,18 @@ export default function AuthForm({
       <SubmitBtn
         type="button"
         style={{
-          backgroundColor: "#ccc",
+          backgroundColor: "#fff",
           color: "black",
         }}
       >
-        <FcGoogle
+        {/* <FcGoogle
           style={{
             marginRight: "20px",
             fontSize: "25px",
           }}
-        />
-        {isSignUp
-          ? "Sign Up with Google"
-          : "Sign In with Google"}
+        /> */}
+        <GoogleButton />
+        {/* {isSignUp ? "Sign Up with Google" : "Sign In with Google"} */}
       </SubmitBtn>
     </FormWrapper>
   );

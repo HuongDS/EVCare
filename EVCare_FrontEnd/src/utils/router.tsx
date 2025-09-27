@@ -5,17 +5,23 @@ import TechnicianLayout from "../components/Layouts/TechnicanLayout";
 import StaffLayout from "../components/Layouts/StaffLayout";
 
 import HomePage from "../pages/Users/HomePage/HomePage";
+// import ServiceList from "../pages/Users/Services/ServiceList";
 import ServiceList from "../pages/Users/Services/ServiceList";
 import AboutUs from "../pages/Users/AboutUs/AboutUs";
 import ContactUs from "../pages/Users/Contact/ContactUs";
 import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail";
 import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
+// import Testservices from "../pages/Users/Services/Testservices";
+import Test from "../components/Test";
+
+
 
 import StaffGeneral from "../pages/Staff/General";
 import StaffInventory from "../pages/Staff/Inventory";
 import PageNotFound from "../components/Layouts/PageNotFound";
 import AdminGeneral from "../pages/Admin/General";
 import TechnicianGeneral from "../pages/Technician/General";
+
 
 const router = createBrowserRouter([
   // Customer routes

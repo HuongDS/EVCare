@@ -6,9 +6,7 @@ export function decodeJwt(token: string) {
   const payload = jwtDecode<JwtPayLoad>(token);
   const now = Math.floor(Date.now() / 1000);
   if (payload.exp < now) {
-    throw new Error(
-      ERROR_MESSAGE.TOKEN_HAS_EXPIRED
-    );
+    throw new Error(ERROR_MESSAGE.TOKEN_HAS_EXPIRED);
   }
   return payload;
 }
