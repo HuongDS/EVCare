@@ -326,11 +326,12 @@ namespace API.Controllers
 
         [HttpGet("appointments/paged")]
         [Authorize(Roles = "Staff")]
-        public async Task<IActionResult> GetAppointmentsWithPagination(int? payload, int? pageindex)
+        public async Task<IActionResult> GetAppointmentsWithPagination([FromQuery]string? customerName, [FromQuery] int? payload, [FromQuery] int? pageindex)
         {
             try
             {
-                var appointments = await _appointmentService.GetAppointmentsWithPagination(payload, pageindex);
+                
+                var appointments = await _appointmentService.GetAppointmentsWithPagination(payload, pageindex,customerName);
                 return Ok(new ResponseDto<PageResultDto<AppointmentViewModel>>
                 {
                     statusCode = 200,
