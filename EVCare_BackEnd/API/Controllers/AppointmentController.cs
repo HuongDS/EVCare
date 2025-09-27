@@ -13,6 +13,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using Application.Services;
 using Newtonsoft.Json.Linq;
 using DataAccess.Dtos.CenterCare;
+using DataAccess.Dtos.Pagination;
 
 
 namespace API.Controllers
@@ -330,7 +331,7 @@ namespace API.Controllers
             try
             {
                 var appointments = await _appointmentService.GetAppointmentsWithPagination(payload, pageindex);
-                return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
+                return Ok(new ResponseDto<PageResultDto<AppointmentViewModel>>
                 {
                     statusCode = 200,
                     message = "Appointments retrieved successfully",

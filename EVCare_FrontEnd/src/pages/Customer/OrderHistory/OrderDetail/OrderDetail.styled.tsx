@@ -211,7 +211,9 @@ export const TotalRow = styled.div`
 export const Status = styled.div`
   font-size: 14px;
   font-weight: 500;
-
+  position: absolute;
+  top: 30px;
+  right: 40px;
   @media (max-width: 480px) {
     font-size: 13px;
   }
