@@ -1,10 +1,25 @@
+import type { Dispatch, SetStateAction } from "react";
+import { ONE_NUMBER_REGEX } from "../../../../constants/regexs/NumberRegex";
 import { FormWrapper, SubmitBtn } from "../Authentication.styled";
+import { LENGTH } from "../../../../constants/Code/Constants";
 
-interface OTPFormProps {
+type OTPFormProps = {
+  otp: string[];
+  setOtp: Dispatch<SetStateAction<string[]>>;
   handleVerifyOTP: () => void;
-}
+};
 
-export default function OTPForm({ handleVerifyOTP }: OTPFormProps) {
+export default function OTPForm({ otp, setOtp, handleVerifyOTP }: OTPFormProps) {
+  const handleChange = (i: number, val: string) => {
+    if (!ONE_NUMBER_REGEX.test(val)) return;
+    setOtp((prev) => {
+      const next = [...prev];
+      next[i] = val;
+      return next;
+    });
+  };
+
+  const isDisabled = otp.join("").length !== LENGTH.OTP_LENGTH;
   return (
     <FormWrapper>
       <p>Enter the 4-digit code sent to your email:</p>
@@ -16,6 +31,7 @@ export default function OTPForm({ handleVerifyOTP }: OTPFormProps) {
               key={i}
               type="text"
               maxLength={1}
+              inputMode="numeric"
               style={{
                 width: "50px",
                 height: "50px",
@@ -23,10 +39,12 @@ export default function OTPForm({ handleVerifyOTP }: OTPFormProps) {
                 fontSize: "1.5rem",
                 border: "1px solid #ccc",
               }}
+              value={otp[i]}
+              onChange={(e) => handleChange(i, e.target.value)}
             />
           ))}
       </div>
-      <SubmitBtn type="button" onClick={handleVerifyOTP}>
+      <SubmitBtn type="button" disabled={isDisabled} onClick={handleVerifyOTP}>
         Verify OTP
       </SubmitBtn>
     </FormWrapper>
