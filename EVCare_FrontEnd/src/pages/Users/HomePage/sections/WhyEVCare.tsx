@@ -67,7 +67,7 @@ const TitleCard = styled.h2`
 
 export default function WhyEVCare() {
   return (
-    <Container>
+    <Container data-aos="fade-up" data-aos-delay="150">
       <Title>Why EVCare?</Title>
       <CardsWrapper>
         <Card>

@@ -1,12 +1,30 @@
 import { useCallback, useMemo, useState } from "react";
 import logo from "../../../assets/EVCare.png";
 import SwitchButton from "../../../components/SwitchButton/SwitchButton";
-import { StyledModal, SideImage, FormContainer, HeaderBox } from "./Authentication.styled";
+import {
+  StyledModal,
+  SideImage,
+  FormContainer,
+  HeaderBox,
+} from "./Authentication.styled";
 import AuthForm from "./sections/AuthForm";
 import OTPForm from "./sections/OTPForm";
-import { AUTH_FORM_MESSAGE, ERROR_MESSAGE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
-import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto } from "../../../models/AuthModel/authModel";
-import { login, register, saveTokens, verifyOtp } from "../../../services/authService";
+import {
+  AUTH_FORM_MESSAGE,
+  ERROR_MESSAGE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
+import type {
+  LoginRequestDto,
+  RegisterRequestDto,
+  VerifyOTPDto,
+} from "../../../models/AuthModel/authModel";
+import {
+  login,
+  register,
+  saveTokens,
+  verifyOtp,
+} from "../../../services/authService";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 import { decodeJwt } from "../../../token/jwtDecode";
 import { useDispatch } from "react-redux";
@@ -32,7 +50,9 @@ export default function Authentication({ show, handleClose }: AuthProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState<string[]>(() => Array(LENGTH.OTP_LENGTH).fill("")); // lazy init
+  const [otp, setOtp] = useState<string[]>(() =>
+    Array(LENGTH.OTP_LENGTH).fill("")
+  ); // lazy init
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
@@ -111,7 +131,12 @@ export default function Authentication({ show, handleClose }: AuthProps) {
 
   // header text
   const headerText = useMemo(
-    () => (isOTP ? AUTH_FORM_MESSAGE.VERIFY : isSignUp ? AUTH_FORM_MESSAGE.REGISTER : AUTH_FORM_MESSAGE.WELCOME_BACK),
+    () =>
+      isOTP
+        ? AUTH_FORM_MESSAGE.VERIFY
+        : isSignUp
+        ? AUTH_FORM_MESSAGE.REGISTER
+        : AUTH_FORM_MESSAGE.WELCOME_BACK,
     [isOTP, isSignUp]
   );
 
@@ -123,7 +148,9 @@ export default function Authentication({ show, handleClose }: AuthProps) {
       <FormContainer $isSignUp={isSignUp}>
         <HeaderBox>
           <h1>{headerText}</h1>
-          {!isOTP ? <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} /> : undefined}
+          {!isOTP ? (
+            <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} />
+          ) : undefined}
         </HeaderBox>
 
         {!isOTP ? (
@@ -145,7 +172,11 @@ export default function Authentication({ show, handleClose }: AuthProps) {
             handleLogin={handleLogin}
           />
         ) : (
-          <OTPForm otp={otp} setOtp={setOtp} handleVerifyOTP={handleVerifyOTP} />
+          <OTPForm
+            otp={otp}
+            setOtp={setOtp}
+            handleVerifyOTP={handleVerifyOTP}
+          />
         )}
       </FormContainer>
     </StyledModal>
