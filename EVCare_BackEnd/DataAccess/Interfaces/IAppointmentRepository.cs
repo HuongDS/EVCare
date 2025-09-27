@@ -17,7 +17,7 @@ namespace DataAccess.Interfaces
         Task<PageResultDto<Appointment>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex);
         Task UpdateAppointmentStatusAsync(int appointmentID, AppointmentStatusEnum status);
         public Task<IEnumerable<AppointmentViewModel>> GetAppointmentsByCustomerId(int customerId);
-        public Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex);
+        public Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex,string customerName);
         public Task<AppointmentViewDetailModel> GetAppointmentWithDetails(int appointmentId);
         Task<int> GetCurrentSlotAsync();
         Task<PageResultDto<Appointment>> GetAppointmentInDayWithPaginationAsync(DateTime date, int pageSize, int pageIndex);

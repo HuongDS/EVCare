@@ -82,16 +82,17 @@ namespace DataAccess.Repositories
                     AppointmentDate = a.Appointment_Date,
                     Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
                     Status = a.Status,
-                    VehicleName = a.Vehicle.Category.Name,
+                    VehicleModel = a.Vehicle.Category.Name,
                     VehicleImageUrl = a.Vehicle.Image
                 }).ToListAsync();
 
         }
 
-        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex)
+        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex,string customername)
         {
-            var query =  _dbContext.Appointments.Include(a => a.Vehicle).ThenInclude(v => v.Category)
+            var query = _dbContext.Appointments.Include(a => a.Vehicle).ThenInclude(v => v.Category)
                 .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
+                .Include(a => a.Customer).ThenInclude(a => a.Account)
                 .OrderBy(a => a.Id)
                 .Select(a => new AppointmentViewModel
                 {
@@ -99,9 +100,12 @@ namespace DataAccess.Repositories
                     AppointmentDate = a.Appointment_Date,
                     Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
                     Status = a.Status,
-                    VehicleName = a.Vehicle.Category.Name,
-                    VehicleImageUrl = a.Vehicle.Image
-                });
+                    VehicleModel = a.Vehicle.Category.Name,
+                    LicensePlate = a.Vehicle.LicensePlate,
+                    VehicleImageUrl = a.Vehicle.Image,
+                    CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
+                    PhoneNumber = a.Customer.Account.Phone
+                }).Where(x=>x.CustomerName.Contains(customername));
 
             return  await PaginationHelper.PaginationAsync(query, payload, pageindex);
 

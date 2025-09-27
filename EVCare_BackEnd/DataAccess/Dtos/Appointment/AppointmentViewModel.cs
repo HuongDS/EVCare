@@ -13,7 +13,10 @@ namespace DataAccess.Dtos.Appointment
     {
         public int Id { get; set; }
         public DateTime AppointmentDate { get; set; }
-        public string? VehicleName { get; set; }
+        public string? VehicleModel { get; set; }
+        public string CustomerName {  get; set; }
+        public string? PhoneNumber { get; set; }
+        public string LicensePlate { get; set; }
         public List<string>? Services { get; set; }
         public string? VehicleImageUrl { get; set; }
         public AppointmentStatusEnum Status { get; set; }
