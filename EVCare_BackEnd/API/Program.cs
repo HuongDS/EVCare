@@ -195,16 +195,29 @@ System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolTyp
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var redisConfig = builder.Configuration.GetConnectionString("Redis");
+    if (string.IsNullOrWhiteSpace(redisConfig))
+        throw new InvalidOperationException("ConnectionStrings:Redis is empty on Azure.");
     var options = ConfigurationOptions.Parse(redisConfig);
 
     options.Ssl = true;
     options.AbortOnConnectFail = false;
+    options.ResolveDnsOnConnect = true;
     options.SslHost = "exotic-dogfish-51279.upstash.io";
+    options.SslProtocols = SslProtocols.Tls12;            // ép dùng TLS 1.2
     options.ConnectRetry = 3;
     options.ConnectTimeout = 15000; // 15s
     options.SyncTimeout = 15000;    // 15s
     options.KeepAlive = 60;
     options.User = "default";
+
+    // debug error
+    // Log để bắt lỗi chính xác nếu còn "SocketClosed"
+    mux.ConnectionFailed += (s, a) =>
+        Console.Error.WriteLine($"[Redis] Failed: {a.EndPoint} {a.FailureType} {a.Exception?.Message}");
+    mux.ConnectionRestored += (s, a) =>
+        Console.WriteLine($"[Redis] Restored: {a.EndPoint} {a.ConnectionType}");
+    mux.ErrorMessage += (s, a) =>
+        Console.Error.WriteLine($"[Redis] Error: {a.Message}");
 
     return ConnectionMultiplexer.Connect(options);
 });
