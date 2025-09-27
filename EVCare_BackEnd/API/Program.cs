@@ -201,7 +201,6 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 
     options.Ssl = true;
     options.AbortOnConnectFail = false;
-    options.ResolveDnsOnConnect = true;
     options.SslHost = "exotic-dogfish-51279.upstash.io";
     options.SslProtocols = SslProtocols.Tls12;            // ép dùng TLS 1.2
     options.ConnectRetry = 3;
