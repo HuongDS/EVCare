@@ -13,6 +13,7 @@ namespace DataAccess.Interfaces
         Task<int> GetCustomerIdByVehicleId(int vehicleId);
         Task<VehicleDetailViewModel> GetVehicleDetailById(int vehicleId);
         Task<IEnumerable<Vehicle>> GetVehiclesByCustomerId(int customerId);
+        Task<IEnumerable<VehicleReminderDto>> GetVehicleReminderTodayAsync();
         
     }
 }

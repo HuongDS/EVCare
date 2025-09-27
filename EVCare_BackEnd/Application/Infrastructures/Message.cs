@@ -75,5 +75,14 @@ namespace Application.Infrastructures
         // Alert
         public const string ALERTS_FETCHED_SUCCESS = "Alerts fetched successfully.";
         public const string ALERT_MARKED_AS_READ_SUCCESS = "Alert marked as read successfully.";
+
+        //Service Category
+        public const string SERVICE_CATEGORY_GET_SUCCESSSFULLY = "Get Service category successfully";
+
+        //Vehicle
+        public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
+
+        //Customer
+        public const string CUSTOMER_GET_SUCCESSFULLY = "Get customer successfully";
     }
 }

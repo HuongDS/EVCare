@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.Invoice;
+using DataAccess.Dtos.Vehicle;
 
 namespace Application.Interfaces
 {
@@ -13,5 +14,7 @@ namespace Application.Interfaces
         Task SendAppointmentInforAsync(AppointmentViewDetailModel data);
         Task SendInvoiceToCustomer(InvoiceMailDto dto);
         Task<string> SendOTP(string email, int expires);
+
+        Task SendEmailToRemider(VehicleReminderDto model);
     }
 }
