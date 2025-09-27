@@ -30,6 +30,11 @@ namespace Application.Service
             return entity.Id;
         }
 
+        public object DeleteAService(int serviceId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<PageResultDto<ServiceViewModel>> GetActiveServicesWithPaginationAsync(string k, int payload,int pageIndex)
         {
             return await _serviceRepository.GetActiveServiceAndKeywordWithPagination(k,payload,pageIndex);
