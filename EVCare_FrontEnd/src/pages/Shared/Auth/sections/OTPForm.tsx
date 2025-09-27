@@ -22,7 +22,7 @@ export default function OTPForm({ otp, setOtp, handleVerifyOTP }: OTPFormProps) 
   const isDisabled = otp.join("").length !== LENGTH.OTP_LENGTH;
   return (
     <FormWrapper>
-      <p>Enter the 4-digit code sent to your email:</p>
+      <p>Enter the 6-digit code sent to your email:</p>
       <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
         {Array(6)
           .fill(0)

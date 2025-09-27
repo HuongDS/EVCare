@@ -4,7 +4,13 @@ import { FiKey, FiPhone } from "react-icons/fi";
 // import { FcGoogle } from "react-icons/fc";
 import TextFieldWithIcon from "../../../../components/TextFieldWithIcon/TextFieldWithIcon";
 import TextFieldAnimation from "../../../../components/TextField/TextFieldAnimation";
-import { FormWrapper, FieldGroup, SubmitBtn, Divider, NameGroup } from "../Authentication.styled";
+import {
+  FormWrapper,
+  FieldGroup,
+  SubmitBtn,
+  Divider,
+  NameGroup,
+} from "../Authentication.styled";
 import GoogleButton from "../google/GoogleButton";
 
 interface AuthFormProps {
@@ -46,15 +52,47 @@ export default function AuthForm({
     <FormWrapper>
       {isSignUp && (
         <NameGroup>
-          <TextFieldAnimation type="First Name" text={firstName} setText={setFirstName} />
-          <TextFieldAnimation type="Last Name" text={lastName} setText={setLastName} />
+          <TextFieldAnimation
+            type="First Name"
+            text={firstName}
+            setText={setFirstName}
+          />
+          <TextFieldAnimation
+            type="Last Name"
+            text={lastName}
+            setText={setLastName}
+          />
         </NameGroup>
       )}
       <FieldGroup>
-        <TextFieldWithIcon icon={<HiOutlineMail />} type="Email" text={email} setText={setEmail} />
-        <TextFieldWithIcon icon={<FiKey />} type="Password" text={password} setText={setPassword} />
-        {isSignUp && <TextFieldWithIcon icon={<FiKey />} type="Password" text={confirm} setText={setConfirm} />}
-        {isSignUp && <TextFieldWithIcon icon={<FiPhone />} type="Phone Number" text={phone} setText={setPhone} />}
+        <TextFieldWithIcon
+          icon={<HiOutlineMail />}
+          type="Email"
+          text={email}
+          setText={setEmail}
+        />
+        <TextFieldWithIcon
+          icon={<FiKey />}
+          type="Password"
+          text={password}
+          setText={setPassword}
+        />
+        {isSignUp && (
+          <TextFieldWithIcon
+            icon={<FiKey />}
+            type="Password"
+            text={confirm}
+            setText={setConfirm}
+          />
+        )}
+        {isSignUp && (
+          <TextFieldWithIcon
+            icon={<FiPhone />}
+            type="Phone Number"
+            text={phone}
+            setText={setPhone}
+          />
+        )}
       </FieldGroup>
 
       {!isSignUp && (
