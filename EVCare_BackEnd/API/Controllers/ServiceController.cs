@@ -17,11 +17,15 @@ namespace API.Controllers
         //admin
         [Authorize(Roles = "Admin")]
         [HttpGet()]
-        public async Task<IActionResult> GetAllServices(int? payload,int? pageindex)
+        public async Task<IActionResult> GetAllServices(string keyword,int? payload,int? pageindex)
         {
+            if (keyword == null) {
+                keyword = "";
+            
+            }
             if(payload.HasValue && pageindex.HasValue)
             {
-                var services = await _service.GetServicesWithPaginationAsync(payload.Value, pageindex.Value);
+                var services = await _service.GetServicesWithPaginationAsync(keyword,payload.Value, pageindex.Value);
                 return Ok(new
                 {
                     statusCode = 200,
@@ -44,16 +48,17 @@ namespace API.Controllers
                
         }
         [HttpGet("active")]
-        public async Task<IActionResult> GetActiveServices(int? payload, int? pageindex)
+        public async Task<IActionResult> GetActiveServices(string? keyword,int? payload, int? pageindex)
         {
+            if (keyword == null) keyword = "";
             if (payload.HasValue && pageindex.HasValue)
             {
-                var services = await _service.GetActiveServicesWithPaginationAsync(payload.Value, pageindex.Value);
+                var services = await _service.GetActiveServicesWithPaginationAsync(keyword,payload.Value, pageindex.Value);
                 return Ok(new { statusCode = 200, message = "Successfully", data = services });
             }
             else
             {
-                var services = await _service.GetAllActiveServicesAsync();
+                var services = await _service.GetAllActiveServicesAsync(keyword);
                 return Ok(new { statusCode = 200, message = "Successfully", data = services });
             }
         }

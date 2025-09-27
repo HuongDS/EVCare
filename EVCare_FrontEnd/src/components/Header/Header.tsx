@@ -10,9 +10,7 @@ import { logout } from "../../services/authService";
 
 export default function Header() {
   const [showAuth, setShowAuth] = useState(false);
-  const { isAuthenticated, user } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   return (
     <Navbar>
       <Logo>
