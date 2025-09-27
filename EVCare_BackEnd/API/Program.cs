@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Security.Authentication;
 using System.Text;
+using API.Features.Service;
 using API.Filters;
 using API.Middlewares;
 using Application.Interfaces;
@@ -14,6 +15,8 @@ using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -27,7 +30,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddFluentValidation();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -114,10 +118,15 @@ builder.Services.AddScoped<AppointmentOwnershipFilter>();
 builder.Services.AddScoped<SetEmployeeIdFilter>();
 builder.Services.AddScoped<GetAccountIdFilter>();
 builder.Services.AddScoped<AuthorizeCustomerAndStaffThroughAccountIdFilter>();
+builder.Services.AddScoped<AppointmentAuthorizationFilter>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
 builder.Services.AddScoped<IReminderService, ReminderService>();
+
+//Validator
+builder.Services.AddValidatorsFromAssemblyContaining<CreateServiceRequestValidator>();
+
 
 
 // Add Cors
