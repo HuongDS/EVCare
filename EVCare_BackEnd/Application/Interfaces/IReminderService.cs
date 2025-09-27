@@ -8,6 +8,6 @@ namespace Application.Interfaces
 {
     public interface IReminderService
     {
-        Task CheckRemindersAsync();
+        Task SendEmailRemindersAsync();
     }
 }

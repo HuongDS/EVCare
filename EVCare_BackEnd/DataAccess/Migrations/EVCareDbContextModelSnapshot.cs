@@ -1101,6 +1101,10 @@ namespace DataAccess.Migrations
                     b.Property<int>("DailyBookingLimit")
                         .HasColumnType("int");
 
+                    b.Property<string>("Hotline")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
