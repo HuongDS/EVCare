@@ -195,11 +195,14 @@ System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolTyp
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var redisConfig = builder.Configuration.GetConnectionString("Redis");
+    if (string.IsNullOrWhiteSpace(redisConfig))
+        throw new InvalidOperationException("ConnectionStrings:Redis is empty on Azure.");
     var options = ConfigurationOptions.Parse(redisConfig);
 
     options.Ssl = true;
     options.AbortOnConnectFail = false;
     options.SslHost = "exotic-dogfish-51279.upstash.io";
+    options.SslProtocols = SslProtocols.Tls12;            // ép dùng TLS 1.2
     options.ConnectRetry = 3;
     options.ConnectTimeout = 15000; // 15s
     options.SyncTimeout = 15000;    // 15s
