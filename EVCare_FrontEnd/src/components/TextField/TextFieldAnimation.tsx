@@ -58,24 +58,17 @@ const FieldGroup = styled.div<{ $hasText: boolean }>`
 interface TextFieldData {
   type: string;
   text: string;
+  required: boolean;
   setText: (val: string) => void;
 }
 
-export default function TextFieldAnimation({
-  type,
-  text,
-  setText,
-}: TextFieldData) {
+export default function TextFieldAnimation({ type, text, required = false, setText }: TextFieldData) {
   return (
     <div>
       <Field>
         <FieldGroup $hasText={text !== ""}>
           <span>{type}</span>
-          <input
-            type={type}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
+          <input type={type} value={text} onChange={(e) => setText(e.target.value)} required={required} />
         </FieldGroup>
       </Field>
     </div>
