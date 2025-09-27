@@ -18,8 +18,8 @@ import {
   Icon,
   Row,
   LocationBox,
-  MainTitle,
   ModalContent,
+  MainTitle,
 } from "./Rating.styled";
 
 interface Staff {
