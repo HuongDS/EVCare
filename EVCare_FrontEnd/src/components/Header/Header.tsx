@@ -6,6 +6,7 @@ import Authentication from "../../pages/Shared/Auth/Authentication";
 import { Navbar, Logo, SearchBar, Menu, Buttons } from "./Header.styled";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../states/store";
+import { logout } from "../../services/authService";
 
 export default function Header() {
   const [showAuth, setShowAuth] = useState(false);
@@ -35,11 +36,13 @@ export default function Header() {
       </Menu>
 
       {isAuthenticated ? (
-        user?.email
+        <Buttons>
+          <button className="btn btn-fill">Log Out</button>
+        </Buttons>
       ) : (
         <Buttons>
           <button className="btn btn-fill" onClick={() => setShowAuth(true)}>
-            Sign Up
+            Get Started
           </button>
         </Buttons>
       )}
