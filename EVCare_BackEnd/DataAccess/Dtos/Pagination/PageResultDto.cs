@@ -8,11 +8,11 @@ namespace DataAccess.Dtos.Pagination
 {
     public class PageResultDto<T> where T : class
     {
-        public IEnumerable<T> items { get; set; }
-        public int pageSize { get; set; }
-        public int pageIndex { get; set; }
-        public int totalItems { get; set; }
-        public int totalPages { get; set; }
+        public IEnumerable<T> Items { get; set; }
+        public int PageSize { get; set; }
+        public int PageIndex { get; set; }
+        public int TotalItems { get; set; }
+        public int TotalPages { get; set; }
 
     }
 }
