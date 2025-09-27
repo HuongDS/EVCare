@@ -33,6 +33,7 @@ import { loginSuccess } from "../../../states/authSlice";
 import type { User } from "../../../models/AuthModel/authModel";
 import { LENGTH } from "../../../constants/Code/Constants";
 import { OTP_REGEX } from "../../../constants/regexs/OTPRegex";
+import { saveUser } from "../../../token/tokenStore";
 
 interface AuthProps {
   show: boolean;
@@ -79,6 +80,7 @@ export default function Authentication({ show, handleClose }: AuthProps) {
         email: payload.email,
         role: payload.role,
       };
+      saveUser(user);
       dispatch(loginSuccess(user));
       alert("Success");
     } catch (err) {
