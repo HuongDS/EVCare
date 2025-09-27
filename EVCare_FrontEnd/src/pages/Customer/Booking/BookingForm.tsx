@@ -12,11 +12,11 @@ import { Plus } from "lucide-react";
 const BookingFormWrapper = styled(Modal)`
   .modal-dialog {
     max-width: 70%;
-    height: max-content;
   }
 
   .modal-content {
-    height: 100%;
+    max-height: 100vh;
+    overflow-y: auto;
     font-family: "Outfit", sans-serif;
     padding: 20px;
   }
@@ -27,7 +27,7 @@ const SubSection = styled.div`
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 16px;
+  margin-bottom: 5px;
 `;
 
 const Label = styled.label`
@@ -217,18 +217,14 @@ interface Props {
   show: boolean;
   handleClose: () => void;
 }
-export default function BookingForm({
-  show,
-  handleClose,
-}: Props) {
-  const [selectedServices, setSelectedServices] =
-    useState<string[]>(["General Repairs"]);
+export default function BookingForm({ show, handleClose }: Props) {
+  const [selectedServices, setSelectedServices] = useState<string[]>([
+    "General Repairs",
+  ]);
 
   if (!show) return null;
 
-  const handleServiceChange = (
-    service: string
-  ) => {
+  const handleServiceChange = (service: string) => {
     setSelectedServices((prev) =>
       prev.includes(service)
         ? prev.filter((s) => s !== service)
@@ -239,32 +235,22 @@ export default function BookingForm({
     <BookingFormWrapper show={show}>
       <BookingFormHeader>
         <FormTitle>Booking Form</FormTitle>
-        <CloseButton onClick={handleClose}>
-          Close
-        </CloseButton>
+        <CloseButton onClick={handleClose}>Close</CloseButton>
       </BookingFormHeader>
       <BookingFormBody>
         <LeftBody>
           <SubTitle>
-            <NumberIcon
-              as={PiNumberCircleOneFill}
-            />
+            <NumberIcon as={PiNumberCircleOneFill} />
             <h5>Information</h5>
           </SubTitle>
           <SubSection>
             <FormGroup>
               <Label>Name</Label>
-              <Input
-                type="text"
-                defaultValue="Alex Nguyen"
-              />
+              <Input type="text" defaultValue="Alex Nguyen" />
             </FormGroup>
             <FormGroup>
               <Label>Phone Number</Label>
-              <Input
-                type="tel"
-                defaultValue="0987654321"
-              />
+              <Input type="tel" defaultValue="0987654321" />
             </FormGroup>
           </SubSection>
           <SubSection>
@@ -281,42 +267,26 @@ export default function BookingForm({
                 Vehicle <Required>*</Required>
               </Label>
               <Select>
-                <option value="">
-                  Select Vehicle
-                </option>
-                <option value="sedan">
-                  Vinfast
-                </option>
+                <option value="">Select Vehicle</option>
+                <option value="sedan">Vinfast</option>
                 <option value="suv">BWD</option>
               </Select>
             </FormGroup>
             <FormGroup>
               <Label>Kilometers</Label>
-              <Input
-                type="number"
-                min={0}
-                placeholder="Enter kilometers"
-              />
+              <Input type="number" min={0} placeholder="Enter kilometers" />
             </FormGroup>
             <FormGroup>
               <Label>
-                Vehicle Model{" "}
-                <Required>*</Required>
+                Vehicle Model <Required>*</Required>
               </Label>
-              <Input
-                type="text"
-                placeholder="Input"
-              />
+              <Input type="text" placeholder="Input" />
             </FormGroup>
             <FormGroup>
               <Label>
-                Vehicle License Plate{" "}
-                <Required>*</Required>
+                Vehicle License Plate <Required>*</Required>
               </Label>
-              <Input
-                type="text"
-                placeholder="Ex:50G-99999"
-              />
+              <Input type="text" placeholder="Ex:50G-99999" />
             </FormGroup>
             <FormGroup>
               <Label>Image</Label>
@@ -328,9 +298,7 @@ export default function BookingForm({
         </LeftBody>
         <RightBody>
           <SubTitle>
-            <NumberIcon
-              as={PiNumberCircleTwoFill}
-            />
+            <NumberIcon as={PiNumberCircleTwoFill} />
             <h5>Service</h5>
           </SubTitle>
           <SubSection>
@@ -347,20 +315,12 @@ export default function BookingForm({
               >
                 <Checkbox
                   type="checkbox"
-                  checked={selectedServices.includes(
-                    "Vehicle Maintenance"
-                  )}
-                  onChange={() =>
-                    handleServiceChange(
-                      "Vehicle Maintenance"
-                    )
-                  }
+                  checked={selectedServices.includes("Vehicle Maintenance")}
+                  onChange={() => handleServiceChange("Vehicle Maintenance")}
                 />
                 <span>Vehicle Maintenance</span>
               </div>
-              <MoreInfoLink>
-                More Info
-              </MoreInfoLink>
+              <MoreInfoLink>More Info</MoreInfoLink>
             </ServiceOption>
 
             <ServiceOption>
@@ -372,20 +332,12 @@ export default function BookingForm({
               >
                 <Checkbox
                   type="checkbox"
-                  checked={selectedServices.includes(
-                    "General Repairs"
-                  )}
-                  onChange={() =>
-                    handleServiceChange(
-                      "General Repairs"
-                    )
-                  }
+                  checked={selectedServices.includes("General Repairs")}
+                  onChange={() => handleServiceChange("General Repairs")}
                 />
                 <span>General Repairs</span>
               </div>
-              <MoreInfoLink>
-                More Info
-              </MoreInfoLink>
+              <MoreInfoLink>More Info</MoreInfoLink>
             </ServiceOption>
 
             <ServiceOption>
@@ -397,24 +349,16 @@ export default function BookingForm({
               >
                 <Checkbox
                   type="checkbox"
-                  checked={selectedServices.includes(
-                    "Repaint"
-                  )}
-                  onChange={() =>
-                    handleServiceChange("Repaint")
-                  }
+                  checked={selectedServices.includes("Repaint")}
+                  onChange={() => handleServiceChange("Repaint")}
                 />
                 <span>Repaint</span>
               </div>
-              <MoreInfoLink>
-                More Info
-              </MoreInfoLink>
+              <MoreInfoLink>More Info</MoreInfoLink>
             </ServiceOption>
           </SubSection>
           <SubTitle>
-            <NumberIcon
-              as={PiNumberCircleThreeFill}
-            />
+            <NumberIcon as={PiNumberCircleThreeFill} />
             <h5>Time</h5>
           </SubTitle>
           <SubSection>
@@ -424,16 +368,10 @@ export default function BookingForm({
               </Label>
               <TimeInputGroup>
                 <TimeInput>
-                  <TimeInputField
-                    type="date"
-                    placeholder="Date"
-                  />
+                  <TimeInputField type="date" placeholder="Date" />
                 </TimeInput>
                 <TimeInput>
-                  <TimeInputField
-                    type="time"
-                    placeholder="Time"
-                  />
+                  <TimeInputField type="time" placeholder="Time" />
                 </TimeInput>
               </TimeInputGroup>
             </FormGroup>

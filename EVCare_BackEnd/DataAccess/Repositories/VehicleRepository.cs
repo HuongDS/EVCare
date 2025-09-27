@@ -40,6 +40,28 @@ namespace DataAccess.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<VehicleReminderDto>> GetVehicleReminderTodayAsync()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            var serviceCenter = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
+            return await _dbContext.Vehicles.AsNoTracking()
+                .Include(x => x.Customer)
+                .Include(x=>x.Customer.Account)
+                .Where(x => x.NextServiceDate.HasValue
+                              && DateOnly.FromDateTime(x.NextServiceDate.Value) <= today)
+                .Select(x => new VehicleReminderDto
+                {
+                    Id = x.Id,
+                    CustomerName = x.Customer.Account.First_Name+" " +x.Customer.Account.Last_Name,
+                    Email = x.Customer.Account.Email,
+                    HotLine = serviceCenter.Hotline,
+                    LicensePlate = x.LicensePlate,
+                    ServiceCenterName = serviceCenter.Name
+
+                }).ToListAsync();
+                
+        }
+
         public async Task<IEnumerable<Vehicle>> GetVehiclesByCustomerId(int customerId)
         {
             return await _dbSet.Where(x=>x.CustomerId==customerId).ToListAsync();

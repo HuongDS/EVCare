@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Rating from "@mui/material/Rating";
 import NameBox from "../NameBox";
+import CloseButton from "react-bootstrap/CloseButton";
 
 import {
   DetailWrapper,
@@ -58,18 +59,8 @@ export default function RatingComponent() {
       { id: 3, name: "Battery Replacement" },
     ],
     staffs: [
-      {
-        id: 1,
-        role: "Service Staff",
-        name: "Alex",
-        rating: 0,
-      },
-      {
-        id: 2,
-        role: "Technical Staff",
-        name: "Alice",
-        rating: 0,
-      },
+      { id: 1, role: "Service Staff", name: "Alex", rating: 0 },
+      { id: 2, role: "Technical Staff", name: "Alice", rating: 0 },
     ],
     review: "",
     rating: 0,
@@ -102,10 +93,7 @@ export default function RatingComponent() {
   };
 
   const handleReviewChange = (value: string) => {
-    setOrder((prev) => ({
-      ...prev,
-      review: value,
-    }));
+    setOrder((prev) => ({ ...prev, review: value }));
   };
 
   const handleSend = () => {
@@ -190,9 +178,6 @@ export default function RatingComponent() {
               <Button onClick={handleSend}>Send</Button>
             </div>
             <ModalContent>
-              <MainTitle>Review</MainTitle>
-              <TitleID>ID: {order.id}</TitleID>
-
               {/* Staff Ratings Section */}
               <Section>
                 <Title>Staff Ratings</Title>
