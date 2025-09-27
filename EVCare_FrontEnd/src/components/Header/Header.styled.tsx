@@ -42,7 +42,7 @@ export const SearchBar = styled.div`
   }
 
   button {
-    flex-shrink: 0; /* button không bị co lại */
+    flex-shrink: 0;
     background-color: #4caf50;
     border: none;
     color: white;
