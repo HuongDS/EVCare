@@ -3,11 +3,11 @@ import { ERROR_MESSAGE } from "../../../../constants/messages/Message";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../../states/store";
 import { loginSuccess } from "../../../../states/authSlice";
-import type { User } from "../../../../models/AuthModel/authModel";
-import { decodeJwt } from "../../../../token/jwtDecode";
+import { toUseFromJwt } from "../../../../token/jwtDecode";
 import { GoogleLogin } from "@react-oauth/google";
 import type { CredentialResponse } from "@react-oauth/google";
 import HTTP_STATUS from "../../../../constants/Code/HttpStatusCode";
+import { saveUser } from "../../../../token/tokenStore";
 
 export default function GoogleButton() {
   const dispatch = useDispatch<AppDispatch>();
@@ -22,12 +22,8 @@ export default function GoogleButton() {
       throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
     }
     saveTokens(accessToken);
-    const payload = decodeJwt(accessToken);
-    const user: User = {
-      accountId: payload.nameid,
-      email: payload.email,
-      role: payload.role,
-    };
+    const user = toUseFromJwt(accessToken);
+    saveUser(user);
     dispatch(loginSuccess(user));
   };
   const handleError = () => console.log("Google login failed");

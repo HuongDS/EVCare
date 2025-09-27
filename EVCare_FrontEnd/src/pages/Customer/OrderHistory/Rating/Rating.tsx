@@ -19,6 +19,7 @@ import {
   Row,
   LocationBox,
   ModalContent,
+  MainTitle,
 } from "./Rating.styled";
 
 interface Staff {
