@@ -72,15 +72,11 @@ interface IconData {
   icon: ReactNode;
   type: string;
   text: string;
+  required?: boolean;
   setText: (val: string) => void;
 }
 
-export default function TextFieldWithIcon({
-  icon,
-  type,
-  text,
-  setText,
-}: IconData) {
+export default function TextFieldWithIcon({ icon, type, text, required = false, setText }: IconData) {
   return (
     <div>
       <Field>
@@ -88,11 +84,7 @@ export default function TextFieldWithIcon({
 
         <FieldGroup $hasText={text !== ""}>
           <span>{type}</span>
-          <input
-            type={type}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
+          <input type={type} value={text} onChange={(e) => setText(e.target.value)} required={required} />
         </FieldGroup>
       </Field>
     </div>
