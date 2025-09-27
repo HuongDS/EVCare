@@ -33,7 +33,7 @@ export default function Header() {
 
       <Buttons>
         <button className="btn btn-fill" onClick={() => setShowAuth(true)}>
-          Sign Up
+          Get Started
         </button>
       </Buttons>
 

@@ -1,5 +1,4 @@
-import type { StatusText } from "./StatusText";
-import { StatusColors } from "./StatusText";
+import { StatusColors } from "./StatusColors";
 import styled from "styled-components";
 
 const TagStatus = styled.div<{ $bg: string; $cl: string }>`
@@ -15,7 +14,7 @@ const TagStatus = styled.div<{ $bg: string; $cl: string }>`
 `;
 
 interface StatusProps {
-  status: StatusText;
+  status: string;
 }
 export default function StatusTag({ status }: StatusProps) {
   return (
