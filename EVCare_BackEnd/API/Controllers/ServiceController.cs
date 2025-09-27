@@ -1,4 +1,7 @@
-﻿using Application.IService;
+﻿using Application.Dtos;
+using Application.Infrastructures;
+using Application.IService;
+using DataAccess.Dtos.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +63,59 @@ namespace API.Controllers
             {
                 var services = await _service.GetAllActiveServicesAsync(keyword);
                 return Ok(new { statusCode = 200, message = "Successfully", data = services });
+            }
+        }
+        
+        
+        [HttpPost()]
+        [Authorize(Roles ="Admin,Staff")]
+        public async Task<IActionResult> AddAService(ServicePostModel model)
+        {
+            try
+            {
+                var data = await _service.AddAService(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.CREATED,
+                    message = Message.ADD_SERVICE_SUCCESSFULLY,
+                    data = data
+                });
+                
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = Message.ADD_SERVICE_FALL,
+                    data = null
+                });
+            }
+
+        }
+        [HttpDelete()]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> DeleteAService(int serviceId)
+        {
+            try
+            {
+                var data = _service.DeleteAService(serviceId);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.NO_CONTENT,
+                    message = Message.DELETE_SUCCESSFULLY,
+
+                });
+
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = Message.DELETE_FAIL,
+                    data = null
+                });
             }
         }
     }
