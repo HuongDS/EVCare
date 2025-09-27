@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Service;
 using DataAccess.Entities;
+using DataAccess.Helpers;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,25 +20,49 @@ namespace DataAccess.Repositories
         {
         }
 
-        public async Task<IEnumerable<Service>> GetActiveServiceWithPagination(int payload, int pageIndex)
+        public async Task<PageResultDto<ServiceViewModel>> GetActiveServiceAndKeywordWithPagination(string keyword, int payload, int pageIndex)
         {
-            var services = await _dbSet
-                .Where(s => s.Deleted_At == DateTime.MinValue)
-                .Skip((pageIndex - 1) * payload)
-                .Take(payload)
-                .AsNoTracking().ToListAsync();
-            return services;
+            var query = _dbSet.Where(s => s.Deleted_At == DateTime.MinValue && s.Name.Contains(keyword))
+                .Select(x=>new ServiceViewModel
+                {
+                    Description = x.Description,
+                    Duration = x.Duration,
+                    Id = x.Id,
+                    IsDeleted = false,
+                    Name = x.Name,
+                })
+                ;
 
+            return await PaginationHelper.PaginationAsync(query, payload, pageIndex);
+               
         }
 
-        public async Task<IEnumerable<Service>> GetAllActiveServices()
+    
+
+       
+
+        public async Task<IEnumerable<Service>> GetAllActiveServices(string keyword)
         {
-            return await _dbSet.Where(s => s.Deleted_At == DateTime.MinValue).AsNoTracking().ToListAsync();
+            return await _dbSet.AsNoTracking() 
+                .Where(s => s.Name.Contains(keyword) && s.Deleted_At==DateTime.MinValue).
+                ToListAsync();
         }
 
-        public Task<IEnumerable> GetServiceWithCategoryIdAndPagination(int catgoryId, int payload, int pageIndex)
+        public async Task<PageResultDto<ServiceViewModel>> GetServiceAndKeywordWithPagination(string keyword, int payload, int pageIndex)
         {
-            throw new NotImplementedException();
+            var query = _dbSet.AsNoTracking()
+                .Where(s => s.Name.Contains(keyword)).Select(x => new ServiceViewModel
+                {
+                    Description = x.Description,
+                    Duration = x.Duration,
+                    Id = x.Id,
+                    IsDeleted = false,
+                    Name = x.Name,
+                });
+            return await PaginationHelper.PaginationAsync(query, payload, pageIndex);
+                 
         }
+
+      
     }
 }
