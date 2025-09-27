@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Rating from "@mui/material/Rating";
 import NameBox from "../NameBox";
-import CloseButton from "react-bootstrap/CloseButton";
 
 import {
   DetailWrapper,
@@ -19,7 +18,6 @@ import {
   Icon,
   Row,
   LocationBox,
-  MainTitle,
   ModalContent,
 } from "./Rating.styled";
 
