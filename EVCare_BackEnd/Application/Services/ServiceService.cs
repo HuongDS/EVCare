@@ -22,6 +22,14 @@ namespace Application.Service
           
         }
 
+        public async Task<int> AddAService(ServicePostModel model)
+        {
+            var data = _mapper.Map<DataAccess.Entities.Service>(model);
+
+            var entity = await _serviceRepository.AddAsync(data);
+            return entity.Id;
+        }
+
         public async Task<PageResultDto<ServiceViewModel>> GetActiveServicesWithPaginationAsync(string k, int payload,int pageIndex)
         {
             return await _serviceRepository.GetActiveServiceAndKeywordWithPagination(k,payload,pageIndex);
