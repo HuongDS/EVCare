@@ -200,6 +200,11 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     options.Ssl = true;
     options.AbortOnConnectFail = false;
     options.SslHost = "exotic-dogfish-51279.upstash.io";
+    options.ConnectRetry = 3;
+    options.ConnectTimeout = 15000; // 15s
+    options.SyncTimeout = 15000;    // 15s
+    options.KeepAlive = 60;
+    options.User = "default";
 
     return ConnectionMultiplexer.Connect(options);
 });
