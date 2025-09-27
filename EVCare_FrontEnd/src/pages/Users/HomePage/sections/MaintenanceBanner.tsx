@@ -1,4 +1,3 @@
-// import Button from "react-bootstrap/Button";
 import styled from "styled-components";
 import bannerImage from "../../../../assets/banner.png";
 
@@ -40,13 +39,19 @@ const MaintenanceBannerWrapper = styled.div`
     position: relative;
     z-index: 3;
   }
+
+  @media (max-width: 768px) {
+    min-height: 40vh;
+    padding: 20px;
+  }
 `;
 
 const BannerTitle = styled.h1`
-  font-size: 48px;
+  font-size: clamp(2rem, 6vw, 4rem);
   font-weight: 800;
   margin: 0 20px;
   margin-bottom: 30px;
+  color: #ffffff;
 `;
 
 const CTAButton = styled.button`
@@ -54,18 +59,23 @@ const CTAButton = styled.button`
   height: 50px;
   margin-top: 30px;
   font-family: "Outfit", sans-serif;
-  font-size: 30px;
+  font-size: clamp(1rem, 3vw, 1.5rem);
   font-weight: 600;
   color: white;
   border-radius: 20px;
   border: 0;
   background-color: #00ad4e;
-  // box-shadow: 5px 5px #ccc;
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
 
   &:hover {
     background-color: #0039a6;
-    transform: translateY(0px) translateX(0px);
-    box-shadow: none;
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    width: 250px;
+    height: 45px;
   }
 `;
 

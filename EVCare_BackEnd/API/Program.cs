@@ -91,7 +91,7 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
 builder.Services.AddScoped<IBlockedDateService, BlockedDateService>();
-
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAlertServices, AlertServices>();
 builder.Services.AddScoped<IApplicationServices, ApplicationServices>();
@@ -109,13 +109,15 @@ builder.Services.AddAutoMapper(typeof(AppointmentProfile));
 //Action Filter
 builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
 builder.Services.AddScoped<SetCustomerIdFilter>();
-builder.Services.AddScoped<AuthorizeCustomerOrAdminFilter>();
+builder.Services.AddScoped<AuthorizeCustomerOrStaffFilter>();
 builder.Services.AddScoped<AppointmentOwnershipFilter>();
 builder.Services.AddScoped<SetEmployeeIdFilter>();
 builder.Services.AddScoped<GetAccountIdFilter>();
+builder.Services.AddScoped<AuthorizeCustomerAndStaffThroughAccountIdFilter>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
+builder.Services.AddScoped<IReminderService, ReminderService>();
 
 
 // Add Cors
@@ -123,7 +125,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
     {
-        builder.WithOrigins("https://localhost:7228")
+        builder.WithOrigins("https://localhost:7228", "http://localhost:5173")
                 .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
@@ -193,11 +195,14 @@ System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolTyp
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var redisConfig = builder.Configuration.GetConnectionString("Redis");
+    if (string.IsNullOrWhiteSpace(redisConfig))
+        throw new InvalidOperationException("ConnectionStrings:Redis is empty on Azure.");
     var options = ConfigurationOptions.Parse(redisConfig);
 
     options.Ssl = true;
     options.AbortOnConnectFail = false;
     options.SslHost = "exotic-dogfish-51279.upstash.io";
+    options.SslProtocols = SslProtocols.Tls12;            // ép dùng TLS 1.2
     options.ConnectRetry = 3;
     options.ConnectTimeout = 15000; // 15s
     options.SyncTimeout = 15000;    // 15s
@@ -224,6 +229,13 @@ RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
        job => job.CancelAppointment(),
         Cron.Daily(7),
        tzVn
+    );
+RecurringJob.AddOrUpdate<IReminderService>(
+    "reminder-service",
+     job=>job.SendEmailRemindersAsync(),
+     Cron.Daily(10),
+     tzVn
+    
     );
 // Configure the HTTP request pipeline.
 var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");

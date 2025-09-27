@@ -9,6 +9,8 @@ namespace DataAccess.Dtos.Customers
 {
     public class CustomerViewDto
     {
+        public int Id { get; set; }
+        public string Address { get; set; }
         public CustomerRankEnum rank { get; set; }
     }
 }

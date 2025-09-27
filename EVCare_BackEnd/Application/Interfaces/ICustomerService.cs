@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Customers;
 
 namespace Application.Interfaces
 {
-    public interface IReminderService
+    public interface ICustomerService
     {
-        Task SendEmailRemindersAsync();
+      
+        Task<CustomerViewDto> GetCustomerByAccountId(int accountId);
     }
 }
