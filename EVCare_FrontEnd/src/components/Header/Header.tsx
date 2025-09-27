@@ -3,21 +3,13 @@ import logo from "../../assets/EVCare.png";
 import { useState } from "react";
 import { Link } from "react-router";
 import Authentication from "../../pages/Shared/Auth/Authentication";
-import {
-  Navbar,
-  Logo,
-  SearchBar,
-  Menu,
-  Buttons,
-} from "./Header.styled";
+import { Navbar, Logo, SearchBar, Menu, Buttons } from "./Header.styled";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../states/store";
 
 export default function Header() {
   const [showAuth, setShowAuth] = useState(false);
-  const { isAuthenticated, user } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   return (
     <Navbar>
       <Logo>
@@ -27,10 +19,7 @@ export default function Header() {
       </Logo>
 
       <SearchBar>
-        <input
-          type="text"
-          placeholder="Search service..."
-        />
+        <input type="text" placeholder="Search service..." />
         <button>
           <i className="bi bi-search"></i>
         </button>
@@ -49,19 +38,13 @@ export default function Header() {
         user?.email
       ) : (
         <Buttons>
-          <button
-            className="btn btn-fill"
-            onClick={() => setShowAuth(true)}
-          >
+          <button className="btn btn-fill" onClick={() => setShowAuth(true)}>
             Sign Up
           </button>
         </Buttons>
       )}
 
-      <Authentication
-        show={showAuth}
-        handleClose={() => setShowAuth(false)}
-      />
+      <Authentication show={showAuth} handleClose={() => setShowAuth(false)} />
     </Navbar>
   );
 }
