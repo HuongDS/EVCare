@@ -89,26 +89,27 @@ namespace Application.Services
         }
         public async Task<PageResultDto<AppointmentViewDto>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, DateOnly currentDate, int pageSize, int pageIndex)
         {
-            var (appointments, totalItems, totalPages) = await _appointmentRepository.GetAppointmentByEmployeeIDAsync(employeeID, status, currentDate, pageSize, pageIndex);
+            var data = await _appointmentRepository.GetAppointmentByEmployeeIDAsync(employeeID, status, currentDate, pageSize, pageIndex);
             return new PageResultDto<AppointmentViewDto>
             {
-                items = _mapper.Map<IEnumerable<AppointmentViewDto>>(appointments),
-                totalItems = totalItems,
-                totalPages = totalPages,
-                pageIndex = pageIndex,
-                pageSize = pageSize
+                Items = _mapper.Map<IEnumerable<AppointmentViewDto>>(data.Items),
+                TotalItems = data.TotalItems,
+                TotalPages = data.TotalPages,
+                PageIndex = pageIndex,
+                PageSize = pageSize
             };
         }
         public async Task<PageResultDto<AppointmentViewDto>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex)
         {
-            var (appointments, totalItems, totalPages) = await _appointmentRepository.GetAppointmentByEmployeeIDAsync(employeeID, status, pageSize, pageIndex);
+            var data = await _appointmentRepository.GetAppointmentByEmployeeIDAsync(employeeID, status, pageSize, pageIndex);
             return new PageResultDto<AppointmentViewDto>
             {
-                items = _mapper.Map<IEnumerable<AppointmentViewDto>>(appointments),
-                totalItems = totalItems,
-                totalPages = totalPages,
-                pageIndex = pageIndex,
-                pageSize = pageSize
+                Items = _mapper.Map<IEnumerable<AppointmentViewDto>>(data.Items),
+                TotalPages = data.TotalPages,
+                PageIndex = pageIndex,
+                PageSize = data.PageSize,
+                TotalItems = data.TotalItems
+
             };
 
         }
@@ -152,7 +153,7 @@ namespace Application.Services
             }
 
         }
-        public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex)
+        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex)
         {
             try
             {
@@ -182,15 +183,15 @@ namespace Application.Services
         public async Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex)
         {
             var currentDay = DateTime.UtcNow;
-            var (appointments, totalItems, totalPages) = await _appointmentRepository.GetAppointmentInDayWithPaginationAsync(currentDay, pageSize, pageIndex);
-            var appointmentDtos = _mapper.Map<IEnumerable<AppointmentViewDto>>(appointments);
+            var data = await _appointmentRepository.GetAppointmentInDayWithPaginationAsync(currentDay, pageSize, pageIndex);
+            var appointmentDtos = _mapper.Map<IEnumerable<AppointmentViewDto>>(data.Items);
             var pageResult = new PageResultDto<AppointmentViewDto>
             {
-                items = appointmentDtos,
-                totalItems = totalItems,
-                totalPages = totalPages,
-                pageIndex = pageIndex,
-                pageSize = pageSize
+                Items = appointmentDtos,
+                PageIndex = data.PageIndex,
+                PageSize = data.PageSize,
+                TotalItems = data.TotalItems,
+                TotalPages = data.TotalPages    
             };
             return new ResponseDto<PageResultDto<AppointmentViewDto>>
             {
@@ -201,15 +202,15 @@ namespace Application.Services
         }
         public async Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex)
         {
-            var (appointments, totalItems, totalPages) = await _appointmentRepository.GetAppointmentBeforeDayAsync(date, pageSize, pageIndex);
-            var appointmentDtos = _mapper.Map<IEnumerable<AppointmentViewDto>>(appointments);
+            var data = await _appointmentRepository.GetAppointmentBeforeDayAsync(date, pageSize, pageIndex);
+            var appointmentDtos = _mapper.Map<IEnumerable<AppointmentViewDto>>(data.Items);
             var pageResult = new PageResultDto<AppointmentViewDto>
             {
-                items = appointmentDtos,
-                totalItems = totalItems,
-                totalPages = totalPages,
-                pageIndex = pageIndex,
-                pageSize = pageSize
+                Items = appointmentDtos,
+                PageIndex = data.PageIndex,
+                PageSize = data.PageSize,
+                TotalItems = data.TotalItems,
+                TotalPages = data.TotalPages
             };
             return new ResponseDto<PageResultDto<AppointmentViewDto>>
             {
