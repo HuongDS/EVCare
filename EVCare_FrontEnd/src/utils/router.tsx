@@ -6,9 +6,11 @@ import AboutUs from "../pages/Users/AboutUs/AboutUs";
 import ContactUs from "../pages/Users/Contact/ContactUs";
 import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail";
 import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
-import ServiceList from "../pages/Users/Services/ServiceList";
+// import ServiceList from "../pages/Users/Services/ServiceList";
 import PageNotFound from "../components/Layouts/PageNotFound";
 import Test from "../components/Test";
+// import Testservices from "../pages/Users/Services/Testservices";
+import ServiceList from "../pages/Users/Services/ServiceList";
 const router = createBrowserRouter([
   {
     path: "/",
