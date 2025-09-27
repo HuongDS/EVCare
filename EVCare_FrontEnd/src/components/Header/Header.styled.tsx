@@ -122,7 +122,7 @@ export const Buttons = styled.div`
   margin-right: 5%;
 
   .btn {
-    width: 83px;
+    width: max-content;
     height: 35px;
     border-radius: 15px;
     border: 0.5px solid #ccc;
