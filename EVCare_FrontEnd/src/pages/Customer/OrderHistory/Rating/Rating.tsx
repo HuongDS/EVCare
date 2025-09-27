@@ -18,7 +18,6 @@ import {
   Icon,
   Row,
   LocationBox,
-  MainTitle,
   ModalContent,
 } from "./Rating.styled";
 
