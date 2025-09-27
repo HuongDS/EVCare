@@ -1,37 +1,57 @@
 import { createBrowserRouter } from "react-router-dom";
-import HomePage from "../../src/pages/Users/HomePage/HomePage";
-import Layout from "../../src/components/Layouts/CustomerLayout";
-// import Test from "../components/Test";
+import CustomerLayout from "../components/Layouts/CustomerLayout";
+import AdminLayout from "../components/Layouts/AdminLayout";
+import TechnicianLayout from "../components/Layouts/TechnicanLayout";
+import StaffLayout from "../components/Layouts/StaffLayout";
+
+import HomePage from "../pages/Users/HomePage/HomePage";
+import ServiceList from "../pages/Users/Services/ServiceList";
 import AboutUs from "../pages/Users/AboutUs/AboutUs";
 import ContactUs from "../pages/Users/Contact/ContactUs";
 import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail";
 import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
-import ServiceList from "../pages/Users/Services/ServiceList";
+
+import StaffGeneral from "../pages/Staff/General";
+import StaffInventory from "../pages/Staff/Inventory";
 import PageNotFound from "../components/Layouts/PageNotFound";
-import Test from "../components/Test";
+import AdminGeneral from "../pages/Admin/General";
+import TechnicianGeneral from "../pages/Technician/General";
+
 const router = createBrowserRouter([
+  // Customer routes
   {
     path: "/",
-    element: <Layout />,
+    element: <CustomerLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      {
-        path: "service",
-        element: <ServiceList />,
-      },
+      { path: "service", element: <ServiceList /> },
       { path: "about", element: <AboutUs /> },
-      {
-        path: "contact",
-        element: <ContactUs />,
-      },
-      {
-        path: "orderDetail",
-        element: <OrderDetail />,
-      },
+      { path: "contact", element: <ContactUs /> },
+      { path: "orderDetail", element: <OrderDetail /> },
       { path: "rating", element: <Rating /> },
-      { path: "test", element: <Test /> },
     ],
   },
+
+  // Staff routes
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [{ path: "general", element: <AdminGeneral /> }],
+  },
+  {
+    path: "/staff",
+    element: <StaffLayout />,
+    children: [
+      { path: "general", element: <StaffGeneral /> },
+      { path: "inventory", element: <StaffInventory /> },
+    ],
+  },
+  {
+    path: "/technician",
+    element: <TechnicianLayout />,
+    children: [{ path: "tasks", element: <TechnicianGeneral /> }],
+  },
+
   { path: "/*", element: <PageNotFound /> },
 ]);
 
