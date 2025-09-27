@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.Filters
 {
-    public class AuthorizeCustomerOrAdminFilter : IAsyncActionFilter
+    public class AuthorizeCustomerOrStaffFilter : IAsyncActionFilter
     {
         private readonly ICustomerRepository _customerRepository;
-        public AuthorizeCustomerOrAdminFilter(ICustomerRepository customerRepository)
+        public AuthorizeCustomerOrStaffFilter(ICustomerRepository customerRepository)
         {
             _customerRepository = customerRepository;
         }

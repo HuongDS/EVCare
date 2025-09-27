@@ -10,14 +10,21 @@ namespace DataAccess.Helpers
 {
     public static class PaginationHelper
     {
-        public static async Task<(IEnumerable<T>, int, int)> PaginationAsync<T>(IQueryable<T> query, int pageSize, int pageIndex) where T : class
+        public static async Task<PageResultDto<T>> PaginationAsync<T>(IQueryable<T> query, int pageSize, int pageIndex) where T : class
         {
             if (pageIndex < 1) pageIndex = 1;
             if (pageSize <= 0) pageSize = 10;
             var totalItems = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
             var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
-            return (items, totalItems, totalPages);
+            return new PageResultDto<T>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                PageSize = pageSize,
+                PageIndex = pageIndex
+            };
         }
     }
 }

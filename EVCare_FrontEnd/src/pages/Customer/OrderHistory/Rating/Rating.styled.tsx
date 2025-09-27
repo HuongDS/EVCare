@@ -92,7 +92,6 @@ export const TitleID = styled.h2`
   font-weight: 800;
   font-size: 1em;
   text-align: left;
-  margin: 0;
 `;
 
 export const Section = styled.div`

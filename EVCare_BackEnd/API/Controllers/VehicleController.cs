@@ -1,5 +1,6 @@
 ﻿using API.Filters;
 using Application.Dtos;
+using Application.Infrastructures;
 using Application.IService;
 using DataAccess.Dtos.Vehicle;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +26,7 @@ namespace API.Controllers
             try
             {
                 var customerId = (int)HttpContext.Items["CustomerId"];
-                var vehicleId = await _vehicleService.CreateVehicle(model,customerId);
+                var vehicleId = await _vehicleService.CreateVehicle(model, customerId);
                 return Ok(new
                 {
                     statusCode = 200,
@@ -50,7 +51,7 @@ namespace API.Controllers
         {
             try
             {
-               // var customerId = (int)HttpContext.Items["CustomerId"];
+                // var customerId = (int)HttpContext.Items["CustomerId"];
                 var result = await _vehicleService.UpdateVehicleCustomer(model);
                 return Ok(new ResponseDto<int>
                 {
@@ -71,7 +72,7 @@ namespace API.Controllers
             }
         }
         [HttpGet("customer/{customerId}")]
-        [ServiceFilter(typeof(AuthorizeCustomerOrAdminFilter))]
+        [ServiceFilter(typeof(AuthorizeCustomerOrStaffFilter))]
         public async Task<IActionResult> GetVehiclesByCustomerId(int customerId)
         {
             try
@@ -110,12 +111,38 @@ namespace API.Controllers
                 });
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = 400,
                     message = ex.Message
+                });
+            }
+        }
+
+
+        [HttpPut("staff/update")]
+        //[Authorize(Roles = "Staff")]
+        public async Task<IActionResult> UpdateVehicleForStaff(VehicleStaffUpdateModel model)
+        {
+            try
+            {
+                var data = await _vehicleService.UpdateVehicleStaff(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.VEHICLE_UPDATE_SUCCESSFULLY,
+                    data = data
+                });
+            }
+            catch
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.NOT_FOUND,
+                    message = Message.NOT_FOUND
+
                 });
             }
         }
