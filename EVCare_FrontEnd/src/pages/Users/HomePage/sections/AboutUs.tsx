@@ -99,7 +99,7 @@ const Content = styled.p`
 export default function AboutUs() {
   return (
     <BehindServiceWrapper>
-      <ContentWrapper>
+      <ContentWrapper data-aos="fade-right" data-aos-delay="200">
         <Title>About Us</Title>
         <Content>
           We are committed to delivering <HighlightBlue>reliable</HighlightBlue>
@@ -109,7 +109,7 @@ export default function AboutUs() {
         </Content>
       </ContentWrapper>
 
-      <DetailsNumberWrapper>
+      <DetailsNumberWrapper data-aos="fade-left" data-aos-delay="200">
         <DetailsItem>
           <DetailsNumber>5000+</DetailsNumber>
           <DetailsDescription>EVs successfully maintained</DetailsDescription>

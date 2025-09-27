@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Container,
   Row,
@@ -24,46 +24,23 @@ import {
   GetInTouchButton,
 } from "./ServiceList.styled";
 import BookingForm from "../../Customer/Booking/BookingForm";
-import { api } from "../../../api/api";
-
-interface ApiService {
-  id: number;
-  name: string;
-  description: string;
-  duration: number;
-  isDeleted: boolean;
-}
+import type { ServicesResponseDto } from "../../../models/ServicesModel/serviceModel";
+import { getActiveServices } from "../../../services/getServices";
 
 type SortBy = "default" | "name" | "duration";
 type SortOrder = "asc" | "desc";
 
 const ServiceList = () => {
-  const [services, setServices] = useState<ApiService[]>([]);
-  const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortBy>("default");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [showForm, setShowForm] = useState(false);
-
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        setLoading(true);
-        const res = await api.get("api/Service/active");
-        setServices(res.data.data);
-      } catch (error) {
-        console.error("Failed to fetch services", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchServices();
-  }, []);
+  const { data, isLoading } = getActiveServices("", 1, 3);
 
   const sortServices = (
-    services: ApiService[],
+    services: ServicesResponseDto[],
     sortBy: SortBy,
     sortOrder: SortOrder
-  ): ApiService[] => {
+  ): ServicesResponseDto[] => {
     const sorted = [...services].sort((a, b) => {
       let comparison = 0;
 
@@ -84,6 +61,18 @@ const ServiceList = () => {
     return sorted;
   };
 
+  if (isLoading) {
+    return (
+      <PageContainer>
+        <Container className="text-center mt-5">
+          <Spinner animation="border" />
+          <p>Loading services...</p>
+        </Container>
+      </PageContainer>
+    );
+  }
+
+  const services: ServicesResponseDto[] = data?.data.items ?? [];
   const sortedServices = sortServices(services, sortBy, sortOrder);
 
   const handleSortChange = (newSortBy: SortBy): void => {
@@ -94,17 +83,6 @@ const ServiceList = () => {
       setSortOrder("asc");
     }
   };
-
-  if (loading) {
-    return (
-      <PageContainer>
-        <Container className="text-center mt-5">
-          <Spinner animation="border" />
-          <p>Loading services...</p>
-        </Container>
-      </PageContainer>
-    );
-  }
 
   return (
     <PageContainer>
@@ -144,22 +122,26 @@ const ServiceList = () => {
         </SortSection>
 
         <Row>
-          {sortedServices.map((service) => (
-            <Col key={service.id} xs={12} md={6} lg={4} className="mb-4">
-              <ServiceCard>
-                <Card.Body>
-                  <ServiceTitle>{service.name}</ServiceTitle>
-                  <ServiceDescription>{service.description}</ServiceDescription>
-                  <p>
-                    <strong>Duration:</strong> {service.duration} hours
-                  </p>
-                  <BookServiceButton onClick={() => setShowForm(true)}>
-                    Book This Service
-                  </BookServiceButton>
-                </Card.Body>
-              </ServiceCard>
-            </Col>
-          ))}
+          {sortedServices
+            .filter((service) => !service.isDeleted)
+            .map((service) => (
+              <Col key={service.id} xs={12} md={6} lg={4} className="mb-4">
+                <ServiceCard>
+                  <Card.Body>
+                    <ServiceTitle>{service.name}</ServiceTitle>
+                    <ServiceDescription>
+                      {service.description}
+                    </ServiceDescription>
+                    <p>
+                      <strong>Duration:</strong> {service.duration} hours
+                    </p>
+                    <BookServiceButton onClick={() => setShowForm(true)}>
+                      Book This Service
+                    </BookServiceButton>
+                  </Card.Body>
+                </ServiceCard>
+              </Col>
+            ))}
         </Row>
 
         <FooterCTA>

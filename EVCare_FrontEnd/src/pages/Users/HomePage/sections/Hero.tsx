@@ -7,6 +7,9 @@ const HeroWrapper = styled.section`
   display: grid;
   grid-template-columns: 1fr 1fr;
   font-family: "Manrope", sans-serif;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const HeroContent = styled.div`
@@ -25,7 +28,6 @@ const HeroContent = styled.div`
   }
 
   p {
-    margin: 0;
     font-family: "Outfit", sans-serif;
     font-size: 20px;
   }
@@ -37,28 +39,43 @@ const HeroContent = styled.div`
   }
 
   @media (max-width: 768px) {
+    margin: 0;
+    padding: 50px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     h1 {
-      font-size: 1.5em;
-      text-align: justify;
+      font-size: 20px;
     }
-
     p {
-      font-size: 1em;
-      text-align: justify;
+      font-size: 18px;
     }
-    button {
-      font-size: 1.3em;
-      width: 50%;
+  }
+  @media (min-width: 768px) and (max-width: 1200px) {
+    margin: 0;
+    padding: 50px;
+    text-align: justify;
+
+    h1 {
+      font-size: 25px;
     }
-    max-width: 95%;
-    height: auto;
+    p {
+      font-size: 19px;
+    }
   }
 `;
 
 const HeroImage = styled.div`
+  text-align: center;
+
   img {
+    width: 95%;
     @media (max-width: 768px) {
-      max-width: 95%;
+      width: 80%;
+      height: auto;
+    }
+    @media (min-width: 768px) and (max-width: 1200px) {
+      width: 80%;
       height: auto;
     }
   }
@@ -83,13 +100,28 @@ const CTAButton = styled.button`
     transform: translateY(5px) translateX(5px);
     box-shadow: none;
   }
+
+  @media (max-width: 768px) {
+    margin: 10px 0 0;
+    padding: 5px 20px;
+    justify-content: center;
+    font-size: 18px;
+    width: fit-content;
+  }
+  @media (min-width: 768px) and (max-width: 1200px) {
+    margin: 16px 0 0;
+    padding: 8px 22px;
+    justify-content: center;
+    font-size: 18px;
+    width: fit-content;
+  }
 `;
 
 const Hero = () => {
   const navigate = useNavigate();
   return (
     <HeroWrapper>
-      <HeroContent>
+      <HeroContent data-aos="fade-right">
         <h1>
           Keep Your EV in <span>Top Shape</span> with{" "}
           <span>Smart Service System</span>
@@ -106,7 +138,7 @@ const Hero = () => {
         </CTAButton>
       </HeroContent>
 
-      <HeroImage>
+      <HeroImage data-aos="fade-left">
         <img src={carImg} alt="EV Car" />
       </HeroImage>
     </HeroWrapper>

@@ -15,10 +15,7 @@ import {
   SUCCESS_MESSAGE,
 } from "../../../constants/messages/Message";
 import type { LoginRequestDto } from "../../../models/AuthModel/authModel";
-import {
-  login,
-  saveTokens,
-} from "../../../services/authService";
+import { login, saveTokens } from "../../../services/authService";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 import { decodeJwt } from "../../../token/jwtDecode";
 import { useDispatch } from "react-redux";
@@ -31,10 +28,7 @@ interface AuthProps {
   handleClose: () => void;
 }
 
-export default function Authentication({
-  show,
-  handleClose,
-}: AuthProps) {
+export default function Authentication({ show, handleClose }: AuthProps) {
   const [isSignUp, setIsSignUp] = useState(true); // true: signUp | false : login
   const [isOTP, setIsOTP] = useState(false); // true: verify Otp
 
@@ -56,15 +50,11 @@ export default function Authentication({
     try {
       const response = await login(loginData);
       if (response.statusCode != HTTP_STATUS.OK) {
-        throw new Error(
-          ERROR_MESSAGE.LOGIN_FAILED
-        );
+        throw new Error(ERROR_MESSAGE.LOGIN_FAILED);
       }
       const token = response.data?.accessToken;
       if (!token) {
-        throw new Error(
-          ERROR_MESSAGE.SOME_THING_WENT_WRONG
-        );
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
       }
       saveTokens(token);
       const payload = decodeJwt(token);
@@ -77,10 +67,8 @@ export default function Authentication({
       alert("Success");
     } catch (err) {
       if (err instanceof Error) {
-        console.error(
-          "Login error:",
-          err.message
-        );
+        alert("error");
+        console.error("Login error:", err.message);
       } else {
         console.error("Login error:", err);
       }
@@ -100,11 +88,7 @@ export default function Authentication({
   };
 
   return (
-    <StyledModal
-      show={show}
-      onHide={handleClose}
-      centered
-    >
+    <StyledModal show={show} onHide={handleClose} centered>
       <SideImage $isSignUp={isSignUp}>
         <img src={logo} alt="EVCare Logo" />
       </SideImage>
@@ -118,10 +102,7 @@ export default function Authentication({
               : AUTH_FORM_MESSAGE.WELCOME_BACK}
           </h1>
           {!isOTP ? (
-            <SwitchButton
-              isSignUp={isSignUp}
-              onChange={setIsSignUp}
-            />
+            <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} />
           ) : undefined}
         </HeaderBox>
 
@@ -142,9 +123,7 @@ export default function Authentication({
             handleLogin={handleLogin}
           />
         ) : (
-          <OTPForm
-            handleVerifyOTP={handleVerifyOTP}
-          />
+          <OTPForm handleVerifyOTP={handleVerifyOTP} />
         )}
       </FormContainer>
     </StyledModal>

@@ -81,7 +81,7 @@ const CTAButton = styled.button`
 
 export default function MaintenanceBanner() {
   return (
-    <MaintenanceBannerWrapper>
+    <MaintenanceBannerWrapper data-aos="fade-up">
       <div>
         <BannerTitle>
           Smart Maintenance Management for EV Service Centers
