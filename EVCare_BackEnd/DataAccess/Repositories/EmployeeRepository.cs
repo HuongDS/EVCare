@@ -18,5 +18,10 @@ namespace DataAccess.Repositories
         {
             return await _dbContext.Employees.Include(e => e.Account).FirstOrDefaultAsync(e => e.AccountId == userId);
         }
+
+        public Task MarkAttendance()
+        {
+            
+        }
     }
 }
