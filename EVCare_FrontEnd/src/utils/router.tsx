@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import CustomerLayout from "../components/Layouts/CustomerLayout";
+import AdminLayout from "../pages/Admin/AdminLayout";
 import StaffLayout from "../components/Layouts/StaffLayout";
 import HomePage from "../pages/Users/HomePage/HomePage";
 import ServiceList from "../pages/Users/Services/ServiceList";
@@ -14,19 +14,28 @@ import Staff_General from "../pages/Staff/StaffGeneral/Staff_General";
 import Manage_Technicians from "../pages/Staff/StaffManageTechnicians/Manage_Technicians";
 import Manage_Customer from "../pages/Staff/StaffManageCustomer/Manage_Customer";
 import Staff_Appoinments from "../pages/Staff/StaffAppoinments/Staff_Appoinments";
-import AdminLayout from "../components/Layouts/AdminLayout";
+import Layout from "../components/Layouts/CustomerLayout";
 const router = createBrowserRouter([
-  // Customer routes
   {
     path: "/",
-    element: <CustomerLayout />,
+    element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: "service", element: <ServiceList /> },
+      {
+        path: "service",
+        element: <ServiceList />,
+      },
       { path: "about", element: <AboutUs /> },
-      { path: "contact", element: <ContactUs /> },
-      { path: "orderDetail", element: <OrderDetail /> },
+      {
+        path: "contact",
+        element: <ContactUs />,
+      },
+      {
+        path: "orderDetail",
+        element: <OrderDetail />,
+      },
       { path: "rating", element: <Rating /> },
+      { path: "test", element: <Test /> },
     ],
   },
 
@@ -39,7 +48,7 @@ const router = createBrowserRouter([
 
   // Staff routes
   {
-    path: "/staff",
+    path: "staff",
     element: <StaffLayout />,
     children: [
       { path: "general", element: <Staff_General /> },
