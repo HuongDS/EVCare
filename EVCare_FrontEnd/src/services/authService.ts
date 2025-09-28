@@ -36,7 +36,7 @@ export async function register(registerData: RegisterRequestDto) {
 
 export async function verifyOtp(data: VerifyOTPDto) {
   const response = await api.post<ResponseDto<object>>("/api/Auth/verify-otp-register", data);
-  return response.data;
+  return response;
 }
 
 //refresh

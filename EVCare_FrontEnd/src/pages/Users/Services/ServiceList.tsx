@@ -1,12 +1,5 @@
-import { useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  ButtonGroup,
-  Spinner,
-} from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Container, Row, Col, Card, ButtonGroup, Spinner } from "react-bootstrap";
 import {
   PageContainer,
   HeaderSection,
@@ -26,6 +19,10 @@ import {
 import BookingForm from "../../Customer/Booking/BookingForm";
 import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
 import { getActiveServices } from "../../../services/getServices";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../../states/store";
+import { closeAppointmentForm, openAppointmentForm, openLogin, setAction } from "../../../states/uiSlice";
+import { ACTION } from "../../../constants/messages/Actions";
 
 type SortBy = "default" | "name" | "duration";
 type SortOrder = "asc" | "desc";
@@ -35,6 +32,16 @@ const ServiceList = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [showForm, setShowForm] = useState(false);
   const { data, isLoading } = getActiveServices("", 1, 3);
+  const dispatch = useDispatch<AppDispatch>();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { createAppointmentFormOpen } = useSelector((state: RootState) => state.ui);
+
+  useEffect(() => {
+    if (createAppointmentFormOpen) {
+      setShowForm(true);
+      dispatch(closeAppointmentForm());
+    }
+  }, [createAppointmentFormOpen, dispatch]);
 
   const sortServices = (
     services: ServicesResponseDto[],
@@ -84,15 +91,23 @@ const ServiceList = () => {
     }
   };
 
+  const handleOpenBookingForm = () => {
+    if (!isAuthenticated) {
+      dispatch(setAction(ACTION.OPEN_APPOINTMENT));
+      dispatch(openLogin());
+      return;
+    }
+    dispatch(openAppointmentForm());
+  };
+
   return (
     <PageContainer>
       <Container>
         <HeaderSection>
           <ServiceLabel>OUR SERVICES</ServiceLabel>
           <MainTitle>Maintenance Your Vehicle</MainTitle>
-          <BookButton onClick={() => setShowForm(true)}>
-            Book a Service →
-          </BookButton>
+
+          <BookButton onClick={handleOpenBookingForm}>Book a Service →</BookButton>
         </HeaderSection>
 
         <SortSection>
@@ -135,9 +150,9 @@ const ServiceList = () => {
                     <p>
                       <strong>Duration:</strong> {service.duration} hours
                     </p>
-                    <BookServiceButton onClick={() => setShowForm(true)}>
-                      Book This Service
-                    </BookServiceButton>
+
+                    <BookServiceButton onClick={handleOpenBookingForm}>Book This Service</BookServiceButton>
+
                   </Card.Body>
                 </ServiceCard>
               </Col>

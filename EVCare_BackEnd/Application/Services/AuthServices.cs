@@ -86,10 +86,7 @@ namespace Application.Services
             }
             if (!Regex.IsMatch(data.phone, RegexPartterns.PHONE_NUMBER_PATTERN))
             {
-                if (!data.phone.Equals("default phone number"))
-                {
-                    throw new Exception(Message.INVALID_PHONE);
-                }
+                throw new Exception(Message.INVALID_PHONE);
             }
             if (!Regex.IsMatch(data.password, RegexPartterns.PASSWORD_PATTERN))
             {

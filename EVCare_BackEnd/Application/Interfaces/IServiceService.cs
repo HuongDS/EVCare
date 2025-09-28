@@ -16,7 +16,8 @@ namespace Application.IService
         //Task<ServiceDto> GetServiceByIdAsync(int id);
         Task<PageResultDto<ServiceViewModel>> GetServicesWithPaginationAsync(string keyword,int payload, int payindex);
         Task<int> AddAService(ServicePostModel model);
-        object DeleteAService(int serviceId);
+        Task DeleteAService(int serviceId);
+        Task<DataAccess.Entities.Service> UpdateAService(ServicePutModel model);
         //Task<ServiceDto> AddServiceAsync(CreateServiceDto createServiceDto);
         //Task<ServiceDto> UpdateServiceAsync(int id, UpdateServiceDto updateServiceDto);
         //Task DeleteServiceAsync(int id);

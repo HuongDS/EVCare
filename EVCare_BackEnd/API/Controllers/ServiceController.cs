@@ -68,7 +68,7 @@ namespace API.Controllers
         
         
         [HttpPost()]
-        [Authorize(Roles ="Admin,Staff")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> AddAService(ServicePostModel model)
         {
             try
@@ -94,12 +94,13 @@ namespace API.Controllers
 
         }
         [HttpDelete()]
-        [Authorize(Roles = "Admin,Staff")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAService(int serviceId)
         {
             try
             {
-                var data = _service.DeleteAService(serviceId);
+                if (serviceId <= 0) throw new Exception();
+                _service.DeleteAService(serviceId);
                 return Ok(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.NO_CONTENT,
@@ -116,6 +117,31 @@ namespace API.Controllers
                     message = Message.DELETE_FAIL,
                     data = null
                 });
+            }
+        }
+        [HttpPut()]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult>UpdateAService(ServicePutModel model)
+        {
+            try
+            {
+                var data = await _service.UpdateAService(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    data = model.Id,
+                    message = Message.UPDATE_SUCCESS
+                });
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = Message.UPDATE_FAIL,
+                    data = model.Id,
+                });
+
             }
         }
     }
