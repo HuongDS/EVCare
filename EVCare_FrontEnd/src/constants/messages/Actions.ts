@@ -1,0 +1,3 @@
+export const ACTION = {
+  OPEN_APPOINTMENT: "OPEN_APPOINTMENT",
+};
