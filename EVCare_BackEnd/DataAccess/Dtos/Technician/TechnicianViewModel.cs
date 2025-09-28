@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DataAccess.Dtos.Service;
+using DataAccess.Enums;
+
+namespace DataAccess.Dtos.Technician
+{
+    public class TechnicianViewModel
+    {
+        public string FullName { get; set; }
+        public string Phone {  get; set; }
+        public double ExpYears { get; set; }        
+        public int? Rating { get; set; }
+        public EmployeeStatusEnum Status { get; set; }
+        public IEnumerable<ServiceViewFormModel> Skills { get; set; }
+    }
+}
