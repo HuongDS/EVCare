@@ -1,23 +1,24 @@
 import logo from "../../assets/EVCare.png";
-
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import Authentication from "../../pages/Shared/Auth/Authentication";
 import { Navbar, Logo, Menu, Buttons, SearchBar } from "./Header.styled";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../states/store";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { AiOutlineMenu } from "react-icons/ai";
+import { deleteToken, logout } from "../../services/authService";
+import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
+import { logoutRedux } from "../../states/authSlice";
 
 export default function Header() {
   const [showAuth, setShowAuth] = useState(false);
   const [tongle, setTongle] = useState(false);
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 750);
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 750);
@@ -33,6 +34,16 @@ export default function Header() {
       setShowAuth(false);
     }
   }, [isAuthenticated]);
+
+  const handleLogout = async () => {
+    const response = await logout();
+    if (response.statusCode != HTTP_STATUS.OK) {
+      console.log("Error when logout");
+    }
+    deleteToken();
+    dispatch(logoutRedux());
+    navigate("/");
+  };
 
   return (
     <Navbar>
@@ -58,7 +69,7 @@ export default function Header() {
         <Link to="/contact">Contact</Link>
       </Menu>
       {isAuthenticated ? (
-        <Buttons>
+        <Buttons typeof="submit" onClick={handleLogout}>
           <button className="btn btn-fill">Log Out</button>
         </Buttons>
       ) : (
