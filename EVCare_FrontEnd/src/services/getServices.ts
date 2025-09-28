@@ -5,10 +5,6 @@ import type {
   ServicesResponseDto,
 } from "../models/ServicesModel/Customer_Services_Model";
 
-/**
- * Get all active services
- * @returns Object: status code, message, data
- */
 export const getActiveServices = (
   keyword?: string,
   payload?: number,
