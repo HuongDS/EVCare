@@ -10,6 +10,7 @@ using DataAccess.Enums;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using DataAccess.Dtos.CenterCare;
+using DataAccess.Dtos.Pagination;
 
 namespace DataAccess.Repositories
 {
@@ -33,14 +34,14 @@ namespace DataAccess.Repositories
             _dbContext.Update(entity);
             await _dbContext.SaveChangesAsync();
         }
-        public async Task<(IEnumerable<Appointment>, int, int)> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, DateOnly currentDate, int pageSize, int pageIndex)
+        public async Task<PageResultDto<Appointment>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, DateOnly currentDate, int pageSize, int pageIndex)
         {
             var startDate = currentDate.ToDateTime(TimeOnly.MinValue);
             var endDate = currentDate.ToDateTime(TimeOnly.MaxValue);
             var appointments = _dbSet.Where(a => a.EmployeeId == employeeID && a.Status == status && a.Appointment_Date >= startDate && a.Appointment_Date <= endDate).AsQueryable();
             return await PaginationHelper.PaginationAsync(appointments, pageSize, pageIndex);
         }
-        public async Task<(IEnumerable<Appointment>, int, int)> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex)
+        public async Task<PageResultDto<Appointment>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex)
         {
             var appointments = _dbSet.Where(a => a.EmployeeId == employeeID && a.Status == status).AsQueryable();
             return await PaginationHelper.PaginationAsync(appointments, pageSize, pageIndex);
@@ -81,28 +82,32 @@ namespace DataAccess.Repositories
                     AppointmentDate = a.Appointment_Date,
                     Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
                     Status = a.Status,
-                    VehicleName = a.Vehicle.Category.Name,
+                    VehicleModel = a.Vehicle.Category.Name,
                     VehicleImageUrl = a.Vehicle.Image
                 }).ToListAsync();
 
         }
 
-        public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex)
+        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex)
         {
-            return await _dbContext.Appointments.Include(a => a.Vehicle).ThenInclude(v => v.Category)
+            var query = _dbContext.Appointments.Include(a => a.Vehicle).ThenInclude(v => v.Category)
                 .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
+                .Include(a => a.Customer).ThenInclude(a => a.Account)
                 .OrderBy(a => a.Id)
-                .Skip((pageindex - 1) * payload)
-                .Take(payload)
                 .Select(a => new AppointmentViewModel
                 {
                     Id = a.Id,
                     AppointmentDate = a.Appointment_Date,
                     Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
                     Status = a.Status,
-                    VehicleName = a.Vehicle.Category.Name,
-                    VehicleImageUrl = a.Vehicle.Image
-                }).ToListAsync();
+                    VehicleModel = a.Vehicle.Category.Name,
+                    LicensePlate = a.Vehicle.LicensePlate,
+                    VehicleImageUrl = a.Vehicle.Image,
+                    CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
+                    PhoneNumber = a.Customer.Account.Phone
+                });
+
+            return  await PaginationHelper.PaginationAsync(query, payload, pageindex);
 
         }
 
@@ -140,11 +145,10 @@ namespace DataAccess.Repositories
             var currSlot = await _dbSet.CountAsync(a => a.Status == AppointmentStatusEnum.InProgress);
             return currSlot;
         }
-        public async Task<(IEnumerable<Appointment>, int, int)> GetAppointmentInDayWithPaginationAsync(DateTime date, int pageSize, int pageIndex)
+        public async Task<PageResultDto<Appointment>> GetAppointmentInDayWithPaginationAsync(DateTime date, int pageSize, int pageIndex)
         {
             var query = _dbContext.Appointments.Where(a => a.Appointment_Date.Date == date.Date && a.Status == AppointmentStatusEnum.Confirmed).AsQueryable();
-            var (list, totalItems, totalPages) = await PaginationHelper.PaginationAsync(query, pageSize, pageIndex);
-            return (list, totalItems, totalPages);
+            return await PaginationHelper.PaginationAsync(query, pageSize, pageIndex);
         }
         public async Task<Appointment> GetAppointmentByOrderIdAsync(int orderId)
         {
@@ -155,11 +159,10 @@ namespace DataAccess.Repositories
             }
             return entity;
         }
-        public async Task<(IEnumerable<Appointment>, int, int)> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex)
+        public async Task<PageResultDto<Appointment>> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex)
         {
             var entity = _dbSet.Where(a => a.Appointment_Date.Date <= date.Date && a.Status == AppointmentStatusEnum.Confirmed).OrderBy(a => a.Appointment_Date).AsQueryable();
-            var (list, totalItems, totalPages) = await PaginationHelper.PaginationAsync(entity, pageSize, pageIndex);
-            return (list, totalItems, totalPages);
+            return  await PaginationHelper.PaginationAsync(entity, pageSize, pageIndex);
         }
         public async Task<Appointment> UpdateAppointmentDate(DateTime date, int appointmentId)
         {

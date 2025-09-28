@@ -79,8 +79,16 @@ namespace Application.Infrastructures
         //Service Category
         public const string SERVICE_CATEGORY_GET_SUCCESSSFULLY = "Get Service category successfully";
 
+        //Service
+        public const string ADD_SERVICE_SUCCESSFULLY = "Add a service successfully";
+        public const string ADD_SERVICE_FALL = "Add a service fall";
+        public const string DELETE_SUCCESSFULLY = "Delete a service successfully";
+        public const string DELETE_FAIL = "Delete a service fail";
+
         //Vehicle
         public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
+
+        
 
         //Customer
         public const string CUSTOMER_GET_SUCCESSFULLY = "Get customer successfully";

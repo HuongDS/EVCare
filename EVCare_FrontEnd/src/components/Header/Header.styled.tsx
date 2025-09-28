@@ -1,71 +1,93 @@
 import styled from "styled-components";
 export const Navbar = styled.header`
   height: 100px;
+  padding: 0 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   font-family: "Outfit", sans-serif;
   background: linear-gradient(to bottom, #ebffe7, #f9fff8);
 `;
 
 export const Logo = styled.div`
-  width: 15%;
+  width: 200px;
   display: flex;
   align-items: center;
   img {
     width: 100%;
     object-fit: cover;
-    border-radius: 8px;
   }
 `;
 
 export const SearchBar = styled.div`
-  flex: 1;
-  max-width: 400px;
-  position: relative;
-  height: 40%;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 0 3px;
+  border-radius: 20px;
+  overflow: hidden;
+  max-width: 350px;
+  width: 100%;
 
   input {
-    width: 99%;
-    height: 100%;
-    padding: 0 50px 0 12px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    outline: none;
-    font-size: 16px;
-    font-family: "Outfit", sans-serif;
+    flex: 1;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    min-width: 0;
+
+    &:focus {
+      outline: none;
+    }
   }
 
   button {
-    position: absolute;
-    top: 51%;
-    right: 1.9%;
-    transform: translateY(-50%);
-    width: 35px;
-    height: 35px;
+    flex-shrink: 0; /* button không bị co lại */
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 4px 8px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: none;
     border-radius: 50%;
-    background: #f2f1f1;
-    color: black;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
 
-  button:hover {
-    background: #1877f2;
-    color: white;
-  }
-
-  @media (max-width: 768px) {
-    input {
-      width: 60%;
+    i {
+      font-size: 16px;
     }
+
+    &:hover {
+      background-color: #45a049;
+    }
+  }
+
+  @media (min-width: 750px) and (max-width: 900px) {
+    max-width: 200px;
+
+    input {
+      padding: 8px 3px;
+      font-size: 12px;
+    }
+
     button {
-      right: 43%;
+      i {
+        font-size: 14px;
+      }
+    }
+  }
+  @media (max-width: 750px) {
+    max-width: 200px;
+
+    input {
+      padding: 8px 3px;
+      font-size: 12px;
+    }
+
+    button {
+      i {
+        font-size: 10px;
+      }
     }
   }
 `;
@@ -73,9 +95,8 @@ export const SearchBar = styled.div`
 export const Menu = styled.nav`
   width: 35%;
   display: flex;
-  justify-content: flex-end;
-  gap: 5%;
-  font-size: 1.3rem;
+  justify-content: space-around;
+  font-size: 1.2rem;
   a {
     position: relative;
     text-decoration: none;
@@ -110,24 +131,25 @@ export const Menu = styled.nav`
     color: black;
   }
 
-  @media (max-width: 768px) {
-    font-size: 1.2rem;
+  @media (min-width: 750px) and (max-width: 900px) {
+    font-size: 16px;
+  }
+  @media (max-width: 750px) {
+    display: none;
   }
 `;
 
 export const Buttons = styled.div`
   display: flex;
   justify-content: flex-end;
-  width: 20%;
-  margin-right: 5%;
 
   .btn {
-    width: 83px;
-    height: 35px;
+    width: max-content;
+    height: fit-content;
     border-radius: 15px;
     border: 0.5px solid #ccc;
     font-family: "Outfit", sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
   }
 
@@ -138,5 +160,10 @@ export const Buttons = styled.div`
 
   .btn-fill:hover {
     background-color: #1877f2;
+  }
+  @media (max-width: 750px) {
+    .btn {
+      font-size: 12px;
+    }
   }
 `;
