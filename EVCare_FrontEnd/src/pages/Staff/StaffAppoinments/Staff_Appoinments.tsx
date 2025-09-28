@@ -20,6 +20,7 @@ const TitleWrapper = styled.div`
 export default function Staff_Appoinments() {
   const name = AppointmentStatusEnum;
   const sortName = [
+    "All",
     name.PENDING,
     name.CHECKED_IN,
     name.CONFIRMED,
