@@ -1,9 +1,7 @@
-import React, { useState } from "react";
-import { Menu } from "antd"; // Import Menu từ antd
-import type { MenuProps } from "antd"; // Import type MenuProps từ antd
-import { Link } from "react-router-dom";
+import React from "react";
+import type { MenuProps } from "antd";
 import { RoleEnum } from "../../models/enums/RoleEnum";
-import { SidebarContainer } from "./SideBar.styled";
+import { SidebarContainer, MenuStyled, LinkStyled } from "./SideBar.styled";
 import {
   HomeOutlined,
   SolutionOutlined,
@@ -205,11 +203,6 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ role }) => {
-  const [collapsed, setCollapsed] = useState(false);
-
-  const handleMouseEnter = () => setCollapsed(false);
-  const handleMouseLeave = () => setCollapsed(true);
-
   const renderMenuItems = (menu: MenuItem[]): MenuProps["items"] => {
     return menu.map((item) => {
       if (item.children) {
@@ -221,23 +214,19 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
       return {
         ...item,
         label: (
-          <Link to={item.route || "#"} style={{ textDecoration: "none" }}>
+          <LinkStyled to={item.route || "#"} style={{ textDecoration: "none" }}>
             {item.label}
-          </Link>
+          </LinkStyled>
         ),
       };
     });
   };
 
   return (
-    <SidebarContainer
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <Menu
+    <SidebarContainer>
+      <MenuStyled
         mode="inline"
         defaultSelectedKeys={["1"]}
-        inlineCollapsed={collapsed}
         items={renderMenuItems(menuByRole[role])}
       />
     </SidebarContainer>
