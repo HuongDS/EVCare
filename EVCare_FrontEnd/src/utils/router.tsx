@@ -9,8 +9,12 @@ import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail"
 import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
 import Test from "../components/Test";
 import PageNotFound from "../components/Layouts/PageNotFound";
+import Staff_Inventory from "../pages/Staff/StaffInventory/Staff_Inventory";
+import Staff_General from "../pages/Staff/StaffGeneral/Staff_General";
+import Manage_Technicians from "../pages/Staff/StaffManageTechnicians/Manage_Technicians";
+import Manage_Customer from "../pages/Staff/StaffManageCustomer/Manage_Customer";
 import Staff_Appoinments from "../pages/Staff/StaffAppoinments/Staff_Appoinments";
-
+import AdminLayout from "../components/Layouts/AdminLayout";
 const router = createBrowserRouter([
   // Customer routes
   {
@@ -29,7 +33,7 @@ const router = createBrowserRouter([
   // Admin routes
   {
     path: "/admin",
-    // element: <AdminLayout />,
+    element: <AdminLayout />,
     // children: [{ path: "general", element: <AdminGeneral /> }],
   },
 
@@ -37,7 +41,13 @@ const router = createBrowserRouter([
   {
     path: "/staff",
     element: <StaffLayout />,
-    children: [{ path: "appointments", element: <Staff_Appoinments /> }],
+    children: [
+      { path: "general", element: <Staff_General /> },
+      { path: "inventory", element: <Staff_Inventory /> },
+      { path: "technicians", element: <Manage_Technicians /> },
+      { path: "customers", element: <Manage_Customer /> },
+      { path: "appointments", element: <Staff_Appoinments /> },
+    ],
   },
 
   // Technician routes
