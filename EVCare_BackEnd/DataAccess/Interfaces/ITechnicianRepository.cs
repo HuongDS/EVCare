@@ -11,6 +11,6 @@ namespace DataAccess.Interfaces
     public interface ITechnicianRepository : IGenericRepository<Technician>
     {
         Task<Technician> GetTechnicianByEmployeeID(int employeeID);
-        Task<IEnumerable<TechnicianViewModel>> GetTechniciansAsync(int payload,int payindex);
+        Task<IEnumerable<TechnicianViewModel>> GetTechniciansAsync(string[]? sortField, string[]?sortOrder,int payload,int payindex);
     }
 }

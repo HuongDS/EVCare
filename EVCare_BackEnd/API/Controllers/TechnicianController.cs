@@ -7,6 +7,6 @@ namespace API.Controllers
     [ApiController]
     public class TechnicianController : ControllerBase
     {
-        private readonly I
+        //private readonly I
     }
 }
