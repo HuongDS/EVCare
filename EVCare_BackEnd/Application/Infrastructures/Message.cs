@@ -84,6 +84,8 @@ namespace Application.Infrastructures
         public const string ADD_SERVICE_FALL = "Add a service fall";
         public const string DELETE_SUCCESSFULLY = "Delete a service successfully";
         public const string DELETE_FAIL = "Delete a service fail";
+        public const string UPDATE_FAIL = "Update a service fail";
+        public const string UPDATE_SUCCESS = "Update a service success";
 
         //Vehicle
         public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
