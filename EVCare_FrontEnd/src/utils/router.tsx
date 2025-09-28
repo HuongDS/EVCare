@@ -13,7 +13,7 @@ import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
 import Test from "../components/Test";
 
 import PageNotFound from "../components/Layouts/PageNotFound";
-import AdminGeneral from "../pages/Admin/AdminGeneral/Admin_General";
+import AdminGeneral from "../pages/Admin/TechnicianGeneral/Technician_General";
 
 import StaffGeneral from "../pages/Staff/StaffSections/Staff_General";
 import StaffInventory from "../pages/Staff/StaffSections/Staff_Inventory";
@@ -60,7 +60,7 @@ const router = createBrowserRouter([
     element: <TechnicianLayout />,
     children: [
       { path: "general", element: <TechnicianGeneral /> },
-      { path: "my-jobs", element: <TechnicianMyJob /> },
+      { path: "my-job", element: <TechnicianMyJob /> },
     ],
   },
 
