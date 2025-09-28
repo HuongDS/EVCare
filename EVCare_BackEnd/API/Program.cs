@@ -126,6 +126,7 @@ builder.Services.AddScoped<IReminderService, ReminderService>();
 
 //Validator
 builder.Services.AddValidatorsFromAssemblyContaining<CreateServiceRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateServiceRequestValidator>();
 
 
 
