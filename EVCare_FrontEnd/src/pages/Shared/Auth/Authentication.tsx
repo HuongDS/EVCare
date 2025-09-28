@@ -19,6 +19,7 @@ import { EMAIL_REGEX } from "../../../constants/regexs/EmailRegex";
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
 import { closeLogin, consumeAction, openAppointmentForm } from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
+import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 
 // interface AuthProps {
 //   show: boolean;
@@ -124,7 +125,11 @@ export default function Authentication() {
         email: email,
         otp: code,
       };
-      await verifyOtp(data);
+      const response = await verifyOtp(data);
+      if (response.statusCode != HTTP_STATUS.OK) {
+        alert(ERROR_MESSAGE.OTP_WRONG);
+        return;
+      }
     } catch (error) {
       alert(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
       console.log(error);
