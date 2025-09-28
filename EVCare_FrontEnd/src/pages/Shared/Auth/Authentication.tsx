@@ -7,10 +7,9 @@ import OTPForm from "./sections/OTPForm";
 import { AUTH_FORM_MESSAGE, ERROR_MESSAGE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
 import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto } from "../../../models/AuthModel/authModel";
 import { login, register, saveTokens, verifyOtp } from "../../../services/authService";
-import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 import { toUseFromJwt } from "../../../token/jwtDecode";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../../states/store";
 import { loginSuccess } from "../../../states/authSlice";
 import { LENGTH } from "../../../constants/Code/Constants";
 import { OTP_REGEX } from "../../../constants/regexs/OTPRegex";
@@ -18,13 +17,15 @@ import { saveUser } from "../../../token/tokenStore";
 import { PASSWORD_REGEX } from "../../../constants/regexs/PasswordRegex";
 import { EMAIL_REGEX } from "../../../constants/regexs/EmailRegex";
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
+import { closeLogin, consumeAction, openAppointmentForm } from "../../../states/uiSlice";
+import { ACTION } from "../../../constants/messages/Actions";
 
-interface AuthProps {
-  show: boolean;
-  handleClose: () => void;
-}
+// interface AuthProps {
+//   show: boolean;
+//   handleClose: () => void;
+// }
 
-export default function Authentication({ show, handleClose }: AuthProps) {
+export default function Authentication() {
   const [isSignUp, setIsSignUp] = useState(true); // true: signUp | false : login
   const [isOTP, setIsOTP] = useState(false); // true: verify Otp
 
@@ -39,6 +40,8 @@ export default function Authentication({ show, handleClose }: AuthProps) {
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
+  const pending = useSelector((state: RootState) => state.ui.actionAfterLogin);
+  const loginFormOpen = useSelector((state: RootState) => state.ui.loginFormOpen);
 
   // login
   const handleLogin = useCallback(async () => {
@@ -47,8 +50,6 @@ export default function Authentication({ show, handleClose }: AuthProps) {
       password: password,
     };
     try {
-      setEmail("");
-      setPassword("");
       if (!EMAIL_REGEX.test(email)) {
         alert(ERROR_MESSAGE.INVALID_EMAIL);
         return;
@@ -65,20 +66,21 @@ export default function Authentication({ show, handleClose }: AuthProps) {
       const user = toUseFromJwt(token);
       saveUser(user);
       dispatch(loginSuccess(user));
+      dispatch(closeLogin());
+      setEmail("");
+      setPassword("");
+      if (pending === ACTION.OPEN_APPOINTMENT) {
+        dispatch(openAppointmentForm());
+      }
+      dispatch(consumeAction());
       alert("Success");
     } catch (err) {
       alert(ERROR_MESSAGE.LOGIN_FAILED);
       console.log("Error in login: " + err);
     }
-  }, [email, password, dispatch]);
+  }, [email, password, pending, dispatch]);
 
   const handleSignUp = useCallback(async () => {
-    setEmail("");
-    setFirstName("");
-    setLastName("");
-    setPassword("");
-    setConfirm("");
-    setPhone("");
     if (firstName.length == 0 || lastName.length == 0) {
       alert(ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
       return;
@@ -103,6 +105,11 @@ export default function Authentication({ show, handleClose }: AuthProps) {
       phone: phone,
     };
     await register(registerData);
+    setFirstName("");
+    setLastName("");
+    setPassword("");
+    setConfirm("");
+    setPhone("");
     setIsOTP(true);
   }, [email, password, firstName, lastName, phone, confirm]);
 
@@ -117,19 +124,15 @@ export default function Authentication({ show, handleClose }: AuthProps) {
         email: email,
         otp: code,
       };
-      const response = await verifyOtp(data);
-      if (response.statusCode != HTTP_STATUS.CREATED) {
-        alert(ERROR_MESSAGE.OTP_WRONG);
-        return;
-      }
+      await verifyOtp(data);
     } catch (error) {
       alert(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
       console.log(error);
     }
     alert(SUCCESS_MESSAGE.REGISTER_SUCCESS);
     setIsOTP(false);
-    handleClose();
-  }, [email, otp, handleClose]);
+    dispatch(closeLogin());
+  }, [email, otp, dispatch]);
 
   // header text
   const headerText = useMemo(
@@ -138,7 +141,7 @@ export default function Authentication({ show, handleClose }: AuthProps) {
   );
 
   return (
-    <StyledModal show={show} onHide={handleClose} centered>
+    <StyledModal show={loginFormOpen} onHide={() => dispatch(closeLogin())} centered>
       <SideImage $isSignUp={isSignUp}>
         <img src={logo} alt="EVCare Logo" />
       </SideImage>
