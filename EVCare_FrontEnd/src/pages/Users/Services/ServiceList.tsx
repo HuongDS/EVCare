@@ -17,7 +17,7 @@ import {
   GetInTouchButton,
 } from "./ServiceList.styled";
 import BookingForm from "../../Customer/Booking/BookingForm";
-import type { ServicesResponseDto } from "../../../models/ServicesModel/serviceModel";
+import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
 import { getActiveServices } from "../../../services/getServices";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
@@ -79,7 +79,7 @@ const ServiceList = () => {
     );
   }
 
-  const services: ServicesResponseDto[] = data?.data.items ?? []; // warning
+  const services: ServicesResponseDto[] = data?.data ?? []; // warning
   const sortedServices = sortServices(services, sortBy, sortOrder);
 
   const handleSortChange = (newSortBy: SortBy): void => {
@@ -106,20 +106,32 @@ const ServiceList = () => {
         <HeaderSection>
           <ServiceLabel>OUR SERVICES</ServiceLabel>
           <MainTitle>Maintenance Your Vehicle</MainTitle>
+
           <BookButton onClick={handleOpenBookingForm}>Book a Service →</BookButton>
         </HeaderSection>
 
         <SortSection>
           <SortLabel>Sort by:</SortLabel>
           <ButtonGroup>
-            <SortButton active={sortBy === "default"} onClick={() => handleSortChange("default")}>
-              Default {sortBy === "default" && (sortOrder === "asc" ? "↑" : "↓")}
+            <SortButton
+              active={sortBy === "default"}
+              onClick={() => handleSortChange("default")}
+            >
+              Default{" "}
+              {sortBy === "default" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
-            <SortButton active={sortBy === "name"} onClick={() => handleSortChange("name")}>
+            <SortButton
+              active={sortBy === "name"}
+              onClick={() => handleSortChange("name")}
+            >
               Name {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
-            <SortButton active={sortBy === "duration"} onClick={() => handleSortChange("duration")}>
-              Duration {sortBy === "duration" && (sortOrder === "asc" ? "↑" : "↓")}
+            <SortButton
+              active={sortBy === "duration"}
+              onClick={() => handleSortChange("duration")}
+            >
+              Duration{" "}
+              {sortBy === "duration" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
           </ButtonGroup>
         </SortSection>
@@ -132,11 +144,15 @@ const ServiceList = () => {
                 <ServiceCard>
                   <Card.Body>
                     <ServiceTitle>{service.name}</ServiceTitle>
-                    <ServiceDescription>{service.description}</ServiceDescription>
+                    <ServiceDescription>
+                      {service.description}
+                    </ServiceDescription>
                     <p>
                       <strong>Duration:</strong> {service.duration} hours
                     </p>
+
                     <BookServiceButton onClick={handleOpenBookingForm}>Book This Service</BookServiceButton>
+
                   </Card.Body>
                 </ServiceCard>
               </Col>

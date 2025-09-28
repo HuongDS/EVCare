@@ -18,6 +18,9 @@ namespace Application.Mapping
                 otp=>otp.MapFrom(src=>src.Deleted_At!=DateTime.MinValue));
             CreateMap<ServicePostModel, DataAccess.Entities.Service>()
                 .ForMember(dest => dest.Create_At, otp => otp.MapFrom(src => DateTime.Now));
+            CreateMap<ServicePutModel, DataAccess.Entities.Service>()
+                .ForMember(dest=>dest.Create_At,otp=>otp.Ignore())
+                .ForMember(dest=>dest.Updated_At,otp=>otp.MapFrom(src=>DateTime.Now));
     
         }
     }
