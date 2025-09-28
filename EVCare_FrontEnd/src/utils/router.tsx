@@ -1,14 +1,16 @@
 import { createBrowserRouter } from "react-router-dom";
-import HomePage from "../../src/pages/Users/HomePage/HomePage";
-import Layout from "../../src/components/Layouts/CustomerLayout";
+import CustomerLayout from "../components/Layouts/CustomerLayout";
+import StaffLayout from "../components/Layouts/StaffLayout";
+import HomePage from "../pages/Users/HomePage/HomePage";
+import ServiceList from "../pages/Users/Services/ServiceList";
 import AboutUs from "../pages/Users/AboutUs/AboutUs";
 import ContactUs from "../pages/Users/Contact/ContactUs";
 import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail";
 import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
-import PageNotFound from "../components/Layouts/PageNotFound";
 import Test from "../components/Test";
-import ServiceList from "../pages/Users/Services/ServiceList";
-import StaffLayout from "../pages/Staff/StaffLayout";
+import PageNotFound from "../components/Layouts/PageNotFound";
+import Staff_Appoinments from "../pages/Staff/StaffAppoinments/Staff_Appoinments";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -32,16 +34,30 @@ const router = createBrowserRouter([
       { path: "test", element: <Test /> },
     ],
   },
+
+  // Admin routes
+  {
+    path: "/admin",
+    // element: <AdminLayout />,
+    // children: [{ path: "general", element: <AdminGeneral /> }],
+  },
+
+  // Staff routes
   {
     path: "staff",
     element: <StaffLayout />,
-    children: [
-      {
-        path: "appointments",
-        element: <Staff_Appoinments />,
-      },
-    ],
+    children: [{ path: "appointments", element: <Staff_Appoinments /> }],
   },
+
+  // Technician routes
+  {
+    path: "/technician",
+    // element: <TechnicianLayout />,
+    // children: [{ path: "tasks", element: <TechnicianGeneral /> }],
+  },
+
+  // Test route
+  { path: "/test", element: <Test /> },
   { path: "/*", element: <PageNotFound /> },
 ]);
 
