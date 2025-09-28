@@ -8,6 +8,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import type { CredentialResponse } from "@react-oauth/google";
 import HTTP_STATUS from "../../../../constants/Code/HttpStatusCode";
 import { saveUser } from "../../../../token/tokenStore";
+import { closeLogin } from "../../../../states/uiSlice";
 
 export default function GoogleButton() {
   const dispatch = useDispatch<AppDispatch>();
@@ -25,6 +26,7 @@ export default function GoogleButton() {
     const user = toUseFromJwt(accessToken);
     saveUser(user);
     dispatch(loginSuccess(user));
+    dispatch(closeLogin());
   };
   const handleError = () => console.log("Google login failed");
   return <GoogleLogin theme="outline" onSuccess={handleSuccess} onError={handleError} />;
