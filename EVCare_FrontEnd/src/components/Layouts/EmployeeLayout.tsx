@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Layout, theme } from "antd";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../SideBar/SideBar";
@@ -11,23 +10,15 @@ const EmployeeLayout: React.FC<{ role: RoleEnum }> = ({ role }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [collapsed, setCollapsed] = useState(false);
-
-  const handleMouseEnter = () => setCollapsed(false);
-  const handleMouseLeave = () => setCollapsed(true);
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Layout style={{ minHeight: "100vh", fontFamily: "'Outfit', sans-serif" }}>
       <HeaderStaff />
       <Layout style={{ flexDirection: "row" }}>
         <Sider
-          width={200}
+          width={250}
           trigger={null}
-          collapsed={collapsed}
-          collapsedWidth={80}
           style={{ background: colorBgContainer }}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
         >
           <Sidebar role={role} />
         </Sider>
