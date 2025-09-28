@@ -34,6 +34,5 @@ export const LinkStyled = styled(Link)`
   &:hover,
   &:focus {
     font-weight: bold;
-    background-color: #00ad4e 20;
   }
 `;
