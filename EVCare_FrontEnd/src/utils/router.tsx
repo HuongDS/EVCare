@@ -12,17 +12,26 @@ import PageNotFound from "../components/Layouts/PageNotFound";
 import Staff_Appoinments from "../pages/Staff/StaffAppoinments/Staff_Appoinments";
 
 const router = createBrowserRouter([
-  // Customer routes
   {
     path: "/",
-    element: <CustomerLayout />,
+    element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: "service", element: <ServiceList /> },
+      {
+        path: "service",
+        element: <ServiceList />,
+      },
       { path: "about", element: <AboutUs /> },
-      { path: "contact", element: <ContactUs /> },
-      { path: "orderDetail", element: <OrderDetail /> },
+      {
+        path: "contact",
+        element: <ContactUs />,
+      },
+      {
+        path: "orderDetail",
+        element: <OrderDetail />,
+      },
       { path: "rating", element: <Rating /> },
+      { path: "test", element: <Test /> },
     ],
   },
 
@@ -35,7 +44,7 @@ const router = createBrowserRouter([
 
   // Staff routes
   {
-    path: "/staff",
+    path: "staff",
     element: <StaffLayout />,
     children: [{ path: "appointments", element: <Staff_Appoinments /> }],
   },
