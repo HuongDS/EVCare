@@ -88,7 +88,7 @@ namespace DataAccess.Repositories
 
         }
 
-        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex)
+        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex,string customername)
         {
             var query = _dbContext.Appointments.Include(a => a.Vehicle).ThenInclude(v => v.Category)
                 .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
@@ -105,7 +105,7 @@ namespace DataAccess.Repositories
                     VehicleImageUrl = a.Vehicle.Image,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone
-                });
+                }).Where(x=>x.CustomerName.Contains(customername));
 
             return  await PaginationHelper.PaginationAsync(query, payload, pageindex);
 

@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  ButtonGroup,
-  Spinner,
-} from "react-bootstrap";
+import { Container, Row, Col, Card, ButtonGroup, Spinner } from "react-bootstrap";
 import {
   PageContainer,
   HeaderSection,
@@ -72,7 +65,7 @@ const ServiceList = () => {
     );
   }
 
-  const services: ServicesResponseDto[] = data?.data.items ?? [];
+  const services: ServicesResponseDto[] = data?.data.items ?? []; // warning
   const sortedServices = sortServices(services, sortBy, sortOrder);
 
   const handleSortChange = (newSortBy: SortBy): void => {
@@ -90,33 +83,20 @@ const ServiceList = () => {
         <HeaderSection>
           <ServiceLabel>OUR SERVICES</ServiceLabel>
           <MainTitle>Maintenance Your Vehicle</MainTitle>
-          <BookButton onClick={() => setShowForm(true)}>
-            Book a Service →
-          </BookButton>
+          <BookButton onClick={() => setShowForm(true)}>Book a Service →</BookButton>
         </HeaderSection>
 
         <SortSection>
           <SortLabel>Sort by:</SortLabel>
           <ButtonGroup>
-            <SortButton
-              active={sortBy === "default"}
-              onClick={() => handleSortChange("default")}
-            >
-              Default{" "}
-              {sortBy === "default" && (sortOrder === "asc" ? "↑" : "↓")}
+            <SortButton active={sortBy === "default"} onClick={() => handleSortChange("default")}>
+              Default {sortBy === "default" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
-            <SortButton
-              active={sortBy === "name"}
-              onClick={() => handleSortChange("name")}
-            >
+            <SortButton active={sortBy === "name"} onClick={() => handleSortChange("name")}>
               Name {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
-            <SortButton
-              active={sortBy === "duration"}
-              onClick={() => handleSortChange("duration")}
-            >
-              Duration{" "}
-              {sortBy === "duration" && (sortOrder === "asc" ? "↑" : "↓")}
+            <SortButton active={sortBy === "duration"} onClick={() => handleSortChange("duration")}>
+              Duration {sortBy === "duration" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
           </ButtonGroup>
         </SortSection>
@@ -129,15 +109,11 @@ const ServiceList = () => {
                 <ServiceCard>
                   <Card.Body>
                     <ServiceTitle>{service.name}</ServiceTitle>
-                    <ServiceDescription>
-                      {service.description}
-                    </ServiceDescription>
+                    <ServiceDescription>{service.description}</ServiceDescription>
                     <p>
                       <strong>Duration:</strong> {service.duration} hours
                     </p>
-                    <BookServiceButton onClick={() => setShowForm(true)}>
-                      Book This Service
-                    </BookServiceButton>
+                    <BookServiceButton onClick={() => setShowForm(true)}>Book This Service</BookServiceButton>
                   </Card.Body>
                 </ServiceCard>
               </Col>
