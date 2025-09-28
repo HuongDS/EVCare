@@ -35,7 +35,7 @@ const SortTable: React.FC<MyComponentProps> = ({ sortName }) => {
     <Container>
       {sortName.map((name) => (
         <Category
-          to={`/staff`}
+          to={`/staff/appointments`}
           key={name}
           active={activeCategory === name}
           onClick={() => selectCategory(name)}

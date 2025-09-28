@@ -12,7 +12,7 @@ import Test from "../components/Test";
 // import Testservices from "../pages/Users/Services/Testservices";
 import ServiceList from "../pages/Users/Services/ServiceList";
 import StaffLayout from "../pages/Staff/StaffLayout";
-import Staff_Appoinments from "../pages/Staff/StaffSections/Staff_Appoinments";
+import Staff_Appoinments from "../pages/Staff/StaffAppoinments/Staff_Appoinments";
 const router = createBrowserRouter([
   {
     path: "/",
