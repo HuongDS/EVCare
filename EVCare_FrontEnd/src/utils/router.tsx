@@ -1,5 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import CustomerLayout from "../components/Layouts/CustomerLayout";
+
+import AdminLayout from "../pages/Admin/AdminLayout";
+import TechnicianLayout from "../pages/Technician/TechnicianLayout";
+
 import StaffLayout from "../components/Layouts/StaffLayout";
 import HomePage from "../pages/Users/HomePage/HomePage";
 import ServiceList from "../pages/Users/Services/ServiceList";
@@ -9,8 +13,15 @@ import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail"
 import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
 import Test from "../components/Test";
 import PageNotFound from "../components/Layouts/PageNotFound";
-import Staff_Appoinments from "../pages/Staff/StaffAppoinments/Staff_Appoinments";
+  
+import AdminGeneral from "../pages/Admin/AdminGeneral/Admin_General";
 
+import StaffGeneral from "../pages/Staff/StaffSections/Staff_General";
+import StaffInventory from "../pages/Staff/StaffSections/Staff_Inventory";
+import Staff_Appoinments from "../pages/Staff/StaffSections/Staff_Appoinments";
+
+import TechnicianGeneral from "../pages/Technician/TechnicianGeneral/Technician_General";
+import TechnicianMyJob from "../pages/Technician/TechnicianMyJob/Technician_MyJob";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -52,8 +63,13 @@ const router = createBrowserRouter([
   // Technician routes
   {
     path: "/technician",
-    // element: <TechnicianLayout />,
-    // children: [{ path: "tasks", element: <TechnicianGeneral /> }],
+
+    element: <TechnicianLayout />,
+    children: [
+      { path: "general", element: <TechnicianGeneral /> },
+      { path: "my-jobs", element: <TechnicianMyJob /> },
+    ],
+
   },
 
   // Test route
