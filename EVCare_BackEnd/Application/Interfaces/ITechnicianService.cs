@@ -8,6 +8,6 @@ namespace Application.Interfaces
 {
     public interface ITechnicianService
     {
-        Task<IEnumerable<>>
+        //Task<IEnumerable<>>
     }
 }

@@ -25,9 +25,33 @@ namespace DataAccess.Repositories
             return entity;
         }
 
-        public Task<IEnumerable<TechnicianViewModel>> GetTechniciansAsync()
+        public async Task<IEnumerable<TechnicianViewModel>> GetTechniciansAsync(string[]? sortField, string[]? sortOrder, int payload,int payindex)
         {
-            throw new NotImplementedException();
+            var now = DateTime.Now;
+            var query =  _dbContext.Technicians
+                .Include(x => x.Employee).ThenInclude(x => x.Applications)
+                .Include(x => x.Employee).ThenInclude(x => x.Account)
+                .Include(x => x.TechnicianSkills).ThenInclude(x => x.Service)
+                .Include(x => x.TechnicianWorkingSessions)
+                .AsNoTracking()
+                .Select(x => new TechnicianViewModel
+                {
+                    FullName = x.Employee.Account.First_Name+" " +x.Employee.Account.Last_Name,
+                    ExpYears = x.ExpYear,
+                    Phone = x.Employee.Account.Phone,
+                    Rating = x.Employee.rate,
+                    Skills = x.TechnicianSkills.Select(x=>new Dtos.Service.ServiceViewFormModel
+                    {
+                        Id = x.ServiceId,
+                        Name = x.Service.Name,
+                    }),
+                    Status = Enums.EmployeeStatusEnum.Available
+
+
+
+                }).ToListAsync();
+
+            return null;
         }
     }
 }
