@@ -72,7 +72,7 @@ const ServiceList = () => {
     );
   }
 
-  const services: ServicesResponseDto[] = data?.data.items ?? []; // warning
+  const services: ServicesResponseDto[] = data?.data ?? []; // warning
   const sortedServices = sortServices(services, sortBy, sortOrder);
 
   const handleSortChange = (newSortBy: SortBy): void => {
