@@ -1,9 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import CustomerLayout from "../components/Layouts/CustomerLayout";
-
 import AdminLayout from "../pages/Admin/AdminLayout";
-import TechnicianLayout from "../pages/Technician/TechnicianLayout";
-
 import StaffLayout from "../components/Layouts/StaffLayout";
 import HomePage from "../pages/Users/HomePage/HomePage";
 import ServiceList from "../pages/Users/Services/ServiceList";
@@ -13,15 +9,12 @@ import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail"
 import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
 import Test from "../components/Test";
 import PageNotFound from "../components/Layouts/PageNotFound";
-  
-import AdminGeneral from "../pages/Admin/AdminGeneral/Admin_General";
-
-import StaffGeneral from "../pages/Staff/StaffSections/Staff_General";
-import StaffInventory from "../pages/Staff/StaffSections/Staff_Inventory";
-import Staff_Appoinments from "../pages/Staff/StaffSections/Staff_Appoinments";
-
-import TechnicianGeneral from "../pages/Technician/TechnicianGeneral/Technician_General";
-import TechnicianMyJob from "../pages/Technician/TechnicianMyJob/Technician_MyJob";
+import Staff_Inventory from "../pages/Staff/StaffInventory/Staff_Inventory";
+import Staff_General from "../pages/Staff/StaffGeneral/Staff_General";
+import Manage_Technicians from "../pages/Staff/StaffManageTechnicians/Manage_Technicians";
+import Manage_Customer from "../pages/Staff/StaffManageCustomer/Manage_Customer";
+import Staff_Appoinments from "../pages/Staff/StaffAppoinments/Staff_Appoinments";
+import Layout from "../components/Layouts/CustomerLayout";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -49,7 +42,7 @@ const router = createBrowserRouter([
   // Admin routes
   {
     path: "/admin",
-    // element: <AdminLayout />,
+    element: <AdminLayout />,
     // children: [{ path: "general", element: <AdminGeneral /> }],
   },
 
@@ -57,19 +50,20 @@ const router = createBrowserRouter([
   {
     path: "staff",
     element: <StaffLayout />,
-    children: [{ path: "appointments", element: <Staff_Appoinments /> }],
+    children: [
+      { path: "general", element: <Staff_General /> },
+      { path: "inventory", element: <Staff_Inventory /> },
+      { path: "technicians", element: <Manage_Technicians /> },
+      { path: "customers", element: <Manage_Customer /> },
+      { path: "appointments", element: <Staff_Appoinments /> },
+    ],
   },
 
   // Technician routes
   {
     path: "/technician",
-
-    element: <TechnicianLayout />,
-    children: [
-      { path: "general", element: <TechnicianGeneral /> },
-      { path: "my-jobs", element: <TechnicianMyJob /> },
-    ],
-
+    // element: <TechnicianLayout />,
+    // children: [{ path: "tasks", element: <TechnicianGeneral /> }],
   },
 
   // Test route
