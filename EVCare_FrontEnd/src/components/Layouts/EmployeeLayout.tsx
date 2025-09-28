@@ -7,7 +7,7 @@ import { RoleEnum } from "../../models/enums/RoleEnum";
 
 const { Content, Sider } = Layout;
 
-const MainLayout: React.FC<{ role: RoleEnum }> = ({ role }) => {
+const EmployeeLayout: React.FC<{ role: RoleEnum }> = ({ role }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -49,4 +49,4 @@ const MainLayout: React.FC<{ role: RoleEnum }> = ({ role }) => {
   );
 };
 
-export default MainLayout;
+export default EmployeeLayout;
