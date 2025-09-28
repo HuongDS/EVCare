@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import CustomerLayout from "../components/Layouts/CustomerLayout";
 import AdminLayout from "../components/Layouts/AdminLayout";
-import TechnicianLayout from "../components/Layouts/TechnicanLayout";
+import TechnicianLayout from "../components/Layouts/TechnicianLayout";
 import StaffLayout from "../components/Layouts/StaffLayout";
 
 import HomePage from "../pages/Users/HomePage/HomePage";
