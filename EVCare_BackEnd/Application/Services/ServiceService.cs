@@ -30,10 +30,7 @@ namespace Application.Service
             return entity.Id;
         }
 
-        public object DeleteAService(int serviceId)
-        {
-            throw new NotImplementedException();
-        }
+      
 
         public async Task<PageResultDto<ServiceViewModel>> GetActiveServicesWithPaginationAsync(string k, int payload,int pageIndex)
         {
@@ -58,6 +55,30 @@ namespace Application.Service
         {
             return await _serviceRepository.GetServiceAndKeywordWithPagination(keyword,payload, payindex);
             
+        }
+
+        public async Task DeleteAService(int serviceId)
+        {
+            try
+            {
+                await _serviceRepository.DeleteAsync(serviceId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
+        }
+
+        public async Task<DataAccess.Entities.Service> UpdateAService(ServicePutModel model)
+        {
+            var entity = await _serviceRepository.GetByIdAsync(model.Id);
+            if (entity == null)
+            {
+                throw new Exception("Source not found");
+            }
+            _mapper.Map(model, entity);
+            return await _serviceRepository.UpdateAsync(entity);
         }
     }
 }

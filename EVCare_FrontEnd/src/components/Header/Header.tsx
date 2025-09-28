@@ -10,9 +10,10 @@ import { AiOutlineMenu } from "react-icons/ai";
 import { deleteToken, logout } from "../../services/authService";
 import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
 import { logoutRedux } from "../../states/authSlice";
+import { openLogin } from "../../states/uiSlice";
 
 export default function Header() {
-  const [showAuth, setShowAuth] = useState(false);
+  // const [showAuth, setShowAuth] = useState(false);
   const [tongle, setTongle] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -29,11 +30,11 @@ export default function Header() {
     };
   }, []);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      setShowAuth(false);
-    }
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     setShowAuth(false);
+  //   }
+  // }, [isAuthenticated]);
 
   const handleLogout = async () => {
     const response = await logout();
@@ -74,7 +75,7 @@ export default function Header() {
         </Buttons>
       ) : (
         <Buttons>
-          <button className="btn btn-fill" onClick={() => setShowAuth(true)}>
+          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
             Get Started
           </button>
         </Buttons>
@@ -98,7 +99,7 @@ export default function Header() {
         </Buttons>
       ) : undefined}
 
-      <Authentication show={showAuth} handleClose={() => setShowAuth(false)} />
+      <Authentication />
     </Navbar>
   );
 }

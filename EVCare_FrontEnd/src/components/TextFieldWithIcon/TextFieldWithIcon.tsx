@@ -84,7 +84,12 @@ export default function TextFieldWithIcon({ icon, type, text, required = false, 
 
         <FieldGroup $hasText={text !== ""}>
           <span>{type}</span>
-          <input type={type} value={text} onChange={(e) => setText(e.target.value)} required={required} />
+          <input
+            type={type.toLocaleLowerCase()}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            required={required}
+          />
         </FieldGroup>
       </Field>
     </div>
