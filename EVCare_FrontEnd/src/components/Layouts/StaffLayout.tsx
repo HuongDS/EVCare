@@ -1,5 +1,5 @@
 import React from "react";
-import MainLayout from "./MainLayout";
+import MainLayout from "./EmployeeLayout";
 import { RoleEnum } from "../../models/enums/RoleEnum";
 
 const StaffLayout: React.FC = () => {
