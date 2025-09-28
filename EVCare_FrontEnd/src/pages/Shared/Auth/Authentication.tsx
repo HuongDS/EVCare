@@ -126,13 +126,14 @@ export default function Authentication() {
         otp: code,
       };
       const response = await verifyOtp(data);
-      if (response.statusCode != HTTP_STATUS.OK) {
-        alert(ERROR_MESSAGE.OTP_WRONG);
+      if (response.status != HTTP_STATUS.OK) {
+        alert(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         return;
       }
     } catch (error) {
-      alert(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      alert(ERROR_MESSAGE.OTP_WRONG);
       console.log(error);
+      return;
     }
     alert(SUCCESS_MESSAGE.REGISTER_SUCCESS);
     setIsOTP(false);
