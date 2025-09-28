@@ -1,9 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import CustomerLayout from "../components/Layouts/CustomerLayout";
-import AdminLayout from "../components/Layouts/AdminLayout";
-import TechnicianLayout from "../components/Layouts/TechnicianLayout";
 import StaffLayout from "../components/Layouts/StaffLayout";
-
 import HomePage from "../pages/Users/HomePage/HomePage";
 import ServiceList from "../pages/Users/Services/ServiceList";
 import AboutUs from "../pages/Users/AboutUs/AboutUs";
@@ -11,15 +8,9 @@ import ContactUs from "../pages/Users/Contact/ContactUs";
 import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail";
 import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
 import Test from "../components/Test";
-
 import PageNotFound from "../components/Layouts/PageNotFound";
-import AdminGeneral from "../pages/Admin/General";
+import Staff_Appoinments from "../pages/Staff/StaffAppoinments/Staff_Appoinments";
 
-import StaffGeneral from "../pages/Staff/StaffSections/Staff_General";
-import StaffInventory from "../pages/Staff/StaffSections/Staff_Inventory";
-import Staff_Appoinments from "../pages/Staff/StaffSections/Staff_Appoinments";
-
-import TechnicianGeneral from "../pages/Technician/General";
 const router = createBrowserRouter([
   // Customer routes
   {
@@ -38,26 +29,22 @@ const router = createBrowserRouter([
   // Admin routes
   {
     path: "/admin",
-    element: <AdminLayout />,
-    children: [{ path: "general", element: <AdminGeneral /> }],
+    // element: <AdminLayout />,
+    // children: [{ path: "general", element: <AdminGeneral /> }],
   },
 
   // Staff routes
   {
     path: "/staff",
     element: <StaffLayout />,
-    children: [
-      { path: "general", element: <StaffGeneral /> },
-      { path: "inventory", element: <StaffInventory /> },
-      { path: "appointments", element: <Staff_Appoinments /> },
-    ],
+    children: [{ path: "appointments", element: <Staff_Appoinments /> }],
   },
 
   // Technician routes
   {
     path: "/technician",
-    element: <TechnicianLayout />,
-    children: [{ path: "tasks", element: <TechnicianGeneral /> }],
+    // element: <TechnicianLayout />,
+    // children: [{ path: "tasks", element: <TechnicianGeneral /> }],
   },
 
   // Test route
