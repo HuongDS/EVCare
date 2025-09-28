@@ -245,7 +245,6 @@ RecurringJob.AddOrUpdate<IReminderService>(
      job=>job.SendEmailRemindersAsync(),
      Cron.Daily(10),
      tzVn
-    
     );
 // Configure the HTTP request pipeline.
 var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");
