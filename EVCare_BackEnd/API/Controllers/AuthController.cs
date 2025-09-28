@@ -11,6 +11,7 @@ using Application.Services;
 using DataAccess.Dtos.Employees;
 using Microsoft.AspNetCore.Authorization;
 using DataAccess.Enums;
+using DataAccess.Dtos.Accounts;
 
 namespace API.Controllers
 {
@@ -61,9 +62,26 @@ namespace API.Controllers
                     data = null
                 });
             }
-            var res = await _authServices.VerifyRegisterAsync(data.email);
-            await _authServices.RegisterCustomerAsync(res);
-            return Ok(res);
+            try
+            {
+                var res = await _authServices.VerifyRegisterAsync(data.email);
+                await _authServices.RegisterCustomerAsync(res);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.OTP_INVALID,
+                    data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = Message.OTP_INVALID,
+                    data = null
+                });
+            }
         }
         [HttpPost("register-for-employee")]
         [Authorize(Roles = "Admin")]
