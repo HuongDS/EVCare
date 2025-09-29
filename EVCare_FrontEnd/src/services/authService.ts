@@ -11,7 +11,10 @@ import { clearToken, setTokens } from "../token/tokenStore";
 
 // login
 export async function login(loginData: LoginRequestDto) {
-  const response = await api.post<ResponseDto<LoginResponseDto>>("/api/Auth/login", loginData);
+  const response = await api.post<ResponseDto<LoginResponseDto>>(
+    "/api/Auth/login",
+    loginData
+  );
   return response.data;
 }
 
@@ -35,7 +38,10 @@ export async function register(registerData: RegisterRequestDto) {
 }
 
 export async function verifyOtp(data: VerifyOTPDto) {
-  const response = await api.post<ResponseDto<object>>("/api/Auth/verify-otp-register", data);
+  const response = await api.post<ResponseDto<object>>(
+    "/api/Auth/verify-otp-register",
+    data
+  );
   return response;
 }
 
@@ -47,16 +53,25 @@ export async function refreshToken() {
 
 // forgot-password
 export async function sendOtp(email: string) {
-  const response = await api.post<ResponseDto<object>>("/api/Auth/sent-otp", email);
+  const response = await api.post<ResponseDto<object>>(
+    "/api/Auth/sent-otp",
+    email
+  );
   return response.data;
 }
 export async function resetPassword(data: ResetPasswordRequestDto) {
-  const response = await api.post<ResponseDto<object>>("/api/Auth/reset-password", data);
+  const response = await api.post<ResponseDto<object>>(
+    "/api/Auth/reset-password",
+    data
+  );
   return response.data;
 }
 
 // login with google
 export async function loginWithGoogle(idToken: string | undefined) {
-  const response = await api.post<ResponseDto<LoginResponseDto>>("/api/Auth/login-google", idToken);
+  const response = await api.post<ResponseDto<LoginResponseDto>>(
+    "/api/Auth/login-google",
+    idToken
+  );
   return response.data;
 }
