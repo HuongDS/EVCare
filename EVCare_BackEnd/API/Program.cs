@@ -103,6 +103,7 @@ builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
 builder.Services.AddScoped<ILinkServices, LinkServices>();
 builder.Services.AddScoped<IServiceCenterService, ServiceCenterService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ITechnicianService, TechnicianService>();
 
 
 // AutoMapper

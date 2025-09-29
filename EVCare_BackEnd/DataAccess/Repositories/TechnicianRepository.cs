@@ -61,9 +61,10 @@ namespace DataAccess.Repositories
                     : x.Employee.Status,
                 })
                 .Where(x=>x.Status == model.Status);
+            if (model.Skills != null) query = query.Where(x => x.Skills.Any(s => model.Skills.Contains(s.Id)));
             query = query.ApplySorting(model.SortField,model.SortOrder);
             
-            return await PaginationHelper.PaginationAsync<TechnicianViewModel>(query,model.PageSize.Value,model.PageIndex.Value);
+            return await PaginationHelper.PaginationAsync(query,model.PageSize.Value,model.PageIndex.Value);
         }
     }
 }
