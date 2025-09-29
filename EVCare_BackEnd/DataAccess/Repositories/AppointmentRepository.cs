@@ -221,5 +221,30 @@ namespace DataAccess.Repositories
                 );
 
         }
+
+        public async Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model)
+        {
+            var query = _dbSet
+                .Where(x => x.Status == model.Status && DateOnly.FromDateTime(x.Appointment_Date) >= model.BeginTime && DateOnly.FromDateTime(x.Appointment_Date) <= model.EndTime)
+                .Include(a => a.Vehicle).ThenInclude(v => v.Category)
+                .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
+                .Include(a => a.Customer).ThenInclude(a => a.Account)
+                .Select(a => new AppointmentViewModel
+                {
+                    Id = a.Id,
+                    AppointmentDate = a.Appointment_Date,
+                    Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
+                    Status = a.Status,
+                    VehicleModel = a.Vehicle.Category.Name,
+                    LicensePlate = a.Vehicle.LicensePlate,
+                    VehicleImageUrl = a.Vehicle.Image,
+                    CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
+                    PhoneNumber = a.Customer.Account.Phone
+
+                }).Where(x => x.CustomerName.Contains(model.CustomerName));
+            query = query.ApplySorting(model.SortField, model.SortOrder);
+            return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+
+        }
     }
 }
