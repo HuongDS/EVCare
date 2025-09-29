@@ -123,6 +123,7 @@ builder.Services.AddScoped<AppointmentAuthorizationFilter>();
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
 builder.Services.AddScoped<IReminderService, ReminderService>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
 //Validator
 builder.Services.AddValidatorsFromAssemblyContaining<CreateServiceRequestValidator>();
@@ -245,6 +246,12 @@ RecurringJob.AddOrUpdate<IReminderService>(
      job=>job.SendEmailRemindersAsync(),
      Cron.Daily(10),
      tzVn
+    );
+RecurringJob.AddOrUpdate<IAttendanceService>(
+    "attendacne-service",
+    job=>job.MarkAttendanceAsync(),
+    Cron.Daily(6),
+    tzVn
     );
 // Configure the HTTP request pipeline.
 var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");
