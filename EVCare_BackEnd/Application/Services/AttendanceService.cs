@@ -20,6 +20,7 @@ namespace Application.Services
 
         public async Task MarkAttendanceAsync()
         {
+            await _employeeRepository.MarkAvaliableAllEmployees();
             var applications = await _applicationRepository.GetApplicationsToday();
             foreach (var application in applications) {
                 
