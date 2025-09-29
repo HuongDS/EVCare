@@ -122,6 +122,7 @@ builder.Services.AddScoped<GetAccountIdFilter>();
 builder.Services.AddScoped<AuthorizeCustomerAndStaffThroughAccountIdFilter>();
 builder.Services.AddScoped<AppointmentAuthorizationFilter>();
 builder.Services.AddScoped<SetAccountIdFilter>();
+builder.Services.AddScoped<SetTechnicianIdFilter>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();

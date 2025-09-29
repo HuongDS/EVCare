@@ -27,6 +27,17 @@ namespace DataAccess.Repositories
             return entity;
         }
 
+        public async Task<int> GetTechnicianIdByAccountId(int accountId)
+        {
+            var data = await _dbSet.Include(x=>x.Employee).ThenInclude(X=>X.Account)
+                .AsNoTracking().Where(x=>x.Employee.Account.Id == accountId).FirstOrDefaultAsync();
+            if(data == null)
+            {
+                throw new Exception("Souce not found");
+            }
+            return data.Id;
+        }
+
         public async Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(string[]? sortField, string[]? sortOrder, int payload,int payindex)
         {
             var now = DateTime.Now;
