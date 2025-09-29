@@ -4,7 +4,13 @@ import { FiKey, FiPhone } from "react-icons/fi";
 // import { FcGoogle } from "react-icons/fc";
 import TextFieldWithIcon from "../../../../components/TextFieldWithIcon/TextFieldWithIcon";
 import TextFieldAnimation from "../../../../components/TextField/TextFieldAnimation";
-import { FormWrapper, FieldGroup, SubmitBtn, Divider, NameGroup } from "../Authentication.styled";
+import {
+  FormWrapper,
+  FieldGroup,
+  SubmitBtn,
+  Divider,
+  NameGroup,
+} from "../Authentication.styled";
 import GoogleButton from "../google/GoogleButton";
 
 interface AuthFormProps {
@@ -23,6 +29,8 @@ interface AuthFormProps {
   setPhone: (v: string) => void;
   handleSignUp: () => void;
   handleLogin: () => void;
+  isForgot: boolean;
+  setIsForgot: (v: boolean) => void;
 }
 
 export default function AuthForm({
@@ -41,23 +49,63 @@ export default function AuthForm({
   setLastName,
   handleSignUp,
   handleLogin,
+  setIsForgot,
 }: AuthFormProps) {
+  const handleIsForgot = () => {
+    isSignUp = false;
+    setIsForgot(true);
+  };
   return (
     <FormWrapper>
       {isSignUp && (
         <NameGroup>
-          <TextFieldAnimation required type="First Name" text={firstName} setText={setFirstName} />
-          <TextFieldAnimation required type="Last Name" text={lastName} setText={setLastName} />
+          <TextFieldAnimation
+            required
+            type="First Name"
+            text={firstName}
+            setText={setFirstName}
+          />
+          <TextFieldAnimation
+            required
+            type="Last Name"
+            text={lastName}
+            setText={setLastName}
+          />
         </NameGroup>
       )}
       <FieldGroup>
-        <TextFieldWithIcon required icon={<HiOutlineMail />} type="Email" text={email} setText={setEmail} />
-        <TextFieldWithIcon required icon={<FiKey />} type="Password" text={password} setText={setPassword} />
+        <TextFieldWithIcon
+          required
+          icon={<HiOutlineMail />}
+          type="Email"
+          text={email}
+          setText={setEmail}
+        />
+        <TextFieldWithIcon
+          required
+          icon={<FiKey />}
+          type="Password"
+          text={password}
+          setText={setPassword}
+        />
+
         {isSignUp && (
-          <TextFieldWithIcon required icon={<FiKey />} type="Password" text={confirm} setText={setConfirm} />
+          <TextFieldWithIcon
+            required
+            icon={<FiKey />}
+            type="Password"
+            text={confirm}
+            setText={setConfirm}
+          />
         )}
         {isSignUp && (
-          <TextFieldWithIcon required icon={<FiPhone />} type="Phone Number" text={phone} setText={setPhone} />
+          <TextFieldWithIcon
+            required
+            icon={<FiPhone />}
+            type="Phone Number"
+            text={phone}
+            setText={setPhone}
+          />
         )}
       </FieldGroup>
 
@@ -70,6 +118,7 @@ export default function AuthForm({
             textDecoration: "none",
             color: "green",
           }}
+          onClick={handleIsForgot}
         >
           Forgot Password?
         </Link>
@@ -91,14 +140,7 @@ export default function AuthForm({
           color: "black",
         }}
       >
-        {/* <FcGoogle
-          style={{
-            marginRight: "20px",
-            fontSize: "25px",
-          }}
-        /> */}
         <GoogleButton />
-        {/* {isSignUp ? "Sign Up with Google" : "Sign In with Google"} */}
       </SubmitBtn>
     </FormWrapper>
   );
