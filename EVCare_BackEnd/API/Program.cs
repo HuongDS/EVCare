@@ -255,7 +255,7 @@ RecurringJob.AddOrUpdate<IReminderService>(
 RecurringJob.AddOrUpdate<IAttendanceService>(
     "attendacne-service",
     job=>job.MarkAttendanceAsync(),
-    Cron.Daily(6),
+    Cron.Daily(5),
     tzVn
     );
 // Configure the HTTP request pipeline.
