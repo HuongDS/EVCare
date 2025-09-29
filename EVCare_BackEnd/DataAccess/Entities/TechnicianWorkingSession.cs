@@ -13,7 +13,7 @@ namespace DataAccess.Entities
         public Order Order { get; set; }
         public int TechnicianId { get; set; }
         public Technician Technician { get; set; }
-        public OrderStatusEnum Status { get; set; }
+        public TechnicianWorkingSessionEnum Status { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         

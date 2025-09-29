@@ -13,5 +13,7 @@ namespace DataAccess.Interfaces
     {
         Task<Technician> GetTechnicianByEmployeeID(int employeeID);
         Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(string[]? sortField, string[]?sortOrder,int payload,int payindex);
+
+        Task<int> GetTechnicianIdByAccountId(int accountId);
     }
 }

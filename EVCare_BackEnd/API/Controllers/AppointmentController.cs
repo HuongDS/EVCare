@@ -83,70 +83,70 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPost("get-appointments-indate-employee")]
-        [Authorize(Roles = "Staff, Technician")]
-        [ServiceFilter(typeof(GetAccountIdFilter))]
-        public async Task<IActionResult> GetAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeFromEmployeeDto data)
-        {
-            try
-            {
-                var employeeId = (int)HttpContext.Items["EmployeeId"];
-                var newReq = new AppointmentGetByEmployeeDto
-                {
-                    employeeID = employeeId,
-                    status = data.status,
-                    currentDate = data.currentDate,
-                    pageSize = data.pageSize,
-                    pageIndex = data.pageIndex
-                };
-                var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(newReq.employeeID, newReq.status, newReq.currentDate, newReq.pageSize, newReq.pageIndex);
-                return Ok(new
-                {
-                    StatusCode = HttpStatus.OK,
-                    Message = Message.APPOINTMENTS_FETCHED_SUCCESS,
-                    Data = appointments
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    StatusCode = HttpStatus.BAD_REQUEST,
-                    message = ex.Message,
-                });
-            }
-        }
-        [HttpPost("get-all-appointments")]
-        [Authorize(Roles = "Staff, Technician")]
-        public async Task<IActionResult> GetAllAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeFromEmployeeDto data)
-        {
-            try
-            {
-                var employeeId = (int)HttpContext.Items["EmployeeId"];
-                var newReq = new AppointmentGetByEmployeeDto
-                {
-                    employeeID = employeeId,
-                    status = data.status,
-                    pageSize = data.pageSize,
-                    pageIndex = data.pageIndex
-                };
-                var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(newReq.employeeID, newReq.status, newReq.pageSize, newReq.pageIndex);
-                return Ok(new
-                {
-                    StatusCode = HttpStatus.OK,
-                    Message = Message.APPOINTMENTS_FETCHED_SUCCESS,
-                    Data = appointments
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    StatusCode = HttpStatus.BAD_REQUEST,
-                    message = ex.Message,
-                });
-            }
-        }
+        //[HttpPost("get-appointments-employee")]
+        //[Authorize(Roles = "Staff, Technician")]
+        //[ServiceFilter(typeof(GetAccountIdFilter))]
+        //public async Task<IActionResult> GetAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeFromEmployeeDto data)
+        //{
+        //    try
+        //    {
+        //        var employeeId = (int)HttpContext.Items["EmployeeId"];
+        //        var newReq = new AppointmentGetByEmployeeDto
+        //        {
+        //            employeeID = employeeId,
+        //            status = data.status,
+        //            currentDate = data.currentDate,
+        //            pageSize = data.pageSize,
+        //            pageIndex = data.pageIndex
+        //        };
+        //        var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(newReq.employeeID, newReq.status, newReq.currentDate, newReq.pageSize, newReq.pageIndex);
+        //        return Ok(new
+        //        {
+        //            StatusCode = HttpStatus.OK,
+        //            Message = Message.APPOINTMENTS_FETCHED_SUCCESS,
+        //            Data = appointments
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new
+        //        {
+        //            StatusCode = HttpStatus.BAD_REQUEST,
+        //            message = ex.Message,
+        //        });
+        //    }
+        //}
+        //[HttpPost("get-all-appointments")]
+        //[Authorize(Roles = "Staff, Technician")]
+        //public async Task<IActionResult> GetAllAppointmentByEmployeeIDAsync(AppointmentGetByEmployeeFromEmployeeDto data)
+        //{
+        //    try
+        //    {
+        //        var employeeId = (int)HttpContext.Items["EmployeeId"];
+        //        var newReq = new AppointmentGetByEmployeeDto
+        //        {
+        //            employeeID = employeeId,
+        //            status = data.status,
+        //            pageSize = data.pageSize,
+        //            pageIndex = data.pageIndex
+        //        };
+        //        var appointments = await _appointmentService.GetAppointmentByEmployeeIDAsync(newReq.employeeID, newReq.status, newReq.pageSize, newReq.pageIndex);
+        //        return Ok(new
+        //        {
+        //            StatusCode = HttpStatus.OK,
+        //            Message = Message.APPOINTMENTS_FETCHED_SUCCESS,
+        //            Data = appointments
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new
+        //        {
+        //            StatusCode = HttpStatus.BAD_REQUEST,
+        //            message = ex.Message,
+        //        });
+        //    }
+        //}
 
         [HttpPost("customer")]
         [Authorize(Roles = "Customer")]
@@ -470,6 +470,26 @@ namespace API.Controllers
                     data = null
                 });
 
+            }
+        }
+
+        [HttpGet("get-appointment-technician")]
+        [Authorize(Roles ="Technician")]
+        [ServiceFilter(typeof(SetTechnicianIdFilter))]
+        public async Task<IActionResult> GetAppointmentByTechnician(AppointmentQueryDto model)
+        {
+            try
+            {
+                return null;
+                
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    data = null
+                });
             }
         }
     }
