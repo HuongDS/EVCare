@@ -11,14 +11,22 @@ namespace Application.Services
     public class AttendanceService : IAttendanceService
     {
         private readonly IEmployeeRepository _employeeRepository;
-        public AttendanceService(IEmployeeRepository employeeRepository)
+        private readonly IApplicationRepository _applicationRepository;
+        public AttendanceService(IEmployeeRepository employeeRepository,IApplicationRepository applicationRepository)
         {
+            _applicationRepository = applicationRepository;
             _employeeRepository = employeeRepository;
         }
 
-        public Task MarkAttendanceAsync()
+        public async Task MarkAttendanceAsync()
         {
-            throw new NotImplementedException();
+            var applications = await _applicationRepository.GetApplicationsToday();
+            foreach (var application in applications) {
+                
+                var employee = await _employeeRepository.GetByIdAsync(application.EmployeeId);
+                employee.Status = DataAccess.Enums.EmployeeStatusEnum.OnLeave;
+                await _employeeRepository.UpdateAsync(employee);
+            }
         }
     }
 }
