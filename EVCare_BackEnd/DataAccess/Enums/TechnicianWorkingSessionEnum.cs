@@ -8,9 +8,10 @@ namespace DataAccess.Enums
 {
     public enum TechnicianWorkingSessionEnum
     {
+        Pending,
+        AddingPart,
         InProgress,
-        Paused,
         Completed,
-        Cancelled
+        Canceled,
     }
 }
