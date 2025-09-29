@@ -30,6 +30,6 @@ namespace Application.Interfaces
         Task<ResponseDto<AppointmentViewDto>> UpdateAppointmentDateAsync(DateTime date, int appointmentId);
         Task<AppointmentInforToSentDto> GetAppointmentInforToAsync(int appointmentId);
         Task<CenterDailyCapacityModel> GetAppointmentWithCountDaily();
-
+        Task <PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model);
     }
 }
