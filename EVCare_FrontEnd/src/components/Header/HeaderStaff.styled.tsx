@@ -7,9 +7,8 @@ export const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 3%;
 
-  /* Responsive: giảm kích thước padding và font-size khi màn hình nhỏ */
   @media (max-width: 768px) {
     padding: 0 16px;
   }
@@ -21,7 +20,6 @@ export const LogoContainer = styled.img`
   max-width: 12%;
   height: auto;
 
-  /* Responsive: giảm kích thước logo khi màn hình nhỏ */
   @media (max-width: 768px) {
     max-width: 20%;
   }
@@ -38,15 +36,5 @@ export const DateContainer = styled.div`
 
   @media (max-width: 768px) {
     font-size: 1.1em;
-  }
-`;
-
-export const AvatarContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  @media (max-width: 768px) {
-    gap: 6px;
   }
 `;
