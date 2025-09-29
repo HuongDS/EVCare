@@ -33,6 +33,7 @@ namespace Application.Infrastructures
         public const string LOGOUT_SUCCESS = "Logout successfully.";
         public const string PASSWORD_MISMATCH = "Password and Confirm Password do not match.";
         public const string PASSWORD_RESET_SUCCESS = "Password reset successfully.";
+        public const string GET_ACCOUNT_SUCCESS = "Get Acccount successfully";
 
         // Parttern
         public const string WEAK_PASSWORD = "Password is too weak. It must be at least 8 characters, at least 1 letter, 1 number and 1 special character.";
@@ -80,6 +81,7 @@ namespace Application.Infrastructures
         public const string SERVICE_CATEGORY_GET_SUCCESSSFULLY = "Get Service category successfully";
 
         //Service
+        public const string GET_SERVICE_SUCCESSFULLY = "Get service successfully";
         public const string ADD_SERVICE_SUCCESSFULLY = "Add a service successfully";
         public const string ADD_SERVICE_FALL = "Add a service fall";
         public const string DELETE_SUCCESSFULLY = "Delete a service successfully";

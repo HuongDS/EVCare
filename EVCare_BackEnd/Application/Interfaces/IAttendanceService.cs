@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
-    public interface ITechnicianService
+    public interface IAttendanceService
     {
-        //Task<IEnumerable<>>
+        public Task MarkAttendanceAsync();
     }
 }

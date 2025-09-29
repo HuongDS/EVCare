@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Technician;
 using DataAccess.Entities;
+using DataAccess.Helpers;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,9 +27,42 @@ namespace DataAccess.Repositories
             return entity;
         }
 
-        public Task<IEnumerable<TechnicianViewModel>> GetTechniciansAsync()
+        public async Task<int> GetTechnicianIdByAccountId(int accountId)
         {
-            throw new NotImplementedException();
+            var data = await _dbSet.Include(x=>x.Employee).ThenInclude(X=>X.Account)
+                .AsNoTracking().Where(x=>x.Employee.Account.Id == accountId).FirstOrDefaultAsync();
+            if(data == null)
+            {
+                throw new Exception("Souce not found");
+            }
+            return data.Id;
+        }
+
+        public async Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(string[]? sortField, string[]? sortOrder, int payload,int payindex)
+        {
+            var now = DateTime.Now;
+            var query = _dbContext.Technicians
+                .Include(x => x.Employee).ThenInclude(x => x.Account)
+                .Include(x => x.TechnicianSkills).ThenInclude(x => x.Service)
+                .Include(x => x.TechnicianWorkingSessions)
+                .AsNoTracking()
+                .Select(x => new TechnicianViewModel
+                {
+                    FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
+                    ExpYears = x.ExpYear,
+                    Phone = x.Employee.Account.Phone,
+                    Rating = x.Employee.rate,
+                    Skills = x.TechnicianSkills.Select(x => new Dtos.Service.ServiceViewFormModel
+                    {
+                        Id = x.ServiceId,
+                        Name = x.Service.Name,
+                    }),
+                    Status = (x.TechnicianWorkingSessions.Any(y => y.TechnicianId == x.Id && y.EndTime == null)) ? Enums.EmployeeStatusEnum.Busy
+                    : x.Employee.Status,
+                });
+            query = query.ApplySorting(sortField,sortOrder);
+            
+            return await PaginationHelper.PaginationAsync<TechnicianViewModel>(query,payload,payindex);
         }
     }
 }
