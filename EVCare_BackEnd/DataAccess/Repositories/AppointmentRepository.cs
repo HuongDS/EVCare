@@ -215,7 +215,7 @@ namespace DataAccess.Repositories
         {
             var today = DateOnly.FromDateTime(DateTime.Now);
             await _dbContext.Appointments
-                .Where(a => DateOnly.FromDateTime(a.Appointment_Date) < today && a.Status== AppointmentStatusEnum.Pending)
+                .Where(a => DateOnly.FromDateTime(a.Appointment_Date) < today && (a.Status==AppointmentStatusEnum.Pending || a.Status == AppointmentStatusEnum.Confirmed))
                 .ExecuteUpdateAsync(s => s
                 .SetProperty(x=>x.Status,AppointmentStatusEnum.Canceled)   
                 );
