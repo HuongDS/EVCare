@@ -476,11 +476,18 @@ namespace API.Controllers
         [HttpGet("get-appointment-technician")]
         [Authorize(Roles ="Technician")]
         [ServiceFilter(typeof(SetTechnicianIdFilter))]
-        public async Task<IActionResult> GetAppointmentByTechnician(AppointmentQueryDto model)
+        public async Task<IActionResult> GetAppointmentByTechnician([FromQuery] AppointmentTechnicianQueryDto model)
         {
             try
             {
-                return null;
+                var technicianId = (int)HttpContext.Items["TechnicianId"];
+                var data = await _appointmentService.GetAppointmentByTechnicianId(technicianId, model);
+                return Ok(new ResponseDto<PageResultDto<AppointmentTechnicianViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = data
+                });
                 
             }catch(Exception ex)
             {
