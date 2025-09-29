@@ -11,6 +11,6 @@ namespace DataAccess.Dtos.Pagination
     public class TechnicianQueryDto : BaseQueryDto
     {
         public EmployeeStatusEnum? Status { get; set; } = EmployeeStatusEnum.Available;
-        public IEnumerable<ServiceViewFormModel>? Skills { get; set; } = new List<ServiceViewFormModel>();
+        public IEnumerable<int>? Skills { get; set; }
     }
 }
