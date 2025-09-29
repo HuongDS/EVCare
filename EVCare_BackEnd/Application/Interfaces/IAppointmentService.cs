@@ -24,7 +24,7 @@ namespace Application.Interfaces
         Task<bool> DeleteAppointment(int appointmentId);
         Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId);
         Task<IEnumerable<AppointmentViewModel>> GetAppointmentHistoryByCustomerId(int customerId);
-        Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex,string? customerName);
+        Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(AppointmentQueryDto model);
         Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex);
         Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex);
         Task<ResponseDto<AppointmentViewDto>> UpdateAppointmentDateAsync(DateTime date, int appointmentId);

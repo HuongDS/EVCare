@@ -252,5 +252,10 @@ namespace Application.Services
             var today = DateOnly.FromDateTime(DateTime.Today);
             return await _appointmentRepository.GetAppointmentWithDailyCount(30, today);
         }
+
+        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(AppointmentQueryDto model)
+        {
+            return await _appointmentRepository.GetWithPaginationAsync(model);
+        }
     }
 }
