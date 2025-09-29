@@ -20,9 +20,9 @@ namespace DataAccess.Repositories
         {
         }
 
-        public async Task<PageResultDto<ServiceViewModel>> GetActiveServiceAndKeywordWithPagination(string keyword, int payload, int pageIndex)
+        public async Task<PageResultDto<ServiceViewModel>> GetActiveServiceAndKeywordWithPagination(ServiceQueryDto model)
         {
-            var query = _dbSet.Where(s => s.Deleted_At == DateTime.MinValue && s.Name.Contains(keyword))
+            var query = _dbSet.Where(s => s.Deleted_At == DateTime.MinValue && s.Name.Contains(model.Keyword))
                 .Select(x=>new ServiceViewModel
                 {
                     Description = x.Description,
@@ -30,16 +30,12 @@ namespace DataAccess.Repositories
                     Id = x.Id,
                     IsDeleted = false,
                     Name = x.Name,
-                })
-                ;
+                });
+            query = query.ApplySorting(model.SortField, model.SortOrder);
 
-            return await PaginationHelper.PaginationAsync(query, payload, pageIndex);
+            return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
                
         }
-
-    
-
-       
 
         public async Task<IEnumerable<Service>> GetAllActiveServices(string keyword)
         {
@@ -48,10 +44,10 @@ namespace DataAccess.Repositories
                 ToListAsync();
         }
 
-        public async Task<PageResultDto<ServiceViewModel>> GetServiceAndKeywordWithPagination(string keyword, int payload, int pageIndex)
+        public async Task<PageResultDto<ServiceViewModel>> GetServiceAndKeywordWithPagination(ServiceQueryDto model)
         {
             var query = _dbSet.AsNoTracking()
-                .Where(s => s.Name.Contains(keyword)).Select(x => new ServiceViewModel
+                .Where(s => s.Name.Contains(model.Keyword)).Select(x => new ServiceViewModel
                 {
                     Description = x.Description,
                     Duration = x.Duration,
@@ -59,7 +55,8 @@ namespace DataAccess.Repositories
                     IsDeleted = false,
                     Name = x.Name,
                 });
-            return await PaginationHelper.PaginationAsync(query, payload, pageIndex);
+            query = query.ApplySorting(model.SortField, model.SortOrder);
+            return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
                  
         }
 
