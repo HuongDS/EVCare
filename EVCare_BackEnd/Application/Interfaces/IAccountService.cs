@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Accounts;
 
 namespace Application.Interfaces
 {
-    public interface ITechnicianService
+    public interface IAccountService
     {
-        //Task<IEnumerable<>>
+        public Task<AccountViewModel> GetAccountById(int accountId);    
     }
 }

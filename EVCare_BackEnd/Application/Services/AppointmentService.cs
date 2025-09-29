@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Dtos;
+﻿using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using AutoMapper;
-using DataAccess;
-using DataAccess.Dtos.Applications;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
 using DataAccess.Enums;
-using DataAccess.Helpers;
 using DataAccess.Interfaces;
-using DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
@@ -251,6 +241,16 @@ namespace Application.Services
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
             return await _appointmentRepository.GetAppointmentWithDailyCount(30, today);
+        }
+
+        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(AppointmentQueryDto model)
+        {
+            return await _appointmentRepository.GetWithPaginationAsync(model);
+        }
+
+        public async Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model)
+        {
+            return await _appointmentRepository.GetAppointmentTechnicianViewModelByTechnicianId(technicianId,model);
         }
     }
 }
