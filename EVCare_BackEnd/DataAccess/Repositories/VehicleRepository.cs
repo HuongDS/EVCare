@@ -64,7 +64,7 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<Vehicle>> GetVehiclesByCustomerId(int customerId)
         {
-            return await _dbSet.Where(x=>x.CustomerId==customerId).ToListAsync();
+            return await _dbSet.Where(x=>x.CustomerId==customerId).Include(x=>x.Category).ToListAsync();
                 
         }
     }
