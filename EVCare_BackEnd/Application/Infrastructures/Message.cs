@@ -80,6 +80,7 @@ namespace Application.Infrastructures
         public const string SERVICE_CATEGORY_GET_SUCCESSSFULLY = "Get Service category successfully";
 
         //Service
+        public const string GET_SERVICE_SUCCESSFULLY = "Get service successfully";
         public const string ADD_SERVICE_SUCCESSFULLY = "Add a service successfully";
         public const string ADD_SERVICE_FALL = "Add a service fall";
         public const string DELETE_SUCCESSFULLY = "Delete a service successfully";
