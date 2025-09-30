@@ -11,6 +11,7 @@ import { deleteToken, logout } from "../../services/authService";
 import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
 import { logoutRedux } from "../../states/authSlice";
 import { openLogin } from "../../states/uiSlice";
+import { handleError } from "../../utils/errorHandler";
 
 export default function Header() {
   // const [showAuth, setShowAuth] = useState(false);
@@ -38,8 +39,12 @@ export default function Header() {
 
   const handleLogout = async () => {
     const response = await logout();
+    if (!response) {
+      handleError("Error when logout");
+      return;
+    }
     if (response.statusCode != HTTP_STATUS.OK) {
-      console.log("Error when logout");
+      handleError("Error when logout");
     }
     deleteToken();
     dispatch(logoutRedux());

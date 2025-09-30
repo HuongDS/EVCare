@@ -24,8 +24,6 @@ import {
   GetInTouchButton,
 } from "./ServiceList.styled";
 import BookingForm from "../../Customer/Booking/BookingForm";
-import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
-import { getActiveServices } from "../../../services/servicesApi";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
 import {
@@ -35,15 +33,26 @@ import {
   setAction,
 } from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
+import { getAllActiveService } from "../../../services/servicesApi";
 
-type SortBy = "default" | "name" | "duration";
+type SortBy = "default" | "Name" | "Duration";
 type SortOrder = "asc" | "desc";
 
 const ServiceList = () => {
   const [sortBy, setSortBy] = useState<SortBy>("default");
+
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [showForm, setShowForm] = useState(false);
-  const { data, isLoading } = getActiveServices("", 1, 3);
+
+  const { data, isLoading, isSuccess } = getAllActiveService(
+    "a",
+    10,
+    1,
+    // sortBy !== "default" ? [sortBy] : [],
+    // sortBy !== "default" ? [sortOrder] : []
+    "Name",
+    "asc"
+  );
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { createAppointmentFormOpen } = useSelector(
@@ -57,31 +66,6 @@ const ServiceList = () => {
     }
   }, [createAppointmentFormOpen, dispatch]);
 
-  const sortServices = (
-    services: ServicesResponseDto[],
-    sortBy: SortBy,
-    sortOrder: SortOrder
-  ): ServicesResponseDto[] => {
-    const sorted = [...services].sort((a, b) => {
-      let comparison = 0;
-
-      switch (sortBy) {
-        case "name":
-          comparison = a.name.localeCompare(b.name);
-          break;
-        case "duration":
-          comparison = a.duration - b.duration;
-          break;
-        default:
-          comparison = a.id - b.id;
-      }
-
-      return sortOrder === "desc" ? -comparison : comparison;
-    });
-
-    return sorted;
-  };
-
   if (isLoading) {
     return (
       <PageContainer>
@@ -93,11 +77,8 @@ const ServiceList = () => {
     );
   }
 
-  const services: ServicesResponseDto[] = data?.data ?? []; // warning
-  const sortedServices = sortServices(services, sortBy, sortOrder);
-
   const handleSortChange = (newSortBy: SortBy): void => {
-    if (sortBy === newSortBy) {
+    if (newSortBy === sortBy) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortBy(newSortBy);
@@ -137,45 +118,45 @@ const ServiceList = () => {
               {sortBy === "default" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
             <SortButton
-              active={sortBy === "name"}
-              onClick={() => handleSortChange("name")}
+              active={sortBy === "Name"}
+              onClick={() => handleSortChange("Name")}
             >
-              Name {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+              Name {sortBy === "Name" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
             <SortButton
-              active={sortBy === "duration"}
-              onClick={() => handleSortChange("duration")}
+              active={sortBy === "Duration"}
+              onClick={() => handleSortChange("Duration")}
             >
               Duration{" "}
-              {sortBy === "duration" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
           </ButtonGroup>
         </SortSection>
 
         <Row>
-          {sortedServices
-            .filter((service) => !service.isDeleted)
-            .map((service) => (
-              <Col key={service.id} xs={12} md={6} lg={4} className="mb-4">
-                <ServiceCard>
-                  <Card.Body>
-                    <ServiceTitle>{service.name}</ServiceTitle>
-                    <ServiceDescription>
-                      {service.description}
-                    </ServiceDescription>
-                    <p>
-                      <strong>Duration:</strong> {service.duration} hours
-                    </p>
+          {isSuccess &&
+            data?.data?.items
+              ?.filter((service) => !service.isDeleted)
+              .map((service) => (
+                <Col key={service.id} xs={12} md={6} lg={4} className="mb-4">
+                  <ServiceCard>
+                    <Card.Body>
+                      <ServiceTitle>{service.name}</ServiceTitle>
+                      <ServiceDescription>
+                        {service.description}
+                      </ServiceDescription>
+                      <p>
+                        <strong>Duration:</strong> {service.duration} hours
+                      </p>
 
-                    <BookServiceButton onClick={handleOpenBookingForm}>
-                      Book This Service
-                    </BookServiceButton>
-                  </Card.Body>
-                </ServiceCard>
-              </Col>
-            ))}
+                      <BookServiceButton onClick={handleOpenBookingForm}>
+                        Book This Service
+                      </BookServiceButton>
+                    </Card.Body>
+                  </ServiceCard>
+                </Col>
+              ))}
         </Row>
-
         <FooterCTA>
           <GetInTouchButton>Get In Touch →</GetInTouchButton>
         </FooterCTA>
