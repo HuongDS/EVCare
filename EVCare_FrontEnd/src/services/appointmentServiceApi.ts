@@ -1,9 +1,9 @@
-import { api } from "../../../api/api";
+import { api } from "../api/api";
 import type {
   PageModel,
   ResponseDto,
   StaffAppointmentsDto,
-} from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+} from "../models/AppointmentsModel/Staff_Appointments_Model";
 import { useQuery } from "@tanstack/react-query";
 
 //API Call và TanStack Query
