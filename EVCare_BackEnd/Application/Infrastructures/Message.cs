@@ -92,7 +92,8 @@ namespace Application.Infrastructures
         //Vehicle
         public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
 
-        
+        //Part
+        public const string PART_GET_SUCCESSFULLY = "Get parts successfully";
 
         //Customer
         public const string CUSTOMER_GET_SUCCESSFULLY = "Get customer successfully";
