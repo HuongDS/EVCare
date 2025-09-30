@@ -10,11 +10,11 @@ namespace Application.IService
 {
     public interface IServiceService
     {   
-        Task<IEnumerable<ServiceViewModel>> GetAllActiveServicesAsync(string keyword);
-        Task <PageResultDto<ServiceViewModel>> GetActiveServicesWithPaginationAsync(string keyword,int payload,int pageIndex);
+       
+        Task <PageResultDto<ServiceViewModel>> GetActiveServicesWithPaginationAsync(ServiceQueryDto model);
         Task<IEnumerable<ServiceViewModel>> GetAllServicesAsync();
         //Task<ServiceDto> GetServiceByIdAsync(int id);
-        Task<PageResultDto<ServiceViewModel>> GetServicesWithPaginationAsync(string keyword,int payload, int payindex);
+        Task<PageResultDto<ServiceViewModel>> GetServicesWithPaginationAsync(ServiceQueryDto model);
         Task<int> AddAService(ServicePostModel model);
         Task DeleteAService(int serviceId);
         Task<DataAccess.Entities.Service> UpdateAService(ServicePutModel model);

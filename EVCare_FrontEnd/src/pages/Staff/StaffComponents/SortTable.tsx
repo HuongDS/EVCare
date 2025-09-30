@@ -7,14 +7,18 @@ const Container = styled.div`
   border-bottom: 1px solid #ccc;
 `;
 
-const Category = styled(Link)<{ active: boolean }>`
+interface CategoryProps {
+  $active: boolean;
+}
+
+const Category = styled(Link)<CategoryProps>`
   padding: 10px 15px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-weight: ${({ active }) => (active ? "bold" : "normal")};
-  text-decoration: ${({ active }) => (active ? "underline" : "none")};
-  color: ${({ active }) => (active ? "#4caf50" : "black")};
-
+  font-weight: ${({ $active }) => ($active ? "bold" : "normal")};
+  text-decoration: ${({ $active }) => ($active ? "underline" : "none")};
+  color: ${({ $active }) => ($active ? "#4caf50" : "black")};
+  font-family: "Outfit", sans-serif;
   &:hover {
     background-color: #f0f0f0;
   }
@@ -37,7 +41,7 @@ const SortTable: React.FC<MyComponentProps> = ({ sortName }) => {
         <Category
           to={`/staff/appointments`}
           key={name}
-          active={activeCategory === name}
+          $active={activeCategory === name}
           onClick={() => selectCategory(name)}
         >
           {name}

@@ -22,4 +22,5 @@ export const AUTH_FORM_MESSAGE = {
   LOGIN: "Login",
   VERIFY: "Verify OTP",
   WELCOME_BACK: "Welcome Back!",
+  FORGOT_PASSWORD: "Forgot Password",
 };
