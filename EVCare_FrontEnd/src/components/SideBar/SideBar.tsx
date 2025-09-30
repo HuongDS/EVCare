@@ -224,11 +224,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
   return (
     <SidebarContainer>
-      <MenuStyled
-        mode="inline"
-        defaultSelectedKeys={["1"]}
-        items={renderMenuItems(menuByRole[role])}
-      />
+      <MenuStyled mode="inline" defaultSelectedKeys={["1"]} items={renderMenuItems(menuByRole[role])} />
     </SidebarContainer>
   );
 };

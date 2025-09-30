@@ -6,8 +6,7 @@ import type {
 } from "../models/AppointmentsModel/Staff_Appointments_Model";
 import { useQuery } from "@tanstack/react-query";
 
-//API Call và TanStack Query
-
+//[STAFF]: Get All appointments
 const fetchAppointmentsData = async (
   customerName?: string,
   payload?: number,

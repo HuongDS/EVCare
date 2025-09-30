@@ -1,28 +1,37 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { api } from "../api/api";
 import type {
   ResponseDto,
+  ServicePageModel,
   ServicesResponseDto,
 } from "../models/ServicesModel/Customer_Services_Model";
 
-export const getActiveServices = (
+//[STAFF, CUSTOMER, ADMIN] - Get all active services
+const fetchServiceData = async (
   keyword?: string,
-  payload?: number,
-  pageindex?: number
+  pageSize?: number,
+  pageIndex?: number,
+  sortField?: string,
+  sortOrder?: string
 ) => {
-  const fetchServiceData = async () => {
-    const response = await api.get<ResponseDto<ServicesResponseDto[]>>(
-      "api/Service/active",
-      {
-        params: { keyword, payload, pageindex },
-      }
-    );
-    return response.data;
-  };
+  const response = await api.get<
+    ResponseDto<ServicePageModel<ServicesResponseDto>>
+  >("api/Service/active", {
+    params: { keyword, pageSize, pageIndex, sortField, sortOrder },
+  });
+  return response.data;
+};
 
+export const getAllActiveService = (
+  keyword?: string,
+  pageSize?: number,
+  pageIndex?: number,
+  sortField?: string,
+  sortOrder?: string
+) => {
   return useQuery({
-    // warning
-    queryKey: ["Services", keyword, payload, pageindex],
-    queryFn: fetchServiceData,
+    queryKey: ["Services", keyword, pageSize, pageIndex, sortField, sortOrder],
+    queryFn: () =>
+      fetchServiceData(keyword, pageSize, pageIndex, sortField, sortOrder),
   });
 };
