@@ -33,6 +33,7 @@ namespace Application.Mappings
                 }
              }));
             CreateMap<AppointmentUpdateModel, Appointment>();
+                
 
             CreateMap<Appointment, AppointmentViewDto>()
                             .ForMember(dest => dest.techinicianNames, opt =>

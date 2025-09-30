@@ -38,7 +38,7 @@ namespace DataAccess.Repositories
             return data.Id;
         }
 
-        public async Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(string[]? sortField, string[]? sortOrder, int payload,int payindex)
+        public async Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(TechnicianQueryDto model)
         {
             var now = DateTime.Now;
             var query = _dbContext.Technicians
@@ -59,10 +59,12 @@ namespace DataAccess.Repositories
                     }),
                     Status = (x.TechnicianWorkingSessions.Any(y => y.TechnicianId == x.Id && y.EndTime == null)) ? Enums.EmployeeStatusEnum.Busy
                     : x.Employee.Status,
-                });
-            query = query.ApplySorting(sortField,sortOrder);
+                })
+                .Where(x=>x.Status == model.Status);
+            if (model.Skills != null) query = query.Where(x => x.Skills.Any(s => model.Skills.Contains(s.Id)));
+            query = query.ApplySorting(model.SortField,model.SortOrder);
             
-            return await PaginationHelper.PaginationAsync<TechnicianViewModel>(query,payload,payindex);
+            return await PaginationHelper.PaginationAsync(query,model.PageSize.Value,model.PageIndex.Value);
         }
     }
 }

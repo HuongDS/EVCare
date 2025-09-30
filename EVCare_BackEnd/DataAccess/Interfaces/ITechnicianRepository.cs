@@ -12,7 +12,7 @@ namespace DataAccess.Interfaces
     public interface ITechnicianRepository : IGenericRepository<Technician>
     {
         Task<Technician> GetTechnicianByEmployeeID(int employeeID);
-        Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(string[]? sortField, string[]?sortOrder,int payload,int payindex);
+        Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(TechnicianQueryDto model);
 
         Task<int> GetTechnicianIdByAccountId(int accountId);
     }

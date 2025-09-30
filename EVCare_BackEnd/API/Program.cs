@@ -103,6 +103,7 @@ builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
 builder.Services.AddScoped<ILinkServices, LinkServices>();
 builder.Services.AddScoped<IServiceCenterService, ServiceCenterService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ITechnicianService, TechnicianService>();
 
 
 // AutoMapper
@@ -254,7 +255,7 @@ RecurringJob.AddOrUpdate<IReminderService>(
 RecurringJob.AddOrUpdate<IAttendanceService>(
     "attendacne-service",
     job=>job.MarkAttendanceAsync(),
-    Cron.Daily(6),
+    Cron.Daily(5),
     tzVn
     );
 // Configure the HTTP request pipeline.
