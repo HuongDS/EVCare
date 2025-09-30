@@ -5,13 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Part;
-using DataAccess.Entities;
 
-namespace DataAccess.Interfaces
+namespace Application.Interfaces
 {
-    public interface IPartRepository : IGenericRepository<Part>, IGenericCategoryRepository<Part>
+    public interface IPartService
     {
         Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model);
-        Task UpdateStockPartAsync(int partID, int quantity);
     }
 }
