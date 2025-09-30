@@ -1,7 +1,7 @@
 //NGO CHI VY
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PiNumberCircleOneFill, PiNumberCircleTwoFill, PiNumberCircleThreeFill } from "react-icons/pi";
-import { Plus } from "lucide-react";
+// import { Plus } from "lucide-react";
 import {
   BookingFormBody,
   BookingFormButton,
@@ -11,7 +11,6 @@ import {
   CloseButton,
   FormGroup,
   FormTitle,
-  ImageUpload,
   Input,
   Label,
   LeftBody,
@@ -28,18 +27,85 @@ import {
   TimeInputField,
   TimeInputGroup,
 } from "./BookingForm.styled";
+import UploadImage from "../../../components/UploadFields/uploadImage";
+import { getCustomerId } from "../../../services/customerServices";
+import type { RootState } from "../../../states/store";
+import { useSelector } from "react-redux";
+import { getVehicleByCustomerId, getVehicleCategories } from "../../../services/vehicleServices";
+import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
+import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
+import type { ServiceCategoryViewModel } from "../../../models/ServicesModel/ServiceCategoryViewModel";
+import { getAllServices } from "../../../services/serviceServices";
+import { handleError } from "../../../utils/errorHandler";
 
 interface Props {
   show: boolean;
   handleClose: () => void;
 }
 export default function BookingForm({ show, handleClose }: Props) {
-  const [selectedServices, setSelectedServices] = useState<string[]>(["General Repairs"]);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const [customerId, setCustomerId] = useState(0);
+  const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<VehicleViewDto[]>([]);
+  const [selectedValue, setSelectedValue] = useState("");
+  const [isAddNew, setIsAddNew] = useState(false);
+  const [listCategories, setListCategories] = useState<VehicleCategoryViewDto[]>([]);
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryViewModel[]>([]);
+
+  useEffect(() => {
+    console.log(selectedServices);
+  }, [selectedServices]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const fetchData = async () => {
+      const customer = await getCustomerId(accountId ?? 0);
+      if (customer == null || customer == undefined) {
+        handleError("Fail when fetch data in booking form");
+        return;
+      }
+      setCustomerId(customer.data?.id ?? 0);
+
+      const listVehicleOfCustomer = await getVehicleByCustomerId(customerId);
+      if (!listVehicleOfCustomer) {
+        handleError("Error in BookingForm.tsx");
+        return;
+      }
+      setListVehicleOfCustomer(listVehicleOfCustomer.data ?? []);
+      const listVehicleCategories = await getVehicleCategories();
+      if (!listVehicleCategories) {
+        handleError("Error in BookingForm.tsx");
+        return;
+      }
+      setListCategories(listVehicleCategories.data ?? []);
+      const services = await getAllServices();
+      if (!services) {
+        handleError("Error in BookingForm.tsx");
+        return;
+      }
+      setServiceCategories(services.data ?? []);
+    };
+    fetchData();
+  }, [accountId, customerId, isAuthenticated]);
 
   if (!show) return null;
 
-  const handleServiceChange = (service: string) => {
-    setSelectedServices((prev) => (prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]));
+  const handleServiceChange = (serviceName: string) => {
+    setSelectedServices((prev) =>
+      prev.includes(serviceName) ? prev.filter((s) => s !== serviceName) : [...prev, serviceName]
+    );
+  };
+
+  const handleSelectVehicle = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value === "add") {
+      setIsAddNew(true);
+      setSelectedValue("");
+    } else {
+      setIsAddNew(false);
+      setSelectedValue(value);
+    }
   };
 
   return (
@@ -57,11 +123,11 @@ export default function BookingForm({ show, handleClose }: Props) {
           <SubSection>
             <FormGroup>
               <Label>Name</Label>
-              <Input type="text" defaultValue="Alex Nguyen" />
+              <Input type="text" disabled defaultValue="Alex Nguyen" />
             </FormGroup>
             <FormGroup>
               <Label>Phone Number</Label>
-              <Input type="tel" defaultValue="0987654321" />
+              <Input type="tel" disabled defaultValue="0987654321" />
             </FormGroup>
           </SubSection>
           <SubSection>
@@ -75,12 +141,15 @@ export default function BookingForm({ show, handleClose }: Props) {
             </SubTitle>
             <FormGroup>
               <Label>
-                Vehicle <Required>*</Required>
+                Your Vehicle License Plate <Required>*</Required>
               </Label>
-              <Select>
-                <option value="">Select Vehicle</option>
-                <option value="sedan">Vinfast</option>
-                <option value="suv">BWD</option>
+              <Select value={isAddNew ? "add" : selectedValue} onChange={handleSelectVehicle}>
+                {listVehicleOfCustomer.map((v) => (
+                  <option key={v.id} value={v.categoryName}>
+                    {v.licensePlate}
+                  </option>
+                ))}
+                <option value={"add"}>Add Vehicle</option>
               </Select>
             </FormGroup>
             <FormGroup>
@@ -91,19 +160,34 @@ export default function BookingForm({ show, handleClose }: Props) {
               <Label>
                 Vehicle Model <Required>*</Required>
               </Label>
-              <Input type="text" placeholder="Input" />
+              {isAddNew ? (
+                <Select>
+                  {listCategories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </Select>
+              ) : (
+                <Input type="text" disabled value={listCategories.find((c) => c.name === selectedValue)?.name} />
+              )}
             </FormGroup>
             <FormGroup>
-              <Label>
-                Vehicle License Plate <Required>*</Required>
-              </Label>
-              <Input type="text" placeholder="Ex:50G-99999" />
+              {isAddNew && (
+                <>
+                  <Label>
+                    Vehicle License Plate <Required>*</Required>
+                  </Label>
+                  <Input type="text" placeholder="Ex:50G-99999" />
+                </>
+              )}
             </FormGroup>
             <FormGroup>
               <Label>Image</Label>
-              <ImageUpload>
+              {/* <ImageUpload>
                 <Plus size={24} color="#9ca3af" />
-              </ImageUpload>
+              </ImageUpload> */}
+              <UploadImage></UploadImage>
             </FormGroup>
           </SubSection>
         </LeftBody>
@@ -117,56 +201,20 @@ export default function BookingForm({ show, handleClose }: Props) {
               Service <Required>*</Required>
             </Label>
 
-            <ServiceOption>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <Checkbox
-                  type="checkbox"
-                  checked={selectedServices.includes("Vehicle Maintenance")}
-                  onChange={() => handleServiceChange("Vehicle Maintenance")}
-                />
-                <span>Vehicle Maintenance</span>
-              </div>
-              <MoreInfoLink>More Info</MoreInfoLink>
-            </ServiceOption>
-
-            <ServiceOption>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <Checkbox
-                  type="checkbox"
-                  checked={selectedServices.includes("General Repairs")}
-                  onChange={() => handleServiceChange("General Repairs")}
-                />
-                <span>General Repairs</span>
-              </div>
-              <MoreInfoLink>More Info</MoreInfoLink>
-            </ServiceOption>
-
-            <ServiceOption>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <Checkbox
-                  type="checkbox"
-                  checked={selectedServices.includes("Repaint")}
-                  onChange={() => handleServiceChange("Repaint")}
-                />
-                <span>Repaint</span>
-              </div>
-              <MoreInfoLink>More Info</MoreInfoLink>
-            </ServiceOption>
+            {serviceCategories.map((c) => (
+              <ServiceOption key={c.name}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Checkbox type="checkbox" onChange={() => handleServiceChange(c.name)} />
+                  <span>{c.name}</span>
+                </div>
+                <MoreInfoLink>More Info</MoreInfoLink>
+              </ServiceOption>
+            ))}
           </SubSection>
           <SubTitle>
             <NumberIcon as={PiNumberCircleThreeFill} />

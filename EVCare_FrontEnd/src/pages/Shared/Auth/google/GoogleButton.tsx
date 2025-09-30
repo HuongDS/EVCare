@@ -15,6 +15,10 @@ export default function GoogleButton() {
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     const idToken = credentialResponse.credential;
     const response = await loginWithGoogle(idToken);
+    if (!response) {
+      handleError();
+      return;
+    }
     if (response.statusCode != HTTP_STATUS.OK) {
       throw new Error(ERROR_MESSAGE.LOGIN_FAILED);
     }
@@ -29,5 +33,7 @@ export default function GoogleButton() {
     dispatch(closeLogin());
   };
   const handleError = () => console.log("Google login failed");
-  return <GoogleLogin theme="outline" onSuccess={handleSuccess} onError={handleError} />;
+  return (
+    <GoogleLogin text="signin_with" shape="pill" theme="outline" onSuccess={handleSuccess} onError={handleError} />
+  );
 }

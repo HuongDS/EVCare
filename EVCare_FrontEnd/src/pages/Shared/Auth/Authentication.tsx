@@ -20,6 +20,7 @@ import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
 import { closeLogin, consumeAction, openAppointmentForm } from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
+import { handleError } from "../../../utils/errorHandler";
 
 // interface AuthProps {
 //   show: boolean;
@@ -38,6 +39,7 @@ export default function Authentication() {
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState<string[]>(() => Array(LENGTH.OTP_LENGTH).fill("")); // lazy init
+  const [isLoading, setIsLoading] = useState(false);
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
@@ -59,6 +61,12 @@ export default function Authentication() {
         return;
       }
       const response = await login(loginData);
+      if (response == null) {
+        throw new Error(ERROR_MESSAGE.LOGIN_FAILED);
+      }
+      if (response.statusCode !== HTTP_STATUS.OK) {
+        throw new Error(ERROR_MESSAGE.LOGIN_FAILED);
+      }
       const token = response.data?.accessToken;
       if (!token) {
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
@@ -74,10 +82,11 @@ export default function Authentication() {
         dispatch(openAppointmentForm());
       }
       dispatch(consumeAction());
-      alert("Success");
+      alert(SUCCESS_MESSAGE.LOGIN_SUCCESS);
     } catch (err) {
       alert(ERROR_MESSAGE.LOGIN_FAILED);
       console.log("Error in login: " + err);
+      return;
     }
   }, [email, password, pending, dispatch]);
 
@@ -105,7 +114,16 @@ export default function Authentication() {
       lastName: lastName,
       phone: phone,
     };
-    await register(registerData);
+    setIsLoading(true);
+    try {
+      await register(registerData);
+    } catch (error) {
+      alert(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+
     setFirstName("");
     setLastName("");
     setPassword("");
@@ -126,7 +144,11 @@ export default function Authentication() {
         otp: code,
       };
       const response = await verifyOtp(data);
-      if (response.status != HTTP_STATUS.OK) {
+      if (!response) {
+        handleError("Error in Authentication.tsx");
+        return;
+      }
+      if (response.statusCode != HTTP_STATUS.OK) {
         alert(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         return;
       }
@@ -174,6 +196,7 @@ export default function Authentication() {
             setPhone={setPhone}
             handleSignUp={handleSignUp}
             handleLogin={handleLogin}
+            disable={isLoading}
           />
         ) : (
           <OTPForm otp={otp} setOtp={setOtp} handleVerifyOTP={handleVerifyOTP} />
