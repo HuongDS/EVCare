@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import NameBox from "./NameBox";
 import ReviewButton from "../../../components/SwitchButton/ReviewButton";
-// import { formatDate } from "../../../utils/formatDate";
-// import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import { formatDate } from "../../../utils/formatDate";
+import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 const Card = styled.div`
   border: 1px solid #ccc;
   border-radius: 12px;
@@ -65,22 +65,22 @@ const ButtonStyled = styled.div`
   align-items: center;
 `;
 
-// type AppointmentCardProps = {
-//   data: TechnicianAppointmentsDto;
-// };
+type AppointmentCardProps = {
+  data: TechnicianAppointmentsDto;
+};
 
-export default function AppointmentCard() {
+export default function AppointmentCard({ data }: AppointmentCardProps) {
   return (
     <Card>
       <CardHeader>
         <AppointmentID>
-          AppointmentID: <span>#</span>
+          AppointmentID: <span>#{data.id}</span>
         </AppointmentID>
         <AppointmentDate>
           <div>
             <i className="bi bi-calendar2-event"></i>
           </div>
-          <div>Date</div>
+          <div> {formatDate(data.appointmentDate)}</div>
         </AppointmentDate>
       </CardHeader>
       <hr style={{ margin: "0.5em" }} />
@@ -88,12 +88,12 @@ export default function AppointmentCard() {
         <InformationStyled>
           <Title>Information</Title>
           <div>
-            <NameBox label="Customer's Name" name="customerName"></NameBox>
-            <NameBox label="Vehicle Model" name="vehicleModel"></NameBox>
+            <NameBox label="Customer's Name" name={data.customerName}></NameBox>
+            <NameBox label="Vehicle Model" name={data.vehicleModel}></NameBox>
           </div>
           <div>
-            <NameBox label="License Plate" name="licensePlate"></NameBox>
-            <NameBox label="Phone Number" name="phoneNumber"></NameBox>
+            <NameBox label="License Plate" name={data.licensePlate}></NameBox>
+            <NameBox label="Phone Number" name={data.phoneNumber}></NameBox>
           </div>
         </InformationStyled>
         <div>
