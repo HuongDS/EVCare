@@ -113,6 +113,7 @@ builder.Services.AddAutoMapper(typeof(VehicleProfile));
 builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 builder.Services.AddAutoMapper(typeof(AppointmentProfile));
 builder.Services.AddAutoMapper(typeof(AccountProfile));
+//builder.Services.AddAutoMapper(typeof(ServiceCenterProfile));
 
 //Action Filter
 builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();

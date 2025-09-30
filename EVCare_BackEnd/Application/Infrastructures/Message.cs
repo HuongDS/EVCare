@@ -88,6 +88,9 @@ namespace Application.Infrastructures
         public const string DELETE_FAIL = "Delete a service fail";
         public const string UPDATE_FAIL = "Update a service fail";
         public const string UPDATE_SUCCESS = "Update a service success";
+        //Service Center
+        public const string SERVICE_CENTER_GET_SUCCESSFULLY = "Get service center successfully";
+        public const string SERVICE_CENTER_UPDATE_SUCCESSFULLY = "Update service center successfully";
 
         //Vehicle
         public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
