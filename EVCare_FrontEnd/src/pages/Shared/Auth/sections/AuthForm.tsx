@@ -1,17 +1,7 @@
-import { Link } from "react-router-dom";
-import { HiOutlineMail } from "react-icons/hi";
-import { FiKey, FiPhone } from "react-icons/fi";
-// import { FcGoogle } from "react-icons/fc";
-import TextFieldWithIcon from "../../../../components/TextFieldWithIcon/TextFieldWithIcon";
-import TextFieldAnimation from "../../../../components/TextField/TextFieldAnimation";
-import {
-  FormWrapper,
-  FieldGroup,
-  SubmitBtn,
-  Divider,
-  NameGroup,
-} from "../Authentication.styled";
+import { FormWrapper, SubmitBtn, Divider } from "../Authentication.styled";
 import GoogleButton from "../google/GoogleButton";
+import SignUpForm from "./SignUpForm";
+import SignInForm from "./SignInForm";
 
 interface AuthFormProps {
   isSignUp: boolean;
@@ -57,76 +47,32 @@ export default function AuthForm({
   };
   return (
     <FormWrapper>
-      {isSignUp && (
-        <NameGroup>
-          <TextFieldAnimation
-            required
-            type="First Name"
-            text={firstName}
-            setText={setFirstName}
-          />
-          <TextFieldAnimation
-            required
-            type="Last Name"
-            text={lastName}
-            setText={setLastName}
-          />
-        </NameGroup>
-      )}
-      <FieldGroup>
-        <TextFieldWithIcon
-          required
-          icon={<HiOutlineMail />}
-          type="Email"
-          text={email}
-          setText={setEmail}
+      {isSignUp ? (
+        <SignUpForm
+          firstName={firstName}
+          setFirstName={setFirstName}
+          lastName={lastName}
+          setLastName={setLastName}
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          confirm={confirm}
+          setConfirm={setConfirm}
+          phone={phone}
+          setPhone={setPhone}
+          handleSignUp={handleSignUp}
         />
-        <TextFieldWithIcon
-          required
-          icon={<FiKey />}
-          type="Password"
-          text={password}
-          setText={setPassword}
+      ) : (
+        <SignInForm
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          handleLogin={handleLogin}
+          handleIsForgot={handleIsForgot}
         />
-
-        {isSignUp && (
-          <TextFieldWithIcon
-            required
-            icon={<FiKey />}
-            type="Password"
-            text={confirm}
-            setText={setConfirm}
-          />
-        )}
-        {isSignUp && (
-          <TextFieldWithIcon
-            required
-            icon={<FiPhone />}
-            type="Phone Number"
-            text={phone}
-            setText={setPhone}
-          />
-        )}
-      </FieldGroup>
-
-      {!isSignUp && (
-        <Link
-          to="#"
-          style={{
-            alignSelf: "flex-end",
-            fontSize: "0.85rem",
-            textDecoration: "none",
-            color: "green",
-          }}
-          onClick={handleIsForgot}
-        >
-          Forgot Password?
-        </Link>
       )}
-
-      <SubmitBtn type="button" onClick={isSignUp ? handleSignUp : handleLogin}>
-        {isSignUp ? "Sign Up" : "Sign In"}
-      </SubmitBtn>
 
       <Divider>
         <hr />
