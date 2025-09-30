@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import { Provider } from "react-redux";
 import { store } from "./states/store.ts";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import * as Sentry from "@sentry/browser";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -14,3 +15,10 @@ createRoot(document.getElementById("root")!).render(
     </Provider>
   </StrictMode>
 );
+
+Sentry.init({
+  dsn: "https://eb2a9201c2ed4443958d8ac69086e4b3@app.glitchtip.com/13023",
+  release: import.meta.env.VITE_APP_VERSION,
+  environment: import.meta.env.VITE_APP_ENV,
+  tracesSampleRate: import.meta.env.VITE_APP_ENV === "production" ? 0.2 : 1.0,
+});
