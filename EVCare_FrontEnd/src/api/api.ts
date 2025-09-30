@@ -3,10 +3,9 @@ import { clearToken, getAccessToken } from "../token/tokenStore";
 import type { LoginResponseDto, ResponseDto } from "../models/AuthModel/authModel";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import { saveTokens } from "../services/authService";
-import { useNavigate } from "react-router";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../states/store";
+import { store } from "../states/store";
 import { logoutRedux } from "../states/authSlice";
+import { handleError } from "../utils/errorHandler";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE,
@@ -29,9 +28,17 @@ type RetryConfig = AxiosRequestConfig & { _retry?: boolean };
 api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
-    const dispatch = useDispatch<AppDispatch>();
-    const navigate = useNavigate();
     const original = error.config as RetryConfig;
+    if (
+      original?.url?.includes("/api/Auth/login") ||
+      original?.url?.includes("/api/Auth/refresh") ||
+      original?.url?.includes("/api/Auth/verify-otp-register")
+    ) {
+      return Promise.reject(error);
+    }
+    if (error?.response?.status === 401 && !original?.headers?.Authorization) {
+      return Promise.reject(error);
+    }
     if (error?.response?.status === 401 || !original?._retry) {
       original._retry = true;
       try {
@@ -43,13 +50,14 @@ api.interceptors.response.use(
         saveTokens(newToken);
         original.headers = original.headers ?? {};
         original.headers.Authorization = `Bearer ${newToken}`;
-        return axios(original);
+        return api(original);
       } catch (error) {
-        dispatch(logoutRedux());
+        store.dispatch(logoutRedux());
         clearToken();
-        navigate("/");
-        console.log(error);
+        window.location.href = "/";
+        handleError(error);
       }
     }
+    return Promise.reject(error);
   }
 );

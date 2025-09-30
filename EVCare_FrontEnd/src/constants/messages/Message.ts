@@ -14,6 +14,7 @@ export const ERROR_MESSAGE = {
 
 export const SUCCESS_MESSAGE = {
   REGISTER_SUCCESS: "OTP verified! Account created.",
+  LOGIN_SUCCESS: "Login Successfully!",
 };
 
 export const AUTH_FORM_MESSAGE = {

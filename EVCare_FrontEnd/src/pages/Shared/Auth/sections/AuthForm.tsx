@@ -21,6 +21,7 @@ interface AuthFormProps {
   setLastName: (v: string) => void;
   phone: string;
   setPhone: (v: string) => void;
+  disable: boolean;
   handleSignUp: () => void;
   handleLogin: () => void;
 }
@@ -41,6 +42,7 @@ export default function AuthForm({
   setLastName,
   handleSignUp,
   handleLogin,
+  disable,
 }: AuthFormProps) {
   return (
     <FormWrapper>
@@ -75,7 +77,7 @@ export default function AuthForm({
         </Link>
       )}
 
-      <SubmitBtn type="button" onClick={isSignUp ? handleSignUp : handleLogin}>
+      <SubmitBtn type="button" onClick={isSignUp ? handleSignUp : handleLogin} disabled={disable}>
         {isSignUp ? "Sign Up" : "Sign In"}
       </SubmitBtn>
 
@@ -90,6 +92,7 @@ export default function AuthForm({
           backgroundColor: "#fff",
           color: "black",
         }}
+        disabled={disable}
       >
         {/* <FcGoogle
           style={{
