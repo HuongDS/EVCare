@@ -3,7 +3,7 @@ import { AppointmentStatusEnum } from "../../../models/enums";
 import Input from "../StaffComponents/SearchBar";
 import styled from "styled-components";
 import AppointmentCard from "../StaffComponents/AppointmentCard";
-import { useGetAllAppointments } from "./Staff_Appointment_API";
+import { useGetAllAppointments } from "../../../services/appointmentServiceApi";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 
 const AppoitmentWrapper = styled.div``;

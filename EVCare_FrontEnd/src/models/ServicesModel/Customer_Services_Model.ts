@@ -4,6 +4,14 @@ export type ResponseDto<T> = {
   data?: T;
 };
 
+export type ServicePageModel<T> = {
+  items?: T[];
+  pageSize: number;
+  pageIndex: number;
+  totalItems: number;
+  totalPages: number;
+};
+
 export type ServicesResponseDto = {
   id: number;
   name: string;

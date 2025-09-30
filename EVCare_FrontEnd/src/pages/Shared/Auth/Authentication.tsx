@@ -45,7 +45,6 @@ import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 import { handleError } from "../../../utils/errorHandler";
 import ForgotPassword from "./sections/ForgotPassword";
 
-
 // interface AuthProps {
 //   show: boolean;
 //   handleClose: () => void;
@@ -62,10 +61,11 @@ export default function Authentication() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState<string[]>(() => Array(LENGTH.OTP_LENGTH).fill("")); // lazy init
+  const [otp, setOtp] = useState<string[]>(() =>
+    Array(LENGTH.OTP_LENGTH).fill("")
+  ); // lazy init
   const [isLoading, setIsLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
-
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();

@@ -1,6 +1,10 @@
 //NGO CHI VY
 import { useEffect, useState } from "react";
-import { PiNumberCircleOneFill, PiNumberCircleTwoFill, PiNumberCircleThreeFill } from "react-icons/pi";
+import {
+  PiNumberCircleOneFill,
+  PiNumberCircleTwoFill,
+  PiNumberCircleThreeFill,
+} from "react-icons/pi";
 // import { Plus } from "lucide-react";
 import {
   BookingFormBody,
@@ -31,11 +35,14 @@ import UploadImage from "../../../components/UploadFields/uploadImage";
 import { getCustomerId } from "../../../services/customerServices";
 import type { RootState } from "../../../states/store";
 import { useSelector } from "react-redux";
-import { getVehicleByCustomerId, getVehicleCategories } from "../../../services/vehicleServices";
+import {
+  getVehicleByCustomerId,
+  getVehicleCategories,
+} from "../../../services/vehicleServicesApi";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
 import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import type { ServiceCategoryViewModel } from "../../../models/ServicesModel/ServiceCategoryViewModel";
-import { getAllServices } from "../../../services/serviceServices";
+import { getAllServices } from "../../../services/serviceServicesApi";
 import { handleError } from "../../../utils/errorHandler";
 
 interface Props {
@@ -44,14 +51,24 @@ interface Props {
 }
 export default function BookingForm({ show, handleClose }: Props) {
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const accountId = useSelector(
+    (state: RootState) => state.auth.user?.accountId
+  );
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
   const [customerId, setCustomerId] = useState(0);
-  const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<VehicleViewDto[]>([]);
+  const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<
+    VehicleViewDto[]
+  >([]);
   const [selectedValue, setSelectedValue] = useState("");
   const [isAddNew, setIsAddNew] = useState(false);
-  const [listCategories, setListCategories] = useState<VehicleCategoryViewDto[]>([]);
-  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryViewModel[]>([]);
+  const [listCategories, setListCategories] = useState<
+    VehicleCategoryViewDto[]
+  >([]);
+  const [serviceCategories, setServiceCategories] = useState<
+    ServiceCategoryViewModel[]
+  >([]);
 
   useEffect(() => {
     console.log(selectedServices);
@@ -93,7 +110,9 @@ export default function BookingForm({ show, handleClose }: Props) {
 
   const handleServiceChange = (serviceName: string) => {
     setSelectedServices((prev) =>
-      prev.includes(serviceName) ? prev.filter((s) => s !== serviceName) : [...prev, serviceName]
+      prev.includes(serviceName)
+        ? prev.filter((s) => s !== serviceName)
+        : [...prev, serviceName]
     );
   };
 
@@ -143,7 +162,10 @@ export default function BookingForm({ show, handleClose }: Props) {
               <Label>
                 Your Vehicle License Plate <Required>*</Required>
               </Label>
-              <Select value={isAddNew ? "add" : selectedValue} onChange={handleSelectVehicle}>
+              <Select
+                value={isAddNew ? "add" : selectedValue}
+                onChange={handleSelectVehicle}
+              >
                 {listVehicleOfCustomer.map((v) => (
                   <option key={v.id} value={v.categoryName}>
                     {v.licensePlate}
@@ -169,7 +191,13 @@ export default function BookingForm({ show, handleClose }: Props) {
                   ))}
                 </Select>
               ) : (
-                <Input type="text" disabled value={listCategories.find((c) => c.name === selectedValue)?.name} />
+                <Input
+                  type="text"
+                  disabled
+                  value={
+                    listCategories.find((c) => c.name === selectedValue)?.name
+                  }
+                />
               )}
             </FormGroup>
             <FormGroup>
@@ -209,7 +237,10 @@ export default function BookingForm({ show, handleClose }: Props) {
                     alignItems: "center",
                   }}
                 >
-                  <Checkbox type="checkbox" onChange={() => handleServiceChange(c.name)} />
+                  <Checkbox
+                    type="checkbox"
+                    onChange={() => handleServiceChange(c.name)}
+                  />
                   <span>{c.name}</span>
                 </div>
                 <MoreInfoLink>More Info</MoreInfoLink>
