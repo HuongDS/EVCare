@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Container, Row, Col, Card, ButtonGroup, Spinner } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  ButtonGroup,
+  Spinner,
+} from "react-bootstrap";
 import {
   PageContainer,
   HeaderSection,
@@ -18,10 +25,15 @@ import {
 } from "./ServiceList.styled";
 import BookingForm from "../../Customer/Booking/BookingForm";
 import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
-import { getActiveServices } from "../../../services/getServices";
+import { getActiveServices } from "../../../services/servicesApi";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
-import { closeAppointmentForm, openAppointmentForm, openLogin, setAction } from "../../../states/uiSlice";
+import {
+  closeAppointmentForm,
+  openAppointmentForm,
+  openLogin,
+  setAction,
+} from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
 
 type SortBy = "default" | "name" | "duration";
@@ -34,7 +46,9 @@ const ServiceList = () => {
   const { data, isLoading } = getActiveServices("", 1, 3);
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { createAppointmentFormOpen } = useSelector((state: RootState) => state.ui);
+  const { createAppointmentFormOpen } = useSelector(
+    (state: RootState) => state.ui
+  );
 
   useEffect(() => {
     if (createAppointmentFormOpen) {
@@ -79,7 +93,7 @@ const ServiceList = () => {
     );
   }
 
-  const services: ServicesResponseDto[] = data?.data.items ?? []; // warning
+  const services: ServicesResponseDto[] = data?.data ?? []; // warning
   const sortedServices = sortServices(services, sortBy, sortOrder);
 
   const handleSortChange = (newSortBy: SortBy): void => {
@@ -107,7 +121,9 @@ const ServiceList = () => {
           <ServiceLabel>OUR SERVICES</ServiceLabel>
           <MainTitle>Maintenance Your Vehicle</MainTitle>
 
-          <BookButton onClick={handleOpenBookingForm}>Book a Service →</BookButton>
+          <BookButton onClick={handleOpenBookingForm}>
+            Book a Service →
+          </BookButton>
         </HeaderSection>
 
         <SortSection>
@@ -151,8 +167,9 @@ const ServiceList = () => {
                       <strong>Duration:</strong> {service.duration} hours
                     </p>
 
-                    <BookServiceButton onClick={handleOpenBookingForm}>Book This Service</BookServiceButton>
-
+                    <BookServiceButton onClick={handleOpenBookingForm}>
+                      Book This Service
+                    </BookServiceButton>
                   </Card.Body>
                 </ServiceCard>
               </Col>
