@@ -12,12 +12,14 @@ import { handleError } from "../utils/errorHandler";
 
 // login
 export async function login(loginData: LoginRequestDto) {
+
   try {
     const response = await api.post<ResponseDto<LoginResponseDto>>("/api/Auth/login", loginData);
     return response.data;
   } catch (error) {
     handleError(error);
   }
+
 }
 
 export function saveTokens(accessToken: string) {
@@ -44,12 +46,14 @@ export async function register(registerData: RegisterRequestDto) {
 }
 
 export async function verifyOtp(data: VerifyOTPDto) {
+
   try {
     const response = await api.post<ResponseDto<object>>("/api/Auth/verify-otp-register", data);
     return response.data;
   } catch (error) {
     handleError(error);
   }
+
 }
 
 //refresh
@@ -64,6 +68,7 @@ export async function refreshToken() {
 
 // forgot-password
 export async function sendOtp(email: string) {
+
   try {
     const response = await api.post<ResponseDto<object>>("/api/Auth/sent-otp", email);
     return response.data;
@@ -78,14 +83,17 @@ export async function resetPassword(data: ResetPasswordRequestDto) {
   } catch (error) {
     handleError(error);
   }
+
 }
 
 // login with google
 export async function loginWithGoogle(idToken: string | undefined) {
+
   try {
     const response = await api.post<ResponseDto<LoginResponseDto>>("/api/Auth/login-google", idToken);
     return response.data;
   } catch (error) {
     handleError(error);
   }
+
 }

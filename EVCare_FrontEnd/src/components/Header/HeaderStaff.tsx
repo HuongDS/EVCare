@@ -1,12 +1,11 @@
 import React from "react";
-import { Badge, Avatar, Space } from "antd";
+import { Badge, Space } from "antd";
 import { CalendarOutlined, BellOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import {
   HeaderContainer,
   LogoContainer,
   DateContainer,
-  AvatarContainer,
 } from "./HeaderStaff.styled";
 import EvCare from "../../assets/EVCare.png";
 
@@ -25,10 +24,6 @@ const HeaderStaff: React.FC = () => {
         <Badge dot offset={[0, 2]}>
           <BellOutlined className="evc-icon" />
         </Badge>
-
-        <AvatarContainer>
-          <Avatar src="https://i.pravatar.cc/40" />
-        </AvatarContainer>
       </Space>
     </HeaderContainer>
   );

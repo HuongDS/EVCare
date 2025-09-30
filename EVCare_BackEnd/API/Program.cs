@@ -102,6 +102,8 @@ builder.Services.AddScoped<IApplicationServices, ApplicationServices>();
 builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
 builder.Services.AddScoped<ILinkServices, LinkServices>();
 builder.Services.AddScoped<IServiceCenterService, ServiceCenterService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ITechnicianService, TechnicianService>();
 
 
 // AutoMapper
@@ -109,6 +111,7 @@ builder.Services.AddAutoMapper(typeof(ServiceProfile));
 builder.Services.AddAutoMapper(typeof(VehicleProfile));
 builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 builder.Services.AddAutoMapper(typeof(AppointmentProfile));
+builder.Services.AddAutoMapper(typeof(AccountProfile));
 
 //Action Filter
 builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
@@ -119,10 +122,13 @@ builder.Services.AddScoped<SetEmployeeIdFilter>();
 builder.Services.AddScoped<GetAccountIdFilter>();
 builder.Services.AddScoped<AuthorizeCustomerAndStaffThroughAccountIdFilter>();
 builder.Services.AddScoped<AppointmentAuthorizationFilter>();
+builder.Services.AddScoped<SetAccountIdFilter>();
+builder.Services.AddScoped<SetTechnicianIdFilter>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
 builder.Services.AddScoped<IReminderService, ReminderService>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
 //Validator
 builder.Services.AddValidatorsFromAssemblyContaining<CreateServiceRequestValidator>();
@@ -245,7 +251,12 @@ RecurringJob.AddOrUpdate<IReminderService>(
      job=>job.SendEmailRemindersAsync(),
      Cron.Daily(10),
      tzVn
-    
+    );
+RecurringJob.AddOrUpdate<IAttendanceService>(
+    "attendacne-service",
+    job=>job.MarkAttendanceAsync(),
+    Cron.Daily(5),
+    tzVn
     );
 // Configure the HTTP request pipeline.
 var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");

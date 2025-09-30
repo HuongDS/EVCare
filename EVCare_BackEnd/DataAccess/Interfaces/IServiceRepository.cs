@@ -13,8 +13,8 @@ namespace DataAccess.Interfaces
     public interface IServiceRepository : IGenericRepository<Service>
     {
     
-        Task<PageResultDto<ServiceViewModel>> GetActiveServiceAndKeywordWithPagination(string keyword,int payload, int pageIndex);
-        Task<PageResultDto<ServiceViewModel>> GetServiceAndKeywordWithPagination(string keyword, int payload, int pageIndex);
+        Task<PageResultDto<ServiceViewModel>> GetActiveServiceAndKeywordWithPagination(ServiceQueryDto model);
+        Task<PageResultDto<ServiceViewModel>> GetServiceAndKeywordWithPagination(ServiceQueryDto model);
         Task <IEnumerable<Service>> GetAllActiveServices(string keyword);
     }
 }

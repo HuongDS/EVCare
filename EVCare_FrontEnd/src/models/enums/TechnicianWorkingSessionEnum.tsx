@@ -1,7 +1,8 @@
 //TechnicianWorkingSessionEnum
 export enum TechnicianWorkingSessionEnum {
-  IN_PROGRESS = "In Progress",
-  PAUSED = "Paused",
+  INPROGRESS = "InProgress",
+  PENDING = "Pending",
+  ADDING_PART = "AddingPart",
   COMPLETED = "Completed",
   CANCELLED = "Cancelled",
 }

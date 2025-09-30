@@ -32,9 +32,9 @@ namespace Application.Service
 
       
 
-        public async Task<PageResultDto<ServiceViewModel>> GetActiveServicesWithPaginationAsync(string k, int payload,int pageIndex)
+        public async Task<PageResultDto<ServiceViewModel>> GetActiveServicesWithPaginationAsync(ServiceQueryDto model)
         {
-            return await _serviceRepository.GetActiveServiceAndKeywordWithPagination(k,payload,pageIndex);
+            return await _serviceRepository.GetActiveServiceAndKeywordWithPagination(model);
            
         }
 
@@ -51,9 +51,9 @@ namespace Application.Service
 
         }
 
-        public async Task<PageResultDto<ServiceViewModel>> GetServicesWithPaginationAsync(string keyword, int payload, int payindex)
+        public async Task<PageResultDto<ServiceViewModel>> GetServicesWithPaginationAsync(ServiceQueryDto model)
         {
-            return await _serviceRepository.GetServiceAndKeywordWithPagination(keyword,payload, payindex);
+            return await _serviceRepository.GetServiceAndKeywordWithPagination(model);
             
         }
 

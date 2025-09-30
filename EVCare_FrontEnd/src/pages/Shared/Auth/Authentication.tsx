@@ -1,12 +1,30 @@
 import { useCallback, useMemo, useState } from "react";
 import logo from "../../../assets/EVCare.png";
 import SwitchButton from "../../../components/SwitchButton/SwitchButton";
-import { StyledModal, SideImage, FormContainer, HeaderBox } from "./Authentication.styled";
+import {
+  StyledModal,
+  SideImage,
+  FormContainer,
+  HeaderBox,
+} from "./Authentication.styled";
 import AuthForm from "./sections/AuthForm";
 import OTPForm from "./sections/OTPForm";
-import { AUTH_FORM_MESSAGE, ERROR_MESSAGE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
-import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto } from "../../../models/AuthModel/authModel";
-import { login, register, saveTokens, verifyOtp } from "../../../services/authService";
+import {
+  AUTH_FORM_MESSAGE,
+  ERROR_MESSAGE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
+import type {
+  LoginRequestDto,
+  RegisterRequestDto,
+  VerifyOTPDto,
+} from "../../../models/AuthModel/authModel";
+import {
+  login,
+  register,
+  saveTokens,
+  verifyOtp,
+} from "../../../services/authService";
 import { toUseFromJwt } from "../../../token/jwtDecode";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
@@ -17,10 +35,16 @@ import { saveUser } from "../../../token/tokenStore";
 import { PASSWORD_REGEX } from "../../../constants/regexs/PasswordRegex";
 import { EMAIL_REGEX } from "../../../constants/regexs/EmailRegex";
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
-import { closeLogin, consumeAction, openAppointmentForm } from "../../../states/uiSlice";
+import {
+  closeLogin,
+  consumeAction,
+  openAppointmentForm,
+} from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 import { handleError } from "../../../utils/errorHandler";
+import ForgotPassword from "./sections/ForgotPassword";
+
 
 // interface AuthProps {
 //   show: boolean;
@@ -40,11 +64,15 @@ export default function Authentication() {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState<string[]>(() => Array(LENGTH.OTP_LENGTH).fill("")); // lazy init
   const [isLoading, setIsLoading] = useState(false);
+  const [isForgot, setIsForgot] = useState(false);
+
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
   const pending = useSelector((state: RootState) => state.ui.actionAfterLogin);
-  const loginFormOpen = useSelector((state: RootState) => state.ui.loginFormOpen);
+  const loginFormOpen = useSelector(
+    (state: RootState) => state.ui.loginFormOpen
+  );
 
   // login
   const handleLogin = useCallback(async () => {
@@ -97,7 +125,10 @@ export default function Authentication() {
     } else if (!EMAIL_REGEX.test(email)) {
       alert(ERROR_MESSAGE.INVALID_EMAIL);
       return;
-    } else if (!PASSWORD_REGEX.test(password) || !PASSWORD_REGEX.test(confirm)) {
+    } else if (
+      !PASSWORD_REGEX.test(password) ||
+      !PASSWORD_REGEX.test(confirm)
+    ) {
       alert(ERROR_MESSAGE.INVALID_PASSWORD);
       return;
     } else if (!PHONE_NUMBER_REGEX.test(phone)) {
@@ -163,43 +194,67 @@ export default function Authentication() {
   }, [email, otp, dispatch]);
 
   // header text
-  const headerText = useMemo(
-    () => (isOTP ? AUTH_FORM_MESSAGE.VERIFY : isSignUp ? AUTH_FORM_MESSAGE.REGISTER : AUTH_FORM_MESSAGE.WELCOME_BACK),
-    [isOTP, isSignUp]
-  );
+  const headerText = useMemo(() => {
+    if (isOTP) return AUTH_FORM_MESSAGE.VERIFY;
+    if (isSignUp) return AUTH_FORM_MESSAGE.REGISTER;
+    if (isForgot) return AUTH_FORM_MESSAGE.FORGOT_PASSWORD;
+    return AUTH_FORM_MESSAGE.LOGIN;
+  }, [isOTP, isSignUp, isForgot]);
 
   return (
-    <StyledModal show={loginFormOpen} onHide={() => dispatch(closeLogin())} centered>
+    <StyledModal
+      show={loginFormOpen}
+      onHide={() => dispatch(closeLogin())}
+      centered
+    >
       <SideImage $isSignUp={isSignUp}>
         <img src={logo} alt="EVCare Logo" />
       </SideImage>
       <FormContainer $isSignUp={isSignUp}>
         <HeaderBox>
           <h1>{headerText}</h1>
-          {!isOTP ? <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} /> : undefined}
+          {!isOTP && !isForgot ? (
+            <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} />
+          ) : null}
         </HeaderBox>
 
         {!isOTP ? (
-          <AuthForm
-            isSignUp={isSignUp}
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            confirm={confirm}
-            setConfirm={setConfirm}
-            firstName={firstName}
-            setFirstName={setFirstName}
-            lastName={lastName}
-            setLastName={setLastName}
-            phone={phone}
-            setPhone={setPhone}
-            handleSignUp={handleSignUp}
-            handleLogin={handleLogin}
-            disable={isLoading}
-          />
+          <>
+            {isForgot ? (
+              <ForgotPassword
+                email={email}
+                setEmail={setEmail}
+                setIsForgot={setIsForgot}
+                setIsOTP={setIsOTP}
+              />
+            ) : (
+              <AuthForm
+                isSignUp={isSignUp}
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+                confirm={confirm}
+                setConfirm={setConfirm}
+                firstName={firstName}
+                setFirstName={setFirstName}
+                lastName={lastName}
+                setLastName={setLastName}
+                phone={phone}
+                setPhone={setPhone}
+                handleSignUp={handleSignUp}
+                handleLogin={handleLogin}
+                isForgot={isForgot}
+                setIsForgot={setIsForgot}
+              />
+            )}
+          </>
         ) : (
-          <OTPForm otp={otp} setOtp={setOtp} handleVerifyOTP={handleVerifyOTP} />
+          <OTPForm
+            otp={otp}
+            setOtp={setOtp}
+            handleVerifyOTP={handleVerifyOTP}
+          />
         )}
       </FormContainer>
     </StyledModal>

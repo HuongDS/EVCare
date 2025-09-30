@@ -1,6 +1,7 @@
 ﻿using Application.Dtos;
 using Application.Infrastructures;
 using Application.IService;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,49 +21,60 @@ namespace API.Controllers
         //admin
         [Authorize(Roles = "Admin")]
         [HttpGet()]
-        public async Task<IActionResult> GetAllServices(string keyword,int? payload,int? pageindex)
+        public async Task<IActionResult> GetAllServices([FromQuery] ServiceQueryDto model)
         {
-            if (keyword == null) {
-                keyword = "";
-            
-            }
-            if(payload.HasValue && pageindex.HasValue)
+            try
             {
-                var services = await _service.GetServicesWithPaginationAsync(keyword,payload.Value, pageindex.Value);
-                return Ok(new
+                var data = await _service.GetServicesWithPaginationAsync(model);
+
+                return Ok(new ResponseDto<PageResultDto<ServiceViewModel>>
                 {
-                    statusCode = 200,
-                    message = "Successfully",
-                    data = services
+                    statusCode = HttpStatus.OK,
+                    message = Message.GET_SERVICE_SUCCESSFULLY,
+                    data = data
+                });
+            }
+            catch (Exception ex)
+            {
+
+
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+
                 });
 
             }
-            else
-            {
-                var services = await _service.GetAllServicesAsync();
-                return Ok(new
-                {
-                    statusCode = 200,
-                    message = "Successfully",
-                    data = services
-                });
 
-            }
-               
+
         }
         [HttpGet("active")]
-        public async Task<IActionResult> GetActiveServices(string? keyword,int? payload, int? pageindex)
+        public async Task<IActionResult> GetActiveServices([FromQuery] ServiceQueryDto model)
         {
-            if (keyword == null) keyword = "";
-            if (payload.HasValue && pageindex.HasValue)
+            try
             {
-                var services = await _service.GetActiveServicesWithPaginationAsync(keyword,payload.Value, pageindex.Value);
-                return Ok(new { statusCode = 200, message = "Successfully", data = services });
+                var data = await _service.GetActiveServicesWithPaginationAsync(model);
+
+                return Ok(new ResponseDto<PageResultDto<ServiceViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.GET_SERVICE_SUCCESSFULLY,
+                    data = data
+                });
             }
-            else
-            {
-                var services = await _service.GetAllActiveServicesAsync(keyword);
-                return Ok(new { statusCode = 200, message = "Successfully", data = services });
+            catch (Exception ex) {
+
+
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+           
+                });
+            
             }
         }
         

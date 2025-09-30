@@ -1,11 +1,7 @@
-import { Link } from "react-router-dom";
-import { HiOutlineMail } from "react-icons/hi";
-import { FiKey, FiPhone } from "react-icons/fi";
-// import { FcGoogle } from "react-icons/fc";
-import TextFieldWithIcon from "../../../../components/TextFieldWithIcon/TextFieldWithIcon";
-import TextFieldAnimation from "../../../../components/TextField/TextFieldAnimation";
-import { FormWrapper, FieldGroup, SubmitBtn, Divider, NameGroup } from "../Authentication.styled";
+import { FormWrapper, SubmitBtn, Divider } from "../Authentication.styled";
 import GoogleButton from "../google/GoogleButton";
+import SignUpForm from "./SignUpForm";
+import SignInForm from "./SignInForm";
 
 interface AuthFormProps {
   isSignUp: boolean;
@@ -24,6 +20,8 @@ interface AuthFormProps {
   disable: boolean;
   handleSignUp: () => void;
   handleLogin: () => void;
+  isForgot: boolean;
+  setIsForgot: (v: boolean) => void;
 }
 
 export default function AuthForm({
@@ -43,43 +41,40 @@ export default function AuthForm({
   handleSignUp,
   handleLogin,
   disable,
+  setIsForgot,
 }: AuthFormProps) {
+  const handleIsForgot = () => {
+    isSignUp = false;
+    setIsForgot(true);
+  };
   return (
     <FormWrapper>
-      {isSignUp && (
-        <NameGroup>
-          <TextFieldAnimation required type="First Name" text={firstName} setText={setFirstName} />
-          <TextFieldAnimation required type="Last Name" text={lastName} setText={setLastName} />
-        </NameGroup>
+      {isSignUp ? (
+        <SignUpForm
+          firstName={firstName}
+          setFirstName={setFirstName}
+          lastName={lastName}
+          setLastName={setLastName}
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          confirm={confirm}
+          setConfirm={setConfirm}
+          phone={phone}
+          setPhone={setPhone}
+          handleSignUp={handleSignUp}
+        />
+      ) : (
+        <SignInForm
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          handleLogin={handleLogin}
+          handleIsForgot={handleIsForgot}
+        />
       )}
-      <FieldGroup>
-        <TextFieldWithIcon required icon={<HiOutlineMail />} type="Email" text={email} setText={setEmail} />
-        <TextFieldWithIcon required icon={<FiKey />} type="Password" text={password} setText={setPassword} />
-        {isSignUp && (
-          <TextFieldWithIcon required icon={<FiKey />} type="Password" text={confirm} setText={setConfirm} />
-        )}
-        {isSignUp && (
-          <TextFieldWithIcon required icon={<FiPhone />} type="Phone Number" text={phone} setText={setPhone} />
-        )}
-      </FieldGroup>
-
-      {!isSignUp && (
-        <Link
-          to="#"
-          style={{
-            alignSelf: "flex-end",
-            fontSize: "0.85rem",
-            textDecoration: "none",
-            color: "green",
-          }}
-        >
-          Forgot Password?
-        </Link>
-      )}
-
-      <SubmitBtn type="button" onClick={isSignUp ? handleSignUp : handleLogin} disabled={disable}>
-        {isSignUp ? "Sign Up" : "Sign In"}
-      </SubmitBtn>
 
       <Divider>
         <hr />
@@ -94,14 +89,7 @@ export default function AuthForm({
         }}
         disabled={disable}
       >
-        {/* <FcGoogle
-          style={{
-            marginRight: "20px",
-            fontSize: "25px",
-          }}
-        /> */}
         <GoogleButton />
-        {/* {isSignUp ? "Sign Up with Google" : "Sign In with Google"} */}
       </SubmitBtn>
     </FormWrapper>
   );
