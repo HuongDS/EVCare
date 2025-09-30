@@ -6,6 +6,7 @@ import { getAccessToken, getUser } from "./token/tokenStore";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "./states/store";
 import { loginSuccess } from "./states/authSlice";
+import GloabalErrorToast from "./components/GlobalErrorToast";
 
 const queryClient = new QueryClient();
 function App() {
@@ -19,6 +20,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={true} />
       <RouterProvider router={router} />
+      <GloabalErrorToast />
     </QueryClientProvider>
   );
 }

@@ -113,25 +113,14 @@ const ServiceList = () => {
         <SortSection>
           <SortLabel>Sort by:</SortLabel>
           <ButtonGroup>
-            <SortButton
-              active={sortBy === "default"}
-              onClick={() => handleSortChange("default")}
-            >
-              Default{" "}
-              {sortBy === "default" && (sortOrder === "asc" ? "↑" : "↓")}
+            <SortButton active={sortBy === "default"} onClick={() => handleSortChange("default")}>
+              Default {sortBy === "default" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
-            <SortButton
-              active={sortBy === "name"}
-              onClick={() => handleSortChange("name")}
-            >
+            <SortButton active={sortBy === "name"} onClick={() => handleSortChange("name")}>
               Name {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
-            <SortButton
-              active={sortBy === "duration"}
-              onClick={() => handleSortChange("duration")}
-            >
-              Duration{" "}
-              {sortBy === "duration" && (sortOrder === "asc" ? "↑" : "↓")}
+            <SortButton active={sortBy === "duration"} onClick={() => handleSortChange("duration")}>
+              Duration {sortBy === "duration" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
           </ButtonGroup>
         </SortSection>
@@ -144,15 +133,12 @@ const ServiceList = () => {
                 <ServiceCard>
                   <Card.Body>
                     <ServiceTitle>{service.name}</ServiceTitle>
-                    <ServiceDescription>
-                      {service.description}
-                    </ServiceDescription>
+                    <ServiceDescription>{service.description}</ServiceDescription>
                     <p>
                       <strong>Duration:</strong> {service.duration} hours
                     </p>
 
                     <BookServiceButton onClick={handleOpenBookingForm}>Book This Service</BookServiceButton>
-
                   </Card.Body>
                 </ServiceCard>
               </Col>
