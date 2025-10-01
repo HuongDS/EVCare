@@ -17,6 +17,7 @@ import Staff_Appoinments from "../pages/Staff/StaffManageAppointment/Staff_Appoi
 import Layout from "../components/Layouts/CustomerLayout";
 import Technician_General from "../pages/Technician/TechnicianGeneral/Technician_General";
 import TechnicianLayout from "../pages/Technician/Technician_Component/TechnicianLayout";
+import TechnicianOrder from "../pages/Technician/TechnicianOrder/Technician_Order";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -65,7 +66,10 @@ const router = createBrowserRouter([
   {
     path: "/technician",
     element: <TechnicianLayout />,
-    children: [{ path: "general", element: <Technician_General /> }],
+    children: [
+      { path: "general", element: <Technician_General /> },
+      { path: "order", element: <TechnicianOrder /> },
+    ],
   },
 
   // Test route
