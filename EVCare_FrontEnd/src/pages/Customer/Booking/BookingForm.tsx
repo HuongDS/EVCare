@@ -32,7 +32,7 @@ import { getAccountInformation } from "../../../services/accountService";
 import SelectVehicleSection from "./SelectVehicleSection";
 import NameAndPhoneNumberSection from "./NameAndPhoneNumberSection";
 import ServiceSection from "./ServiceSection";
-import type { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import TimeSection from "./TimeSection";
 import type { AppointmentCreateModel } from "../../../models/AppointmentsModel/AppointmentCreateModel";
 import { createAppointment } from "../../../services/appointmentServices";
@@ -62,11 +62,12 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
   const [licensePlate, setLicensePlate] = useState("");
   const [appointmentDate, setAppointmentDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [urls, setUrls] = useState<string[]>([]);
 
   const handleSelectVehicle = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value;
-      if (value === "add") {
+      const value = Number(e.target.value);
+      if (value === 0) {
         setIsAddNew(true);
         setSelectedValue(0);
       } else {
@@ -102,46 +103,56 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
     });
   }, []);
 
-  const handleSelectDate = useCallback((dateSelected: Dayjs | undefined, timeSelected: Dayjs | undefined) => {
-    setDateSelected(dateSelected);
-    if (dateSelected && timeSelected) {
-      setAppointmentDate(dateSelected.hour(timeSelected.hour()).minute(timeSelected.minute()).second(0).toISOString());
-    }
-  }, []);
+  const handleSelectDate = useCallback(
+    (date: Dayjs | undefined) => {
+      setDateSelected(date);
+      if (date && timeSelected) {
+        setAppointmentDate(date.hour(timeSelected.hour()).minute(timeSelected.minute()).second(0).toISOString());
+      }
+    },
+    [timeSelected]
+  );
 
-  const handleSelectTime = useCallback((dateSelected: Dayjs | undefined, timeSelected: Dayjs | undefined) => {
-    setTimeSelected(timeSelected);
-    if (dateSelected && timeSelected) {
-      setAppointmentDate(dateSelected.hour(timeSelected.hour()).minute(timeSelected.minute()).second(0).toISOString());
-    }
-  }, []);
+  const handleSelectTime = useCallback(
+    (time: Dayjs | undefined) => {
+      setTimeSelected(time);
+      if (dateSelected && time) {
+        setAppointmentDate(dateSelected.hour(time.hour()).minute(time.minute()).second(0).toISOString());
+      }
+    },
+    [dateSelected]
+  );
 
   const handleSubmit = useCallback(async () => {
     setIsLoading(true);
+    let tmp = 0;
     if (note.length > 0) setNote(note.trim());
     if (selectedValue === 0) {
-      const data: VehicleCreateDto = {
-        categoryId: vehicleCategory,
-        licensePlate: licensePlate,
-      };
-      console.log("Bien So Xe :" + data);
-
       try {
+        const data: VehicleCreateDto = {
+          categoryId: vehicleCategory,
+          licensePlate: licensePlate,
+        };
         const response = await createVehicle(data);
-        setSelectedValue(response.data ?? 0);
+        tmp = response.data ?? 0;
+        setSelectedValue(tmp);
       } catch (error) {
+        handleError(error);
         alert(error);
+        setIsLoading(false);
+        setLicensePlate("");
+        setIsAddNew(true);
+        return;
       }
     }
 
     const data: AppointmentCreateModel = {
-      vehicleId: selectedValue,
-      note: note,
+      vehicleId: tmp !== 0 ? tmp : selectedValue,
+      note: note.trim(),
       appointment_Date: appointmentDate,
-      imagesUrls: ["abc", "def", "hehe"],
+      imagesUrls: urls,
       serviceIds: selectedServices,
     };
-    console.log("appoint in4: " + data);
     try {
       const response = await createAppointment(data);
       alert(response.message);
@@ -149,14 +160,28 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
       alert(error);
     } finally {
       setIsLoading(false);
-      setSelectedValue(0);
       setSelectedServices([]);
       setAppointmentDate("");
-      setVehicleCategory(0);
       setLicensePlate("");
       setNote("");
+      setDateSelected(undefined);
+      setTimeSelected(undefined);
+      setSelectedValue(0);
+      setIsAddNew(true);
     }
-  }, [selectedValue, selectedServices, appointmentDate, vehicleCategory, licensePlate, note]);
+  }, [selectedValue, selectedServices, appointmentDate, vehicleCategory, licensePlate, note, urls]);
+
+  const handleNoteChange = useCallback((note: string) => {
+    setNote(note);
+  }, []);
+
+  const handleSelectVehicleCategory = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setVehicleCategory(Number(e.target.value));
+  }, []);
+
+  const handleFileSubmit = useCallback((url: string) => {
+    setUrls((prev) => [...prev, url]);
+  }, []);
 
   useEffect(() => {
     if (!show) return;
@@ -194,6 +219,11 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
     fetchData();
   }, [accountId, isAuthenticated, show, setLoading]);
 
+  useEffect(() => {
+    if (listCategories.length === 0) return;
+    setVehicleCategory(listCategories[0].id);
+  }, [listCategories]);
+
   if (!show || loading) return null;
 
   return (
@@ -218,13 +248,14 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
               handleSelectVehicle={handleSelectVehicle}
               listVehicleOfCustomer={listVehicleOfCustomer}
               listCategories={listCategories}
-              setVehicleCategory={setVehicleCategory}
+              handleSelectVehicleCategory={handleSelectVehicleCategory}
               vehicleCategory={vehicleCategory}
               setLicensePlate={setLicensePlate}
+              licensePlate={licensePlate}
             />
             <FormGroup>
               <Label>Image</Label>
-              <UploadImage></UploadImage>
+              <UploadImage handleFileSubmit={handleFileSubmit}></UploadImage>
             </FormGroup>
           </SubSection>
         </LeftBody>
@@ -256,7 +287,8 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
               <Label>Note</Label>
               <TextArea
                 placeholder="Enter any additional notes..."
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNote(e.target.value)}
+                value={note}
+                onChange={(e) => handleNoteChange(e.target.value)}
               />
             </FormGroup>
           </SubSection>
