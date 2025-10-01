@@ -1,30 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 import logo from "../../../assets/EVCare.png";
 import SwitchButton from "../../../components/SwitchButton/SwitchButton";
-import {
-  StyledModal,
-  SideImage,
-  FormContainer,
-  HeaderBox,
-} from "./Authentication.styled";
+import { StyledModal, SideImage, FormContainer, HeaderBox } from "./Authentication.styled";
 import AuthForm from "./sections/AuthForm";
 import OTPForm from "./sections/OTPForm";
-import {
-  AUTH_FORM_MESSAGE,
-  ERROR_MESSAGE,
-  SUCCESS_MESSAGE,
-} from "../../../constants/messages/Message";
-import type {
-  LoginRequestDto,
-  RegisterRequestDto,
-  VerifyOTPDto,
-} from "../../../models/AuthModel/authModel";
-import {
-  login,
-  register,
-  saveTokens,
-  verifyOtp,
-} from "../../../services/authService";
+import { AUTH_FORM_MESSAGE, ERROR_MESSAGE } from "../../../constants/messages/Message";
+import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto } from "../../../models/AuthModel/authModel";
+import { login, register, saveTokens, verifyOtp } from "../../../services/authService";
 import { toUseFromJwt } from "../../../token/jwtDecode";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
@@ -35,11 +17,7 @@ import { saveUser } from "../../../token/tokenStore";
 import { PASSWORD_REGEX } from "../../../constants/regexs/PasswordRegex";
 import { EMAIL_REGEX } from "../../../constants/regexs/EmailRegex";
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
-import {
-  closeLogin,
-  consumeAction,
-  openAppointmentForm,
-} from "../../../states/uiSlice";
+import { closeLogin, consumeAction, openAppointmentForm } from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 import { handleError } from "../../../utils/errorHandler";
@@ -70,15 +48,14 @@ export default function Authentication() {
   // Redux
   const dispatch = useDispatch<AppDispatch>();
   const pending = useSelector((state: RootState) => state.ui.actionAfterLogin);
-  const loginFormOpen = useSelector(
-    (state: RootState) => state.ui.loginFormOpen
-  );
+  const loginFormOpen = useSelector((state: RootState) => state.ui.loginFormOpen);
 
   // login
   const handleLogin = useCallback(async () => {
+    setIsLoading(true);
     const loginData: LoginRequestDto = {
-      email: email,
-      password: password,
+      email: email.trim(),
+      password: password.trim(),
     };
     try {
       if (!EMAIL_REGEX.test(email)) {
@@ -89,9 +66,6 @@ export default function Authentication() {
         return;
       }
       const response = await login(loginData);
-      if (response == null) {
-        throw new Error(ERROR_MESSAGE.LOGIN_FAILED);
-      }
       if (response.statusCode !== HTTP_STATUS.OK) {
         throw new Error(ERROR_MESSAGE.LOGIN_FAILED);
       }
@@ -110,10 +84,11 @@ export default function Authentication() {
         dispatch(openAppointmentForm());
       }
       dispatch(consumeAction());
-      alert(SUCCESS_MESSAGE.LOGIN_SUCCESS);
+      setIsLoading(false);
+      alert(response.message);
     } catch (err) {
-      alert(ERROR_MESSAGE.LOGIN_FAILED);
-      console.log("Error in login: " + err);
+      alert(err);
+      setIsLoading(false);
       return;
     }
   }, [email, password, pending, dispatch]);
@@ -125,10 +100,7 @@ export default function Authentication() {
     } else if (!EMAIL_REGEX.test(email)) {
       alert(ERROR_MESSAGE.INVALID_EMAIL);
       return;
-    } else if (
-      !PASSWORD_REGEX.test(password) ||
-      !PASSWORD_REGEX.test(confirm)
-    ) {
+    } else if (!PASSWORD_REGEX.test(password) || !PASSWORD_REGEX.test(confirm)) {
       alert(ERROR_MESSAGE.INVALID_PASSWORD);
       return;
     } else if (!PHONE_NUMBER_REGEX.test(phone)) {
@@ -139,31 +111,35 @@ export default function Authentication() {
       return;
     }
     const registerData: RegisterRequestDto = {
-      email: email,
-      password: password,
-      firstName: firstName,
-      lastName: lastName,
-      phone: phone,
+      email: email.trim(),
+      password: password.trim(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      phone: phone.trim(),
     };
     setIsLoading(true);
     try {
-      await register(registerData);
-    } catch (error) {
-      alert(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
-      console.log(error);
-    } finally {
+      const response = await register(registerData);
+      if (!response) {
+        throw new Error(response);
+      }
+      setFirstName("");
+      setLastName("");
+      setPassword("");
+      setConfirm("");
+      setPhone("");
+      setIsOTP(true);
       setIsLoading(false);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      handleError(error);
+      setIsLoading(false);
+      return;
     }
-
-    setFirstName("");
-    setLastName("");
-    setPassword("");
-    setConfirm("");
-    setPhone("");
-    setIsOTP(true);
   }, [email, password, firstName, lastName, phone, confirm]);
 
   const handleVerifyOTP = useCallback(async () => {
+    setIsLoading(true);
     const code = otp.join("");
     if (code.length != LENGTH.OTP_LENGTH || !OTP_REGEX.test(code)) {
       alert(`OTP must be ${LENGTH.OTP_LENGTH} numbers`);
@@ -175,20 +151,14 @@ export default function Authentication() {
         otp: code,
       };
       const response = await verifyOtp(data);
-      if (!response) {
-        handleError("Error in Authentication.tsx");
-        return;
-      }
-      if (response.statusCode != HTTP_STATUS.OK) {
-        alert(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
-        return;
-      }
+      alert(response.message);
     } catch (error) {
-      alert(ERROR_MESSAGE.OTP_WRONG);
-      console.log(error);
+      alert(error);
+      setIsLoading(false);
+      handleError(error);
       return;
     }
-    alert(SUCCESS_MESSAGE.REGISTER_SUCCESS);
+    setIsLoading(false);
     setIsOTP(false);
     dispatch(closeLogin());
   }, [email, otp, dispatch]);
@@ -202,31 +172,20 @@ export default function Authentication() {
   }, [isOTP, isSignUp, isForgot]);
 
   return (
-    <StyledModal
-      show={loginFormOpen}
-      onHide={() => dispatch(closeLogin())}
-      centered
-    >
+    <StyledModal show={loginFormOpen} onHide={() => dispatch(closeLogin())} centered>
       <SideImage $isSignUp={isSignUp}>
         <img src={logo} alt="EVCare Logo" />
       </SideImage>
       <FormContainer $isSignUp={isSignUp}>
         <HeaderBox>
           <h1>{headerText}</h1>
-          {!isOTP && !isForgot ? (
-            <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} />
-          ) : null}
+          {!isOTP && !isForgot ? <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} /> : null}
         </HeaderBox>
 
         {!isOTP ? (
           <>
             {isForgot ? (
-              <ForgotPassword
-                email={email}
-                setEmail={setEmail}
-                setIsForgot={setIsForgot}
-                setIsOTP={setIsOTP}
-              />
+              <ForgotPassword email={email} setEmail={setEmail} setIsForgot={setIsForgot} setIsOTP={setIsOTP} />
             ) : (
               <AuthForm
                 isSignUp={isSignUp}
@@ -246,15 +205,12 @@ export default function Authentication() {
                 handleLogin={handleLogin}
                 isForgot={isForgot}
                 setIsForgot={setIsForgot}
+                disable={isLoading}
               />
             )}
           </>
         ) : (
-          <OTPForm
-            otp={otp}
-            setOtp={setOtp}
-            handleVerifyOTP={handleVerifyOTP}
-          />
+          <OTPForm disable={isLoading} otp={otp} setOtp={setOtp} handleVerifyOTP={handleVerifyOTP} />
         )}
       </FormContainer>
     </StyledModal>
