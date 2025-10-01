@@ -16,7 +16,7 @@ namespace Application.Validators.Part
         {
             _partRepository = partRepository;
 
-            RuleFor
+            
 
         }
     }
