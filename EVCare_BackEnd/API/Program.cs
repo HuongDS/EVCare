@@ -13,6 +13,7 @@ using Application.Services;
 using Application.Validators.Order;
 using Application.Validators.Part;
 using Application.Validators.Service;
+using Application.Validators.Vehicle;
 using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
@@ -140,6 +141,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateServiceRequestValidat
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateServiceRequestValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<OrderUpdateModelValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<OrderPartUpdateModelValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateVehivleModelValidator>();
 
 
 
