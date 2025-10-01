@@ -13,6 +13,7 @@ import { handleError } from "../utils/errorHandler";
 import { store } from "../states/store";
 import { setGlobalError } from "../states/errorSlice";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
+import type { AccountViewModel } from "../models/Accounts/accountViewModel";
 
 // login
 export async function login(loginData: LoginRequestDto) {
@@ -120,5 +121,21 @@ export async function loginWithGoogle(idToken: string | undefined) {
     return response.data;
   } catch (error) {
     handleError(error);
+  }
+}
+
+// get me
+export async function getMe() {
+  try {
+    const response = await api.get<ResponseDto<AccountViewModel>>("/api/Account/me");
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.message;
+      store.dispatch(setGlobalError(errMsg));
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }
