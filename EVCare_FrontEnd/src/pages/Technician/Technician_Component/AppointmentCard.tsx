@@ -19,13 +19,13 @@ const AppointmentID = styled.div`
   justify-content: space-between;
   column-gap: 1rem;
 
-    font-size: 1.2em;
-    font-weight: bold;
-    span {
-      font-weight: 500;
-    }
+  font-size: 1.2em;
+  font-weight: bold;
+  span {
+    font-weight: 500;
   }
 `;
+
 const AppointmentDate = styled.div`
   display: flex;
   justify-content: flex-end;
