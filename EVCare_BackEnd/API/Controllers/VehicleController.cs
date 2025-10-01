@@ -20,7 +20,9 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Customer")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
+        
         public async Task<IActionResult> CreateVehicle(VehicleCreateModel model)
         {
             try
