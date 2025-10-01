@@ -19,26 +19,26 @@ namespace DataAccess.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task BeginTransactionAsync()
-        {
-            _transaction = await _dbContext.Database.BeginTransactionAsync();
-        }
+        //public async Task BeginTransactionAsync()
+        //{
+        //    _transaction = await _dbContext.Database.BeginTransactionAsync();
+        //}
 
-        public async Task CommitAsync()
-        {
-            await _dbContext.SaveChangesAsync();
-            await _transaction.CommitAsync();
-        }
+        //public async Task CommitAsync()
+        //{
+        //    await _dbContext.SaveChangesAsync();
+        //    await _transaction.CommitAsync();
+        //}
 
-        public async Task RollbackAsync()
-        {
-            await _transaction.RollbackAsync();
-        }
+        //public async Task RollbackAsync()
+        //{
+        //    await _transaction.RollbackAsync();
+        //}
 
-        public Task<int> SaveChangesAsync()
-        {
-            return _dbContext.SaveChangesAsync();
-        }
+        //public Task<int> SaveChangesAsync()
+        //{
+        //    return _dbContext.SaveChangesAsync();
+        //}
         public async Task ExecuteInTransactionAsync(Func<Task> operation)
         {
             var strategy = _dbContext.Database.CreateExecutionStrategy();

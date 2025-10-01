@@ -27,22 +27,35 @@ namespace Application.Services
         {
             // check số lần đặt của khách hàng
             // check ngày hôm đó
-            var appointment = _mapper.Map<Appointment>(model);
-
-            if ((await CheckCustomerCreate(appointment)) == false)
+            if ((await CheckCustomerCreate(model.CustomerId)) == false)
             {
                 throw new Exception("You’ve reached your booking limit.");
 
             }
-            if ((await CheckAppointmentsToday()) == false)
+            if ((await CheckAppointmentsForApointmentDate(model.Appointment_Date)) == false)
             {
                 throw new Exception("This day is fully booked");
             }
+            var appointment = _mapper.Map<Appointment>(model);
             await _appointmentRepository.AddAsync(appointment);
 
             return appointment.Id;
 
         }
+
+        private async Task<bool> CheckAppointmentsForApointmentDate(DateTime appointment_Date)
+        {
+            int cnt = await _appointmentRepository.CountAppointment(appointment_Date);
+            int capacity = await _serviceCenterRepository.GetAppactityOfServiceCenter();
+            if (cnt > capacity)
+            {
+                return false;
+
+            }
+            return true;
+
+        }
+
         private async Task<bool> CheckAppointmentsToday()
         {
             int appointments = await _appointmentRepository.CountAppointmnetToday();
@@ -54,9 +67,9 @@ namespace Application.Services
             }
             return true;
         }
-        private async Task<bool> CheckCustomerCreate(Appointment appointment)
+        private async Task<bool> CheckCustomerCreate(int customerId)
         {
-            int appointments = await _appointmentRepository.CountAppointmentsPerDay(appointment.CustomerId);
+            int appointments = await _appointmentRepository.CountAppointmentsPerDay(customerId);
             int dailyLimit = await _serviceCenterRepository.GetLimitBookingOfServiceCenter();
             if (appointments > dailyLimit)
             {
