@@ -56,6 +56,7 @@ namespace Application.Infrastructures
         public const string ORDER_NOT_FOUND = "Order not found.";
         public const string ORDER_CREATED_SUCCESS = "Order created successfully.";
         public const string ORDER_STATUS_UPDATED_SUCCESS = "Order status updated successfully.";
+        public const string ORDER_GET_SUCCESS = "Order get successfully.";
 
         // OrderParts
         public const string ORDER_PARTS_ADDED_SUCCESS = "Parts added to order successfully.";
