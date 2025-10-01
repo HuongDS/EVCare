@@ -14,5 +14,6 @@ namespace DataAccess.Interfaces
         Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model);
         Task UpdateStockPartAsync(int partID, int quantity);
         Task<bool> CheckExist(int partId);
+        void Update(Part part);
     }
 }

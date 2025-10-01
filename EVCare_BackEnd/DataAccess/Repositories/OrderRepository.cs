@@ -31,8 +31,7 @@ namespace DataAccess.Repositories
         public async Task<OrderViewModel> GetOrderDetailAsync(int orderId)
         {
             var query = await _dbSet.AsNoTracking().Where(x => x.Id == orderId)
-                .Include(x => x.OrderParts)
-                .ThenInclude(x => x.Part)
+                .Include(x => x.OrderParts).ThenInclude(x => x.Part)
                 .Select(x => new OrderViewModel
                 {
                     Id = x.Id,
@@ -43,11 +42,36 @@ namespace DataAccess.Repositories
                         Name = x.Part.Name,
                         Price = x.Price,
                         Quantity = x.Quantity,
+                        TechnicianId = x.TechnicianId,
                     }),
                     Price = x.OrderParts.Sum(x => x.Price * x.Quantity)
                 }).FirstOrDefaultAsync();
             return query;
 
+        }
+
+        public async Task<Order> GetOrderPartsByOrderId(int orderId)
+        {
+            return await _dbSet.Include(x => x.OrderParts).FirstOrDefaultAsync(x => x.Id == orderId);
+
+        }
+
+        public async Task RemoveOrderPartsAsync(int orderId)
+        {
+            var orderParts = await _dbContext.OrderParts
+                            .Where(op => op.OrderId == orderId)
+                            .ToListAsync();
+            if (orderParts.Any())
+            {
+                _dbContext.OrderParts.RemoveRange(orderParts);
+                //await _dbContext.SaveChangesAsync();
+            }
+
+        }
+
+        public async Task AddOrderPartAsync(OrderPart orderPart)
+        {
+            await _dbContext.OrderParts.AddAsync(orderPart);
         }
     }
 }
