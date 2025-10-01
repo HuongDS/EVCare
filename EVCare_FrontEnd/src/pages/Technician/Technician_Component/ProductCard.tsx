@@ -1,5 +1,10 @@
 import styled from "styled-components";
 
+// Định nghĩa kiểu cho props của ProductCard
+interface ProductCardProps {
+  onClick: () => void;
+}
+
 const CardContainer = styled.button`
   font-family: "Outfit", sans-serif;
   display: flex;
@@ -49,10 +54,10 @@ const Info = styled.div`
   gap: 5px;
 `;
 
-const ProductCard = () => {
+const ProductCard: React.FC<ProductCardProps> = ({ onClick }) => {
   const price = 20000;
   return (
-    <CardContainer>
+    <CardContainer onClick={onClick}>
       <Image>Product Image</Image>
       <Info>
         <div>Product Name</div>
