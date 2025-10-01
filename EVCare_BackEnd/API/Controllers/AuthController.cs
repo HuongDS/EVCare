@@ -69,7 +69,7 @@ namespace API.Controllers
                 return Ok(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.OK,
-                    message = Message.OTP_INVALID,
+                    message = Message.REGISTER_SUCCESS,
                     data = null
                 });
             }

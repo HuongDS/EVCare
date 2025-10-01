@@ -6,6 +6,7 @@ import { saveTokens } from "../services/authService";
 import { store } from "../states/store";
 import { logoutRedux } from "../states/authSlice";
 import { handleError } from "../utils/errorHandler";
+import { setGlobalError } from "../states/errorSlice";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE,
@@ -32,7 +33,8 @@ api.interceptors.response.use(
     if (
       original?.url?.includes("/api/Auth/login") ||
       original?.url?.includes("/api/Auth/refresh") ||
-      original?.url?.includes("/api/Auth/verify-otp-register")
+      original?.url?.includes("/api/Auth/verify-otp-register") ||
+      original?.url?.includes("/api/Auth/register")
     ) {
       return Promise.reject(error);
     }
@@ -56,6 +58,7 @@ api.interceptors.response.use(
         clearToken();
         window.location.href = "/";
         handleError(error);
+        store.dispatch(setGlobalError(error instanceof Error ? error.message : ERROR_MESSAGE.SOME_THING_WENT_WRONG));
       }
     }
     return Promise.reject(error);

@@ -10,6 +10,9 @@ export const ERROR_MESSAGE = {
   INVALID_PHONE: "Phone number is not valid.",
   THIS_FIELD_IS_REQUIRED: "This field can not be empty!",
   NO_ACCESS_TOKEN_FROM_REFRESH: "No AccessToken from refresh.",
+  FETCH_DATA_FAILED: "Failed to fetch data.",
+  CREATE_APPOINTMENT_FAILED: "Failed to create an appointment.",
+  CREATE_VEHICLE_FAILED: "Failed to create a vehicle.",
 };
 
 export const SUCCESS_MESSAGE = {
