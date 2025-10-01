@@ -75,7 +75,7 @@ namespace API.Controllers
         }
 
         [HttpPost("update-order-status")]
-        [Authorize(Roles = "Staff, Technician")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> UpdateOrderStatus(OrderUpdateStatusDto data)
         {
             try
@@ -90,6 +90,45 @@ namespace API.Controllers
                     statusCode = 400,
                     message = ex.Message,
                     data = null
+                });
+            }
+        }
+        [HttpGet("get-order-detail/{orderId}")]
+        [Authorize(Roles ="Staff")]
+        public async Task<IActionResult> GetOrderDetail(int orderId)
+        {
+            try
+            {
+                var data =  await _orderService.GetOrderDetailAsync(orderId);
+                return Ok(new ResponseDto<OrderViewModel> {
+                    
+                    statusCode = HttpStatus.OK,
+                    message = Message.ORDER_GET_SUCCESS,
+                    data = data      
+                });
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                });
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateOrder(OrderUpdateModel model)
+        {
+            try
+            {
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
                 });
             }
         }

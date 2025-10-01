@@ -268,8 +268,11 @@ namespace DataAccess.Repositories
                      Services = x.Order.Appointment.AppointmentServices.Select(x => x.Service.Name).ToList(),
                      Parts = x.Technician.OrderParts.Select(x => new Dtos.Part.PartTechnicianViewModel
                      {
+                         Id = x.PartId,
                          Name = x.Part.Name,
                          Quantity = x.Quantity,
+                         ImageUrl = x.Part.Image,
+                         Price = x.Price,
                      }).ToList()
                  })
                  .Where(x => x.Status == model.Status
