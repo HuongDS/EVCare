@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using System.Security.Authentication;
 using System.Text;
-using API.Features.Order;
-using API.Features.Service;
 using API.Filters;
 using API.Middlewares;
 using Application.Interfaces;
@@ -12,7 +10,8 @@ using Application.Mapping;
 using Application.Mappings;
 using Application.Service;
 using Application.Services;
-
+using Application.Validators.Order;
+using Application.Validators.Service;
 using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
