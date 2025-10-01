@@ -1,7 +1,8 @@
 ﻿using DataAccess.Dtos.Service;
 using FluentValidation;
 
-namespace API.Features.Service
+
+namespace Application.Validators.Service
 {
     public class CreateServiceRequestValidator : AbstractValidator<ServicePostModel>
     {
