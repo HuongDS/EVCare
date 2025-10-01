@@ -40,6 +40,11 @@ namespace DataAccess.Repositories
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
         }
 
+        public void Update(Part part)
+        {
+            _dbContext.Update(part);
+        }
+
         public async Task UpdateStockPartAsync(int partID, int quantity)
         {
             var part = await GetByIdAsync(partID);

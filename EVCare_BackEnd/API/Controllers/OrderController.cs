@@ -8,6 +8,7 @@ using DataAccess.Interfaces;
 using DataAccess.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -118,11 +119,18 @@ namespace API.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles ="Staff")]
         public async Task<IActionResult> UpdateOrder(OrderUpdateModel model)
         {
             try
             {
-                return null;
+                await _orderService.UpdateOrderAsync(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = "Sucess",
+                    data = model.Id
+                });
 
             }catch(Exception ex)
             {

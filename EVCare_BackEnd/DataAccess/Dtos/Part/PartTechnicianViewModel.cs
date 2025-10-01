@@ -8,6 +8,8 @@ namespace DataAccess.Dtos.Part
 {
     public class PartTechnicianViewModel
     {
+        public int TechnicianId { get; set; }
+ 
         public int Id { get; set; }
         public string Name { get; set; }
         public int Quantity { get; set; }

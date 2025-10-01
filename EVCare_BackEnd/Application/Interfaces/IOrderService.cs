@@ -18,6 +18,7 @@ namespace Application.Interfaces
         Task<int> GetAppointmentIdByOrderIdAsync(int orderId);
         Task<OrderViewModel> GetOrderDetailAsync(int orderId);
         Task<(StringBuilder, decimal)> GetOrderPartViewModelsAsync(int orderId);
+        Task UpdateOrderAsync(OrderUpdateModel model);
         Task<ResponseDto<OrderResponseDto>> UpdateStatusOrderAsync(OrderUpdateStatusDto data);
     }
 }

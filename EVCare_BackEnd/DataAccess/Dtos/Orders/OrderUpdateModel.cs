@@ -10,7 +10,7 @@ namespace DataAccess.Dtos.Orders
 {
     public class OrderUpdateModel
     {
-        public int Id;
+        public int Id { get; set; }
         public IEnumerable<OrderPartUpdateModel> OrderParts { get; set; }
     }
 }

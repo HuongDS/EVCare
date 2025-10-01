@@ -256,6 +256,7 @@ namespace DataAccess.Repositories
                  .Include(x => x.Order).ThenInclude(x => x.Appointment).ThenInclude(x => x.Customer).ThenInclude(x => x.Account)
                  .Include(x => x.Order).ThenInclude(x => x.Appointment).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Category)
                  .Include(x => x.Order).ThenInclude(x => x.Appointment).ThenInclude(x => x.AppointmentServices)
+                 
                  .Select(x => new AppointmentTechnicianViewModel
                  {
                      Id = x.Order.Appointment.Id,
@@ -273,6 +274,8 @@ namespace DataAccess.Repositories
                          Quantity = x.Quantity,
                          ImageUrl = x.Part.Image,
                          Price = x.Price,
+                         TechnicianId = x.TechnicianId,
+                         
                      }).ToList()
                  })
                  .Where(x => x.Status == model.Status
