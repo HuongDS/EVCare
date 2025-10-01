@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Part;
 
-namespace DataAccess.Dtos.Part
+namespace DataAccess.Dtos.Orders
 {
-    public class PartTechnicianViewModel
+    public class OrderViewModel
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public int Quantity { get; set; }
+        public IEnumerable<PartTechnicianViewModel> Parts { get; set; }   
+
         public decimal Price { get; set; }
-        public string ImageUrl { get; set; }
     }
 }

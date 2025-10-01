@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Security.Authentication;
 using System.Text;
+using API.Features.Order;
 using API.Features.Service;
 using API.Filters;
 using API.Middlewares;
@@ -11,6 +12,7 @@ using Application.Mapping;
 using Application.Mappings;
 using Application.Service;
 using Application.Services;
+
 using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
@@ -135,6 +137,7 @@ builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 //Validator
 builder.Services.AddValidatorsFromAssemblyContaining<CreateServiceRequestValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateServiceRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<OrderUpdateModelValidator>();
 
 
 

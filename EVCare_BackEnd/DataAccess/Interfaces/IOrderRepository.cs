@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Orders;
 using DataAccess.Entities;
 
 namespace DataAccess.Interfaces
@@ -11,5 +12,6 @@ namespace DataAccess.Interfaces
     {
         Task<int> GetAppointmentIdByOrderId(int orderId);
         public Task<int> GetCustomerIdByOrderId(int orderId);
+        Task<OrderViewModel> GetOrderDetailAsync(int orderId);
     }
 }
