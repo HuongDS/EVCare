@@ -1,4 +1,4 @@
-import React, { type ChangeEvent } from "react";
+import React from "react";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
 import { FormGroup, Input, Label, Required, Select, SubTitle } from "./BookingForm.styled";
 import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
@@ -9,9 +9,10 @@ interface Props {
   handleSelectVehicle: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   listVehicleOfCustomer: VehicleViewDto[];
   listCategories: VehicleCategoryViewDto[];
-  setVehicleCategory: (cateId: number) => void;
+  handleSelectVehicleCategory: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   vehicleCategory: number;
   setLicensePlate: (l: string) => void;
+  licensePlate: string;
 }
 
 function SelectVehicleComponent({
@@ -20,9 +21,10 @@ function SelectVehicleComponent({
   handleSelectVehicle,
   listVehicleOfCustomer,
   listCategories,
-  setVehicleCategory,
+  handleSelectVehicleCategory,
   vehicleCategory,
   setLicensePlate,
+  licensePlate,
 }: Props) {
   return (
     <>
@@ -50,18 +52,11 @@ function SelectVehicleComponent({
         </Select>
       </FormGroup>
       <FormGroup>
-        <Label>Kilometers</Label>
-        <Input type="number" min={0} placeholder="Enter kilometers" />
-      </FormGroup>
-      <FormGroup>
         <Label>
           Vehicle Model <Required>*</Required>
         </Label>
         {isAddNew ? (
-          <Select
-            value={vehicleCategory}
-            onChange={(e: ChangeEvent<HTMLSelectElement>) => setVehicleCategory(Number(e.target.value))}
-          >
+          <Select value={vehicleCategory} onChange={handleSelectVehicleCategory}>
             {listCategories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -82,6 +77,7 @@ function SelectVehicleComponent({
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLicensePlate(e.target.value)}
               type="text"
               placeholder="Ex:50G-99999"
+              value={licensePlate}
             />
           </>
         )}
