@@ -8,10 +8,10 @@ namespace DataAccess.Interfaces
 {
     public interface IUnitOfWork
     {
-        Task BeginTransactionAsync();
-        Task CommitAsync();
-        Task RollbackAsync();
-        Task<int> SaveChangesAsync();
+        //Task BeginTransactionAsync();
+        //Task CommitAsync();
+        //Task RollbackAsync();
+        //Task<int> SaveChangesAsync();
         Task ExecuteInTransactionAsync(Func<Task> operation);
     }
 }
