@@ -11,6 +11,7 @@ using Application.Mappings;
 using Application.Service;
 using Application.Services;
 using Application.Validators.Order;
+using Application.Validators.Part;
 using Application.Validators.Service;
 using DataAccess;
 using DataAccess.Entities;
@@ -79,6 +80,7 @@ builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
 builder.Services.AddScoped<ITechnicianWorkingSessionRepository, TechnicianWorkingSessionRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 
@@ -137,6 +139,7 @@ builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateServiceRequestValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateServiceRequestValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<OrderUpdateModelValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<OrderPartUpdateModelValidator>();
 
 
 

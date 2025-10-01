@@ -7,6 +7,7 @@ using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using AutoMapper;
+using CloudinaryDotNet.Actions;
 using DataAccess.Dtos.OrderPart;
 using DataAccess.Dtos.OrderParts;
 using DataAccess.Dtos.Orders;
@@ -14,6 +15,7 @@ using DataAccess.Entities;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using Order = DataAccess.Entities.Order;
 
@@ -26,15 +28,17 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly IOrderPartRepository _orderPartRepository;
         private readonly IPartRepository _partRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public OrderService(IOrderRepository orderRepository, IAppointmentRepository appointmentRepository,
-            IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository)
+            IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository,IUnitOfWork unitOfWork)
         {
             _orderRepository = orderRepository;
             _appointmentRepository = appointmentRepository;
             _mapper = mapper;
             _orderPartRepository = orderPartRepository;
             _partRepository = partRepository;
+            _unitOfWork = unitOfWork;
         }
         public async Task<ResponseDto<OrderResponseDto>> CreateOrderAsync(OrderCreateRequestDto data)
         {
@@ -128,6 +132,47 @@ namespace Application.Services
         public async Task<OrderViewModel> GetOrderDetailAsync(int orderId)
         {
             return await _orderRepository.GetOrderDetailAsync(orderId);
+        }
+
+        public async Task UpdateOrderAsync(OrderUpdateModel model)
+        {
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                var data = await _orderRepository.GetOrderPartsByOrderId(model.Id);
+                //trả lại
+                foreach (var op in data.OrderParts)
+                {
+                    var part = await _partRepository.GetByIdAsync(op.PartId);
+                    if (part == null) throw new Exception($"Part {op.PartId} not found");
+                    part.Stock += op.Quantity;
+                    _partRepository.Update(part);
+                }
+
+                //Xóa hết cái cũ
+                await _orderRepository.RemoveOrderPartsAsync(model.Id);
+
+
+                //thêm mới
+                foreach (var part in model.OrderParts)
+                {
+                    var originalPart = await _partRepository.GetByIdAsync(part.PartId);
+                    if (originalPart == null) throw new Exception($"Part {part.PartId} not found");
+                    if (part.Quantity > originalPart.Stock) throw new Exception($"Part {part.PartId} doesn't have enough stock");
+                    originalPart.Stock -= part.Quantity;
+                    _partRepository.Update(originalPart);
+
+                    await _orderRepository.AddOrderPartAsync(new OrderPart
+                    {
+                        OrderId = model.Id,
+                        PartId = part.PartId,
+                        Quantity = part.Quantity,
+                        TechnicianId = part.TechnicianId,
+                        Price = originalPart.Price,
+                    });
+                }
+
+            });
+            
         }
     }
 }
