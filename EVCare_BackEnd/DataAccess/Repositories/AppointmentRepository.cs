@@ -287,5 +287,10 @@ namespace DataAccess.Repositories
                                                                                                                                        
                 
         }
+
+        public async Task<int> CountAppointment(DateTime appointment_Date)
+        {
+            return await _dbSet.CountAsync(x => DateOnly.FromDateTime(x.Appointment_Date) == DateOnly.FromDateTime(appointment_Date));
+        }
     }
 }
