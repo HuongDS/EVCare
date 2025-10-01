@@ -39,7 +39,9 @@ export default function Authentication() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState<string[]>(() => Array(LENGTH.OTP_LENGTH).fill("")); // lazy init
+  const [otp, setOtp] = useState<string[]>(() =>
+    Array(LENGTH.OTP_LENGTH).fill("")
+  ); // lazy init
   const [isLoading, setIsLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
 
