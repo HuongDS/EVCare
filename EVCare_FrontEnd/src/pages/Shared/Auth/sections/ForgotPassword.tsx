@@ -8,25 +8,14 @@ interface ForgotProps {
   setIsForgot: (v: boolean) => void;
   setIsOTP: (v: boolean) => void;
 }
-export default function ForgotPassword({
-  email,
-  setEmail,
-  setIsForgot,
-  setIsOTP,
-}: ForgotProps) {
+export default function ForgotPassword({ email, setEmail, setIsForgot, setIsOTP }: ForgotProps) {
   const handleChangeIsForgot = () => {
     setIsForgot(false);
     setIsOTP(true);
   };
   return (
     <FormWrapper>
-      <TextFieldWithIcon
-        required
-        icon={<HiOutlineMail />}
-        type="Email"
-        text={email}
-        setText={setEmail}
-      />
+      <TextFieldWithIcon required={true} icon={<HiOutlineMail />} type="Email" text={email} setText={setEmail} />
       <SubmitBtn type="button" onClick={handleChangeIsForgot}>
         Send
       </SubmitBtn>
