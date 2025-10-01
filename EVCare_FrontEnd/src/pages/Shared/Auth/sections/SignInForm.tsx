@@ -3,12 +3,14 @@ import { HiOutlineMail } from "react-icons/hi";
 import { FiKey } from "react-icons/fi";
 import { FieldGroup, SubmitBtn } from "../Authentication.styled";
 import { Link } from "react-router";
+import SpinnerComponent from "../../../../components/SpinnerComponent";
 
 interface SignInProps {
   email: string;
   setEmail: (v: string) => void;
   password: string;
   setPassword: (v: string) => void;
+  disable: boolean;
   handleLogin: () => void;
   handleIsForgot: () => void;
 }
@@ -20,24 +22,13 @@ export default function SignInForm({
   setPassword,
   handleLogin,
   handleIsForgot,
+  disable,
 }: SignInProps) {
   return (
     <>
       <FieldGroup>
-        <TextFieldWithIcon
-          required
-          icon={<HiOutlineMail />}
-          type="Email"
-          text={email}
-          setText={setEmail}
-        />
-        <TextFieldWithIcon
-          required
-          icon={<FiKey />}
-          type="Password"
-          text={password}
-          setText={setPassword}
-        />
+        <TextFieldWithIcon required={true} icon={<HiOutlineMail />} type="Email" text={email} setText={setEmail} />
+        <TextFieldWithIcon required={true} icon={<FiKey />} type="Password" text={password} setText={setPassword} />
       </FieldGroup>
       <Link
         to="#"
@@ -51,9 +42,13 @@ export default function SignInForm({
       >
         Forgot Password?
       </Link>
-      <SubmitBtn type="button" onClick={handleLogin}>
-        Sign In
-      </SubmitBtn>
+      {disable ? (
+        <SpinnerComponent />
+      ) : (
+        <SubmitBtn type="button" onClick={handleLogin}>
+          Sign In
+        </SubmitBtn>
+      )}
     </>
   );
 }

@@ -12,6 +12,7 @@ namespace DataAccess.Dtos.Vehicle
         public string CategoryName { get; set; }
         public string LicensePlate { get; set; }
         public string? Image { get; set; }
+        public int cateId { get; set; }
 
     }
 }

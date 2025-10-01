@@ -64,6 +64,7 @@ export default function AuthForm({
           phone={phone}
           setPhone={setPhone}
           handleSignUp={handleSignUp}
+          disable={disable}
         />
       ) : (
         <SignInForm
@@ -73,6 +74,7 @@ export default function AuthForm({
           setPassword={setPassword}
           handleLogin={handleLogin}
           handleIsForgot={handleIsForgot}
+          disable={disable}
         />
       )}
 

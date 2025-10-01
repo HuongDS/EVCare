@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
 import { closeAppointmentForm, openAppointmentForm, openLogin, setAction } from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 type SortBy = "default" | "name" | "duration";
 type SortOrder = "asc" | "desc";
@@ -35,6 +36,7 @@ const ServiceList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { createAppointmentFormOpen } = useSelector((state: RootState) => state.ui);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (createAppointmentFormOpen) {
@@ -106,8 +108,7 @@ const ServiceList = () => {
         <HeaderSection>
           <ServiceLabel>OUR SERVICES</ServiceLabel>
           <MainTitle>Maintenance Your Vehicle</MainTitle>
-
-          <BookButton onClick={handleOpenBookingForm}>Book a Service →</BookButton>
+          {loading ? <SpinnerComponent /> : <BookButton onClick={handleOpenBookingForm}>Book a Service →</BookButton>}
         </HeaderSection>
 
         <SortSection>
@@ -149,7 +150,7 @@ const ServiceList = () => {
           <GetInTouchButton>Get In Touch →</GetInTouchButton>
         </FooterCTA>
       </Container>
-      <BookingForm show={showForm} handleClose={() => setShowForm(false)} />
+      <BookingForm loading={loading} setLoading={setLoading} show={showForm} handleClose={() => setShowForm(false)} />
     </PageContainer>
   );
 };

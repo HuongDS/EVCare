@@ -1,3 +1,4 @@
+import axios from "axios";
 import { api } from "../api/api";
 import type {
   LoginRequestDto,
@@ -9,17 +10,24 @@ import type {
 } from "../models/AuthModel/authModel";
 import { clearToken, setTokens } from "../token/tokenStore";
 import { handleError } from "../utils/errorHandler";
+import { store } from "../states/store";
+import { setGlobalError } from "../states/errorSlice";
+import { ERROR_MESSAGE } from "../constants/messages/Message";
 
 // login
 export async function login(loginData: LoginRequestDto) {
-
   try {
     const response = await api.post<ResponseDto<LoginResponseDto>>("/api/Auth/login", loginData);
     return response.data;
   } catch (error) {
     handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || ERROR_MESSAGE.LOGIN_FAILED;
+      store.dispatch(setGlobalError(errMsg));
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
-
 }
 
 export function saveTokens(accessToken: string) {
@@ -33,6 +41,12 @@ export async function logout() {
     return response.data;
   } catch (error) {
     handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || "Logout Failed";
+      store.dispatch(setGlobalError(errMsg));
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }
 
@@ -42,18 +56,33 @@ export function deleteToken() {
 
 // signUp
 export async function register(registerData: RegisterRequestDto) {
-  await api.post<ResponseDto<object>>("/api/Auth/register", registerData);
+  try {
+    const response = await api.post<ResponseDto<object>>("/api/Auth/register", registerData);
+    return response.data.message;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || "Register Failed";
+      store.dispatch(setGlobalError(errMsg));
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
 }
 
 export async function verifyOtp(data: VerifyOTPDto) {
-
   try {
     const response = await api.post<ResponseDto<object>>("/api/Auth/verify-otp-register", data);
     return response.data;
   } catch (error) {
     handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || ERROR_MESSAGE.OTP_WRONG;
+      store.dispatch(setGlobalError(errMsg));
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
-
 }
 
 //refresh
@@ -68,7 +97,6 @@ export async function refreshToken() {
 
 // forgot-password
 export async function sendOtp(email: string) {
-
   try {
     const response = await api.post<ResponseDto<object>>("/api/Auth/sent-otp", email);
     return response.data;
@@ -83,17 +111,14 @@ export async function resetPassword(data: ResetPasswordRequestDto) {
   } catch (error) {
     handleError(error);
   }
-
 }
 
 // login with google
 export async function loginWithGoogle(idToken: string | undefined) {
-
   try {
     const response = await api.post<ResponseDto<LoginResponseDto>>("/api/Auth/login-google", idToken);
     return response.data;
   } catch (error) {
     handleError(error);
   }
-
 }
