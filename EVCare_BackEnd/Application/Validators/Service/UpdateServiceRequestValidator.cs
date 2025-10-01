@@ -1,7 +1,7 @@
 ﻿using DataAccess.Dtos.Service;
 using FluentValidation;
 
-namespace API.Features.Service
+namespace Application.Validators.Service
 {
     public class UpdateServiceRequestValidator : AbstractValidator<ServicePutModel>
     {

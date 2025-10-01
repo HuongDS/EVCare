@@ -124,5 +124,10 @@ namespace Application.Services
         {
             return await _orderRepository.GetAppointmentIdByOrderId(orderId);
         }
+
+        public async Task<OrderViewModel> GetOrderDetailAsync(int orderId)
+        {
+            return await _orderRepository.GetOrderDetailAsync(orderId);
+        }
     }
 }

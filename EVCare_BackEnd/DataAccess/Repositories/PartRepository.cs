@@ -17,7 +17,10 @@ namespace DataAccess.Repositories
         public PartRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
-
+        public async Task<bool> CheckExist(int partId)
+        {
+            return await _dbSet.AnyAsync(x => x.Id == partId);
+        }
         public Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
         {
             var query = _dbContext.Parts.AsNoTracking()
@@ -28,7 +31,8 @@ namespace DataAccess.Repositories
                      CategoryId = x.CategoryId,
                      IsDeleted = (x.Deleted_At != DateTime.MinValue),
                      Price = x.Price,
-                     Quantity = x.Stock
+                     Quantity = x.Stock,
+                     ImageUrl = x.Image,
                  });
             if (model.CategpryId.HasValue) query = query.Where(x => x.CategoryId == model.CategpryId.Value);
 
