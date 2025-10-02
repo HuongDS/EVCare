@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Part;
 using DataAccess.Entities;
+using DataAccess.Helpers;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +17,25 @@ namespace DataAccess.Repositories
         public PartRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
+
+        public Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
+        {
+            var query = _dbContext.Parts.AsNoTracking()
+                .Where(x => x.Name.Contains(model.PartName))
+                .Select(x => new PartViewModel
+                 {
+                     Name = x.Name,
+                     CategoryId = x.CategoryId,
+                     IsDeleted = (x.Deleted_At != DateTime.MinValue),
+                     Price = x.Price,
+                     Quantity = x.Stock
+                 });
+            if (model.CategpryId.HasValue) query = query.Where(x => x.CategoryId == model.CategpryId.Value);
+
+            query = query.ApplySorting(model.SortField, model.SortOrder);
+            return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+        }
+
         public async Task UpdateStockPartAsync(int partID, int quantity)
         {
             var part = await GetByIdAsync(partID);
