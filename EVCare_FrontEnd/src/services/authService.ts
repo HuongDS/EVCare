@@ -108,17 +108,16 @@ export async function refreshToken() {
 // forgot-password
 export async function sendOtp(email: string) {
   try {
-    const response = await api.post<ResponseDto<object>>(
-      "/api/Auth/sent-otp",
-      null,
-      { params: { email } }
-    );
+
+    const response = await api.post<ResponseDto<object>>("/api/Auth/sent-otp", null, { params: { email } });
+
     return response.data;
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
-      const errMsg =
-        error.response?.data.message || ERROR_MESSAGE.SOME_THING_WENT_WRONG;
+
+      const errMsg = error.response?.data.message || ERROR_MESSAGE.SOME_THING_WENT_WRONG;
+
       store.dispatch(setGlobalError(errMsg));
       throw new Error(errMsg);
     }
@@ -135,8 +134,9 @@ export async function resetPassword(data: ResetPasswordRequestDto) {
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
-      const errMsg =
-        error.response?.data.message || ERROR_MESSAGE.RESET_PASSWORD_FAILED;
+
+      const errMsg = error.response?.data.message || ERROR_MESSAGE.RESET_PASSWORD_FAILED;
+
       store.dispatch(setGlobalError(errMsg));
       throw new Error(errMsg);
     }
