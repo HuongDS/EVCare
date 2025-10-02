@@ -33,7 +33,6 @@ namespace Application.Services
             var date = _mapper.Map<CenterUnavailableDays>(model);
             var blockedDate = await _blockedDateRepository.AddAsync(date);
             return blockedDate.Id;
-
         }
 
         public async Task<IEnumerable<BlockedDateViewModel>> GetBlockedDateFromToday()

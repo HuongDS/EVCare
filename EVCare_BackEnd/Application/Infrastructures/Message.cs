@@ -103,7 +103,7 @@ namespace Application.Infrastructures
         public const string CUSTOMER_GET_SUCCESSFULLY = "Get customer successfully";
 
         //Technician
-
         public const string GET_TECHNICIAN_SUCCESSFULLY = "Get technician successfully";
+        public const string UPDATE_SUCCESSFULLY = "Update successfully";
     }
 }
