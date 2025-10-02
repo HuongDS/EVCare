@@ -1,10 +1,3 @@
-//NGO CHI VY
-import { useEffect, useState } from "react";
-import {
-  PiNumberCircleOneFill,
-  PiNumberCircleTwoFill,
-  PiNumberCircleThreeFill,
-} from "react-icons/pi";
 import React, { useCallback, useEffect, useState } from "react";
 import { PiNumberCircleOneFill, PiNumberCircleTwoFill, PiNumberCircleThreeFill } from "react-icons/pi";
 // import { Plus } from "lucide-react";
@@ -28,15 +21,11 @@ import UploadImage from "../../../components/UploadFields/uploadImage";
 import { getCustomerId } from "../../../services/customerServices";
 import type { RootState } from "../../../states/store";
 import { useSelector } from "react-redux";
-import {
-  getVehicleByCustomerId,
-  getVehicleCategories,
-} from "../../../services/vehicleServicesApi";
 import { createVehicle, getVehicleByCustomerId, getVehicleCategories } from "../../../services/vehicleServices";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
 import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import type { ServiceCategoryViewModel } from "../../../models/ServicesModel/ServiceCategoryViewModel";
-import { getAllServices } from "../../../services/serviceServicesApi";
+import { getAllServices } from "../../../services/serviceServices";
 import { handleError } from "../../../utils/errorHandler";
 import type { AccountViewModel } from "../../../models/Accounts/accountViewModel";
 import { getAccountInformation } from "../../../services/accountService";
@@ -49,7 +38,6 @@ import type { AppointmentCreateModel } from "../../../models/AppointmentsModel/A
 import { createAppointment } from "../../../services/appointmentServices";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
-import { ERROR_MESSAGE } from "../../../constants/messages/Message";
 
 interface Props {
   show: boolean;
@@ -57,26 +45,6 @@ interface Props {
   loading: boolean;
   setLoading: (loading: boolean) => void;
 }
-export default function BookingForm({ show, handleClose }: Props) {
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const accountId = useSelector(
-    (state: RootState) => state.auth.user?.accountId
-  );
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
-  const [customerId, setCustomerId] = useState(0);
-  const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<
-    VehicleViewDto[]
-  >([]);
-  const [selectedValue, setSelectedValue] = useState("");
-  const [isAddNew, setIsAddNew] = useState(false);
-  const [listCategories, setListCategories] = useState<
-    VehicleCategoryViewDto[]
-  >([]);
-  const [serviceCategories, setServiceCategories] = useState<
-    ServiceCategoryViewModel[]
-  >([]);
 export default function BookingForm({ show, handleClose, setLoading, loading }: Props) {
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -229,13 +197,13 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
       setAccountInfor(account.data);
       const listVehicleOfCustomer = await getVehicleByCustomerId(customer.data?.id ?? 0);
       if (!listVehicleOfCustomer) {
-        handleError(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+        handleError("Error in BookingForm.tsx");
         return;
       }
       setListVehicleOfCustomer(listVehicleOfCustomer.data ?? []);
       const listVehicleCategories = await getVehicleCategories();
       if (!listVehicleCategories) {
-        handleError(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+        handleError("Error in BookingForm.tsx");
         return;
       }
       setListCategories(listVehicleCategories.data ?? []);
@@ -249,17 +217,6 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
       setLoading(false);
     };
     fetchData();
-  }, [accountId, customerId, isAuthenticated]);
-
-  if (!show) return null;
-
-  const handleServiceChange = (serviceName: string) => {
-    setSelectedServices((prev) =>
-      prev.includes(serviceName)
-        ? prev.filter((s) => s !== serviceName)
-        : [...prev, serviceName]
-    );
-  };
   }, [accountId, isAuthenticated, show, setLoading]);
 
   useEffect(() => {
@@ -285,66 +242,6 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
             <NameAndPhoneNumberSection accountInfor={accountInfor} />
           </SubSection>
           <SubSection>
-            <SubTitle
-              style={{
-                fontSize: 20,
-                fontWeight: "bold",
-              }}
-            >
-              Vehicle
-            </SubTitle>
-            <FormGroup>
-              <Label>
-                Your Vehicle License Plate <Required>*</Required>
-              </Label>
-              <Select
-                value={isAddNew ? "add" : selectedValue}
-                onChange={handleSelectVehicle}
-              >
-                {listVehicleOfCustomer.map((v) => (
-                  <option key={v.id} value={v.categoryName}>
-                    {v.licensePlate}
-                  </option>
-                ))}
-                <option value={"add"}>Add Vehicle</option>
-              </Select>
-            </FormGroup>
-            <FormGroup>
-              <Label>Kilometers</Label>
-              <Input type="number" min={0} placeholder="Enter kilometers" />
-            </FormGroup>
-            <FormGroup>
-              <Label>
-                Vehicle Model <Required>*</Required>
-              </Label>
-              {isAddNew ? (
-                <Select>
-                  {listCategories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </Select>
-              ) : (
-                <Input
-                  type="text"
-                  disabled
-                  value={
-                    listCategories.find((c) => c.name === selectedValue)?.name
-                  }
-                />
-              )}
-            </FormGroup>
-            <FormGroup>
-              {isAddNew && (
-                <>
-                  <Label>
-                    Vehicle License Plate <Required>*</Required>
-                  </Label>
-                  <Input type="text" placeholder="Ex:50G-99999" />
-                </>
-              )}
-            </FormGroup>
             <SelectVehicleSection
               isAddNew={isAddNew}
               selectedValue={selectedValue}
@@ -368,27 +265,6 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
             <h5>Service</h5>
           </SubTitle>
           <SubSection>
-            <Label>
-              Service <Required>*</Required>
-            </Label>
-
-            {serviceCategories.map((c) => (
-              <ServiceOption key={c.name}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <Checkbox
-                    type="checkbox"
-                    onChange={() => handleServiceChange(c.name)}
-                  />
-                  <span>{c.name}</span>
-                </div>
-                <MoreInfoLink>More Info</MoreInfoLink>
-              </ServiceOption>
-            ))}
             <ServiceSection
               serviceCategories={serviceCategories}
               handleServiceCategoriesChange={handleServiceCategoriesChange}
@@ -410,7 +286,7 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
             <FormGroup>
               <Label>Note</Label>
               <TextArea
-                placeholder="Enter any additional note"
+                placeholder="Enter any additional notes..."
                 value={note}
                 onChange={(e) => handleNoteChange(e.target.value)}
               />
