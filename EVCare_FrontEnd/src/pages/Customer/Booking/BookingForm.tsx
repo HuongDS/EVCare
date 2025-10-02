@@ -21,7 +21,7 @@ import UploadImage from "../../../components/UploadFields/uploadImage";
 import { getCustomerId } from "../../../services/customerServices";
 import type { RootState } from "../../../states/store";
 import { useSelector } from "react-redux";
-import { createVehicle, getVehicleByCustomerId, getVehicleCategories } from "../../../services/vehicleServices";
+import { createVehicle, getVehicleByCustomerId, getVehicleCategories } from "../../../services/vehicleServicesApi";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
 import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import type { ServiceCategoryViewModel } from "../../../models/ServicesModel/ServiceCategoryViewModel";
@@ -45,7 +45,7 @@ interface Props {
   loading: boolean;
   setLoading: (loading: boolean) => void;
 }
-export default function BookingForm({ show, handleClose, setLoading, loading }: Props) {
+function BookingFormComponent({ show, handleClose, setLoading, loading }: Props) {
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<VehicleViewDto[]>([]);
@@ -306,3 +306,6 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
     </BookingFormWrapper>
   );
 }
+
+const BookingForm = React.memo(BookingFormComponent);
+export default BookingForm;
