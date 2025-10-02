@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router-dom";
 import AdminLayout from "../pages/Admin/AdminLayout";
 import StaffLayout from "../components/Layouts/StaffLayout";
 import HomePage from "../pages/Users/HomePage/HomePage";
-import ServiceList from "../pages/Users/Services/ServiceList";
 import AboutUs from "../pages/Users/AboutUs/AboutUs";
 import ContactUs from "../pages/Users/Contact/ContactUs";
 import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail";
@@ -18,6 +17,7 @@ import Staff_Appoinments from "../pages/Staff/StaffAppoinments/Staff_Appoinments
 import Layout from "../components/Layouts/CustomerLayout";
 import Technician_General from "../pages/Technician/TechnicianGeneral/Technician_General";
 import TechnicianLayout from "../pages/Technician/TechnicianLayout";
+import ServiceList from "../pages/Users/ServicesPage/ServiceList";
 const router = createBrowserRouter([
   {
     path: "/",
