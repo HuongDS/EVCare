@@ -13,6 +13,7 @@ export const ERROR_MESSAGE = {
   FETCH_DATA_FAILED: "Failed to fetch data.",
   CREATE_APPOINTMENT_FAILED: "Failed to create an appointment.",
   CREATE_VEHICLE_FAILED: "Failed to create a vehicle.",
+  RESET_PASSWORD_FAILED: "Failed to reset password",
 };
 
 export const SUCCESS_MESSAGE = {
