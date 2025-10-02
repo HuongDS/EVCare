@@ -25,11 +25,7 @@ namespace Application.Services
 
         public async Task<int> CreatePost(BlockedDatePostModel model)
         {
-            var cnt = await _appointmentRepository.CountAppointment(model.Date);
-            if (cnt > 0)
-            {
-                throw new Exception($"The Date {model.Date} has {cnt} appointments");
-            }
+          
             var date = _mapper.Map<CenterUnavailableDays>(model);
             var blockedDate = await _blockedDateRepository.AddAsync(date);
             return blockedDate.Id;
