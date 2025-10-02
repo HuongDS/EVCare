@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Orders;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,52 @@ namespace DataAccess.Repositories
         {
             var entity = await _dbContext.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.Id == orderId);
             return entity.AppointmentId;
+        }
+
+        public async Task<OrderViewModel> GetOrderDetailAsync(int orderId)
+        {
+            var query = await _dbSet.AsNoTracking().Where(x => x.Id == orderId)
+                .Include(x => x.OrderParts).ThenInclude(x => x.Part)
+                .Select(x => new OrderViewModel
+                {
+                    Id = x.Id,
+                    Parts = x.OrderParts.Select(x => new Dtos.Part.PartTechnicianViewModel
+                    {
+                        Id = x.PartId,
+                        ImageUrl = x.Part.Image,
+                        Name = x.Part.Name,
+                        Price = x.Price,
+                        Quantity = x.Quantity,
+                        TechnicianId = x.TechnicianId,
+                    }),
+                    Price = x.OrderParts.Sum(x => x.Price * x.Quantity)
+                }).FirstOrDefaultAsync();
+            return query;
+
+        }
+
+        public async Task<Order> GetOrderPartsByOrderId(int orderId)
+        {
+            return await _dbSet.Include(x => x.OrderParts).FirstOrDefaultAsync(x => x.Id == orderId);
+
+        }
+
+        public async Task RemoveOrderPartsAsync(int orderId)
+        {
+            var orderParts = await _dbContext.OrderParts
+                            .Where(op => op.OrderId == orderId)
+                            .ToListAsync();
+            if (orderParts.Any())
+            {
+                _dbContext.OrderParts.RemoveRange(orderParts);
+                //await _dbContext.SaveChangesAsync();
+            }
+
+        }
+
+        public async Task AddOrderPartAsync(OrderPart orderPart)
+        {
+            await _dbContext.OrderParts.AddAsync(orderPart);
         }
     }
 }
