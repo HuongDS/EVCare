@@ -136,6 +136,18 @@ namespace Application.Services
 
         public async Task UpdateOrderAsync(OrderUpdateModel model)
         {
+
+            var entity = await _orderRepository.GetByIdAsync(model.Id);
+            if (entity == null) {
+
+                throw new Exception($"The Order {model.Id} doesn't not exist");
+            }
+            if(entity.Status == DataAccess.Enums.OrderStatusEnum.Canceled || entity.Status == DataAccess.Enums.OrderStatusEnum.Completed)
+            {
+                throw new Exception($"The Order {model.Id} haved canceled or completed");
+
+            }
+
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var data = await _orderRepository.GetOrderPartsByOrderId(model.Id);

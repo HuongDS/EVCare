@@ -8,7 +8,8 @@ namespace DataAccess.Dtos.BlockedDate
 {
     public class BlockedDateViewModel
     {
-        public DateTime DateTime { get; set; }
+        public DateOnly DateTime { get; set; }
+        public string Reason { get; set; }
    
     }
 }
