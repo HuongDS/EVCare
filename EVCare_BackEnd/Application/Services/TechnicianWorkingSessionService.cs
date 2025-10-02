@@ -14,16 +14,17 @@ namespace Application.Services
         private readonly ITechnicianWorkingSessionRepository _technicianWorkingSessionRepository;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IOrderRepository _orderRepository;
-        private readonly IUnitOfWork _unitOfWork;   
+        private readonly INotificationServices _notificationServices;   
         public TechnicianWorkingSessionService(ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
             ,IOrderRepository orderRepository
             ,IAppointmentRepository appointmentRepository
-            
+            ,INotificationServices notificationServices
             )
         {
             _orderRepository = orderRepository;
             _appointmentRepository = appointmentRepository;
             _technicianWorkingSessionRepository = technicianWorkingSessionRepository;
+            _notificationServices = notificationServices;
         }
 
         public async Task UpdateWorkingSession(int technician,TechnicianWorkingSessionUpdateModel model)
@@ -43,6 +44,10 @@ namespace Application.Services
                     Message = $"Your appointment have ready to pick up"
                 });
                 await _appointmentRepository.UpdateAsync(appointment);
+                var data = await _appointmentRepository.GetPaymentPendingPickupEmailModel(appointment.Id);
+                await _notificationServices.SendPaymentPendingPickupEmailAsync(data);
+
+                
             }
 
         }

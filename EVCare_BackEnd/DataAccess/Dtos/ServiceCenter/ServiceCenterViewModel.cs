@@ -17,5 +17,7 @@ namespace DataAccess.Dtos.ServiceCenter
         public int? Capacity { get; set; }
         public int? WorkSlot { get; set; }
         public int? DailyBookingLimit { get; set; }
+        public string? WorkStartDay { get; set; }
+        public string? WorkEndDay { get; set; }
     }
 }

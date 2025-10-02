@@ -44,7 +44,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> UpdateServiceCenter(ServiceCenterViewModel model)
         {
             try

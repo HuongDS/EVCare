@@ -11,6 +11,7 @@ using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Payment;
 
 namespace DataAccess.Repositories
 {
@@ -291,6 +292,33 @@ namespace DataAccess.Repositories
         public async Task<int> CountAppointment(DateOnly appointment_Date)
         {
             return await _dbSet.CountAsync(x => DateOnly.FromDateTime(x.Appointment_Date) == appointment_Date);
+        }
+
+        public async Task<PaymentPendingPickupEmailModel> GetPaymentPendingPickupEmailModel(int id)
+        {
+            var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
+            return await _dbContext.Appointments.AsNoTracking()
+                .Where(x => x.Id == id)
+                .Include(x => x.Customer).ThenInclude(x => x.Account)
+                .Include(x => x.AppointmentServices).ThenInclude(x=>x.Service)
+                .Include(x => x.Vehicle).ThenInclude(x => x.Category)
+                .Include(x => x.Order).ThenInclude(x => x.OrderParts)
+                .Select(x => new PaymentPendingPickupEmailModel
+                {
+                    Amount = x.Order.OrderParts.Sum(x => x.Price * x.Quantity),
+                    CloseDate = center.WorkEndDay,
+                    CloseTime = center.CloseTime,
+                    CompletedAt = DateTime.Now,
+                    CustomerName = x.Customer.Account.First_Name + " " + x.Customer.Account.Last_Name,
+                    Email = x.Customer.Account.Email,
+                    LicensePlate = x.Vehicle.LicensePlate,
+                    OpenDate = center.WorkStartDay,
+                    OpenTime  = center.OpenTime,
+                    ServiceCenterName = center.Name,
+                    ServiceList = x.AppointmentServices.Select(x=>x.Service.Name).ToList(),
+                    VehicleModel = x.Vehicle.Category.Name
+                })
+                .FirstOrDefaultAsync();
         }
     }
 }
