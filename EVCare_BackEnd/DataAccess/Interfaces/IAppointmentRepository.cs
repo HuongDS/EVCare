@@ -30,6 +30,6 @@ namespace DataAccess.Interfaces
         Task CancelAppointment();
         Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model);
         Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentTechnicianViewModelByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model);
-        Task<int> CountAppointment(DateTime appointment_Date);
+        Task<int> CountAppointment(DateOnly appointment_Date);
     }
 }
