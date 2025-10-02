@@ -27,6 +27,7 @@ namespace DataAccess.Repositories
                 .Where(x => x.Name.Contains(model.PartName))
                 .Select(x => new PartViewModel
                  {
+                     Id = x.Id,
                      Name = x.Name,
                      CategoryId = x.CategoryId,
                      IsDeleted = (x.Deleted_At != DateTime.MinValue),

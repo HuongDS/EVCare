@@ -1,4 +1,9 @@
-﻿using Application.Interfaces;
+﻿using API.Filters;
+using Application.Dtos;
+using Application.Infrastructures;
+using Application.Interfaces;
+using DataAccess.Dtos.Technician;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +18,31 @@ namespace API.Controllers
         {
             _service = service; 
         }
-        [HttpPut("my-working-session/{orderId}")]
-        public Task<IActionResult> UpdateWorkingSession(int orderId)
+        [HttpPut("my-working-session")]
+        [Authorize(Roles ="Technician")]
+        [ServiceFilter(typeof(SetTechnicianIdFilter))]
+        public async Task<IActionResult> UpdateWorkingSession(TechnicianWorkingSessionUpdateModel model)
         {
-            return null;
+            try
+            {
+                var techicianId = (int)HttpContext.Items["TechnicianId"];
+                await _service.UpdateWorkingSession(techicianId, model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.UPDATE_SUCCESSFULLY,
+                    data = model.OrderId
+                });
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+
+                });
+            }
         }
     }
 }
