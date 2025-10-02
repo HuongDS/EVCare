@@ -18,7 +18,10 @@ import type { AccountViewModel } from "../models/Accounts/accountViewModel";
 // login
 export async function login(loginData: LoginRequestDto) {
   try {
-    const response = await api.post<ResponseDto<LoginResponseDto>>("/api/Auth/login", loginData);
+    const response = await api.post<ResponseDto<LoginResponseDto>>(
+      "/api/Auth/login",
+      loginData
+    );
     return response.data;
   } catch (error) {
     handleError(error);
@@ -58,7 +61,10 @@ export function deleteToken() {
 // signUp
 export async function register(registerData: RegisterRequestDto) {
   try {
-    const response = await api.post<ResponseDto<object>>("/api/Auth/register", registerData);
+    const response = await api.post<ResponseDto<object>>(
+      "/api/Auth/register",
+      registerData
+    );
     return response.data.message;
   } catch (error) {
     handleError(error);
@@ -73,7 +79,10 @@ export async function register(registerData: RegisterRequestDto) {
 
 export async function verifyOtp(data: VerifyOTPDto) {
   try {
-    const response = await api.post<ResponseDto<object>>("/api/Auth/verify-otp-register", data);
+    const response = await api.post<ResponseDto<object>>(
+      "/api/Auth/verify-otp-register",
+      data
+    );
     return response.data;
   } catch (error) {
     handleError(error);
@@ -99,12 +108,16 @@ export async function refreshToken() {
 // forgot-password
 export async function sendOtp(email: string) {
   try {
+
     const response = await api.post<ResponseDto<object>>("/api/Auth/sent-otp", null, { params: { email } });
+
     return response.data;
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
+
       const errMsg = error.response?.data.message || ERROR_MESSAGE.SOME_THING_WENT_WRONG;
+
       store.dispatch(setGlobalError(errMsg));
       throw new Error(errMsg);
     }
@@ -113,12 +126,17 @@ export async function sendOtp(email: string) {
 }
 export async function resetPassword(data: ResetPasswordRequestDto) {
   try {
-    const response = await api.post<ResponseDto<object>>("/api/Auth/reset-password", data);
+    const response = await api.post<ResponseDto<object>>(
+      "/api/Auth/reset-password",
+      data
+    );
     return response.data;
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
+
       const errMsg = error.response?.data.message || ERROR_MESSAGE.RESET_PASSWORD_FAILED;
+
       store.dispatch(setGlobalError(errMsg));
       throw new Error(errMsg);
     }
@@ -129,7 +147,10 @@ export async function resetPassword(data: ResetPasswordRequestDto) {
 // login with google
 export async function loginWithGoogle(idToken: string | undefined) {
   try {
-    const response = await api.post<ResponseDto<LoginResponseDto>>("/api/Auth/login-google", idToken);
+    const response = await api.post<ResponseDto<LoginResponseDto>>(
+      "/api/Auth/login-google",
+      idToken
+    );
     return response.data;
   } catch (error) {
     handleError(error);
@@ -139,7 +160,9 @@ export async function loginWithGoogle(idToken: string | undefined) {
 // get me
 export async function getMe() {
   try {
-    const response = await api.get<ResponseDto<AccountViewModel>>("/api/Account/me");
+    const response = await api.get<ResponseDto<AccountViewModel>>(
+      "/api/Account/me"
+    );
     return response.data;
   } catch (error) {
     handleError(error);
