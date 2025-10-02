@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.Invoice;
+using DataAccess.Dtos.Payment;
 using DataAccess.Dtos.Vehicle;
 
 namespace Application.Interfaces
@@ -16,6 +17,6 @@ namespace Application.Interfaces
         Task<string> SendOTP(string email, int expires);
 
         Task SendEmailToRemider(VehicleReminderDto model);
-        //Task SendEmailTo
+        Task SendPaymentPendingPickupEmailAsync(PaymentPendingPickupEmailModel model);
     }
 }

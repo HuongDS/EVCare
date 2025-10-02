@@ -8,15 +8,18 @@ namespace DataAccess.Dtos.Payment
 {
     public class PaymentPendingPickupEmailModel
     {
+        public string Email { get; set; }
         public string CustomerName { get; set; }
         public string VehicleModel { get; set; }
         public string LicensePlate { get; set; }
-        public string ServiceList { get; set; }
-        public string Amount { get; set; }                
+        public List<string> ServiceList { get; set; }
+        public decimal Amount { get; set; }                
         public DateTime CompletedAt { get; set; }
         public string ServiceCenterName { get; set; }
-        public string OpenTime { get; set; }          
-        public string CloseTime { get; set; }
+        public TimeSpan OpenTime { get; set; }          
+        public TimeSpan CloseTime { get; set; }
+        public string OpenDate {  get; set; }
+        public string CloseDate { get; set; }
 
     }
 }
