@@ -256,6 +256,7 @@ namespace DataAccess.Repositories
                  .Include(x => x.Order).ThenInclude(x => x.Appointment).ThenInclude(x => x.Customer).ThenInclude(x => x.Account)
                  .Include(x => x.Order).ThenInclude(x => x.Appointment).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Category)
                  .Include(x => x.Order).ThenInclude(x => x.Appointment).ThenInclude(x => x.AppointmentServices)
+                 
                  .Select(x => new AppointmentTechnicianViewModel
                  {
                      Id = x.Order.Appointment.Id,
@@ -268,8 +269,13 @@ namespace DataAccess.Repositories
                      Services = x.Order.Appointment.AppointmentServices.Select(x => x.Service.Name).ToList(),
                      Parts = x.Technician.OrderParts.Select(x => new Dtos.Part.PartTechnicianViewModel
                      {
+                         Id = x.PartId,
                          Name = x.Part.Name,
                          Quantity = x.Quantity,
+                         ImageUrl = x.Part.Image,
+                         Price = x.Price,
+                         TechnicianId = x.TechnicianId,
+                         
                      }).ToList()
                  })
                  .Where(x => x.Status == model.Status
@@ -280,6 +286,11 @@ namespace DataAccess.Repositories
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
                                                                                                                                        
                 
+        }
+
+        public async Task<int> CountAppointment(DateTime appointment_Date)
+        {
+            return await _dbSet.CountAsync(x => DateOnly.FromDateTime(x.Appointment_Date) == DateOnly.FromDateTime(appointment_Date));
         }
     }
 }

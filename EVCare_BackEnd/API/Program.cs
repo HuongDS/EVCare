@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Security.Authentication;
 using System.Text;
-using API.Features.Service;
 using API.Filters;
 using API.Middlewares;
 using Application.Interfaces;
@@ -11,6 +10,10 @@ using Application.Mapping;
 using Application.Mappings;
 using Application.Service;
 using Application.Services;
+using Application.Validators.Order;
+using Application.Validators.Part;
+using Application.Validators.Service;
+using Application.Validators.Vehicle;
 using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
@@ -78,6 +81,7 @@ builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
 builder.Services.AddScoped<ITechnicianWorkingSessionRepository, TechnicianWorkingSessionRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 
@@ -104,6 +108,7 @@ builder.Services.AddScoped<ILinkServices, LinkServices>();
 builder.Services.AddScoped<IServiceCenterService, ServiceCenterService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITechnicianService, TechnicianService>();
+builder.Services.AddScoped<IPartService, PartService>();
 
 
 // AutoMapper
@@ -112,6 +117,7 @@ builder.Services.AddAutoMapper(typeof(VehicleProfile));
 builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 builder.Services.AddAutoMapper(typeof(AppointmentProfile));
 builder.Services.AddAutoMapper(typeof(AccountProfile));
+//builder.Services.AddAutoMapper(typeof(ServiceCenterProfile));
 
 //Action Filter
 builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
@@ -133,6 +139,9 @@ builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 //Validator
 builder.Services.AddValidatorsFromAssemblyContaining<CreateServiceRequestValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateServiceRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<OrderUpdateModelValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<OrderPartUpdateModelValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateVehivleModelValidator>();
 
 
 

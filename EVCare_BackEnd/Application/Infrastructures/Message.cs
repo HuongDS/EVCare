@@ -56,6 +56,7 @@ namespace Application.Infrastructures
         public const string ORDER_NOT_FOUND = "Order not found.";
         public const string ORDER_CREATED_SUCCESS = "Order created successfully.";
         public const string ORDER_STATUS_UPDATED_SUCCESS = "Order status updated successfully.";
+        public const string ORDER_GET_SUCCESS = "Order get successfully.";
 
         // OrderParts
         public const string ORDER_PARTS_ADDED_SUCCESS = "Parts added to order successfully.";
@@ -88,11 +89,15 @@ namespace Application.Infrastructures
         public const string DELETE_FAIL = "Delete a service fail";
         public const string UPDATE_FAIL = "Update a service fail";
         public const string UPDATE_SUCCESS = "Update a service success";
+        //Service Center
+        public const string SERVICE_CENTER_GET_SUCCESSFULLY = "Get service center successfully";
+        public const string SERVICE_CENTER_UPDATE_SUCCESSFULLY = "Update service center successfully";
 
         //Vehicle
         public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
 
-
+        //Part
+        public const string PART_GET_SUCCESSFULLY = "Get parts successfully";
 
         //Customer
         public const string CUSTOMER_GET_SUCCESSFULLY = "Get customer successfully";
