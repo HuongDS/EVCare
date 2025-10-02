@@ -38,6 +38,7 @@ import type { AppointmentCreateModel } from "../../../models/AppointmentsModel/A
 import { createAppointment } from "../../../services/appointmentServices";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
+import { ERROR_MESSAGE } from "../../../constants/messages/Message";
 
 interface Props {
   show: boolean;
@@ -197,13 +198,13 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
       setAccountInfor(account.data);
       const listVehicleOfCustomer = await getVehicleByCustomerId(customer.data?.id ?? 0);
       if (!listVehicleOfCustomer) {
-        handleError("Error in BookingForm.tsx");
+        handleError(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         return;
       }
       setListVehicleOfCustomer(listVehicleOfCustomer.data ?? []);
       const listVehicleCategories = await getVehicleCategories();
       if (!listVehicleCategories) {
-        handleError("Error in BookingForm.tsx");
+        handleError(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         return;
       }
       setListCategories(listVehicleCategories.data ?? []);
@@ -286,7 +287,7 @@ export default function BookingForm({ show, handleClose, setLoading, loading }: 
             <FormGroup>
               <Label>Note</Label>
               <TextArea
-                placeholder="Enter any additional notes..."
+                placeholder="Enter any additional note"
                 value={note}
                 onChange={(e) => handleNoteChange(e.target.value)}
               />
