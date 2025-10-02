@@ -268,6 +268,7 @@ namespace DataAccess.Repositories
                      Status = x.Status,
                      VehicleModel = x.Order.Appointment.Vehicle.Category.Name,
                      Services = x.Order.Appointment.AppointmentServices.Select(x => x.Service.Name).ToList(),
+                     OrderId = x.OrderId,
                      Parts = x.Technician.OrderParts.Select(x => new Dtos.Part.PartTechnicianViewModel
                      {
                          Id = x.PartId,
