@@ -16,5 +16,6 @@ namespace Application.Interfaces
         Task<string> SendOTP(string email, int expires);
 
         Task SendEmailToRemider(VehicleReminderDto model);
+        //Task SendEmailTo
     }
 }
