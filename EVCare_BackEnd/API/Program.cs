@@ -11,6 +11,7 @@ using Application.Mappings;
 using Application.Service;
 using Application.Services;
 using Application.Validators.Appointment;
+using Application.Validators.BlockDate;
 using Application.Validators.Order;
 using Application.Validators.Part;
 using Application.Validators.Service;
@@ -111,6 +112,7 @@ builder.Services.AddScoped<IServiceCenterService, ServiceCenterService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITechnicianService, TechnicianService>();
 builder.Services.AddScoped<IPartService, PartService>();
+builder.Services.AddScoped<ITechnicianWorkingSessionService, TechnicianWorkingSessionService>();
 
 
 // AutoMapper
@@ -145,6 +147,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<OrderUpdateModelValidator>(
 builder.Services.AddValidatorsFromAssemblyContaining<OrderPartUpdateModelValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateVehivleModelValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AppointmentCustomerCreateModelValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<BlockedDatePostModelValidator>();
 
 
 
