@@ -17,7 +17,6 @@ interface AuthFormProps {
   setLastName: (v: string) => void;
   phone: string;
   setPhone: (v: string) => void;
-  disable: boolean;
   handleSignUp: () => void;
   handleLogin: () => void;
   isForgot: boolean;
@@ -40,7 +39,6 @@ export default function AuthForm({
   setLastName,
   handleSignUp,
   handleLogin,
-  disable,
   setIsForgot,
 }: AuthFormProps) {
   const handleIsForgot = () => {
@@ -89,7 +87,6 @@ export default function AuthForm({
           backgroundColor: "#fff",
           color: "black",
         }}
-        disabled={disable}
       >
         <GoogleButton />
       </SubmitBtn>

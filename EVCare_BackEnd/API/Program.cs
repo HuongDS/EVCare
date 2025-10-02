@@ -104,6 +104,7 @@ builder.Services.AddScoped<ILinkServices, LinkServices>();
 builder.Services.AddScoped<IServiceCenterService, ServiceCenterService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITechnicianService, TechnicianService>();
+builder.Services.AddScoped<IPartService, PartService>();
 
 
 // AutoMapper
@@ -112,6 +113,7 @@ builder.Services.AddAutoMapper(typeof(VehicleProfile));
 builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 builder.Services.AddAutoMapper(typeof(AppointmentProfile));
 builder.Services.AddAutoMapper(typeof(AccountProfile));
+//builder.Services.AddAutoMapper(typeof(ServiceCenterProfile));
 
 //Action Filter
 builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
