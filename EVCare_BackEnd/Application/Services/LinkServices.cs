@@ -25,8 +25,8 @@ namespace Application.Services
             var confirmToken = _tokenServices.Issue(customerId, appointmentId, "confirm", ttl);
             var cancelToken = _tokenServices.Issue(customerId, appointmentId, "cancel", ttl);
             return (
-                $"{baseUrl}/customer-confirm-appointment?token={confirmToken}",
-                $"{baseUrl}/customer-cancel-appointment?token={cancelToken}"
+                $"{baseUrl}/api/Appointment/customer-confirm-appointment?token={confirmToken}",
+                $"{baseUrl}/api/Appointment/customer-cancel-appointment?token={cancelToken}"
                 );
         }
     }
