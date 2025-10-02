@@ -6,8 +6,8 @@ import type { Dayjs } from "dayjs";
 interface Props {
   date: Dayjs | undefined;
   time: Dayjs | undefined;
-  handleSelectDate: (date: Dayjs | undefined, time: Dayjs | undefined) => void;
-  handleSelectTime: (date: Dayjs | undefined, time: Dayjs | undefined) => void;
+  handleSelectDate: (date: Dayjs | undefined) => void;
+  handleSelectTime: (time: Dayjs | undefined) => void;
 }
 
 function TimeComponent({ date, time, handleSelectDate, handleSelectTime }: Props) {
@@ -20,18 +20,20 @@ function TimeComponent({ date, time, handleSelectDate, handleSelectTime }: Props
         <TimeInput>
           <DatePicker
             getPopupContainer={(triggerNode) => triggerNode.parentElement as HTMLElement}
-            onChange={() => handleSelectDate(date, time)}
+            onChange={(value) => handleSelectDate(value)}
+            value={date}
           />
         </TimeInput>
         <TimeInput>
           <TimePicker
             getPopupContainer={(triggerNode) => triggerNode.parentElement as HTMLElement}
             type="time"
-            onChange={() => handleSelectTime(date, time)}
+            onChange={(value) => handleSelectTime(value)}
             placeholder="Time"
             format="HH:mm"
             showSecond={false}
             minuteStep={5}
+            value={time}
           />
         </TimeInput>
       </TimeInputGroup>

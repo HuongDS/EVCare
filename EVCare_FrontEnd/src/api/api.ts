@@ -41,7 +41,7 @@ api.interceptors.response.use(
     if (error?.response?.status === 401 && !original?.headers?.Authorization) {
       return Promise.reject(error);
     }
-    if (error?.response?.status === 401 || !original?._retry) {
+    if (error?.response?.status === 401 && !original?._retry) {
       original._retry = true;
       try {
         const response = await api.post<ResponseDto<LoginResponseDto>>(
@@ -49,6 +49,7 @@ api.interceptors.response.use(
         );
         const newToken = response.data.data?.accessToken;
         if (!newToken) throw new Error(ERROR_MESSAGE.NO_ACCESS_TOKEN_FROM_REFRESH);
+        clearToken();
         saveTokens(newToken);
         original.headers = original.headers ?? {};
         original.headers.Authorization = `Bearer ${newToken}`;

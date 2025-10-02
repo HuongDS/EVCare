@@ -57,11 +57,9 @@ export default function Authentication() {
     };
     try {
       if (!EMAIL_REGEX.test(email)) {
-        alert(ERROR_MESSAGE.INVALID_EMAIL);
-        return;
+        throw new Error(ERROR_MESSAGE.INVALID_EMAIL);
       } else if (!PASSWORD_REGEX.test(password)) {
-        alert(ERROR_MESSAGE.INVALID_PASSWORD);
-        return;
+        throw new Error(ERROR_MESSAGE.INVALID_PASSWORD);
       }
       const response = await login(loginData);
       if (response.statusCode !== HTTP_STATUS.OK) {
