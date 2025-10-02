@@ -24,6 +24,8 @@ namespace Application.Services
         {
             try
             {
+                var ok =  await _vehicleRepository.CheckLicensePlate(model.LicensePlate);
+                if (ok == true) throw new Exception("Licese Plate has exits");
                 var vehicle = _mapper.Map<Vehicle>(model);
                 vehicle.CustomerId = customerId;
                 var createdVehicle = await _vehicleRepository.AddAsync(vehicle);

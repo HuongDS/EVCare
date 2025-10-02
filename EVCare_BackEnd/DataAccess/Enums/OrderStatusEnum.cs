@@ -10,9 +10,7 @@ namespace DataAccess.Enums
     {
         Pending,
         Processing,
-        Paused,
         Completed,
-        WaitingForPayment,
         Canceled
     }
 }

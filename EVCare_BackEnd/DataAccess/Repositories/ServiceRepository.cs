@@ -22,7 +22,13 @@ namespace DataAccess.Repositories
 
         public async Task<PageResultDto<ServiceViewModel>> GetActiveServiceAndKeywordWithPagination(ServiceQueryDto model)
         {
-            var query = _dbSet.Where(s => s.Deleted_At == DateTime.MinValue && s.Name.Contains(model.Keyword))
+            if (string.IsNullOrWhiteSpace(model.Keyword))
+            {
+                model.Keyword = string.Empty;
+            }
+            var query = _dbSet
+                .AsNoTracking()
+                .Where(s => s.Deleted_At == DateTime.MinValue && s.Name.Contains(model.Keyword))
                 .Select(x=>new ServiceViewModel
                 {
                     Description = x.Description,

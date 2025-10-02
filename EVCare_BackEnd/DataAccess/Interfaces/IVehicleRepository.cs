@@ -14,6 +14,6 @@ namespace DataAccess.Interfaces
         Task<VehicleDetailViewModel> GetVehicleDetailById(int vehicleId);
         Task<IEnumerable<Vehicle>> GetVehiclesByCustomerId(int customerId);
         Task<IEnumerable<VehicleReminderDto>> GetVehicleReminderTodayAsync();
-        
+        Task<bool> CheckLicensePlate(string licensePlate);
     }
 }

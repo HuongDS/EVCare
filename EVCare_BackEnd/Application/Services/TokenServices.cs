@@ -36,7 +36,7 @@ namespace Application.Services
             };
 
             var minutes = int.Parse(_configuration["Jwt:AccessTokenMinutes"] ?? "20");
-            var expires = DateTime.Now.AddMinutes(minutes);
+            var expires = DateTime.UtcNow.AddMinutes(minutes);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
