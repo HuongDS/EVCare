@@ -12,5 +12,6 @@ namespace DataAccess.Interfaces
     {
         Task AssignTechnicianToOrder(TechnicianWorkingSession data);
         Task UpdateStatusWorkingSession(int technician, TechnicianWorkingSessionUpdateModel model);
+        Task<bool> CheckOrderDone(int orderId);
     }
 }
