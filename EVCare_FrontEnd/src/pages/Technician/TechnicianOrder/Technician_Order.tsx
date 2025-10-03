@@ -1,30 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductCard from "../Technician_Component/ProductCard";
 import ProductModal from "../Technician_Component/ProductModal";
+import { getAllParts } from "../../../services/partApi";
+import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 
 export default function TechnicianOrder() {
   const [open, setOpen] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const openModal = () => {
-    setVisible(true);
-    requestAnimationFrame(() => setOpen(true));
-  };
+  const [parts, setParts] = useState<OrderPartsResponseDto[]>([]);
 
-  const closeModal = () => setOpen(false);
+  useEffect(() => {
+    const fetchParts = async () => {
+      try {
+        const res = await getAllParts();
+        setParts(res?.data ?? []);
+      } catch (error) {
+        console.error("Error fetching parts:", error);
+        setParts([]);
+      }
+    };
+    fetchParts();
+  }, []);
 
-  const handleAnimationEnd = () => {
-    if (!open) setVisible(false);
-  };
   return (
     <div>
       <h1>Technician Order</h1>
-      <ProductCard onClick={openModal}></ProductCard>
-      {visible && (
-        <div>
-          <div onClick={closeModal}>Backdrop</div>
-          <ProductModal isOpen={open} onAnimationEnd={handleAnimationEnd} />
-        </div>
-      )}
+
+      {parts.map((part) => (
+        <ProductCard
+          key={part.partId}
+          part={part}
+          onClick={() => setOpen(true)}
+        />
+      ))}
+
+      <ProductModal open={open} onClose={() => setOpen(false)} />
     </div>
   );
 }
