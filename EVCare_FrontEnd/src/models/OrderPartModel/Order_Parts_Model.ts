@@ -5,8 +5,8 @@ export type ResponseDto<T> = {
 };
 
 export type OrderPartsResponseDto = {
-  partId: number;
-  partName: string;
+  id: number;
+  name: string;
   quantity: number;
   price: number;
   categoryId: number;
