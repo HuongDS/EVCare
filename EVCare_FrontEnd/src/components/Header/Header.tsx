@@ -2,7 +2,7 @@ import logo from "../../assets/EVCare.png";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import Authentication from "../../pages/Shared/Auth/Authentication";
-import { Navbar, Logo, Menu, Buttons, SearchBar } from "./Header.styled";
+import { Navbar, Logo, Menu, Buttons } from "./Header.styled";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../states/store";
 import { Dropdown, DropdownButton } from "react-bootstrap";
@@ -12,6 +12,7 @@ import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
 import { logoutRedux } from "../../states/authSlice";
 import { openLogin } from "../../states/uiSlice";
 import { handleError } from "../../utils/errorHandler";
+import DropdownMenu from "./DropdownMenu";
 
 export default function Header() {
   // const [showAuth, setShowAuth] = useState(false);
@@ -68,15 +69,19 @@ export default function Header() {
         <Link to="/contact">Contact</Link>
       </Menu>
       {isAuthenticated ? (
-        <Buttons typeof="submit" onClick={handleLogout}>
-          <button className="btn btn-fill">Log Out</button>
-        </Buttons>
+        <div
+          style={{
+            display: "flex",
+          }}
+        >
+          <DropdownMenu></DropdownMenu>
+          <Buttons typeof="submit" onClick={handleLogout}>
+            <button className="btn btn-fill">Log Out</button>
+          </Buttons>
+        </div>
       ) : (
         <Buttons>
-          <button
-            className="btn btn-fill"
-            onClick={() => dispatch(openLogin())}
-          >
+          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
             Get Started
           </button>
         </Buttons>
