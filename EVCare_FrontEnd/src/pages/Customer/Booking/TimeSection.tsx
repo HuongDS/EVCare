@@ -77,11 +77,11 @@ function TimeComponent({ date, time, handleSelectDate, handleSelectTime }: Props
           //   for (let m = 0; m < startTime.minute(); m++) disabled.push(m);
           //   return disabled;
           // }
-          const cutoffStartDate = startTime?.add(1, "hour");
-          if (selectedHour === cutoffStartDate?.hour()) {
-            for (let m = 0; m < cutoffStartDate.minute(); m++) disabled.push(m);
-            return disabled;
-          }
+          // const cutoffStartDate = startTime?.add(1, "hour");
+          // if (selectedHour === cutoffStartDate?.hour()) {
+          //   for (let m = 0; m < cutoffStartDate.minute(); m++) disabled.push(m);
+          //   return disabled;
+          // }
 
           if (selectedHour === endTime?.hour()) {
             for (let m = 0; m < 60; m++) disabled.push(m);
@@ -89,6 +89,11 @@ function TimeComponent({ date, time, handleSelectDate, handleSelectTime }: Props
           }
 
           if (current && current.isSame(now, "day")) {
+            const cutoffStartDate = startTime?.add(1, "hour");
+            if (selectedHour === cutoffStartDate?.hour()) {
+              for (let m = 0; m < cutoffStartDate.minute(); m++) disabled.push(m);
+              return disabled;
+            }
             if (selectedHour === cutoff.hour()) {
               for (let m = 0; m < cutoff.minute(); m++) disabled.push(m);
               return disabled;
