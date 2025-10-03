@@ -4,10 +4,12 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Helper;
 using Application.Interfaces;
 using AutoMapper;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.Invoice;
+using DataAccess.Dtos.Payment;
 using DataAccess.Dtos.Vehicle;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
@@ -166,6 +168,43 @@ namespace Application.Services
             };
             await notificationApi.Send(notification);
 
+        }
+       
+        public async Task SendPaymentPendingPickupEmailAsync(PaymentPendingPickupEmailModel model)
+        {
+            var key03 = _configuration["NotificationAPI:key03"];
+            var key04 = _configuration["NotificationAPI:key04"];
+            var notificationApi = new NotificationApiServer(
+                    key03!,
+                    key04!,
+                    true
+                  );
+            var user = new NotificationUser
+            {
+                Id = model.Email,
+                Email = model.Email
+            };
+            var notification = new SendNotificationData
+            {
+                NotificationId = "appointment_reminder",
+                User = user,
+                TemplateId = "appointment_reminder",
+                MergeTags = new Dictionary<string, object>
+                {
+                    {"CustomerName",  model.CustomerName },
+                    {"LicensePlate", model.LicensePlate },
+                    {"ServiceCenterName", model.ServiceCenterName },
+                    {"VehicleModel",model.VehicleModel },
+                    {"ServiceList",FormatHelper.BuildServiceListPlain(model.ServiceList) },
+                    {"Amount",FormatHelper.FormatAmount(model.Amount)},
+                    {"OpenDate",model.OpenDate },
+                    {"EndDate",model.CloseDate },
+                    {"OpenTime",model.OpenTime },
+                    {"CloseTime",model.CloseTime },
+                    {"CompletedAt",FormatHelper.FormatLocalDateTime(model.CompletedAt) }
+                }
+            };
+            await notificationApi.Send(notification);
         }
     }
 }

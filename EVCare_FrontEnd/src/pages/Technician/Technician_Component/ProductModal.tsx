@@ -1,87 +1,68 @@
-import styled from "styled-components";
+import { Box, Modal, Button as MuiButton, Fade, Backdrop } from "@mui/material";
 
-const CardContainer = styled.div`
-  font-family: "Outfit", sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-sizing: border-box;
-  width: 300px;
-  height: auto;
-  background: rgba(255, 255, 255, 1);
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-`;
+import {
+  CardContainer,
+  Image,
+  ProductName,
+  Descriptions,
+  Info,
+} from "./Style/ProductModal.styled";
 
-const Image = styled.div`
-  width: 100%;
-  height: 200px;
-  background-color: #f0f0f0;
-  border-radius: 10px;
-  margin-bottom: 15px;
-`;
+interface ProductModalProps {
+  open: boolean;
+  onClose: () => void;
+}
 
-const Content = styled.div``;
-
-const ProductName = styled.div`
-  font-size: 1.5em;
-  font-weight: bold;
-  margin-bottom: 10px;
-`;
-
-const Descriptions = styled.div`
-  font-size: 1em;
-  color: #555;
-  margin-bottom: 15px;
-`;
-
-const Info = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const Button = styled.button`
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
-const ProductModal = ({
-  isOpen,
-  onAnimationEnd,
-}: {
-  isOpen: boolean;
-  onAnimationEnd: () => void;
-}) => {
-  const price = 20000;
-  return (
-    <CardContainer
-      style={{ display: isOpen ? "block" : "none" }}
-      onAnimationEnd={onAnimationEnd}
-    >
-      <Image />
-      <Content>
-        <ProductName>Tên sản phẩm</ProductName>
-        <Descriptions>Đây là mô tả sản phẩm.</Descriptions>
-        <Info>
-          <div>Số lượng: 30</div>
-          <div>{price.toLocaleString("vi-VN")} VNĐ</div>
-          <Button>Thêm vào giỏ</Button>
-        </Info>
-      </Content>
-    </CardContainer>
-  );
+const boxStyle = {
+  position: "absolute" as const,
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "90%",
+  maxWidth: 400,
+  bgcolor: "background.paper",
+  borderRadius: "12px",
+  boxShadow: 24,
+  p: 4,
 };
 
-export default ProductModal;
+export default function ProductModal({ open, onClose }: ProductModalProps) {
+  const price = 20000;
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      closeAfterTransition
+      slots={{ backdrop: Backdrop }}
+      slotProps={{
+        backdrop: {
+          timeout: 400,
+        },
+      }}
+    >
+      <Fade in={open} timeout={400}>
+        <Box sx={boxStyle}>
+          <CardContainer>
+            <Image src="https://via.placeholder.com/300x150" alt="Product" />
+            <ProductName variant="h6">Product Name</ProductName>
+
+            <Descriptions>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur
+              rhoncus facilisis felis, eget tincidunt tortor pulvinar vitae.
+              Donec porta volutpat sem, sed fermentum purus euismod ac.
+            </Descriptions>
+
+            <Info>
+              <div>Quantity: 30</div>
+              <div>{price.toLocaleString("vi-VN")} VNĐ</div>
+              <MuiButton variant="contained" color="primary" onClick={onClose}>
+                Add To Cart
+              </MuiButton>
+            </Info>
+          </CardContainer>
+        </Box>
+      </Fade>
+    </Modal>
+  );
+}
