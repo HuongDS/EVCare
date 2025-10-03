@@ -11,6 +11,7 @@ import {
   ServiceCard,
   ServiceTitle,
   ServiceDescription,
+  BookServiceButton,
   SortSection,
   SortLabel,
   SortButton,
@@ -29,9 +30,10 @@ import { getAllActiveService } from "../../../services/servicesApi";
 import ServiceCarousel from "./ServiceCarousel";
 import { Col } from "antd";
 import { Pagination } from "../../../components/Paginations/Pagination";
-import SpinnerComponent from "../../../components/SpinnerComponent";
 import SearchBar from "../../../components/SearchBar/Search";
 import { LIST_SERVICES_MESSAGE } from "../../../constants/messages/Message";
+import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 type SortBy = "Name" | "Duration";
 type SortOrder = "asc" | "desc";
@@ -57,6 +59,27 @@ const ServiceList = () => {
     (state: RootState) => state.ui
   );
 
+  const handleSortChange = useCallback(
+    (newSortBy: SortBy): void => {
+      if (newSortBy === sortBy) {
+        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      } else {
+        setSortBy(newSortBy);
+        setSortOrder("asc");
+      }
+    },
+    [sortBy, sortOrder]
+  );
+
+  const handleOpenBookingForm = useCallback(() => {
+    if (!isAuthenticated) {
+      dispatch(setAction(ACTION.OPEN_APPOINTMENT));
+      dispatch(openLogin());
+      return;
+    }
+    dispatch(openAppointmentForm());
+  }, [isAuthenticated, dispatch]);
+
   useEffect(() => {
     if (data?.data?.items?.length === 0) {
       setIsHaveData(false);
@@ -76,24 +99,6 @@ const ServiceList = () => {
     setCurrentPage(page);
   };
 
-  const handleSortChange = (newSortBy: SortBy): void => {
-    if (newSortBy === sortBy) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(newSortBy);
-      setSortOrder("asc");
-    }
-  };
-
-  const handleOpenBookingForm = useCallback(() => {
-    if (!isAuthenticated) {
-      dispatch(setAction(ACTION.OPEN_APPOINTMENT));
-      dispatch(openLogin());
-      return;
-    }
-    dispatch(openAppointmentForm());
-  }, [isAuthenticated, dispatch]);
-
   const handleSearchValue = (searchValue: string) => {
     setSearchValue(searchValue);
   };
@@ -104,9 +109,13 @@ const ServiceList = () => {
         <ServiceLabel>OUR SERVICES</ServiceLabel>
         <MainTitle>Maintenance Your Vehicle</MainTitle>
 
-        <BookButton onClick={handleOpenBookingForm}>
-          Book a Service →
-        </BookButton>
+        {loading ? (
+          <SpinnerComponent />
+        ) : (
+          <BookButton onClick={handleOpenBookingForm}>
+            Book a Service →
+          </BookButton>
+        )}
       </HeaderSection>
 
       <ServiceCarousel />
@@ -159,8 +168,8 @@ const ServiceList = () => {
           )}
           {isSuccess &&
             data?.data?.items
-              ?.filter((service) => !service.isDeleted)
-              .map((service) => (
+              ?.filter((service: ServicesResponseDto) => !service.isDeleted)
+              .map((service: ServicesResponseDto) => (
                 <Col key={service.id} xs={12} md={6} lg={4} className="mb-4">
                   <ServiceCard>
                     <Card.Body>
