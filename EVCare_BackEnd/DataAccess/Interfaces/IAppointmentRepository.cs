@@ -8,6 +8,7 @@ using DataAccess.Dtos.Appointment;
 using DataAccess.Entities;
 using DataAccess.Enums;
 using DataAccess.Dtos.CenterCare;
+using DataAccess.Dtos.Payment;
 
 namespace DataAccess.Interfaces
 {
@@ -30,6 +31,7 @@ namespace DataAccess.Interfaces
         Task CancelAppointment();
         Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model);
         Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentTechnicianViewModelByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model);
-        Task<int> CountAppointment(DateTime appointment_Date);
+        Task<int> CountAppointment(DateOnly appointment_Date);
+        Task<PaymentPendingPickupEmailModel> GetPaymentPendingPickupEmailModel(int id);
     }
 }
