@@ -5,6 +5,7 @@ const initialState: UIState = {
   loginFormOpen: false,
   createAppointmentFormOpen: false,
   actionAfterLogin: null,
+  messagePopUpOpen: false,
 };
 
 const uiSlice = createSlice({
@@ -29,9 +30,21 @@ const uiSlice = createSlice({
     consumeAction: (state) => {
       state.actionAfterLogin = null;
     },
+    openMessagePopUp: (state) => {
+      state.messagePopUpOpen = true;
+    },
+    closeMassagePopUp: (state) => {
+      state.messagePopUpOpen = false;
+    },
   },
 });
 
-export const { openLogin, openAppointmentForm, closeLogin, closeAppointmentForm, setAction, consumeAction } =
-  uiSlice.actions;
+export const {
+  openLogin,
+  openAppointmentForm,
+  closeLogin,
+  closeAppointmentForm,
+  setAction,
+  consumeAction,
+} = uiSlice.actions;
 export default uiSlice.reducer;
