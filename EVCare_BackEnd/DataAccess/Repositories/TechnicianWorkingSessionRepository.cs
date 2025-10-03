@@ -24,6 +24,13 @@ namespace DataAccess.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<bool> CheckOrderDone(int orderId)
+        {
+            var anyComplete = await _dbContext.TechnicianWorkingSessions
+                   .AnyAsync(x =>  x.OrderId == orderId && x.Status != Enums.TechnicianWorkingSessionEnum.Completed);
+            return !anyComplete;
+        }
+
         public async Task UpdateStatusWorkingSession(int technician, TechnicianWorkingSessionUpdateModel model)
         {
             var data = await _dbContext.TechnicianWorkingSessions.Where(x=>x.TechnicianId == technician && x.OrderId == model.OrderId).FirstOrDefaultAsync();
@@ -35,13 +42,6 @@ namespace DataAccess.Repositories
             if (model.Status == Enums.TechnicianWorkingSessionEnum.Completed) {
 
                 data.EndTime = DateTime.Now;
-                var anyComplete = await _dbContext.TechnicianWorkingSessions
-                    .AnyAsync(x => x.TechnicianId != technician && x.OrderId == model.OrderId && x.Status != Enums.TechnicianWorkingSessionEnum.Completed);
-                if (!anyComplete) { 
-                     var order = await _dbContext.Orders.FindAsync(model.OrderId);
-                    order.Status = Enums.OrderStatusEnum.Completed;
-                    order.Updated_At = DateTime.Now;
-                }
             }
             await _dbContext.SaveChangesAsync();
 
