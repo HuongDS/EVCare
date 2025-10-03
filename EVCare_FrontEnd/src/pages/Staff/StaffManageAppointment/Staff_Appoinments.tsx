@@ -1,10 +1,10 @@
 import SortTable from "../StaffComponents/SortTable";
 import { AppointmentStatusEnum } from "../../../models/enums";
-import Input from "../StaffComponents/SearchBar";
 import styled from "styled-components";
 import AppointmentCard from "../StaffComponents/AppointmentCard";
 import { useGetAllAppointments } from "../../../services/appointmentServiceApi";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import SearchBar from "../../../components/SearchBar/Search";
 
 const AppoitmentWrapper = styled.div``;
 
@@ -39,7 +39,7 @@ export default function Staff_Appoinments() {
     <AppoitmentWrapper>
       <TitleWrapper>
         <h2>Appoinments</h2>
-        <Input />
+        {/* <SearchBar /> */}
       </TitleWrapper>
       <SortTable sortName={sortName} />
       <div>
