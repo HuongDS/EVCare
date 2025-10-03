@@ -18,5 +18,7 @@ namespace DataAccess.Entities
         public TimeSpan OpenTime { get; set; }
         public TimeSpan CloseTime { get; set; }
         public string Hotline {  get; set; }
+        public string WorkStartDay { get; set; }
+        public string WorkEndDay { get; set; }
     }
 }

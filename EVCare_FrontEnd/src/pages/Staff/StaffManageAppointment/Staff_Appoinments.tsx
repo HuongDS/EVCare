@@ -1,6 +1,5 @@
 import SortTable from "../StaffComponents/SortTable";
 import { AppointmentStatusEnum } from "../../../models/enums";
-import Input from "../StaffComponents/SearchBar";
 import styled from "styled-components";
 import AppointmentCard from "../StaffComponents/AppointmentCard";
 import { useGetAllAppointments } from "../../../services/appointmentServiceApi";
@@ -26,27 +25,17 @@ export default function Staff_Appoinments() {
   const { data, isSuccess, isLoading, isError } = useGetAllAppointments();
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading appointments</div>;
-  const sortName = [
-    "All",
-    name.PENDING,
-    name.CHECKED_IN,
-    name.CONFIRMED,
-    name.IN_PROGRESS,
-    name.DONE,
-    name.CANCELLED,
-  ];
+  const sortName = ["All", name.PENDING, name.CHECKED_IN, name.CONFIRMED, name.IN_PROGRESS, name.DONE, name.CANCELLED];
   return (
     <AppoitmentWrapper>
       <TitleWrapper>
         <h2>Appoinments</h2>
-        <Input />
+        {/* <SearchBar /> */}
       </TitleWrapper>
       <SortTable sortName={sortName} />
       <div>
         {isSuccess &&
-          data?.data?.items?.map((item: StaffAppointmentsDto) => (
-            <AppointmentCard key={item.id} data={item} />
-          ))}
+          data?.data?.items?.map((item: StaffAppointmentsDto) => <AppointmentCard key={item.id} data={item} />)}
       </div>
     </AppoitmentWrapper>
   );

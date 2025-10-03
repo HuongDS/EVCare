@@ -23,6 +23,7 @@
     "@reduxjs/toolkit": "2.9.0",
     "@sentry/browser": "^10.16.0",
     "@sentry/react": "^10.16.0",
+    "@tailwindcss/vite": "^4.1.14",
     "@tanstack/react-query": "5.87.4",
     "@tanstack/react-query-devtools": "5.87.4",
     "antd": "5.27.3",
@@ -30,7 +31,7 @@
     "axios": "^1.12.2",
     "bootstrap": "5.3.8",
     "bootstrap-icons": "1.13.1",
-    "dayjs": "1.11.18",
+    "dayjs": "^1.11.18",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.544.0",
     "moment": "^2.30.1",
@@ -41,9 +42,12 @@
     "react-redux": "9.2.0",
     "react-router": "7.9.1",
     "react-router-dom": "7.9.1",
+    "react-slick": "^0.31.0",
     "react-window": "2.1.1",
     "redux-persist": "^6.0.0",
-    "styled-components": "6.1.19"
+    "slick-carousel": "^1.8.1",
+    "styled-components": "6.1.19",
+    "tailwindcss": "^4.1.14"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
