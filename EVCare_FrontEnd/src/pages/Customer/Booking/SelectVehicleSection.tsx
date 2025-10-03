@@ -78,6 +78,7 @@ function SelectVehicleComponent({
               type="text"
               placeholder="Ex:50G-99999"
               value={licensePlate}
+              required={true}
             />
           </>
         )}
