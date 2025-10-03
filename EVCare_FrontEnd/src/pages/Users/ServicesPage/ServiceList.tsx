@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Container, Row, Card, ButtonGroup } from "react-bootstrap";
@@ -19,20 +19,15 @@ import {
 import BookingForm from "../../Customer/Booking/BookingForm";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
-import {
-  closeAppointmentForm,
-  openAppointmentForm,
-  openLogin,
-  setAction,
-} from "../../../states/uiSlice";
+import { closeAppointmentForm, openAppointmentForm, openLogin, setAction } from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
 import { getAllActiveService } from "../../../services/servicesApi";
 import ServiceCarousel from "./ServiceCarousel";
 import { Col } from "antd";
 import { Pagination } from "../../../components/Paginations/Pagination";
-import SpinnerComponent from "../../../components/SpinnerComponent";
 import SearchBar from "../../../components/SearchBar/Search";
 import { LIST_SERVICES_MESSAGE } from "../../../constants/messages/Message";
+import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
 
 type SortBy = "Name" | "Duration";
 type SortOrder = "asc" | "desc";
@@ -54,9 +49,28 @@ const ServiceList = () => {
   );
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { createAppointmentFormOpen } = useSelector(
-    (state: RootState) => state.ui
+  const { createAppointmentFormOpen } = useSelector((state: RootState) => state.ui);
+
+  const handleSortChange = useCallback(
+    (newSortBy: SortBy): void => {
+      if (newSortBy === sortBy) {
+        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      } else {
+        setSortBy(newSortBy);
+        setSortOrder("asc");
+      }
+    },
+    [sortBy, sortOrder]
   );
+
+  const handleOpenBookingForm = useCallback(() => {
+    if (!isAuthenticated) {
+      dispatch(setAction(ACTION.OPEN_APPOINTMENT));
+      dispatch(openLogin());
+      return;
+    }
+    dispatch(openAppointmentForm());
+  }, [isAuthenticated, dispatch]);
 
   useEffect(() => {
     if (data?.data?.items?.length === 0) {
@@ -86,15 +100,6 @@ const ServiceList = () => {
     }
   };
 
-  const handleOpenBookingForm = () => {
-    if (!isAuthenticated) {
-      dispatch(setAction(ACTION.OPEN_APPOINTMENT));
-      dispatch(openLogin());
-      return;
-    }
-    dispatch(openAppointmentForm());
-  };
-
   const handleSearchValue = (searchValue: string) => {
     setSearchValue(searchValue);
   };
@@ -105,9 +110,7 @@ const ServiceList = () => {
         <ServiceLabel>OUR SERVICES</ServiceLabel>
         <MainTitle>Maintenance Your Vehicle</MainTitle>
 
-        <BookButton onClick={handleOpenBookingForm}>
-          Book a Service →
-        </BookButton>
+        {loading ? <SpinnerComponent /> : <BookButton onClick={handleOpenBookingForm}>Book a Service →</BookButton>}
       </HeaderSection>
 
       <ServiceCarousel />
@@ -116,18 +119,11 @@ const ServiceList = () => {
         <SortSection>
           <ButtonGroup>
             <SortLabel>Sort by:</SortLabel>
-            <SortButton
-              active={sortBy === "Name"}
-              onClick={() => handleSortChange("Name")}
-            >
+            <SortButton active={sortBy === "Name"} onClick={() => handleSortChange("Name")}>
               Name {sortBy === "Name" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
-            <SortButton
-              active={sortBy === "Duration"}
-              onClick={() => handleSortChange("Duration")}
-            >
-              Duration{" "}
-              {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
+            <SortButton active={sortBy === "Duration"} onClick={() => handleSortChange("Duration")}>
+              Duration {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
           </ButtonGroup>
           <SearchBar
@@ -160,15 +156,13 @@ const ServiceList = () => {
           )}
           {isSuccess &&
             data?.data?.items
-              ?.filter((service) => !service.isDeleted)
-              .map((service) => (
+              ?.filter((service: ServicesResponseDto) => !service.isDeleted)
+              .map((service: ServicesResponseDto) => (
                 <Col key={service.id} xs={12} md={6} lg={4} className="mb-4">
                   <ServiceCard>
                     <Card.Body>
                       <ServiceTitle>{service.name}</ServiceTitle>
-                      <ServiceDescription>
-                        {service.description}
-                      </ServiceDescription>
+                      <ServiceDescription>{service.description}</ServiceDescription>
                       <p>
                         <strong>Duration:</strong> {service.duration} hours
                       </p>
@@ -189,12 +183,7 @@ const ServiceList = () => {
           />
         )}
       </Container>
-      <BookingForm
-        loading={loading}
-        setLoading={setLoading}
-        show={showForm}
-        handleClose={() => setShowForm(false)}
-      />
+      <BookingForm loading={loading} setLoading={setLoading} show={showForm} handleClose={() => setShowForm(false)} />
     </PageContainer>
   );
 };

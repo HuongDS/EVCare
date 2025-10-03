@@ -6,7 +6,7 @@ import AuthForm from "./sections/AuthForm";
 import OTPForm from "./sections/OTPForm";
 import { AUTH_FORM_MESSAGE, ERROR_MESSAGE } from "../../../constants/messages/Message";
 import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto } from "../../../models/AuthModel/authModel";
-import { login, register, saveTokens, verifyOtp } from "../../../services/authService";
+import { login, register, saveTokens, sendOtp, verifyOtp } from "../../../services/authService";
 import { toUseFromJwt } from "../../../token/jwtDecode";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
@@ -161,6 +161,26 @@ export default function Authentication() {
     dispatch(closeLogin());
   }, [email, otp, dispatch]);
 
+  const handChangeIsForgot = useCallback(async () => {
+    setIsLoading(true);
+    setIsForgot(true);
+    try {
+      if (!EMAIL_REGEX.test(email.trim())) {
+        alert(ERROR_MESSAGE.INVALID_EMAIL);
+        return;
+      }
+      const response = await sendOtp(email);
+      console.log(response);
+    } catch (error) {
+      alert(error);
+      handleError(error);
+      return;
+    } finally {
+      setIsLoading(false);
+      setIsForgot(false);
+    }
+  }, [email]);
+
   // header text
   const headerText = useMemo(() => {
     if (isOTP) return AUTH_FORM_MESSAGE.VERIFY;
@@ -183,7 +203,12 @@ export default function Authentication() {
         {!isOTP ? (
           <>
             {isForgot ? (
-              <ForgotPassword email={email} setEmail={setEmail} setIsForgot={setIsForgot} setIsOTP={setIsOTP} />
+              <ForgotPassword
+                isLoading={isLoading}
+                handChangeIsForgot={handChangeIsForgot}
+                email={email}
+                setEmail={setEmail}
+              />
             ) : (
               <AuthForm
                 isSignUp={isSignUp}
