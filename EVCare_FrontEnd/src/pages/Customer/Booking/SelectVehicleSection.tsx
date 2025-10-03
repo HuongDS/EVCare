@@ -76,8 +76,9 @@ function SelectVehicleComponent({
             <Input
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLicensePlate(e.target.value)}
               type="text"
-              placeholder="Ex:50G-99999"
+              placeholder="Ex:50G99999"
               value={licensePlate}
+              required={true}
             />
           </>
         )}

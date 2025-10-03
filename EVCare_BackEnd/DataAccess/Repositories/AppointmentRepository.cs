@@ -11,6 +11,7 @@ using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Payment;
 
 namespace DataAccess.Repositories
 {
@@ -152,7 +153,7 @@ namespace DataAccess.Repositories
         }
         public async Task<Appointment> GetAppointmentByOrderIdAsync(int orderId)
         {
-            var entity = await _dbSet.FirstOrDefaultAsync(a => a.OrderId == orderId);
+            var entity = await _dbContext.Appointments.Include(x => x.Alerts).FirstOrDefaultAsync(x => x.OrderId == orderId);
             if (entity is null)
             {
                 throw new Exception($"Entity with orderId = {orderId} is not found.");
@@ -243,6 +244,7 @@ namespace DataAccess.Repositories
                     Note = a.Note
 
                 }).Where(x => x.CustomerName.Contains(model.CustomerName));
+            
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
 
@@ -268,6 +270,7 @@ namespace DataAccess.Repositories
                      Status = x.Status,
                      VehicleModel = x.Order.Appointment.Vehicle.Category.Name,
                      Services = x.Order.Appointment.AppointmentServices.Select(x => x.Service.Name).ToList(),
+                     OrderId = x.OrderId,
                      Parts = x.Technician.OrderParts.Select(x => new Dtos.Part.PartTechnicianViewModel
                      {
                          Id = x.PartId,
@@ -292,6 +295,33 @@ namespace DataAccess.Repositories
         public async Task<int> CountAppointment(DateOnly appointment_Date)
         {
             return await _dbSet.CountAsync(x => DateOnly.FromDateTime(x.Appointment_Date) == appointment_Date);
+        }
+
+        public async Task<PaymentPendingPickupEmailModel> GetPaymentPendingPickupEmailModel(int id)
+        {
+            var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
+            return await _dbContext.Appointments.AsNoTracking()
+                .Where(x => x.Id == id)
+                .Include(x => x.Customer).ThenInclude(x => x.Account)
+                .Include(x => x.AppointmentServices).ThenInclude(x=>x.Service)
+                .Include(x => x.Vehicle).ThenInclude(x => x.Category)
+                .Include(x => x.Order).ThenInclude(x => x.OrderParts)
+                .Select(x => new PaymentPendingPickupEmailModel
+                {
+                    Amount = x.Order.OrderParts.Sum(x => x.Price * x.Quantity),
+                    CloseDate = center.WorkEndDay,
+                    CloseTime = center.CloseTime,
+                    CompletedAt = DateTime.Now,
+                    CustomerName = x.Customer.Account.First_Name + " " + x.Customer.Account.Last_Name,
+                    Email = x.Customer.Account.Email,
+                    LicensePlate = x.Vehicle.LicensePlate,
+                    OpenDate = center.WorkStartDay,
+                    OpenTime  = center.OpenTime,
+                    ServiceCenterName = center.Name,
+                    ServiceList = x.AppointmentServices.Select(x=>x.Service.Name).ToList(),
+                    VehicleModel = x.Vehicle.Category.Name
+                })
+                .FirstOrDefaultAsync();
         }
     }
 }

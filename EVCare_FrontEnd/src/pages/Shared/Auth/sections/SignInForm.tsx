@@ -27,8 +27,20 @@ export default function SignInForm({
   return (
     <>
       <FieldGroup>
-        <TextFieldWithIcon required={true} icon={<HiOutlineMail />} type="Email" text={email} setText={setEmail} />
-        <TextFieldWithIcon required={true} icon={<FiKey />} type="Password" text={password} setText={setPassword} />
+        <TextFieldWithIcon
+          required={true}
+          icon={<HiOutlineMail />}
+          type="Email"
+          text={email}
+          setText={setEmail}
+        />
+        <TextFieldWithIcon
+          required={true}
+          icon={<FiKey />}
+          type="Password"
+          text={password}
+          setText={setPassword}
+        />
       </FieldGroup>
       <Link
         to="#"

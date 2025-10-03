@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  PiNumberCircleOneFill,
-  PiNumberCircleTwoFill,
-  PiNumberCircleThreeFill,
-} from "react-icons/pi";
+import { PiNumberCircleOneFill, PiNumberCircleTwoFill, PiNumberCircleThreeFill } from "react-icons/pi";
 // import { Plus } from "lucide-react";
 import {
   BookingFormBody,
@@ -42,6 +38,8 @@ import type { AppointmentCreateModel } from "../../../models/AppointmentsModel/A
 import { createAppointment } from "../../../services/appointmentServices";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
+import { LICENSE_PLATE_REGEX } from "../../../constants/regexs/LicensePlateRegex";
+import { ERROR_MESSAGE } from "../../../constants/messages/Message";
 
 interface Props {
   show: boolean;
@@ -57,16 +55,12 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
 
   const [selectedValue, setSelectedValue] = useState(0);
   const [isAddNew, setIsAddNew] = useState(true);
-  const [listCategories, setListCategories] = useState<
-    VehicleCategoryViewDto[]
-  >([]);
-  const [serviceCategories, setServiceCategories] = useState<
-    ServiceCategoryViewModel[]
-  >([]);
+  const [listCategories, setListCategories] = useState<VehicleCategoryViewDto[]>([]);
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryViewModel[]>([]);
   const [accountInfor, setAccountInfor] = useState<AccountViewModel>();
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [dateSelected, setDateSelected] = useState<Dayjs>();
-  const [timeSelected, setTimeSelected] = useState<Dayjs>();
+  const [timeSelected, setTimeSelected] = useState<Dayjs | undefined>(undefined);
   const [note, setNote] = useState("");
   const [vehicleCategory, setVehicleCategory] = useState(0);
   const [licensePlate, setLicensePlate] = useState("");
@@ -82,63 +76,43 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
         setSelectedValue(0);
       } else {
         setIsAddNew(false);
-        const vehicle = listVehicleOfCustomer.find(
-          (v) => v.id === Number(e.target.value)
-        );
-        setVehicleCategory(
-          listCategories.find((c) => c.id === vehicle?.cateId)?.id || 0
-        );
+        const vehicle = listVehicleOfCustomer.find((v) => v.id === Number(e.target.value));
+        setVehicleCategory(listCategories.find((c) => c.id === vehicle?.cateId)?.id || 0);
         setSelectedValue(Number(e.target.value));
+        setLicensePlate(vehicle?.licensePlate || "");
       }
     },
-    [
-      setVehicleCategory,
-      listVehicleOfCustomer,
-      setSelectedValue,
-      setIsAddNew,
-      listCategories,
-    ]
+    [setVehicleCategory, listVehicleOfCustomer, setSelectedValue, setIsAddNew, listCategories]
   );
 
   const handleSelectServices = useCallback((serviceId: number) => {
     setSelectedServices((prev) =>
-      prev.includes(serviceId)
-        ? prev.filter((s) => s !== serviceId)
-        : [...prev, serviceId]
+      prev.includes(serviceId) ? prev.filter((s) => s !== serviceId) : [...prev, serviceId]
     );
   }, []);
 
-  const handleServiceCategoriesChange = useCallback(
-    (serviceCategory: ServiceCategoryViewModel) => {
-      const servicesInCategory = serviceCategory.services.map((s) => s.id);
-      if (servicesInCategory.length === 0) return;
-      setSelectedServices((prev) => {
-        const allSelected = servicesInCategory.every((s) => prev.includes(s));
-        if (allSelected) {
-          return prev.filter((s) => !servicesInCategory.includes(s));
-        } else {
-          const currSelect = [...prev];
-          servicesInCategory.forEach((e) => {
-            if (!currSelect.includes(e)) currSelect.push(e);
-          });
-          return currSelect;
-        }
-      });
-    },
-    []
-  );
+  const handleServiceCategoriesChange = useCallback((serviceCategory: ServiceCategoryViewModel) => {
+    const servicesInCategory = serviceCategory.services.map((s) => s.id);
+    if (servicesInCategory.length === 0) return;
+    setSelectedServices((prev) => {
+      const allSelected = servicesInCategory.every((s) => prev.includes(s));
+      if (allSelected) {
+        return prev.filter((s) => !servicesInCategory.includes(s));
+      } else {
+        const currSelect = [...prev];
+        servicesInCategory.forEach((e) => {
+          if (!currSelect.includes(e)) currSelect.push(e);
+        });
+        return currSelect;
+      }
+    });
+  }, []);
 
   const handleSelectDate = useCallback(
     (date: Dayjs | undefined) => {
       setDateSelected(date);
       if (date && timeSelected) {
-        setAppointmentDate(
-          date
-            .hour(timeSelected.hour())
-            .minute(timeSelected.minute())
-            .second(0)
-            .toISOString()
-        );
+        setAppointmentDate(date.hour(timeSelected.hour()).minute(timeSelected.minute()).second(0).toISOString());
       }
     },
     [timeSelected]
@@ -148,13 +122,7 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
     (time: Dayjs | undefined) => {
       setTimeSelected(time);
       if (dateSelected && time) {
-        setAppointmentDate(
-          dateSelected
-            .hour(time.hour())
-            .minute(time.minute())
-            .second(0)
-            .toISOString()
-        );
+        setAppointmentDate(dateSelected.hour(time.hour()).minute(time.minute()).second(0).toISOString());
       }
     },
     [dateSelected]
@@ -162,6 +130,27 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
 
   const handleSubmit = useCallback(async () => {
     setIsLoading(true);
+    if (
+      !licensePlate ||
+      licensePlate.trim().length === 0 ||
+      !LICENSE_PLATE_REGEX.test(licensePlate) ||
+      licensePlate.includes("-")
+    ) {
+      alert(ERROR_MESSAGE.LICENSE_PLATE_WRONG);
+      setLicensePlate("");
+      setIsLoading(false);
+      return;
+    }
+    if (selectedServices.length === 0) {
+      alert(ERROR_MESSAGE.SERVICES_MUST_NOT_BE_EMPTY);
+      setIsLoading(false);
+      return;
+    }
+    if (!dateSelected || !timeSelected) {
+      alert(ERROR_MESSAGE.DATE_AND_TIME_CAN_NOT_BE_EMPTY);
+      setIsLoading(false);
+      return;
+    }
     let tmp = 0;
     if (note.length > 0) setNote(note.trim());
     if (selectedValue === 0) {
@@ -214,18 +203,17 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
     licensePlate,
     note,
     urls,
+    dateSelected,
+    timeSelected,
   ]);
 
   const handleNoteChange = useCallback((note: string) => {
     setNote(note);
   }, []);
 
-  const handleSelectVehicleCategory = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setVehicleCategory(Number(e.target.value));
-    },
-    []
-  );
+  const handleSelectVehicleCategory = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setVehicleCategory(Number(e.target.value));
+  }, []);
 
   const handleFileSubmit = useCallback((url: string) => {
     setUrls((prev) => [...prev, url]);
@@ -243,9 +231,7 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
       }
       const account = await getAccountInformation();
       setAccountInfor(account.data);
-      const listVehicleOfCustomer = await getVehicleByCustomerId(
-        customer.data?.id ?? 0
-      );
+      const listVehicleOfCustomer = await getVehicleByCustomerId(customer.data?.id ?? 0);
       if (!listVehicleOfCustomer) {
         handleError("Error in BookingForm.tsx");
         return;
