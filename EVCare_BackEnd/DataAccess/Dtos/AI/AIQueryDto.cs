@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Pagination;
 
 namespace DataAccess.Dtos.AI
 {
-    public class AIQueryDto
+    public class AIQueryDto : BaseQueryDto
     {
-        public int Lead { get; set; } = 5;
-        public double sl { get; set; } = 0.95;
-        public bool IncludeAll { get; set; } = true;
+        public int LeadDate { get; set; } = 5;
+
     }
 }

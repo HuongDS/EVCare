@@ -11,6 +11,8 @@ namespace DataAccess.Dtos.AI
         public int PartId { get; set; }
         public string PartName { get; set; }
         public int MinStock { get; set; }
+        public int NeedQuantity { get; set; }
         public string Reason { get; set; }
+
     }
 }
