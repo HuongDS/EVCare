@@ -14,6 +14,9 @@ export const ERROR_MESSAGE = {
   CREATE_APPOINTMENT_FAILED: "Failed to create an appointment.",
   CREATE_VEHICLE_FAILED: "Failed to create a vehicle.",
   RESET_PASSWORD_FAILED: "Failed to reset password",
+  LICENSE_PLATE_WRONG: "License format was wrong format. Please try again!",
+  SERVICES_MUST_NOT_BE_EMPTY: "Please choose at least 1 service!",
+  DATE_AND_TIME_CAN_NOT_BE_EMPTY: "Please select a suitable day and time!",
 };
 
 export const SUCCESS_MESSAGE = {
@@ -27,4 +30,8 @@ export const AUTH_FORM_MESSAGE = {
   VERIFY: "Verify OTP",
   WELCOME_BACK: "Welcome Back!",
   FORGOT_PASSWORD: "Forgot Password",
+};
+
+export const LIST_SERVICES_MESSAGE = {
+  EMPTY: "Sorry! No services found for:",
 };

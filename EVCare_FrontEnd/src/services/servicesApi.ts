@@ -6,7 +6,15 @@ import type {
   ServicesResponseDto,
 } from "../models/ServicesModel/Customer_Services_Model";
 
-//[STAFF, CUSTOMER, ADMIN] - Get all active services
+/**
+ * [STAFF, CUSTOMER, ADMIN] - get all services
+ * @param keyword : customer name
+ * @param pageSize : so luong mỗi trang
+ * @param pageIndex : trang hiện tại
+ * @param sortField : sort theo field
+ * @param sortOrder : asc descs
+ * @returns
+ */
 const fetchServiceData = async (
   keyword?: string,
   pageSize?: number,
