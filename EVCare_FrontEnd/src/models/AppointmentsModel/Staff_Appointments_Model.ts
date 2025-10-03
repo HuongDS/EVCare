@@ -1,5 +1,3 @@
-import type { ServicesResponseDto } from "../ServicesModel/Customer_Services_Model";
-
 export type ResponseDto<T> = {
   statusCode: number;
   message?: string;
@@ -21,7 +19,8 @@ export type StaffAppointmentsDto = {
   customerName: string;
   phoneNumber: string;
   licensePlate: string;
-  services: ServicesResponseDto[];
+  services: [];
   vehicleImageUrl: string[];
-  status: number;
+  status: string;
+  note: string;
 };
