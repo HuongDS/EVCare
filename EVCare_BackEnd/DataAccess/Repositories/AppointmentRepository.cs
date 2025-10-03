@@ -243,6 +243,7 @@ namespace DataAccess.Repositories
                     PhoneNumber = a.Customer.Account.Phone
 
                 }).Where(x => x.CustomerName.Contains(model.CustomerName));
+            
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
 

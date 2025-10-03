@@ -37,7 +37,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers()
-    .AddFluentValidation();
+    .AddFluentValidation()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()); 
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -134,6 +138,7 @@ builder.Services.AddScoped<AuthorizeCustomerAndStaffThroughAccountIdFilter>();
 builder.Services.AddScoped<AppointmentAuthorizationFilter>();
 builder.Services.AddScoped<SetAccountIdFilter>();
 builder.Services.AddScoped<SetTechnicianIdFilter>();
+builder.Services.AddScoped<AuthorizeTechnicianDetail>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
