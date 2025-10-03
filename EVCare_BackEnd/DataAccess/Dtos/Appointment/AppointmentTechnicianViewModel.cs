@@ -17,6 +17,7 @@ namespace DataAccess.Dtos.Appointment
         public string? PhoneNumber { get; set; }
         public string LicensePlate { get; set; }
         public List<string>? Services { get; set; }
+        public int? OrderId { get; set; }
         public List<PartTechnicianViewModel>? Parts {  get; set; }
         public TechnicianWorkingSessionEnum Status { get; set; }
     }

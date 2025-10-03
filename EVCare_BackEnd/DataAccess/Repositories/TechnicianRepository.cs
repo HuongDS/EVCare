@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Service;
 using DataAccess.Dtos.Technician;
 using DataAccess.Entities;
 using DataAccess.Helpers;
@@ -27,6 +28,30 @@ namespace DataAccess.Repositories
             return entity;
         }
 
+        public async Task<TechnicianViewModel> GetTechnicianDetai(int technicianId)
+        {
+            return await _dbContext.Technicians.AsNoTracking()
+                .Where(x => x.Id == technicianId)
+                .Include(x => x.Employee).ThenInclude(x => x.Account)
+                .Include(x => x.TechnicianSkills).ThenInclude(x => x.Service)
+                .Include(x=>x.TechnicianWorkingSessions)
+                .Select(x => new TechnicianViewModel
+                {
+                    ExpYears = x.ExpYear,
+                    FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
+                    Phone = x.Employee.Account.Phone,
+                    Rating = x.Employee.rate,
+                    Skills = x.TechnicianSkills.Select(x => new ServiceViewFormModel
+                    {
+                        Id = x.ServiceId,
+                        Name = x.Service.Name
+                    }).ToList(),
+                    Status = (x.TechnicianWorkingSessions.Any(y => y.TechnicianId == x.Id && y.EndTime == null)) ? Enums.EmployeeStatusEnum.Busy
+                    : x.Employee.Status,
+
+                }).FirstOrDefaultAsync();
+        }
+
         public async Task<int> GetTechnicianIdByAccountId(int accountId)
         {
             var data = await _dbSet.Include(x=>x.Employee).ThenInclude(X=>X.Account)
@@ -40,7 +65,7 @@ namespace DataAccess.Repositories
 
         public async Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(TechnicianQueryDto model)
         {
-            var now = DateTime.Now;
+          
             var query = _dbContext.Technicians
                 .Include(x => x.Employee).ThenInclude(x => x.Account)
                 .Include(x => x.TechnicianSkills).ThenInclude(x => x.Service)
