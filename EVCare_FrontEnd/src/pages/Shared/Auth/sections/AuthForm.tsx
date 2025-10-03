@@ -22,7 +22,6 @@ interface AuthFormProps {
   handleLogin: () => void;
   isForgot: boolean;
   setIsForgot: (v: boolean) => void;
-  disable: boolean;
 }
 
 export default function AuthForm({
@@ -43,7 +42,6 @@ export default function AuthForm({
   handleLogin,
   disable,
   setIsForgot,
-  disable,
 }: AuthFormProps) {
   const handleIsForgot = () => {
     isSignUp = false;

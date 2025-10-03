@@ -19,7 +19,12 @@ import {
 import BookingForm from "../../Customer/Booking/BookingForm";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
-import { closeAppointmentForm, openAppointmentForm, openLogin, setAction } from "../../../states/uiSlice";
+import {
+  closeAppointmentForm,
+  openAppointmentForm,
+  openLogin,
+  setAction,
+} from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
 import { getAllActiveService } from "../../../services/servicesApi";
 import ServiceCarousel from "./ServiceCarousel";
@@ -28,6 +33,7 @@ import { Pagination } from "../../../components/Paginations/Pagination";
 import SearchBar from "../../../components/SearchBar/Search";
 import { LIST_SERVICES_MESSAGE } from "../../../constants/messages/Message";
 import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 type SortBy = "Name" | "Duration";
 type SortOrder = "asc" | "desc";
@@ -49,7 +55,9 @@ const ServiceList = () => {
   );
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { createAppointmentFormOpen } = useSelector((state: RootState) => state.ui);
+  const { createAppointmentFormOpen } = useSelector(
+    (state: RootState) => state.ui
+  );
 
   const handleSortChange = useCallback(
     (newSortBy: SortBy): void => {
@@ -91,15 +99,6 @@ const ServiceList = () => {
     setCurrentPage(page);
   };
 
-  const handleSortChange = (newSortBy: SortBy): void => {
-    if (newSortBy === sortBy) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(newSortBy);
-      setSortOrder("asc");
-    }
-  };
-
   const handleSearchValue = (searchValue: string) => {
     setSearchValue(searchValue);
   };
@@ -110,7 +109,13 @@ const ServiceList = () => {
         <ServiceLabel>OUR SERVICES</ServiceLabel>
         <MainTitle>Maintenance Your Vehicle</MainTitle>
 
-        {loading ? <SpinnerComponent /> : <BookButton onClick={handleOpenBookingForm}>Book a Service →</BookButton>}
+        {loading ? (
+          <SpinnerComponent />
+        ) : (
+          <BookButton onClick={handleOpenBookingForm}>
+            Book a Service →
+          </BookButton>
+        )}
       </HeaderSection>
 
       <ServiceCarousel />
@@ -119,11 +124,18 @@ const ServiceList = () => {
         <SortSection>
           <ButtonGroup>
             <SortLabel>Sort by:</SortLabel>
-            <SortButton active={sortBy === "Name"} onClick={() => handleSortChange("Name")}>
+            <SortButton
+              active={sortBy === "Name"}
+              onClick={() => handleSortChange("Name")}
+            >
               Name {sortBy === "Name" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
-            <SortButton active={sortBy === "Duration"} onClick={() => handleSortChange("Duration")}>
-              Duration {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
+            <SortButton
+              active={sortBy === "Duration"}
+              onClick={() => handleSortChange("Duration")}
+            >
+              Duration{" "}
+              {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
           </ButtonGroup>
           <SearchBar
@@ -162,7 +174,9 @@ const ServiceList = () => {
                   <ServiceCard>
                     <Card.Body>
                       <ServiceTitle>{service.name}</ServiceTitle>
-                      <ServiceDescription>{service.description}</ServiceDescription>
+                      <ServiceDescription>
+                        {service.description}
+                      </ServiceDescription>
                       <p>
                         <strong>Duration:</strong> {service.duration} hours
                       </p>
@@ -183,7 +197,12 @@ const ServiceList = () => {
           />
         )}
       </Container>
-      <BookingForm loading={loading} setLoading={setLoading} show={showForm} handleClose={() => setShowForm(false)} />
+      <BookingForm
+        loading={loading}
+        setLoading={setLoading}
+        show={showForm}
+        handleClose={() => setShowForm(false)}
+      />
     </PageContainer>
   );
 };
