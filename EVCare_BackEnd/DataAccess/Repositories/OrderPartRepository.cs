@@ -81,15 +81,14 @@ namespace DataAccess.Repositories
                             Sum = g.Sum(x => x.Quantity)
                         }).ToDictionaryAsync(g => g.Key, g => (double)g.Sum);
 
-            return await _dbContext.Parts.Select(x => new PartBrief
-            {
-                PartId = x.Id,
-                Name = x.Name,
-                Stock = x.Stock,
-                AvgUse7d = (used7.TryGetValue(x.Id, out var s7) ? s7 : 0) / 7,
-                AvgUse30d = (used30.TryGetValue(x.Id, out var s30) ? s30 : 0) / 30
+            var parts = await _dbContext.Parts.Select(p => new { p.Id, p.Name, p.Stock }).ToListAsync();
 
-            }).ToListAsync();
+            return parts.Select(p =>
+            {
+                double s7 = 0; used7.TryGetValue(p.Id, out s7);
+                double s30 = 0; used30.TryGetValue(p.Id, out s30);
+                return new PartBrief { PartId = p.Id, Name = p.Name, Stock = p.Stock, AvgUse7d = s7 / 7d, AvgUse30d = s30 / 30d };
+            }).ToList();
 
         }
     }
