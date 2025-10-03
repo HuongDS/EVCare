@@ -5,9 +5,13 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Application.Helper;
 using Application.Interfaces;
 using DataAccess.Dtos.AI;
+using DataAccess.Dtos.Pagination;
+using DataAccess.Helpers;
 using DataAccess.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Planner
@@ -17,21 +21,22 @@ namespace Application.Planner
         private readonly IHttpClientFactory _httpFactory;
         private readonly IConfiguration _cfg;
         private readonly IOrderPartRepository _orderPartRepository;
-        public GeminiReplenishmentPlanner(IOrderPartRepository orderPartRepository, IConfiguration config,IHttpClientFactory httpClientFactory)
+        public GeminiReplenishmentPlanner(IOrderPartRepository orderPartRepository, IConfiguration config, IHttpClientFactory httpClientFactory)
         {
             _orderPartRepository = orderPartRepository;
             _httpFactory = httpClientFactory;
             _cfg = config;
 
         }
-        public async Task<IReadOnlyList<ReplenishmentItem>> SuggestAsync(int leadTimeDays = 5, double serviceLevel = 0.95, bool includeAll = true)
+        public async Task<PageResultDto<ReplenishmentItem>> SuggestAsync(AIQueryDto dto)
         {
             List<PartBrief> data = await _orderPartRepository.GetPartBriefs();
             var jsonContext = JsonSerializer.Serialize(data);
-            var prompt = BuildOneShotPrompt(jsonContext, leadTimeDays, serviceLevel, includeAll);
+            var prompt = BuildOneShotPrompt(jsonContext, dto.LeadDate);
             var key = _cfg["Gemini:ApiKey"] ?? throw new InvalidOperationException("Missing Gemini:ApiKey");
-            var model = _cfg["Gemini:Model"] ?? "gemini-1.5-flash";
-            var baseUrl = _cfg["Gemini:Endpoint"] ?? "https://generativelanguage.googleapis.com/v1beta";
+            var model = (_cfg["Gemini:Model"] ?? "gemini-1.5-flash").Trim();
+            var baseUrl = (_cfg["Gemini:Endpoint"] ?? "https://generativelanguage.googleapis.com/v1beta")
+                          .Trim().TrimEnd('/');
             var url = $"{baseUrl}/models/{model}:generateContent?key={key}";
             var payload = new
             {
@@ -52,56 +57,75 @@ namespace Application.Planner
             var nameMap = data.ToDictionary(x => x.PartId, x => x.Name);
             var stockMap = data.ToDictionary(x => x.PartId, x => x.Stock);
             var validIds = nameMap.Keys.ToHashSet();
-           var items = root.RootElement.GetProperty("items").EnumerateArray()
-                .Select(x =>
-                {
-                    int partId = x.GetProperty("partId").GetInt32();
-                    int min = Math.Max(0, x.GetProperty("minStock").GetInt32());
-                    string reason = x.TryGetProperty("reason", out var r) ? (r.GetString() ?? "") : "";
-                    string partName = nameMap[partId];
-                    return new ReplenishmentItem
-                    {
-                        PartId = partId,
-                        MinStock = min,
-                        PartName = partName,
-                        Reason = reason
-                    };
-                })
-                .Where(x=>validIds.Contains(x.PartId))
-                .OrderByDescending(i => Math.Max(0, i.MinStock - (stockMap.TryGetValue(i.PartId, out var s) ? s : 0)))
-                .ToList();
-            if (!includeAll)
-                items = items.Where(i => i.MinStock > (stockMap.TryGetValue(i.PartId, out var s) ? s : 0)).ToList();
-            return items;
+            var items = root.RootElement.GetProperty("items").EnumerateArray()
+                 .Select(x =>
+                 {
+                     int partId = x.GetProperty("partId").GetInt32();
+                     int min = Math.Max(0, x.GetProperty("minStock").GetInt32());
+                     int aiOrd = Math.Max(0, x.GetProperty("orderQty").GetInt32());
+                     int mustOrd = Math.Max(0, min - (stockMap.TryGetValue(partId, out var s) ? s : 0));
+                     string reason = x.TryGetProperty("reason", out var r) ? (r.GetString() ?? "") : "";
+                     string partName = nameMap[partId];
+                     return new ReplenishmentItem
+                     {
+                         PartId = partId,
+                         MinStock = min,
+                         PartName = partName,
+                         Reason = reason,
+                         NeedQuantity = Math.Max(aiOrd, mustOrd)
+                     };
 
+                 })
+                 .Where(x => validIds.Contains(x.PartId))
+                 .ApplySorting(dto.SortField, dto.SortOrder)
+                 .ToList();
+                
+
+            return IMemoryPaginationHelper.Pagination(items, dto.PageSize.Value, dto.PageIndex.Value);
+                 
+           
         }
 
-        private static string BuildOneShotPrompt(string jsonContext, int lead, double sl, bool includeAll) => $@"
-You are an inventory replenishment planner for a single-site EV service center.
-Input: a JSON array where each item has: partId (int), name, stock, avgUse7d, avgUse30d (avg/day).
+        private static string BuildOneShotPrompt(string jsonContext, int lead, bool includeAll = false) => $@"
+                You are an inventory replenishment planner for a single-site EV service center.
+                Input: a JSON array; each item has: partId (int), name, stock, avgUse7d, avgUse30d (avg/day).
 
-REQUIREMENTS:
-- Compute **minStock** (minimum stock) for each part to cover demand for {lead} days plus a small safety margin aligned with service level {sl:P0}.
-- Heuristic:
-  base = max(avgUse7d, avgUse30d, 0.2);
-  safety = 1.1 // ~ +10%
-  minStock = ceil(base * {lead} * safety)
+                REQUIREMENTS:
+                - Compute minStock for the next {lead} days with a data-driven safety margin (no service level provided).
+                - Then compute orderQty = max(0, minStock - stock).
 
-RETURN JSON ONLY:
-{{
-  ""items"": [
-    {{ ""partId"": 0, ""minStock"": 0, ""reason"": ""<=160 chars"" }}
-  ]
-}}
+                Heuristic:
+                  base   = max(avgUse7d, avgUse30d, 0.2)   // daily demand baseline
 
-Rules:
-- Use only partId values provided in the input (**partId is an integer**).
-- Do NOT return names; the backend will join names by partId.
-- includeAll = {includeAll.ToString().ToLower()} (if true, still include items where minStock <= stock).
+                  // volatility proxy: how much 7d exceeds 30d
+                  ratio  = (avgUse30d > 0 ? avgUse7d / avgUse30d : (avgUse7d > 0 ? 2.0 : 1.0))
 
-DATA:
-{jsonContext}
+                  // choose safety by volatility
+                  // high volatility → larger buffer
+                  safety =
+                    ratio >= 1.8 ? 1.25 :
+                    ratio >= 1.4 ? 1.18 :
+                    ratio >= 1.1 ? 1.12 : 1.08;
 
-Return ONLY the JSON object above. No extra text outside the JSON.";
+                  minStock = ceil(base * {lead} * safety)
+
+                RETURN JSON ONLY:
+                {{
+                  ""items"": [
+                    {{ ""partId"": 0, ""minStock"": 0, ""orderQty"": 0,
+                       ""reason"": ""<=160 chars; show base, ratio, safety, lead, stock → min, order"" }}
+                  ]
+                }}
+
+                Rules:
+                - Use only partId values from input (partId is an integer).
+                - minStock and orderQty must be non-negative integers (<= 10000).
+                - includeAll = {includeAll.ToString().ToLower()} (if true, include items even when orderQty = 0).
+                - Keep reason concise and numeric, e.g.: ""base=0.7, ratio=1.5, safety=1.18, L={lead}, stock=3 → min=5, order=2"".
+
+                DATA:
+                {jsonContext}
+
+                Return ONLY the JSON object above; no extra text outside the JSON.";
     }
 }
