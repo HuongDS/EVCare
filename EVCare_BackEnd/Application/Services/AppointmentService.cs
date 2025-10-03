@@ -45,7 +45,7 @@ namespace Application.Services
 
         private async Task<bool> CheckAppointmentsForApointmentDate(DateTime appointment_Date)
         {
-            int cnt = await _appointmentRepository.CountAppointment(appointment_Date);
+            int cnt = await _appointmentRepository.CountAppointment(DateOnly.FromDateTime(appointment_Date));
             int capacity = await _serviceCenterRepository.GetAppactityOfServiceCenter();
             if (cnt > capacity)
             {

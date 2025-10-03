@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { PiNumberCircleOneFill, PiNumberCircleTwoFill, PiNumberCircleThreeFill } from "react-icons/pi";
+import {
+  PiNumberCircleOneFill,
+  PiNumberCircleTwoFill,
+  PiNumberCircleThreeFill,
+} from "react-icons/pi";
 // import { Plus } from "lucide-react";
 import {
   BookingFormBody,
@@ -47,14 +51,20 @@ interface Props {
   loading: boolean;
   setLoading: (loading: boolean) => void;
 }
+
 function BookingFormComponent({ show, handleClose, setLoading, loading }: Props) {
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<VehicleViewDto[]>([]);
+
   const [selectedValue, setSelectedValue] = useState(0);
   const [isAddNew, setIsAddNew] = useState(true);
-  const [listCategories, setListCategories] = useState<VehicleCategoryViewDto[]>([]);
-  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryViewModel[]>([]);
+  const [listCategories, setListCategories] = useState<
+    VehicleCategoryViewDto[]
+  >([]);
+  const [serviceCategories, setServiceCategories] = useState<
+    ServiceCategoryViewModel[]
+  >([]);
   const [accountInfor, setAccountInfor] = useState<AccountViewModel>();
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [dateSelected, setDateSelected] = useState<Dayjs>();
@@ -74,42 +84,63 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
         setSelectedValue(0);
       } else {
         setIsAddNew(false);
-        const vehicle = listVehicleOfCustomer.find((v) => v.id === Number(e.target.value));
-        setVehicleCategory(listCategories.find((c) => c.id === vehicle?.cateId)?.id || 0);
+        const vehicle = listVehicleOfCustomer.find(
+          (v) => v.id === Number(e.target.value)
+        );
+        setVehicleCategory(
+          listCategories.find((c) => c.id === vehicle?.cateId)?.id || 0
+        );
         setSelectedValue(Number(e.target.value));
       }
     },
-    [setVehicleCategory, listVehicleOfCustomer, setSelectedValue, setIsAddNew, listCategories]
+    [
+      setVehicleCategory,
+      listVehicleOfCustomer,
+      setSelectedValue,
+      setIsAddNew,
+      listCategories,
+    ]
   );
 
   const handleSelectServices = useCallback((serviceId: number) => {
     setSelectedServices((prev) =>
-      prev.includes(serviceId) ? prev.filter((s) => s !== serviceId) : [...prev, serviceId]
+      prev.includes(serviceId)
+        ? prev.filter((s) => s !== serviceId)
+        : [...prev, serviceId]
     );
   }, []);
 
-  const handleServiceCategoriesChange = useCallback((serviceCategory: ServiceCategoryViewModel) => {
-    const servicesInCategory = serviceCategory.services.map((s) => s.id);
-    if (servicesInCategory.length === 0) return;
-    setSelectedServices((prev) => {
-      const allSelected = servicesInCategory.every((s) => prev.includes(s));
-      if (allSelected) {
-        return prev.filter((s) => !servicesInCategory.includes(s));
-      } else {
-        const currSelect = [...prev];
-        servicesInCategory.forEach((e) => {
-          if (!currSelect.includes(e)) currSelect.push(e);
-        });
-        return currSelect;
-      }
-    });
-  }, []);
+  const handleServiceCategoriesChange = useCallback(
+    (serviceCategory: ServiceCategoryViewModel) => {
+      const servicesInCategory = serviceCategory.services.map((s) => s.id);
+      if (servicesInCategory.length === 0) return;
+      setSelectedServices((prev) => {
+        const allSelected = servicesInCategory.every((s) => prev.includes(s));
+        if (allSelected) {
+          return prev.filter((s) => !servicesInCategory.includes(s));
+        } else {
+          const currSelect = [...prev];
+          servicesInCategory.forEach((e) => {
+            if (!currSelect.includes(e)) currSelect.push(e);
+          });
+          return currSelect;
+        }
+      });
+    },
+    []
+  );
 
   const handleSelectDate = useCallback(
     (date: Dayjs | undefined) => {
       setDateSelected(date);
       if (date && timeSelected) {
-        setAppointmentDate(date.hour(timeSelected.hour()).minute(timeSelected.minute()).second(0).toISOString());
+        setAppointmentDate(
+          date
+            .hour(timeSelected.hour())
+            .minute(timeSelected.minute())
+            .second(0)
+            .toISOString()
+        );
       }
     },
     [timeSelected]
@@ -119,7 +150,13 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
     (time: Dayjs | undefined) => {
       setTimeSelected(time);
       if (dateSelected && time) {
-        setAppointmentDate(dateSelected.hour(time.hour()).minute(time.minute()).second(0).toISOString());
+        setAppointmentDate(
+          dateSelected
+            .hour(time.hour())
+            .minute(time.minute())
+            .second(0)
+            .toISOString()
+        );
       }
     },
     [dateSelected]
@@ -186,15 +223,26 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
       setSelectedValue(0);
       setIsAddNew(true);
     }
-  }, [selectedValue, selectedServices, appointmentDate, vehicleCategory, licensePlate, note, urls]);
+  }, [
+    selectedValue,
+    selectedServices,
+    appointmentDate,
+    vehicleCategory,
+    licensePlate,
+    note,
+    urls,
+  ]);
 
   const handleNoteChange = useCallback((note: string) => {
     setNote(note);
   }, []);
 
-  const handleSelectVehicleCategory = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setVehicleCategory(Number(e.target.value));
-  }, []);
+  const handleSelectVehicleCategory = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setVehicleCategory(Number(e.target.value));
+    },
+    []
+  );
 
   const handleFileSubmit = useCallback((url: string) => {
     setUrls((prev) => [...prev, url]);
@@ -212,7 +260,9 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
       }
       const account = await getAccountInformation();
       setAccountInfor(account.data);
-      const listVehicleOfCustomer = await getVehicleByCustomerId(customer.data?.id ?? 0);
+      const listVehicleOfCustomer = await getVehicleByCustomerId(
+        customer.data?.id ?? 0
+      );
       if (!listVehicleOfCustomer) {
         handleError("Error in BookingForm.tsx");
         return;
