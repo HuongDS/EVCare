@@ -53,7 +53,8 @@ interface Props {
   loading: boolean;
   setLoading: (loading: boolean) => void;
 }
-export default function BookingForm({
+
+function BookingFormComponent({
   show,
   handleClose,
   setLoading,
@@ -68,6 +69,7 @@ export default function BookingForm({
   const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<
     VehicleViewDto[]
   >([]);
+
   const [selectedValue, setSelectedValue] = useState(0);
   const [isAddNew, setIsAddNew] = useState(true);
   const [listCategories, setListCategories] = useState<
@@ -369,3 +371,6 @@ export default function BookingForm({
     </BookingFormWrapper>
   );
 }
+
+const BookingForm = React.memo(BookingFormComponent);
+export default BookingForm;

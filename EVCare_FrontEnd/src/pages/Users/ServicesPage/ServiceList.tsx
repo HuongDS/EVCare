@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Container, Row, Card, ButtonGroup } from "react-bootstrap";
@@ -11,7 +11,6 @@ import {
   ServiceCard,
   ServiceTitle,
   ServiceDescription,
-  BookServiceButton,
   SortSection,
   SortLabel,
   SortButton,
@@ -86,14 +85,14 @@ const ServiceList = () => {
     }
   };
 
-  const handleOpenBookingForm = () => {
+  const handleOpenBookingForm = useCallback(() => {
     if (!isAuthenticated) {
       dispatch(setAction(ACTION.OPEN_APPOINTMENT));
       dispatch(openLogin());
       return;
     }
     dispatch(openAppointmentForm());
-  };
+  }, [isAuthenticated, dispatch]);
 
   const handleSearchValue = (searchValue: string) => {
     setSearchValue(searchValue);

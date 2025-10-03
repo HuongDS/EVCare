@@ -7,7 +7,9 @@ export type ResponseDto<T> = {
 export type OrderPartsResponseDto = {
   partId: number;
   partName: string;
-  orderId: number;
   quantity: number;
   price: number;
+  categoryId: number;
+  isDeleted: boolean;
+  imageUrl: string;
 };

@@ -8,9 +8,9 @@ import { useQuery } from "@tanstack/react-query";
 
 // Hàm gọi API
 const fetchTechnicianAppointments = async (
-  status?: number, // trạng thái công việc
-  beginTime?: string, // thời gian bắt đầu
-  endTime?: string, // thời gian kết thúc
+  status?: number,
+  beginTime?: string,
+  endTime?: string,
   pageSize?: number,
   pageIndex?: number
 ) => {
