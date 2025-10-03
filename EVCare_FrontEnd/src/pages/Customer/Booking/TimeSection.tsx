@@ -61,39 +61,16 @@ function TimeComponent({ date, time, handleSelectDate, handleSelectTime }: Props
       const cutoff = now.add(1, "hour");
       return {
         disabledHours: () => {
-          let hours = Array.from({ length: 24 }, (_, i) => i).filter(
-            (h) => h > (endTime?.hour() ?? 0) || h <= (startTime?.hour() ?? 0)
+          const hours = Array.from({ length: 24 }, (_, i) => i).filter(
+            (h) => h > (endTime?.hour() ?? 0) || h < (startTime?.hour() ?? 0)
           );
-          if (current && current.isSame(now, "day")) {
-            hours = [...hours, ...hours.filter((h) => h <= cutoff.hour())];
-          }
           return hours;
         },
         disabledMinutes: (selectedHour?: number) => {
           const disabled: number[] = [];
           if (selectedHour == null) return [];
 
-          // if (selectedHour === startTime?.hour()) {
-          //   for (let m = 0; m < startTime.minute(); m++) disabled.push(m);
-          //   return disabled;
-          // }
-          // const cutoffStartDate = startTime?.add(1, "hour");
-          // if (selectedHour === cutoffStartDate?.hour()) {
-          //   for (let m = 0; m < cutoffStartDate.minute(); m++) disabled.push(m);
-          //   return disabled;
-          // }
-
-          if (selectedHour === endTime?.hour()) {
-            for (let m = 0; m < 60; m++) disabled.push(m);
-            return disabled;
-          }
-
-          if (current && current.isSame(now, "day")) {
-            const cutoffStartDate = startTime?.add(1, "hour");
-            if (selectedHour === cutoffStartDate?.hour()) {
-              for (let m = 0; m < cutoffStartDate.minute(); m++) disabled.push(m);
-              return disabled;
-            }
+          if (date && date.isSame(now, "day")) {
             if (selectedHour === cutoff.hour()) {
               for (let m = 0; m < cutoff.minute(); m++) disabled.push(m);
               return disabled;
@@ -102,6 +79,17 @@ function TimeComponent({ date, time, handleSelectDate, handleSelectTime }: Props
               return Array.from({ length: 60 }, (_, i) => i);
             }
           }
+
+          // const cutoffStartDate = startTime?.add(1, "hour");
+          if (selectedHour === startTime?.hour()) {
+            for (let m = 0; m < startTime?.minute(); m++) disabled.push(m);
+            return disabled;
+          }
+
+          if (selectedHour === endTime?.hour()) {
+            for (let m = 0; m < 60; m++) disabled.push(m);
+            return disabled;
+          }
           return disabled;
         },
         disabledSeconds: () => {
@@ -109,7 +97,7 @@ function TimeComponent({ date, time, handleSelectDate, handleSelectTime }: Props
         },
       };
     },
-    [startTime, endTime]
+    [startTime, endTime, date]
   );
 
   return (
@@ -124,23 +112,25 @@ function TimeComponent({ date, time, handleSelectDate, handleSelectTime }: Props
             onChange={(value) => handleSelectDate(value)}
             value={date}
             disabledDate={disableDate}
-            dateRender={(current) => {
-              const reason = listBlockedDays.find((item) => current.isSame(dayjs(item.dateTime), "day"))?.reason;
+            cellRender={(current, info) => {
+              if (info.type === "date") {
+                const reason = listBlockedDays.find((item) => (current as Dayjs).isSame(item.dateTime, "day"))?.reason;
 
-              return (
-                <div
-                  style={{
-                    height: "100%",
-                    width: "100%",
-                    lineHeight: "24px",
-                    textAlign: "center",
-                    background: reason ? "#ffa39e" : undefined,
-                  }}
-                  title={reason}
-                >
-                  {current.date()}
-                </div>
-              );
+                return (
+                  <div
+                    style={{
+                      height: "100%",
+                      width: "100%",
+                      lineHeight: "24px",
+                      textAlign: "center",
+                      background: reason ? "#ffa39e" : undefined,
+                    }}
+                    title={reason}
+                  >
+                    {(current as Dayjs).date()}
+                  </div>
+                );
+              }
             }}
           />
         </TimeInput>

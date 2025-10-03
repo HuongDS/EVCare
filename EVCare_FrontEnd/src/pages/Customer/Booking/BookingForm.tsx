@@ -21,11 +21,7 @@ import UploadImage from "../../../components/UploadFields/uploadImage";
 import { getCustomerId } from "../../../services/customerServices";
 import type { RootState } from "../../../states/store";
 import { useSelector } from "react-redux";
-import {
-  createVehicle,
-  getVehicleByCustomerId,
-  getVehicleCategories,
-} from "../../../services/vehicleServicesApi";
+import { createVehicle, getVehicleByCustomerId, getVehicleCategories } from "../../../services/vehicleServicesApi";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
 import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import type { ServiceCategoryViewModel } from "../../../models/ServicesModel/ServiceCategoryViewModel";
@@ -52,21 +48,10 @@ interface Props {
   setLoading: (loading: boolean) => void;
 }
 
-function BookingFormComponent({
-  show,
-  handleClose,
-  setLoading,
-  loading,
-}: Props) {
-  const accountId = useSelector(
-    (state: RootState) => state.auth.user?.accountId
-  );
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
-  const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<
-    VehicleViewDto[]
-  >([]);
+function BookingFormComponent({ show, handleClose, setLoading, loading }: Props) {
+  const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<VehicleViewDto[]>([]);
 
   const [selectedValue, setSelectedValue] = useState(0);
   const [isAddNew, setIsAddNew] = useState(true);
@@ -94,6 +79,7 @@ function BookingFormComponent({
         const vehicle = listVehicleOfCustomer.find((v) => v.id === Number(e.target.value));
         setVehicleCategory(listCategories.find((c) => c.id === vehicle?.cateId)?.id || 0);
         setSelectedValue(Number(e.target.value));
+        setLicensePlate(vehicle?.licensePlate || "");
       }
     },
     [setVehicleCategory, listVehicleOfCustomer, setSelectedValue, setIsAddNew, listCategories]
@@ -144,8 +130,14 @@ function BookingFormComponent({
 
   const handleSubmit = useCallback(async () => {
     setIsLoading(true);
-    if (!licensePlate || licensePlate.trim().length === 0 || !LICENSE_PLATE_REGEX.test(licensePlate)) {
+    if (
+      !licensePlate ||
+      licensePlate.trim().length === 0 ||
+      !LICENSE_PLATE_REGEX.test(licensePlate) ||
+      licensePlate.includes("-")
+    ) {
       alert(ERROR_MESSAGE.LICENSE_PLATE_WRONG);
+      setLicensePlate("");
       setIsLoading(false);
       return;
     }
