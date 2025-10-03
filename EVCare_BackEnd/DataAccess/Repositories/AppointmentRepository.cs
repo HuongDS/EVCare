@@ -240,9 +240,11 @@ namespace DataAccess.Repositories
                     LicensePlate = a.Vehicle.LicensePlate,
                     VehicleImageUrl = a.Vehicle.Image,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
-                    PhoneNumber = a.Customer.Account.Phone
+                    PhoneNumber = a.Customer.Account.Phone,
+                    Note = a.Note
 
                 }).Where(x => x.CustomerName.Contains(model.CustomerName));
+            
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
 
@@ -268,6 +270,7 @@ namespace DataAccess.Repositories
                      Status = x.Status,
                      VehicleModel = x.Order.Appointment.Vehicle.Category.Name,
                      Services = x.Order.Appointment.AppointmentServices.Select(x => x.Service.Name).ToList(),
+                     OrderId = x.OrderId,
                      Parts = x.Technician.OrderParts.Select(x => new Dtos.Part.PartTechnicianViewModel
                      {
                          Id = x.PartId,

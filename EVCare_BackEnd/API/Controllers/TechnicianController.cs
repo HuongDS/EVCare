@@ -1,4 +1,5 @@
-﻿using Application.Dtos;
+﻿using API.Filters;
+using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Pagination;
@@ -44,6 +45,33 @@ namespace API.Controllers
 
                     });
                 }
+
+            }
+        }
+
+        [HttpGet("detail/{technicianId}")]
+        [Authorize(Roles ="Staff,Admin,Technician")]
+        [ServiceFilter(typeof(AuthorizeTechnicianDetail))]
+        public async Task<IActionResult> GetTechnicianDeatil(int technicianId)
+        {
+            try
+            {
+                var data = await _technicianService.GetTechnicianDetail(technicianId);
+                return Ok(new ResponseDto<TechnicianViewModel>
+                {
+                    data = data,
+                    statusCode = HttpStatus.OK,
+                    message = Message.GET_TECHNICIAN_SUCCESSFULLY
+
+                });
+                
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                });
 
             }
         }

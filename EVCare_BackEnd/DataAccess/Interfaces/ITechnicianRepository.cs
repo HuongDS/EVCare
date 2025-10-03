@@ -15,5 +15,6 @@ namespace DataAccess.Interfaces
         Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(TechnicianQueryDto model);
 
         Task<int> GetTechnicianIdByAccountId(int accountId);
+        Task<TechnicianViewModel> GetTechnicianDetai(int technicianId);
     }
 }

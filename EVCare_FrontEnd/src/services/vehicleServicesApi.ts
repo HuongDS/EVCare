@@ -34,7 +34,7 @@ export async function createVehicle(data: VehicleCreateDto) {
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
-      const errMsg = error.message;
+      const errMsg = error.response?.data?.message || error.message || ERROR_MESSAGE.CREATE_VEHICLE_FAILED;
       store.dispatch(setGlobalError(errMsg));
       throw new Error(errMsg);
     }
