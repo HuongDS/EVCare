@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.Jobs;
+using Application.Interfaces;
 using DataAccess.Interfaces;
 
 namespace Application.Services
