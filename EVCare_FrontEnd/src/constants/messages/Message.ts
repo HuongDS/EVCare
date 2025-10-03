@@ -27,3 +27,7 @@ export const AUTH_FORM_MESSAGE = {
   WELCOME_BACK: "Welcome Back!",
   FORGOT_PASSWORD: "Forgot Password",
 };
+
+export const LIST_SERVICES_MESSAGE = {
+  EMPTY: "Sorry! No services found for:",
+};

@@ -1,27 +1,20 @@
 import { useEffect, useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  ButtonGroup,
-  Spinner,
-} from "react-bootstrap";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { Container, Row, Card, ButtonGroup } from "react-bootstrap";
 import {
   PageContainer,
   HeaderSection,
   ServiceLabel,
   MainTitle,
   BookButton,
-  SortSection,
-  SortLabel,
-  SortButton,
   ServiceCard,
   ServiceTitle,
   ServiceDescription,
   BookServiceButton,
-  FooterCTA,
-  GetInTouchButton,
+  SortSection,
+  SortLabel,
+  SortButton,
 } from "./ServiceList.styled";
 import BookingForm from "../../Customer/Booking/BookingForm";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,24 +27,30 @@ import {
 } from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
 import { getAllActiveService } from "../../../services/servicesApi";
+import ServiceCarousel from "./ServiceCarousel";
+import { Col } from "antd";
+import { Pagination } from "../../../components/Paginations/Pagination";
+import SpinnerComponent from "../../../components/SpinnerComponent";
+import SearchBar from "../../../components/SearchBar/Search";
+import { LIST_SERVICES_MESSAGE } from "../../../constants/messages/Message";
 
-type SortBy = "default" | "Name" | "Duration";
+type SortBy = "Name" | "Duration";
 type SortOrder = "asc" | "desc";
 
 const ServiceList = () => {
-  const [sortBy, setSortBy] = useState<SortBy>("default");
-
+  const [sortBy, setSortBy] = useState<SortBy>("Name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [showForm, setShowForm] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [currenPage, setCurrentPage] = useState(1);
+  const [searchValue, setSearchValue] = useState(" ");
+  const [isHaveData, setIsHaveData] = useState(true);
   const { data, isLoading, isSuccess } = getAllActiveService(
-    "a",
-    10,
-    1,
-    // sortBy !== "default" ? [sortBy] : [],
-    // sortBy !== "default" ? [sortOrder] : []
-    "Name",
-    "asc"
+    searchValue,
+    9,
+    currenPage,
+    sortBy,
+    sortOrder
   );
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -60,22 +59,23 @@ const ServiceList = () => {
   );
 
   useEffect(() => {
+    if (data?.data?.items?.length === 0) {
+      setIsHaveData(false);
+    } else {
+      setIsHaveData(true);
+    }
+  }, [data]);
+
+  useEffect(() => {
     if (createAppointmentFormOpen) {
       setShowForm(true);
       dispatch(closeAppointmentForm());
     }
   }, [createAppointmentFormOpen, dispatch]);
 
-  if (isLoading) {
-    return (
-      <PageContainer>
-        <Container className="text-center mt-5">
-          <Spinner animation="border" />
-          <p>Loading services...</p>
-        </Container>
-      </PageContainer>
-    );
-  }
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleSortChange = (newSortBy: SortBy): void => {
     if (newSortBy === sortBy) {
@@ -95,28 +95,27 @@ const ServiceList = () => {
     dispatch(openAppointmentForm());
   };
 
+  const handleSearchValue = (searchValue: string) => {
+    setSearchValue(searchValue);
+  };
+
   return (
     <PageContainer>
+      <HeaderSection>
+        <ServiceLabel>OUR SERVICES</ServiceLabel>
+        <MainTitle>Maintenance Your Vehicle</MainTitle>
+
+        <BookButton onClick={handleOpenBookingForm}>
+          Book a Service →
+        </BookButton>
+      </HeaderSection>
+
+      <ServiceCarousel />
+
       <Container>
-        <HeaderSection>
-          <ServiceLabel>OUR SERVICES</ServiceLabel>
-          <MainTitle>Maintenance Your Vehicle</MainTitle>
-
-          <BookButton onClick={handleOpenBookingForm}>
-            Book a Service →
-          </BookButton>
-        </HeaderSection>
-
         <SortSection>
-          <SortLabel>Sort by:</SortLabel>
           <ButtonGroup>
-            <SortButton
-              active={sortBy === "default"}
-              onClick={() => handleSortChange("default")}
-            >
-              Default{" "}
-              {sortBy === "default" && (sortOrder === "asc" ? "↑" : "↓")}
-            </SortButton>
+            <SortLabel>Sort by:</SortLabel>
             <SortButton
               active={sortBy === "Name"}
               onClick={() => handleSortChange("Name")}
@@ -131,9 +130,34 @@ const ServiceList = () => {
               {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
             </SortButton>
           </ButtonGroup>
+          <SearchBar
+            handleSearchValue={handleSearchValue}
+            placeholder="Search services..."
+            searchValue={searchValue}
+          />
         </SortSection>
 
-        <Row>
+        <Row style={{ justifyContent: "center" }}>
+          {isLoading && (
+            <PageContainer>
+              <Container className="text-center mt-5">
+                <SpinnerComponent />
+                <p>Loading services...</p>
+              </Container>
+            </PageContainer>
+          )}
+
+          {!isHaveData && (
+            <h3
+              style={{
+                color: "red",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              {LIST_SERVICES_MESSAGE.EMPTY + `${searchValue}`}
+            </h3>
+          )}
           {isSuccess &&
             data?.data?.items
               ?.filter((service) => !service.isDeleted)
@@ -149,19 +173,28 @@ const ServiceList = () => {
                         <strong>Duration:</strong> {service.duration} hours
                       </p>
 
-                      <BookServiceButton onClick={handleOpenBookingForm}>
+                      {/* <BookServiceButton onClick={handleOpenBookingForm}>
                         Book This Service
-                      </BookServiceButton>
+                      </BookServiceButton> */}
                     </Card.Body>
                   </ServiceCard>
                 </Col>
               ))}
         </Row>
-        <FooterCTA>
-          <GetInTouchButton>Get In Touch →</GetInTouchButton>
-        </FooterCTA>
+        {isHaveData && (
+          <Pagination
+            pageIndex={currenPage}
+            totalPage={data?.data?.totalPages || 1}
+            onPageChange={onPageChange}
+          />
+        )}
       </Container>
-      <BookingForm show={showForm} handleClose={() => setShowForm(false)} />
+      <BookingForm
+        loading={loading}
+        setLoading={setLoading}
+        show={showForm}
+        handleClose={() => setShowForm(false)}
+      />
     </PageContainer>
   );
 };

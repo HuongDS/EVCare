@@ -3,7 +3,7 @@ export const Navbar = styled.header`
   height: 100px;
   padding: 0 20px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   font-family: "Outfit", sans-serif;
   background: linear-gradient(to bottom, #ebffe7, #f9fff8);
@@ -95,8 +95,9 @@ export const SearchBar = styled.div`
 export const Menu = styled.nav`
   width: 35%;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   font-size: 1.2rem;
+  margin-right: 8%;
   a {
     position: relative;
     text-decoration: none;
