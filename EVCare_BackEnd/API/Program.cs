@@ -5,7 +5,6 @@ using API.Filters;
 using API.Middlewares;
 using Application.Interfaces;
 using Application.IService;
-using Application.Jobs;
 using Application.Mapping;
 using Application.Mappings;
 using Application.Service;
