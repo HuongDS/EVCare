@@ -52,7 +52,8 @@ export const BookButton = styled(Button)`
 export const SortSection = styled.div`
   margin-bottom: 2rem;
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.5rem;
 `;
@@ -95,6 +96,8 @@ export const ServiceCard = styled(Card)`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   height: 100%;
+  width: 400px;
+  font-family: "Outfit", sans-serif;
 
   &:hover {
     transform: translateY(-4px);

@@ -59,13 +59,6 @@ export default function Header() {
         </Link>
       </Logo>
 
-      <SearchBar>
-        <input type="text" placeholder="Search service..." />
-        <button>
-          <i className="bi bi-search"></i>
-        </button>
-      </SearchBar>
-
       <Menu>
         <Link to="/" className="active">
           Home
@@ -80,7 +73,10 @@ export default function Header() {
         </Buttons>
       ) : (
         <Buttons>
-          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
+          <button
+            className="btn btn-fill"
+            onClick={() => dispatch(openLogin())}
+          >
             Get Started
           </button>
         </Buttons>
