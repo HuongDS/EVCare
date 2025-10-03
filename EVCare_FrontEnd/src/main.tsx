@@ -4,14 +4,17 @@ import App from "./App.tsx";
 import { Provider } from "react-redux";
 import { store } from "./states/store.ts";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { ProviderLib } from "./components/ui/provider.jsx";
 import * as Sentry from "@sentry/browser";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <App />
-      </GoogleOAuthProvider>
+      <ProviderLib>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+          <App />
+        </GoogleOAuthProvider>
+      </ProviderLib>
     </Provider>
   </StrictMode>
 );

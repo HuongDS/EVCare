@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 interface handleSearchProps {
   handleSearchValue: (v: string) => void;
-  placeholder: string;
+  placeholder?: string;
   searchValue?: string;
 }
 const SearchBar = ({

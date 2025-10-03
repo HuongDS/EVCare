@@ -23,7 +23,9 @@ const TitleWrapper = styled.div`
 
 export default function Staff_Appoinments() {
   const name = AppointmentStatusEnum;
-  const { data, isSuccess, isLoading, isError } = useGetAllAppointments();
+  const { data, isSuccess, isLoading, isError } = useGetAllAppointments({
+    status: 1,
+  });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading appointments</div>;
   const sortName = [
@@ -39,7 +41,10 @@ export default function Staff_Appoinments() {
     <AppoitmentWrapper>
       <TitleWrapper>
         <h2>Appoinments</h2>
-        {/* <SearchBar /> */}
+        <SearchBar
+          placeholder="Search appointments..."
+          handleSearchValue={() => 1}
+        />
       </TitleWrapper>
       <SortTable sortName={sortName} />
       <div>
