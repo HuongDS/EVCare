@@ -11,10 +11,10 @@ import {
   ServiceCard,
   ServiceTitle,
   ServiceDescription,
-  BookServiceButton,
   SortSection,
   SortLabel,
   SortButton,
+  BookServiceButton,
 } from "./ServiceList.styled";
 import BookingForm from "../../Customer/Booking/BookingForm";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,7 +44,7 @@ const ServiceList = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currenPage, setCurrentPage] = useState(1);
-  const [searchValue, setSearchValue] = useState(" ");
+  const [searchValue, setSearchValue] = useState("");
   const [isHaveData, setIsHaveData] = useState(true);
   const { data, isLoading, isSuccess } = getAllActiveService(
     searchValue,

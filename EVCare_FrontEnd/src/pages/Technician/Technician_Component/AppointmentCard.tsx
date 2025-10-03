@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import NameBox from "./NameBox";
-import ReviewButton from "../../../components/SwitchButton/ReviewButton";
+import ReviewButton from "../../../components/Button/ReviewButton";
 import { formatDate } from "../../../utils/formatDate";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 const Card = styled.div`
