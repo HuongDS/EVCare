@@ -46,6 +46,8 @@ import type { AppointmentCreateModel } from "../../../models/AppointmentsModel/A
 import { createAppointment } from "../../../services/appointmentServices";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
+import { LICENSE_PLATE_REGEX } from "../../../constants/regexs/LicensePlateRegex";
+import { ERROR_MESSAGE } from "../../../constants/messages/Message";
 
 interface Props {
   show: boolean;
@@ -81,7 +83,7 @@ function BookingFormComponent({
   const [accountInfor, setAccountInfor] = useState<AccountViewModel>();
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [dateSelected, setDateSelected] = useState<Dayjs>();
-  const [timeSelected, setTimeSelected] = useState<Dayjs>();
+  const [timeSelected, setTimeSelected] = useState<Dayjs | undefined>(undefined);
   const [note, setNote] = useState("");
   const [vehicleCategory, setVehicleCategory] = useState(0);
   const [licensePlate, setLicensePlate] = useState("");
@@ -177,6 +179,21 @@ function BookingFormComponent({
 
   const handleSubmit = useCallback(async () => {
     setIsLoading(true);
+    if (!licensePlate || licensePlate.trim().length === 0 || !LICENSE_PLATE_REGEX.test(licensePlate)) {
+      alert(ERROR_MESSAGE.LICENSE_PLATE_WRONG);
+      setIsLoading(false);
+      return;
+    }
+    if (selectedServices.length === 0) {
+      alert(ERROR_MESSAGE.SERVICES_MUST_NOT_BE_EMPTY);
+      setIsLoading(false);
+      return;
+    }
+    if (!dateSelected || !timeSelected) {
+      alert(ERROR_MESSAGE.DATE_AND_TIME_CAN_NOT_BE_EMPTY);
+      setIsLoading(false);
+      return;
+    }
     let tmp = 0;
     if (note.length > 0) setNote(note.trim());
     if (selectedValue === 0) {
