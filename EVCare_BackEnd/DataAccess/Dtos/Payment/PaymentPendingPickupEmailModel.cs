@@ -18,8 +18,8 @@ namespace DataAccess.Dtos.Payment
         public string ServiceCenterName { get; set; }
         public TimeSpan OpenTime { get; set; }          
         public TimeSpan CloseTime { get; set; }
-        public string OpenDate {  get; set; }
-        public string CloseDate { get; set; }
+        public DayOfWeek OpenDate {  get; set; }
+        public DayOfWeek CloseDate { get; set; }
 
     }
 }
