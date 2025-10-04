@@ -67,6 +67,7 @@ const router = createBrowserRouter([
     path: "/technician",
     element: <TechnicianLayout />,
     children: [
+      { index: true, element: <Technician_General /> },
       { path: "general", element: <Technician_General /> },
       { path: "order", element: <TechnicianOrder /> },
     ],
