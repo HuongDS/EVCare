@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 interface SortTableProps {
   sortName: (string | number)[];
-  active: number | "All";
-  onChange: (val: number | "All") => void;
+  active: number | "To Do List";
+  onChange: (val: number | "To Do List") => void;
 }
 
 const Nav = styled.div`
@@ -80,7 +80,7 @@ const SortTable: React.FC<SortTableProps> = ({
           <span
             key={name}
             className={active === name ? "active" : ""}
-            onClick={() => onChange(name as number | "All")}
+            onClick={() => onChange(name as number | "To Do List")}
           >
             {name}
           </span>

@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import SortTable from "../Technician_Component/SortTable";
-import Input from "../Technician_Component/SearchBar";
 import styled from "styled-components";
 import AppointmentCard from "../Technician_Component/AppointmentCard";
-import { useGetTechnicianAppointments } from "./Technician_General_API";
+
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
 
 const AppointmentWrapper = styled.div``;
 
@@ -23,23 +23,49 @@ const TitleWrapper = styled.div`
 `;
 
 export default function Technician_General() {
-  const [activeStatus, setActiveStatus] = useState<number | "All">("All");
-
-  // Gọi API, bỏ qua Status nếu đang chọn "All"
-  const { data, isSuccess, isLoading, isError } = useGetTechnicianAppointments(
-    activeStatus === "All" ? undefined : activeStatus
+  const [activeStatus, setActiveStatus] = useState<number | "To Do List">(
+    "To Do List"
   );
+  const [appointments, setAppointments] = useState<TechnicianAppointmentsDto[]>(
+    []
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      setIsLoading(true);
+      setIsError(false);
+      try {
+        const data = await getTechnicianAppointments({
+          pageSize: 1000,
+          pageIndex: 1,
+        });
+        setAppointments(data.items ?? []);
+      } catch {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchAppointments();
+  }, []);
 
   const name = TechnicianWorkingSessionEnum;
 
   const sortName = [
-    "All",
+    "To Do List",
     name.PENDING,
     name.INPROGRESS,
     name.ADDING_PART,
     name.COMPLETED,
     name.CANCELLED,
   ];
+
+  const filteredAppointments = useMemo(() => {
+    if (activeStatus === "To Do List") return appointments;
+    return appointments.filter((item) => item.status === activeStatus);
+  }, [appointments, activeStatus]);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading technician appointments</div>;
@@ -48,7 +74,6 @@ export default function Technician_General() {
     <AppointmentWrapper>
       <TitleWrapper>
         <h2>Technician Jobs</h2>
-        <Input />
       </TitleWrapper>
 
       <SortTable
@@ -58,10 +83,9 @@ export default function Technician_General() {
       />
 
       <div>
-        {isSuccess &&
-          data?.data?.items?.map((item: TechnicianAppointmentsDto) => (
-            <AppointmentCard key={item.id} data={item} />
-          ))}
+        {filteredAppointments.map((item) => (
+          <AppointmentCard key={item.id} data={item} />
+        ))}
       </div>
     </AppointmentWrapper>
   );
