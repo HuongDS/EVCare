@@ -6,28 +6,29 @@ import type {
 } from "../models/AppointmentsModel/Staff_Appointments_Model";
 import { useQuery } from "@tanstack/react-query";
 
+interface GetAppointmentsParams {
+  customerName?: string;
+  status?: number;
+  beginTime?: Date;
+  endTime?: Date;
+  pageSize?: number;
+  pageIndex?: number;
+  sortField?: string;
+  sortOrder?: string;
+}
+
 //[STAFF]: Get All appointments
-const fetchAppointmentsData = async (
-  customerName?: string,
-  payload?: number,
-  pageindex?: number
-) => {
+const fetchAppointmentsData = async (params: GetAppointmentsParams) => {
   const response = await api.get<ResponseDto<PageModel<StaffAppointmentsDto>>>(
     "api/Appointment/appointments/paged",
-    {
-      params: { customerName, payload, pageindex },
-    }
+    { params }
   );
   return response.data;
 };
 
-export const useGetAllAppointments = (
-  customerName?: string,
-  payload?: number,
-  pageindex?: number
-) => {
+export const useGetAllAppointments = (params: GetAppointmentsParams = {}) => {
   return useQuery({
-    queryKey: ["Staff Appointments", customerName, payload, pageindex],
-    queryFn: () => fetchAppointmentsData(customerName, payload, pageindex),
+    queryKey: ["Staff Appointments", params],
+    queryFn: () => fetchAppointmentsData(params),
   });
 };

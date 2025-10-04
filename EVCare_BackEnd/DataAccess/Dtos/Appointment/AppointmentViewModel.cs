@@ -20,6 +20,7 @@ namespace DataAccess.Dtos.Appointment
         public List<string>? Services { get; set; }
         public string? VehicleImageUrl { get; set; }
         public AppointmentStatusEnum Status { get; set; }
+        public string? Note { get; set; }
     }
 }
 

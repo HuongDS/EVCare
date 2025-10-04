@@ -5,9 +5,9 @@ using API.Filters;
 using API.Middlewares;
 using Application.Interfaces;
 using Application.IService;
-using Application.Jobs;
 using Application.Mapping;
 using Application.Mappings;
+using Application.Planner;
 using Application.Service;
 using Application.Services;
 using Application.Validators.Appointment;
@@ -56,7 +56,7 @@ builder.Services.AddDbContext<EVCareDbContext>(options =>
 
 // DbContext
 //builder.Services.AddScoped<IEVCareDbContext, EVCareDbContext>();
-
+builder.Services.AddHttpClient();
 // Repositories
 builder.Services.AddScoped<IGenericRepository<Account>, GenericRepository<Account>>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -117,6 +117,8 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITechnicianService, TechnicianService>();
 builder.Services.AddScoped<IPartService, PartService>();
 builder.Services.AddScoped<ITechnicianWorkingSessionService, TechnicianWorkingSessionService>();
+
+builder.Services.AddScoped<IReplenishmentPlanner, GeminiReplenishmentPlanner>();
 
 
 // AutoMapper

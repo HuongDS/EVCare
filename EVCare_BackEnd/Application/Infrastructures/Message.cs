@@ -105,5 +105,9 @@ namespace Application.Infrastructures
         //Technician
         public const string GET_TECHNICIAN_SUCCESSFULLY = "Get technician successfully";
         public const string UPDATE_SUCCESSFULLY = "Update successfully";
+
+        //AI
+        public const string GET_AI_SUCCESSFULLY = "Get AI successfully";
+
     }
 }
