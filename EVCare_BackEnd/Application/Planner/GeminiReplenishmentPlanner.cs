@@ -62,7 +62,7 @@ namespace Application.Planner
                  {
                      int partId = x.GetProperty("partId").GetInt32();
                      int min = Math.Max(0, x.GetProperty("minStock").GetInt32());
-                     int aiOrd = Math.Max(0, x.GetProperty("orderQty").GetInt32());
+                     int aiOrd = Math.Max(0, x.GetProperty("needQuantity").GetInt32());
                      int mustOrd = Math.Max(0, min - (stockMap.TryGetValue(partId, out var s) ? s : 0));
                      string reason = x.TryGetProperty("reason", out var r) ? (r.GetString() ?? "") : "";
                      string partName = nameMap[partId];
@@ -92,7 +92,7 @@ namespace Application.Planner
 
                 REQUIREMENTS:
                 - Compute minStock for the next {lead} days with a data-driven safety margin (no service level provided).
-                - Then compute orderQty = max(0, minStock - stock).
+                - Then compute needQuantity = max(0, minStock - stock).
 
                 Heuristic:
                   base   = max(avgUse7d, avgUse30d, 0.2)   // daily demand baseline
@@ -112,16 +112,17 @@ namespace Application.Planner
                 RETURN JSON ONLY:
                 {{
                   ""items"": [
-                    {{ ""partId"": 0, ""minStock"": 0, ""orderQty"": 0,
-                       ""reason"": ""<=160 chars; show base, ratio, safety, lead, stock → min, order"" }}
+                    {{ ""partId"": 0, ""minStock"": 0, ""needQuantity"": 0,
+                       ""reason"": ""<=1000 chars; show reason why admin should add this part"" }}
                   ]
                 }}
 
                 Rules:
                 - Use only partId values from input (partId is an integer).
-                - minStock and orderQty must be non-negative integers (<= 10000).
+                - minStock and needQuantity must be non-negative integers (<= 10000).
                 - includeAll = {includeAll.ToString().ToLower()} (if true, include items even when orderQty = 0).
-                - Keep reason concise and numeric, e.g.: ""base=0.7, ratio=1.5, safety=1.18, L={lead}, stock=3 → min=5, order=2"".
+                - Keep reason clear and <=1000 chars show proof that the spare part must have that minstock only shows text not formula.
+                 for example in the next {lead} days if avg7day is like this and avg30day is like this and avg30day is like this and avg30day so you should add needQuantity   
 
                 DATA:
                 {jsonContext}
