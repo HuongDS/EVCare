@@ -9,62 +9,103 @@ import {
   Title,
   CardWrapper,
   PaginationContainer,
+  TitleContainer,
 } from "./Technician_Order.styled";
 
 import { Pagination, PaginationItem } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { LENGTH } from "../../../constants/Code/Constants";
+import SearchBar from "../Technician_Component/SearchBar";
+import ImageSkeleton from "../Technician_Component/ImageSkeleton";
 
 export default function TechnicianOrder() {
   const [open, setOpen] = useState(false);
   const [selectedPart, setSelectedPart] =
     useState<OrderPartsResponseDto | null>(null);
 
-  const [parts, setParts] = useState<OrderPartsResponseDto[]>([]);
+  const [allParts, setAllParts] = useState<OrderPartsResponseDto[]>([]); // dữ liệu gốc
+  const [displayParts, setDisplayParts] = useState<OrderPartsResponseDto[]>([]); // hiển thị trên UI
+
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  // mặc định mỗi trang trả về 20 card
-  const pageSize = 20;
+  const pageSize = LENGTH.VIEW_PARTCARD_MAX;
 
-  /**
-   * Sử dụng useCallback để tránh tạo lại hàm fetchParts sau mỗi lần render
-   */
-  const fetchParts = useCallback(
-    async (pageIndex: number) => {
-      try {
-        const data = await getAllParts({ pageIndex, pageSize });
-        setParts(data.items);
-        setTotalPages(data.totalPages);
-      } catch (error) {
-        console.error("Failed to fetch parts:", error);
-      }
-    },
-    [pageSize] // chỉ phụ thuộc vào pageSize
-  );
+  const fetchParts = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await getAllParts({ pageIndex: 1, pageSize: 1000 });
+      setAllParts(data.items);
+    } catch (error) {
+      console.error("Failed to fetch parts:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  /**
-   * Mỗi khi page thay đổi, gọi lại fetchParts
-   */
   useEffect(() => {
-    fetchParts(page);
-  }, [page, fetchParts]);
+    fetchParts();
+  }, [fetchParts]);
+
+  const updateDisplayParts = useCallback(() => {
+    const filtered = allParts.filter((part) =>
+      part.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    setTotalPages(Math.ceil(filtered.length / pageSize));
+
+    const startIndex = (page - 1) * pageSize;
+    setDisplayParts(filtered.slice(startIndex, startIndex + pageSize));
+  }, [allParts, searchQuery, page, pageSize]);
+
+  useEffect(() => {
+    updateDisplayParts();
+  }, [updateDisplayParts]);
+
+  const handleOpenModal = (part: OrderPartsResponseDto) => {
+    setSelectedPart(part);
+    setOpen(true);
+  };
 
   return (
     <PageContainer>
-      <Title>Technician Order</Title>
+      <TitleContainer>
+        <Title>Technician Order</Title>
+
+        <SearchBar
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setPage(1); // reset page khi search
+          }}
+          placeholder="Search for parts..."
+        />
+      </TitleContainer>
 
       <CardWrapper>
-        {parts.map((part) => (
-          <ProductCard
-            key={part.id}
-            part={part}
-            onClick={() => {
-              setSelectedPart(part);
-              setOpen(true);
-            }}
-          />
-        ))}
+        {isLoading
+          ? Array.from({ length: pageSize }).map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width: "200px",
+                  margin: "0.5rem",
+                  borderRadius: "8px",
+                }}
+              >
+                <ImageSkeleton src="" alt="loading" height={150} />
+              </div>
+            ))
+          : displayParts.map((part) => (
+              <ProductCard
+                key={part.id}
+                part={part}
+                onClick={() => handleOpenModal(part)}
+              />
+            ))}
       </CardWrapper>
 
       <PaginationContainer>
