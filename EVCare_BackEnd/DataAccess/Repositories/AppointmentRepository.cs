@@ -240,7 +240,8 @@ namespace DataAccess.Repositories
                     LicensePlate = a.Vehicle.LicensePlate,
                     VehicleImageUrl = a.Vehicle.Image,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
-                    PhoneNumber = a.Customer.Account.Phone
+                    PhoneNumber = a.Customer.Account.Phone,
+                    Note = a.Note
 
                 }).Where(x => x.CustomerName.Contains(model.CustomerName));
             

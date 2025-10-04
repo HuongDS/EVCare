@@ -1,9 +1,11 @@
 import styled from "styled-components";
 import StatusTag from "../../../components/StatusTags/StatusTag";
-import ReviewButton from "../../../components/SwitchButton/ReviewButton";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 
 import { formatDate } from "../../../utils/formatDate";
+import ButtonAction from "../../../components/Button/ReviewButton";
+import Appoinment_Progress_Modal from "../StaffManageAppointment/Appoinment_Progress_Modal";
+import { useState } from "react";
 const ContainerStyled = styled.div`
   border: 1px solid #ccc;
   border-radius: 12px;
@@ -62,69 +64,99 @@ const GroupButtonStyled = styled.div`
   display: flex;
   flex-direction: column;
   row-gap: 10px;
-  justify-content: flex-end;
   align-items: end;
 `;
 type AppointmentCardProps = {
   data: StaffAppointmentsDto;
 };
 export default function AppointmentCard({ data }: AppointmentCardProps) {
-  return (
-    <ContainerStyled>
-      <HeaderStyled>
-        <AppointmentId>
-          <div>
-            AppointmentID: <span>#{data.id}</span>
-          </div>
-          <div>
-            <StatusTag status="Done" />
-          </div>
-        </AppointmentId>
+  const [show, setShow] = useState(false);
 
-        <CalendarStyled>
+  const handleShowProgress = () => {
+    setShow(true);
+  };
+
+  const handleCloseProgress = () => {
+    setShow(false);
+  };
+  return (
+    <>
+      <ContainerStyled>
+        <HeaderStyled>
+          <AppointmentId>
+            <div>
+              AppointmentID: <span>#{data.id}</span>
+            </div>
+            <div>
+              <StatusTag status={data.status} />
+            </div>
+          </AppointmentId>
+
+          <CalendarStyled>
+            <div>
+              <i className="bi bi-calendar2-event"></i>
+            </div>
+            <div>{formatDate(data.appointmentDate)}</div>
+          </CalendarStyled>
+        </HeaderStyled>
+        <hr />
+        <InformationStyled>
+          <ImageStyled>
+            <img
+              src="https://th.bing.com/th/id/OSK.HERO8JB9i-Vk9dE32vQgHmNtC51-a4Zd2M1_ENbXWgtZvbk?w=472&h=280&c=1&rs=2&o=6&dpr=1.3&pid=SANGAM"
+              alt=""
+            />
+          </ImageStyled>
           <div>
-            <i className="bi bi-calendar2-event"></i>
+            <GroupFiled>
+              <div>Customer name</div>
+              <p>{data.customerName}</p>
+            </GroupFiled>
+            <GroupFiled>
+              <div>Phone number</div>
+              <p>{data.phoneNumber}</p>
+            </GroupFiled>
           </div>
-          <div>{formatDate(data.appointmentDate)}</div>
-        </CalendarStyled>
-      </HeaderStyled>
-      <hr />
-      <InformationStyled>
-        <ImageStyled>
-          <img
-            src="https://th.bing.com/th/id/OSK.HERO8JB9i-Vk9dE32vQgHmNtC51-a4Zd2M1_ENbXWgtZvbk?w=472&h=280&c=1&rs=2&o=6&dpr=1.3&pid=SANGAM"
-            alt=""
-          />
-        </ImageStyled>
-        <div>
+          <div>
+            <GroupFiled>
+              <div>Vehicle name</div>
+              <p>{data.vehicleModel}</p>
+            </GroupFiled>
+            <GroupFiled>
+              <div>License Plate</div>
+              <p>{data.licensePlate}</p>
+            </GroupFiled>
+          </div>
           <GroupFiled>
-            <div>Customer name</div>
-            <p>{data.customerName}</p>
+            <div>Services</div>
+            {data.services.slice(0, 3).map((service) => (
+              <p style={{ fontSize: "1rem" }}>{service}</p>
+            ))}
           </GroupFiled>
-          <GroupFiled>
-            <div>Phone number</div>
-            <p>{data.phoneNumber}</p>
-          </GroupFiled>
-        </div>
-        <div>
-          <GroupFiled>
-            <div>Vehicle name</div>
-            <p>{data.vehicleModel}</p>
-          </GroupFiled>
-          <GroupFiled>
-            <div>License Plate</div>
-            <p>{data.licensePlate}</p>
-          </GroupFiled>
-        </div>
-        <GroupFiled>
-          <div>Services</div>
-          <p>chua co data</p>
-        </GroupFiled>
-        <GroupButtonStyled>
-          <ReviewButton status={5} />
-          <ReviewButton status={4} /> <ReviewButton status={3} />
-        </GroupButtonStyled>
-      </InformationStyled>
-    </ContainerStyled>
+          <GroupButtonStyled>
+            {data.status === "Done" ? (
+              <ButtonAction
+                text="View Details"
+                color="white"
+                backgroundColor="#1da1f2"
+                action={handleShowProgress}
+              />
+            ) : (
+              <ButtonAction
+                text="Progress"
+                color="white"
+                backgroundColor="#00AD4E"
+                action={handleShowProgress}
+              />
+            )}
+          </GroupButtonStyled>
+        </InformationStyled>
+      </ContainerStyled>
+      <Appoinment_Progress_Modal
+        show={show}
+        close={handleCloseProgress}
+        data={data}
+      />
+    </>
   );
 }

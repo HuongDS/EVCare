@@ -19,6 +19,7 @@ namespace DataAccess.Entities
         public decimal BaseSalary { get; set; }
         public DateTime Updated_At { get; set; }
         public DateTime Deleted_At { get; set; }
+        public string? Avatar { get; set; }
         public ICollection<Application> Applications { get; set; }
         public ICollection<Salary> Salaries { get; set; }
         public ICollection<ReviewEmployee> ReviewEmployees { get; set; }

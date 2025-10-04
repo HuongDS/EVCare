@@ -41,14 +41,48 @@ export default function SignUpForm({
   return (
     <>
       <NameGroup>
-        <TextFieldAnimation required={true} type="First Name" text={firstName} setText={setFirstName} />
-        <TextFieldAnimation required={true} type="Last Name" text={lastName} setText={setLastName} />
+        <TextFieldAnimation
+          required={true}
+          type="First Name"
+          text={firstName}
+          setText={setFirstName}
+        />
+        <TextFieldAnimation
+          required={true}
+          type="Last Name"
+          text={lastName}
+          setText={setLastName}
+        />
       </NameGroup>
       <FieldGroup>
-        <TextFieldWithIcon required={true} icon={<HiOutlineMail />} type="Email" text={email} setText={setEmail} />
-        <TextFieldWithIcon required={true} icon={<FiKey />} type="Password" text={password} setText={setPassword} />
-        <TextFieldWithIcon required={true} icon={<FiKey />} type="Password" text={confirm} setText={setConfirm} />
-        <TextFieldWithIcon required={true} icon={<FiPhone />} type="Phone Number" text={phone} setText={setPhone} />
+        <TextFieldWithIcon
+          required={true}
+          icon={<HiOutlineMail />}
+          type="Email"
+          text={email}
+          setText={setEmail}
+        />
+        <TextFieldWithIcon
+          required={true}
+          icon={<FiKey />}
+          type="Password"
+          text={password}
+          setText={setPassword}
+        />
+        <TextFieldWithIcon
+          required={true}
+          icon={<FiKey />}
+          type="Password"
+          text={confirm}
+          setText={setConfirm}
+        />
+        <TextFieldWithIcon
+          required={true}
+          icon={<FiPhone />}
+          type="Phone Number"
+          text={phone}
+          setText={setPhone}
+        />
       </FieldGroup>
       {disable ? (
         <SpinnerComponent />
