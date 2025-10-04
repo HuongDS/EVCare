@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Skeleton from "@mui/material/Skeleton";
 
 interface ImageSkeletonProps {
@@ -17,6 +17,17 @@ export default function ImageSkeleton({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setError(true);
+      }
+    }, 30000); // after 30 seconds
+
+    return () => clearTimeout(timer);
+  }, [loading, src]);
+
   return (
     <>
       {loading && !error && (
@@ -28,7 +39,7 @@ export default function ImageSkeleton({
         />
       )}
       <img
-        src={error ? "https://via.placeholder.com/300x150?text=No+Image" : src}
+        src={error ? "https://placehold.co/300x180?text=No+Image" : src}
         alt={alt}
         className={className}
         style={{
@@ -38,6 +49,7 @@ export default function ImageSkeleton({
           height: `${height}px`,
           borderRadius: "8px",
         }}
+        loading="lazy"
         onLoad={() => setLoading(false)}
         onError={() => {
           setLoading(false);

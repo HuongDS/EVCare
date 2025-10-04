@@ -1,18 +1,10 @@
-// services/partApi.ts
 import { api } from "../api/api";
 import type {
-  OrderPartsResponseDto,
   ResponseDto,
+  PageModel,
+  OrderPartsResponseDto,
 } from "../models/OrderPartModel/Order_Parts_Model";
 import { handleError } from "../utils/errorHandler";
-
-interface PaginatedParts {
-  items: OrderPartsResponseDto[];
-  pageSize: number;
-  pageIndex: number;
-  totalItems: number;
-  totalPages: number;
-}
 
 export async function getAllParts(params?: {
   partName?: string;
@@ -21,7 +13,9 @@ export async function getAllParts(params?: {
   pageIndex?: number;
 }) {
   try {
-    const response = await api.get<ResponseDto<PaginatedParts>>("/api/Part", {
+    const response = await api.get<
+      ResponseDto<PageModel<OrderPartsResponseDto>>
+    >("/api/Part", {
       params,
     });
 

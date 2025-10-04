@@ -13,3 +13,11 @@ export type OrderPartsResponseDto = {
   isDeleted: boolean;
   imageUrl: string;
 };
+
+export type PageModel<T> = {
+  items: T[];
+  pageSize: number;
+  pageIndex: number;
+  totalItems: number;
+  totalPages: number;
+};
