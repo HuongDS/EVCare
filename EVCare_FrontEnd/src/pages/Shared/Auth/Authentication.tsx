@@ -22,6 +22,8 @@ import { ACTION } from "../../../constants/messages/Actions";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 import { handleError } from "../../../utils/errorHandler";
 import ForgotPassword from "./sections/ForgotPassword";
+import { RoleEnum } from "../../../models/enums";
+import { useNavigate } from "react-router";
 
 // interface AuthProps {
 //   show: boolean;
@@ -39,9 +41,7 @@ export default function Authentication() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState<string[]>(() =>
-    Array(LENGTH.OTP_LENGTH).fill("")
-  ); // lazy init
+  const [otp, setOtp] = useState<string[]>(() => Array(LENGTH.OTP_LENGTH).fill("")); // lazy init
   const [isLoading, setIsLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
 
@@ -49,6 +49,9 @@ export default function Authentication() {
   const dispatch = useDispatch<AppDispatch>();
   const pending = useSelector((state: RootState) => state.ui.actionAfterLogin);
   const loginFormOpen = useSelector((state: RootState) => state.ui.loginFormOpen);
+
+  // Navigate
+  const navigate = useNavigate();
 
   // login
   const handleLogin = useCallback(async () => {
@@ -74,6 +77,20 @@ export default function Authentication() {
       saveTokens(token);
       const user = toUseFromJwt(token);
       saveUser(user);
+
+      // Author
+      switch (user.role) {
+        case RoleEnum.ADMIN:
+          navigate("/admin");
+          break;
+        case RoleEnum.STAFF:
+          navigate("/staff");
+          break;
+        case RoleEnum.TECHNICIAN:
+          navigate("/technician");
+          break;
+      }
+
       dispatch(loginSuccess(user));
       dispatch(closeLogin());
       setEmail("");
@@ -89,7 +106,7 @@ export default function Authentication() {
       setIsLoading(false);
       return;
     }
-  }, [email, password, pending, dispatch]);
+  }, [email, password, pending, dispatch, navigate]);
 
   const handleSignUp = useCallback(async () => {
     if (firstName.length == 0 || lastName.length == 0) {
