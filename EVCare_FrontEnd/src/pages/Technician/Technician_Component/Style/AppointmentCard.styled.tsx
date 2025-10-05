@@ -61,3 +61,14 @@ export const ButtonStyled = styled.div`
   justify-content: flex-end;
   align-items: center;
 `;
+
+export const AppointmentStatus = styled.div`
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+  font-size: 1em;
+
+  i {
+    font-size: 1.2em;
+  }
+`;

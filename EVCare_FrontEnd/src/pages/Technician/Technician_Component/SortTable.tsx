@@ -1,10 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 
 interface SortTableProps {
-  sortName: (string | number)[];
-  active: number | "To Do List";
-  onChange: (val: number | "To Do List") => void;
+  sortName: TechnicianWorkingSessionEnum[];
+  active: TechnicianWorkingSessionEnum;
+  onChange: (val: TechnicianWorkingSessionEnum) => void;
 }
 
 const Nav = styled.div`
@@ -24,11 +25,9 @@ const Menu = styled.nav`
 
   span {
     position: relative;
-    text-decoration: none;
     font-weight: bold;
     color: #2f2f2f;
     cursor: pointer;
-    transition: color 0.2s;
     padding-bottom: 4px;
 
     &::after {
@@ -50,21 +49,13 @@ const Menu = styled.nav`
     }
   }
 
-  span:hover {
-    color: black;
-  }
-
   .active {
     color: black;
-  }
 
-  @media (min-width: 750px) and (max-width: 900px) {
-    font-size: 16px;
-  }
-
-  @media (max-width: 750px) {
-    font-size: 14px;
-    column-gap: 1rem;
+    &::after {
+      width: 100%;
+      transform: translateX(-50%) scaleX(1);
+    }
   }
 `;
 
@@ -80,7 +71,7 @@ const SortTable: React.FC<SortTableProps> = ({
           <span
             key={name}
             className={active === name ? "active" : ""}
-            onClick={() => onChange(name as number | "To Do List")}
+            onClick={() => onChange(name)}
           >
             {name}
           </span>

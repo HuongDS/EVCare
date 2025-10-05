@@ -27,7 +27,15 @@ export default function Staff_Appoinments() {
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading appointments</div>;
-  const sortName = ["All", name.PENDING, name.CHECKED_IN, name.CONFIRMED, name.IN_PROGRESS, name.DONE, name.CANCELLED];
+  const sortName = [
+    "All",
+    name.PENDING,
+    name.CHECKED_IN,
+    name.CONFIRMED,
+    name.IN_PROGRESS,
+    name.DONE,
+    name.CANCELLED,
+  ];
   return (
     <AppoitmentWrapper>
       <TitleWrapper>
@@ -40,7 +48,9 @@ export default function Staff_Appoinments() {
       <SortTable sortName={sortName} />
       <div>
         {isSuccess &&
-          data?.data?.items?.map((item: StaffAppointmentsDto) => <AppointmentCard key={item.id} data={item} />)}
+          data?.data?.items?.map((item: StaffAppointmentsDto) => (
+            <AppointmentCard key={item.id} data={item} />
+          ))}
       </div>
     </AppoitmentWrapper>
   );
