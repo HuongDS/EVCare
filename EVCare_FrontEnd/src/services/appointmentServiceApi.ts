@@ -1,3 +1,4 @@
+import { useDispatch } from "react-redux";
 import { api } from "../api/api";
 import type {
   PageModel,
@@ -5,6 +6,13 @@ import type {
   StaffAppointmentsDto,
 } from "../models/AppointmentsModel/Staff_Appointments_Model";
 import { useQuery } from "@tanstack/react-query";
+import type { AppDispatch } from "../states/store";
+import { useEffect } from "react";
+import {
+  setAppointments,
+  setError,
+  setLoading,
+} from "../states/appointmentSlice";
 
 interface GetAppointmentsParams {
   customerName?: string;
@@ -27,8 +35,23 @@ const fetchAppointmentsData = async (params: GetAppointmentsParams) => {
 };
 
 export const useGetAllAppointments = (params: GetAppointmentsParams = {}) => {
-  return useQuery({
+  const dispatch = useDispatch<AppDispatch>();
+  const query = useQuery({
     queryKey: ["Staff Appointments", params],
     queryFn: () => fetchAppointmentsData(params),
   });
+
+  useEffect(() => {
+    if (query.data?.data) {
+      dispatch(setAppointments(query.data.data));
+      dispatch(setLoading(false));
+      dispatch(setError(null));
+    }
+    if (query.isError) {
+      dispatch(setError(query.error?.message ?? "Fetch error"));
+      dispatch(setLoading(false));
+    }
+  }, [query.data, dispatch, query.isError, query.error]);
+
+  return query;
 };
