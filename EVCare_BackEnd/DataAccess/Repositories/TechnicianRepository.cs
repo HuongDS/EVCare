@@ -73,6 +73,7 @@ namespace DataAccess.Repositories
                 .AsNoTracking()
                 .Select(x => new TechnicianViewModel
                 {
+                    Id = x.Id,
                     FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
                     ExpYears = x.ExpYear,
                     Phone = x.Employee.Account.Phone,
