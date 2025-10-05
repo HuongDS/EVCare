@@ -75,6 +75,7 @@ namespace DataAccess.Repositories
         {
 
             return await _dbContext.Appointments.Where(a => a.CustomerId == customerId)
+                .Include(a=>a.Customer).ThenInclude(a=>a.Account)
                 .Include(a => a.Vehicle).ThenInclude(v => v.Category)
                 .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
                 .Select(a => new AppointmentViewModel
@@ -84,7 +85,10 @@ namespace DataAccess.Repositories
                     Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
                     Status = a.Status,
                     VehicleModel = a.Vehicle.Category.Name,
-                    VehicleImageUrl = a.Vehicle.Image
+                    VehicleImageUrl = a.Vehicle.Image,
+                    Note = a.Note,
+                    CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
+                    PhoneNumber = a.Customer.Account.Phone
                 }).ToListAsync();
 
         }
