@@ -24,7 +24,7 @@ const TitleWrapper = styled.div`
 export default function Staff_Appoinments() {
   const name = AppointmentStatusEnum;
   const { data, isSuccess, isLoading, isError } = useGetAllAppointments({
-    status: 1,
+    status: "Confirmed",
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading appointments</div>;
