@@ -38,16 +38,17 @@ const router = createBrowserRouter([
       },
       // CUSTOMER ROUTES
       {
-        element: <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}></ProtectedRoute>,
+        path: "orderHistory",
+        element: (
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
+            <OrderList />
+          </ProtectedRoute>
+        ),
         children: [
           // {
           //   path: "orderDetail",
           //   element: <OrderDetail />,
           // },
-          {
-            path: "orderHistory",
-            element: <OrderList />,
-          },
           { path: "rating", element: <Rating /> },
         ],
       },
@@ -58,16 +59,23 @@ const router = createBrowserRouter([
   // ADMIN ROUTES
   {
     path: "/admin",
-    element: <ProtectedRoute allowedRoles={[RoleEnum.ADMIN]}></ProtectedRoute>,
-    children: [{ element: <AdminLayout /> }],
+    element: (
+      <ProtectedRoute allowedRoles={[RoleEnum.ADMIN]}>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [],
     // children: [{ path: "general", element: <AdminGeneral /> }],
   },
   // STAFF ROUTES
   {
-    path: "staff",
-    element: <ProtectedRoute allowedRoles={[RoleEnum.STAFF]}></ProtectedRoute>,
+    path: "/staff",
+    element: (
+      <ProtectedRoute allowedRoles={[RoleEnum.STAFF]}>
+        <StaffLayout />
+      </ProtectedRoute>
+    ),
     children: [
-      { element: <StaffLayout /> },
       { path: "general", element: <Staff_General /> },
       { path: "inventory", element: <Staff_Inventory /> },
       { path: "technicians", element: <Manage_Technicians /> },
@@ -78,9 +86,12 @@ const router = createBrowserRouter([
   // TECHINICIAN ROUTES
   {
     path: "/technician",
-    element: <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}></ProtectedRoute>,
+    element: (
+      <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
+        <TechnicianLayout />
+      </ProtectedRoute>
+    ),
     children: [
-      { element: <TechnicianLayout /> },
       { path: "general", element: <Technician_General /> },
       { path: "order", element: <TechnicianOrder /> },
     ],

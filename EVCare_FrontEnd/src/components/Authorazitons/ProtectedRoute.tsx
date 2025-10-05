@@ -1,12 +1,13 @@
-import { Navigate, Outlet } from "react-router";
+import { Navigate } from "react-router";
 import type { RoleEnum } from "../../models/enums";
 import { getAccessToken, getUser } from "../../token/tokenStore";
 
 interface ProtectedRouteProps {
   allowedRoles: RoleEnum[];
+  children: React.ReactNode;
 }
 
-const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
   const user = getUser();
   const token = getAccessToken();
 
@@ -18,7 +19,7 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/" replace></Navigate>;
   }
 
-  return <Outlet></Outlet>;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;
