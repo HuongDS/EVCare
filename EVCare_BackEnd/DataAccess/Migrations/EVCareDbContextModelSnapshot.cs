@@ -351,6 +351,9 @@ namespace DataAccess.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Avatar")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("BaseSalary")
                         .HasColumnType("decimal(18,2)");
 
@@ -1112,16 +1115,14 @@ namespace DataAccess.Migrations
                     b.Property<TimeSpan>("OpenTime")
                         .HasColumnType("time");
 
-                    b.Property<string>("WorkEndDay")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("WorkEndDay")
+                        .HasColumnType("int");
 
                     b.Property<int>("WorkSlot")
                         .HasColumnType("int");
 
-                    b.Property<string>("WorkStartDay")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("WorkStartDay")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

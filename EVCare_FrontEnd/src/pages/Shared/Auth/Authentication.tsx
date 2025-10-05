@@ -1,12 +1,30 @@
 import { useCallback, useMemo, useState } from "react";
 import logo from "../../../assets/EVCare.png";
-import SwitchButton from "../../../components/SwitchButton/SwitchButton";
-import { StyledModal, SideImage, FormContainer, HeaderBox } from "./Authentication.styled";
+import SwitchButton from "../../../components/Button/SwitchButton";
+import {
+  StyledModal,
+  SideImage,
+  FormContainer,
+  HeaderBox,
+} from "./Authentication.styled";
 import AuthForm from "./sections/AuthForm";
 import OTPForm from "./sections/OTPForm";
-import { AUTH_FORM_MESSAGE, ERROR_MESSAGE } from "../../../constants/messages/Message";
-import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto } from "../../../models/AuthModel/authModel";
-import { login, register, saveTokens, sendOtp, verifyOtp } from "../../../services/authService";
+import {
+  AUTH_FORM_MESSAGE,
+  ERROR_MESSAGE,
+} from "../../../constants/messages/Message";
+import type {
+  LoginRequestDto,
+  RegisterRequestDto,
+  VerifyOTPDto,
+} from "../../../models/AuthModel/authModel";
+import {
+  login,
+  register,
+  saveTokens,
+  sendOtp,
+  verifyOtp,
+} from "../../../services/authService";
 import { toUseFromJwt } from "../../../token/jwtDecode";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
@@ -17,7 +35,11 @@ import { saveUser } from "../../../token/tokenStore";
 import { PASSWORD_REGEX } from "../../../constants/regexs/PasswordRegex";
 import { EMAIL_REGEX } from "../../../constants/regexs/EmailRegex";
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
-import { closeLogin, consumeAction, openAppointmentForm } from "../../../states/uiSlice";
+import {
+  closeLogin,
+  consumeAction,
+  openAppointmentForm,
+} from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 import { handleError } from "../../../utils/errorHandler";
@@ -48,7 +70,9 @@ export default function Authentication() {
   // Redux
   const dispatch = useDispatch<AppDispatch>();
   const pending = useSelector((state: RootState) => state.ui.actionAfterLogin);
-  const loginFormOpen = useSelector((state: RootState) => state.ui.loginFormOpen);
+  const loginFormOpen = useSelector(
+    (state: RootState) => state.ui.loginFormOpen
+  );
 
   // Navigate
   const navigate = useNavigate();
@@ -115,7 +139,10 @@ export default function Authentication() {
     } else if (!EMAIL_REGEX.test(email)) {
       alert(ERROR_MESSAGE.INVALID_EMAIL);
       return;
-    } else if (!PASSWORD_REGEX.test(password) || !PASSWORD_REGEX.test(confirm)) {
+    } else if (
+      !PASSWORD_REGEX.test(password) ||
+      !PASSWORD_REGEX.test(confirm)
+    ) {
       alert(ERROR_MESSAGE.INVALID_PASSWORD);
       return;
     } else if (!PHONE_NUMBER_REGEX.test(phone)) {
@@ -146,7 +173,11 @@ export default function Authentication() {
       setIsOTP(true);
       setIsLoading(false);
     } catch (error) {
-      alert(error instanceof Error ? error.message : ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      alert(
+        error instanceof Error
+          ? error.message
+          : ERROR_MESSAGE.SOME_THING_WENT_WRONG
+      );
       handleError(error);
       setIsLoading(false);
       return;
@@ -207,14 +238,20 @@ export default function Authentication() {
   }, [isOTP, isSignUp, isForgot]);
 
   return (
-    <StyledModal show={loginFormOpen} onHide={() => dispatch(closeLogin())} centered>
+    <StyledModal
+      show={loginFormOpen}
+      onHide={() => dispatch(closeLogin())}
+      centered
+    >
       <SideImage $isSignUp={isSignUp}>
         <img src={logo} alt="EVCare Logo" />
       </SideImage>
       <FormContainer $isSignUp={isSignUp}>
         <HeaderBox>
           <h1>{headerText}</h1>
-          {!isOTP && !isForgot ? <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} /> : null}
+          {!isOTP && !isForgot ? (
+            <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} />
+          ) : null}
         </HeaderBox>
 
         {!isOTP ? (
@@ -250,7 +287,12 @@ export default function Authentication() {
             )}
           </>
         ) : (
-          <OTPForm disable={isLoading} otp={otp} setOtp={setOtp} handleVerifyOTP={handleVerifyOTP} />
+          <OTPForm
+            disable={isLoading}
+            otp={otp}
+            setOtp={setOtp}
+            handleVerifyOTP={handleVerifyOTP}
+          />
         )}
       </FormContainer>
     </StyledModal>

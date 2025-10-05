@@ -42,7 +42,7 @@ namespace Application.Services
             vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + model.OrderId);
             vnpay.AddRequestData("vnp_OrderType", "other");
             vnpay.AddRequestData("vnp_ReturnUrl", _configuration["VnPay:PaymentBackReturnUrl"]);
-            vnpay.AddRequestData("vnp_TxnRef", $"{model.OrderId.ToString()}-{tick}");
+            vnpay.AddRequestData("vnp_TxnRef", $"{model.OrderId.ToString()}-{tick}"); 
             var returnUrl = vnpay.CreateRequestUrl(_configuration["VnPay:BaseUrl"], _configuration["VnPay:HashSecret"]);
             return returnUrl;
 

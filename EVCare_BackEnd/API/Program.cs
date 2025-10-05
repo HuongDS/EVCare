@@ -5,9 +5,9 @@ using API.Filters;
 using API.Middlewares;
 using Application.Interfaces;
 using Application.IService;
-using Application.Jobs;
 using Application.Mapping;
 using Application.Mappings;
+using Application.Planner;
 using Application.Service;
 using Application.Services;
 using Application.Validators.Appointment;
@@ -37,7 +37,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers()
-    .AddFluentValidation();
+    .AddFluentValidation()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()); 
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -52,7 +56,7 @@ builder.Services.AddDbContext<EVCareDbContext>(options =>
 
 // DbContext
 //builder.Services.AddScoped<IEVCareDbContext, EVCareDbContext>();
-
+builder.Services.AddHttpClient();
 // Repositories
 builder.Services.AddScoped<IGenericRepository<Account>, GenericRepository<Account>>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -114,6 +118,8 @@ builder.Services.AddScoped<ITechnicianService, TechnicianService>();
 builder.Services.AddScoped<IPartService, PartService>();
 builder.Services.AddScoped<ITechnicianWorkingSessionService, TechnicianWorkingSessionService>();
 
+builder.Services.AddScoped<IReplenishmentPlanner, GeminiReplenishmentPlanner>();
+
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(ServiceProfile));
@@ -134,6 +140,7 @@ builder.Services.AddScoped<AuthorizeCustomerAndStaffThroughAccountIdFilter>();
 builder.Services.AddScoped<AppointmentAuthorizationFilter>();
 builder.Services.AddScoped<SetAccountIdFilter>();
 builder.Services.AddScoped<SetTechnicianIdFilter>();
+builder.Services.AddScoped<AuthorizeTechnicianDetail>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
@@ -287,10 +294,9 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
+app.UseMiddleware<RateLimitMiddleware>();
 app.UseAuthentication();
 app.UseMiddleware<BannedMiddleware>();
-
-
 
 app.UseAuthorization();
 

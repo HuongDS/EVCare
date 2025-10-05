@@ -1,6 +1,17 @@
-import styled from "styled-components";
+import React from "react";
+import { StyledWrapper } from "./Style/SearchBar.styled";
 
-const Input = () => {
+interface handleSearchProps {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // Xác định kiểu cho e
+  placeholder: string;
+}
+
+const SearchBar: React.FC<handleSearchProps> = ({
+  value,
+  onChange,
+  placeholder,
+}) => {
   return (
     <StyledWrapper>
       <div className="group">
@@ -13,7 +24,9 @@ const Input = () => {
           id="query"
           className="input"
           type="search"
-          placeholder="Search..."
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
           name="searchbar"
         />
       </div>
@@ -21,56 +34,4 @@ const Input = () => {
   );
 };
 
-const StyledWrapper = styled.div`
-  .group {
-    display: flex;
-    line-height: 28px;
-    align-items: center;
-    position: relative;
-    max-width: 300px;
-  }
-
-  .input {
-    font-family: "Outfit", sans-serif;
-    width: 100%;
-    height: 40px;
-    padding-left: 2.5rem;
-    box-shadow: 0 0 0 1.5px #4caf50, 0 0 25px -17px #4caf50;
-    border: 0;
-    border-radius: 12px;
-    background-color: white;
-    outline: none;
-    color: black;
-    transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
-    cursor: text;
-    z-index: 0;
-  }
-
-  .input::placeholder {
-    color: #bdbecb;
-  }
-
-  .input:hover {
-    box-shadow: 0 0 0 2.5px #4caf50, 0px 0px 25px -15px #4caf50;
-  }
-
-  .input:active {
-    transform: scale(0.95);
-  }
-
-  .input:focus {
-    box-shadow: 0 0 0 2.5px #4caf50;
-  }
-
-  .search-icon {
-    position: absolute;
-    left: 1rem;
-    fill: #bdbecb;
-    width: 1rem;
-    height: 1rem;
-    pointer-events: none;
-    z-index: 1;
-  }
-`;
-
-export default Input;
+export default SearchBar;

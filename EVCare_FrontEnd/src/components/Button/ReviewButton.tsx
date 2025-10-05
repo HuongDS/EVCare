@@ -19,7 +19,12 @@ const ActionButton = styled.button<{ color: string; bg: string }>`
   background-color: ${({ bg }) => bg || "green"};
 `;
 
-export default function ButtonAction({ text, color, backgroundColor, action }: ActionButtonProps) {
+export default function ButtonAction({
+  text,
+  color,
+  backgroundColor,
+  action,
+}: ActionButtonProps) {
   return (
     <ActionButton color={color} bg={backgroundColor} onClick={action}>
       {text}

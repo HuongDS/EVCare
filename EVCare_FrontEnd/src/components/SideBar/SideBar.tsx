@@ -1,4 +1,3 @@
-import React from "react";
 import type { MenuProps } from "antd";
 import { RoleEnum } from "../../models/enums/RoleEnum";
 import { SidebarContainer, MenuStyled, LinkStyled } from "./SideBar.styled";
@@ -138,19 +137,9 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       key: "6",
       icon: <SolutionOutlined />,
       label: "Application",
-      route: "/staff/application",
+      route: "/staff/customers",
     },
-    {
-      key: "7",
-      icon: <QuestionCircleOutlined />,
-      label: "Help & Information",
-      route: "/staff/help",
-    },
-    {
-      key: "8",
-      icon: <LogoutOutlined />,
-      label: "Logout",
-    },
+    { key: "8", icon: <LogoutOutlined />, label: "Logout" },
   ],
   [RoleEnum.TECHNICIAN]: [
     {
@@ -189,13 +178,79 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       label: "Help & Information",
       route: "/technician/help",
     },
-    {
-      key: "7",
-      icon: <LogoutOutlined />,
-      label: "Logout",
-    },
+    { key: "7", icon: <LogoutOutlined />, label: "Logout" },
   ],
   [RoleEnum.CUSTOMER]: [],
+  // [RoleEnum.TECHNICIAN]: [
+  //   {
+  //     key: "1",
+  //     icon: <HomeOutlined />,
+  //     label: "High-Voltage Battery System",
+
+  //     children: [
+  //       {
+  //         key: "1.1",
+  //         icon: <HomeOutlined />,
+  //         label: "Battery Modules",
+  //         route: "/technician/general/battery-modules",
+  //       },
+  //       {
+  //         key: "1.2",
+  //         icon: <HomeOutlined />,
+  //         label: "High-voltage cables & connectors",
+  //         route: "/technician/general/battery-packs",
+  //       },
+  //       {
+  //         key: "1.3",
+  //         icon: <HomeOutlined />,
+  //         label: "On-board charger",
+  //         route: "/technician/general/bms",
+  //       },
+  //       {
+  //         key: "1.4",
+  //         icon: <HomeOutlined />,
+  //         label: "HV fuses, contactors, relays",
+  //         route: "/technician/general/battery-management-system",
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     key: "2",
+  //     icon: <ApartmentOutlined />,
+  //     label: "Electric Drive System",
+  //     route: "/technician/my-jobs",
+  //   },
+  //   {
+  //     key: "3",
+  //     icon: <CalendarOutlined />,
+  //     label: "Control & Electronics",
+  //     route: "/technician/schedule",
+  //   },
+  //   {
+  //     key: "4",
+  //     icon: <ClockCircleOutlined />,
+  //     label: "Braking & Suspension System",
+  //     route: "/technician/history",
+  //   },
+  //   {
+  //     key: "5",
+  //     icon: <LogoutOutlined />,
+  //     label: "Steering & Body",
+  //     route: "/technician/logout",
+  //   },
+  //   {
+  //     key: "6",
+  //     icon: <SolutionOutlined />,
+  //     label: "Interior Accessories",
+  //     route: "/technician/application",
+  //   },
+  //   {
+  //     key: "7",
+  //     icon: <QuestionCircleOutlined />,
+  //     label: "Tools & Repair Materials",
+  //     route: "/technician/help",
+  //   },
+  // ],
 };
 
 interface SidebarProps {
@@ -206,25 +261,22 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
   const renderMenuItems = (menu: MenuItem[]): MenuProps["items"] => {
     return menu.map((item) => {
       if (item.children) {
-        return {
-          ...item,
-          children: renderMenuItems(item.children),
-        };
+        return { ...item, children: renderMenuItems(item.children) };
       }
       return {
         ...item,
-        label: (
-          <LinkStyled to={item.route || "#"} style={{ textDecoration: "none" }}>
-            {item.label}
-          </LinkStyled>
-        ),
+        label: <LinkStyled to={item.route || "#"}>{item.label}</LinkStyled>,
       };
     });
   };
 
   return (
     <SidebarContainer>
-      <MenuStyled mode="inline" defaultSelectedKeys={["1"]} items={renderMenuItems(menuByRole[role])} />
+      <MenuStyled
+        mode="inline"
+        defaultSelectedKeys={["1"]}
+        items={renderMenuItems(menuByRole[role])}
+      />
     </SidebarContainer>
   );
 };
