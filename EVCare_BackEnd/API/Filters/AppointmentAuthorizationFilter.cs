@@ -33,6 +33,7 @@ namespace API.Filters
                     });
                     return;
                 }
+                await next();
             }
         }
     }

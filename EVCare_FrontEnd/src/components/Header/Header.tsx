@@ -51,7 +51,6 @@ export default function Header() {
     dispatch(logoutRedux());
     navigate("/");
   };
-
   return (
     <Navbar>
       <Logo>
@@ -74,10 +73,7 @@ export default function Header() {
             display: "flex",
           }}
         >
-          <DropdownMenu></DropdownMenu>
-          <Buttons typeof="submit" onClick={handleLogout}>
-            <button className="btn btn-fill">Log Out</button>
-          </Buttons>
+          <DropdownMenu handleLogout={handleLogout} />
         </div>
       ) : (
         <Buttons>

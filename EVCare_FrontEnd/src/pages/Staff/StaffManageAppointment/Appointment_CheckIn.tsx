@@ -4,20 +4,42 @@ import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Sta
 
 const CheckInWrapper = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  padding: 10px 30px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(2, auto);
+  padding: 20px 30px;
   font-family: "Outfit", sans-serif;
+  gap: 20px;
 `;
 
-const CustomerInformation = styled.div`
-  span {
+const Section = styled.div`
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fff;
+`;
+
+const CustomerInformation = styled(Section)`
+  grid-column: 1 / 2;
+  grid-row: 1;
+
+  h5 {
+    background-color: #f1f1f1;
+    padding: 5px 2px;
+    border-radius: 10px;
     font-weight: bold;
   }
 `;
 
-const GroupFiled = styled.div`
+const GroupField = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   font-size: 16px;
   color: #ccc;
+
+  div {
+    font-style: italic;
+    color: #686868;
+  }
   p {
     font-weight: bold;
     font-size: 18px;
@@ -26,17 +48,30 @@ const GroupFiled = styled.div`
   }
 `;
 
-const ServiceGroup = styled.div`
+const ServiceGroup = styled(Section)`
+  grid-column: 2 / 3;
+  grid-row: 1;
+
   h5 {
+    background-color: #f1f1f1;
+    padding: 5px 2px;
+    border-radius: 10px;
     font-weight: bold;
   }
 `;
+
 const Services = styled.div`
   max-height: 200px;
   overflow-y: auto;
+
+  p {
+    font-size: 15px;
+  }
 `;
 
-const ImageGroup = styled.div`
+const ImageGroup = styled(Section)`
+  grid-column: 1 / 2;
+  grid-row: 2;
   display: flex;
   gap: 20%;
   img {
@@ -46,53 +81,61 @@ const ImageGroup = styled.div`
   }
 `;
 
-interface props {
+const TextAreaContainer = styled(Section)`
+  grid-column: 2 / 3;
+  grid-row: 2;
+`;
+
+interface Props {
   data: StaffAppointmentsDto;
 }
-export default function Appointment_CheckIn({ data }: props) {
+
+export default function Appointment_CheckIn({ data }: Props) {
   return (
     <CheckInWrapper>
       <CustomerInformation>
         <h5>
           Appointment ID: <span>#{data.id}</span>
         </h5>
-        <GroupFiled>
-          <div>Customer name</div>
+        <GroupField>
+          <div>Customer Name</div>
           <p>{data.customerName}</p>
-        </GroupFiled>
-        <GroupFiled>
+        </GroupField>
+        <GroupField>
           <div>Vehicle Model</div>
           <p>{data.vehicleModel}</p>
-        </GroupFiled>
-        <GroupFiled>
+        </GroupField>
+        <GroupField>
           <div>License Plate</div>
           <p>{data.licensePlate}</p>
-        </GroupFiled>
-        <GroupFiled>
+        </GroupField>
+        <GroupField>
           <div>Phone Number</div>
           <p>{data.phoneNumber}</p>
-        </GroupFiled>
+        </GroupField>
       </CustomerInformation>
+
       <ServiceGroup>
         <h5>Services</h5>
         <Services>
           {data.services.map((service, index) => (
-            <p>
+            <p key={index}>
               {index + 1}. {service}
             </p>
           ))}
         </Services>
       </ServiceGroup>
+
       <ImageGroup>
-        {data?.vehicleImageUrl?.map((img, i) => (
-          <img src={img} alt={`image + ${i + 1}`} />
-        ))}
+        {/* Uncomment to display vehicle images */}
+        {/* {data?.vehicleImageUrl?.map((img, i) => (
+          <img src={img} alt={`image ${i + 1}`} key={i} />
+        ))} */}
       </ImageGroup>
-      <div>
-        <div>
-          <TextAreaDisabled value={data.note} />
-        </div>
-      </div>
+
+      <TextAreaContainer>
+        <TextAreaDisabled value={data.note} />
+      </TextAreaContainer>
     </CheckInWrapper>
   );
 }
