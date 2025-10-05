@@ -3,12 +3,13 @@ import type React from "react";
 
 interface Steps {
   title: string;
-  description: string;
 }
 
 interface StepsProps {
   steps: Steps[];
   children: React.ReactNode;
+  // onNext: () => void;
+  // onPre: () => void;
 }
 export const ProgressSteps = ({ steps, children }: StepsProps) => {
   return (
@@ -40,18 +41,14 @@ export const ProgressSteps = ({ steps, children }: StepsProps) => {
 export const stepsAppoinment = [
   {
     title: "Check In",
-    description: "Step 1 description",
   },
   {
     title: "Assign",
-    description: "Step 2 description",
   },
   {
     title: "Order",
-    description: "Step 3 description",
   },
   {
     title: "Completed",
-    description: "Step 3 description",
   },
 ];
