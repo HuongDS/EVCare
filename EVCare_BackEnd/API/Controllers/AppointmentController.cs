@@ -326,11 +326,11 @@ namespace API.Controllers
 
         [HttpGet("appointments/paged")]
         [Authorize(Roles = "Staff")]
-        public async Task<IActionResult> GetAppointmentsWithPagination([FromQuery]AppointmentQueryDto model)
+        public async Task<IActionResult> GetAppointmentsWithPagination([FromQuery] AppointmentQueryDto model)
         {
             try
             {
-                
+
                 var appointments = await _appointmentService.GetAppointmentsWithPagination(model);
                 return Ok(new ResponseDto<PageResultDto<AppointmentViewModel>>
                 {
@@ -474,7 +474,7 @@ namespace API.Controllers
         }
 
         [HttpGet("get-appointment-technician")]
-        [Authorize(Roles ="Technician")]
+        [Authorize(Roles = "Technician")]
         [ServiceFilter(typeof(SetTechnicianIdFilter))]
         public async Task<IActionResult> GetAppointmentByTechnician([FromQuery] AppointmentTechnicianQueryDto model)
         {
@@ -488,8 +488,9 @@ namespace API.Controllers
                     message = Message.APPOINTMENT_GET_SUCCESS,
                     data = data
                 });
-                
-            }catch(Exception ex)
+
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
