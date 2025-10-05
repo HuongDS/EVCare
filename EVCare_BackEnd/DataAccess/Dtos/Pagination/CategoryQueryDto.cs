@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Dtos.Pagination
 {
-    public class PartQueryDto : BaseQueryDto
+    public class CategoryQueryDto : BaseQueryDto
     {
-        public string PartName { get; set; } = string.Empty;
-        public int? CategoryId { get; set; }
-
     }
 }
