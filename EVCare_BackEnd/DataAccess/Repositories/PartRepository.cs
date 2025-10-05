@@ -35,7 +35,7 @@ namespace DataAccess.Repositories
                      Quantity = x.Stock,
                      ImageUrl = x.Image,
                  });
-            if (model.CategpryId.HasValue) query = query.Where(x => x.CategoryId == model.CategpryId.Value);
+            if (model.CategoryId.HasValue) query = query.Where(x => x.CategoryId == model.CategoryId.Value);
 
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
