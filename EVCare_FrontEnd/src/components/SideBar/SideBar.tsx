@@ -1,4 +1,3 @@
-import React from "react";
 import type { MenuProps } from "antd";
 import { RoleEnum } from "../../models/enums/RoleEnum";
 import { SidebarContainer, MenuStyled, LinkStyled } from "./SideBar.styled";
@@ -138,19 +137,9 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       key: "6",
       icon: <SolutionOutlined />,
       label: "Application",
-      route: "/staff/application",
+      route: "/staff/customers",
     },
-    {
-      key: "7",
-      icon: <QuestionCircleOutlined />,
-      label: "Help & Information",
-      route: "/staff/help",
-    },
-    {
-      key: "8",
-      icon: <LogoutOutlined />,
-      label: "Logout",
-    },
+    { key: "8", icon: <LogoutOutlined />, label: "Logout" },
   ],
   [RoleEnum.TECHNICIAN]: [
     {
@@ -189,11 +178,7 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       label: "Help & Information",
       route: "/technician/help",
     },
-    {
-      key: "7",
-      icon: <LogoutOutlined />,
-      label: "Logout",
-    },
+    { key: "7", icon: <LogoutOutlined />, label: "Logout" },
   ],
   [RoleEnum.CUSTOMER]: [],
   // [RoleEnum.TECHNICIAN]: [
@@ -276,18 +261,11 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
   const renderMenuItems = (menu: MenuItem[]): MenuProps["items"] => {
     return menu.map((item) => {
       if (item.children) {
-        return {
-          ...item,
-          children: renderMenuItems(item.children),
-        };
+        return { ...item, children: renderMenuItems(item.children) };
       }
       return {
         ...item,
-        label: (
-          <LinkStyled to={item.route || "#"} style={{ textDecoration: "none" }}>
-            {item.label}
-          </LinkStyled>
-        ),
+        label: <LinkStyled to={item.route || "#"}>{item.label}</LinkStyled>,
       };
     });
   };
