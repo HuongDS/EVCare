@@ -4,6 +4,8 @@ import styled from "styled-components";
 import AppointmentCard from "../StaffComponents/AppointmentCard";
 import { useGetAllAppointments } from "../../../services/appointmentServiceApi";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import SearchBar from "../../../components/SearchBar/Search";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 const AppoitmentWrapper = styled.div``;
 
@@ -22,12 +24,20 @@ const TitleWrapper = styled.div`
 
 export default function Staff_Appoinments() {
   const name = AppointmentStatusEnum;
-  const { data, isSuccess, isLoading, isError } = useGetAllAppointments({
-    status: 1,
+  const { data: appointments, isLoading } = useGetAllAppointments({
+    status: "Confirmed",
   });
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading appointments</div>;
-  const sortName = ["All", name.PENDING, name.CHECKED_IN, name.CONFIRMED, name.IN_PROGRESS, name.DONE, name.CANCELLED];
+
+  if (isLoading) return <SpinnerComponent />;
+  const sortName = [
+    "All",
+    name.PENDING,
+    name.CHECKED_IN,
+    name.CONFIRMED,
+    name.IN_PROGRESS,
+    name.DONE,
+    name.CANCELLED,
+  ];
   return (
     <AppoitmentWrapper>
       <TitleWrapper>
@@ -39,8 +49,9 @@ export default function Staff_Appoinments() {
       </TitleWrapper>
       <SortTable sortName={sortName} />
       <div>
-        {isSuccess &&
-          data?.data?.items?.map((item: StaffAppointmentsDto) => <AppointmentCard key={item.id} data={item} />)}
+        {appointments?.data?.items?.map((item: StaffAppointmentsDto) => (
+          <AppointmentCard key={item.id} data={item} />
+        ))}
       </div>
     </AppoitmentWrapper>
   );
