@@ -23,3 +23,25 @@ export type TechnicianAppointmentsDto = {
   parts: string[];
   status: number;
 };
+
+//Get technicians for assigning appointment
+
+export type TechnicianModel<T> = {
+  id: number;
+  fullName: "string string";
+  phone: "0907829278";
+  expYears: 8;
+  rating: null;
+  status: "Available";
+  skills: T[];
+  avatar?: string;
+};
+
+export type GetTechnicianParams = {
+  Status?: string;
+  Skills?: number;
+  PageSize?: number;
+  PageIndex?: number;
+  SortField?: string;
+  SortOrder?: string;
+};
