@@ -1,6 +1,6 @@
 import StatusTag from "../../../../components/StatusTags/StatusTag";
 import Car from "../../../../assets/EVcar.webp";
-import ButtonAction from "../../../../components/SwitchButton/ReviewButton";
+import ButtonAction from "../../../../components/Button/ReviewButton";
 import {
   ButtonStyle,
   Container,
@@ -44,7 +44,7 @@ export default function OrderHistoryCard({ data, onViewAppointmentDetail }: prop
       <ContentWrapper>
         <CustomerInformation>
           <ImageWrapper>
-            <img src={Car} alt="" />
+            <img src={data.vehicleImageUrl ? data.vehicleImageUrl[0] : Car} alt="" />
           </ImageWrapper>
           <ServiceWrapper>
             <List>
