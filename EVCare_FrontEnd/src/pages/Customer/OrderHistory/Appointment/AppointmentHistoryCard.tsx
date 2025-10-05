@@ -1,6 +1,6 @@
 import StatusTag from "../../../../components/StatusTags/StatusTag";
 import Car from "../../../../assets/EVcar.webp";
-import ButtonAction from "../../../../components/SwitchButton/ReviewButton";
+import ButtonAction from "../../../../components/Button/ReviewButton";
 import {
   ButtonStyle,
   Container,
@@ -22,7 +22,10 @@ interface props {
   onViewAppointmentDetail: (appointmentId: number) => void;
 }
 
-export default function OrderHistoryCard({ data, onViewAppointmentDetail }: props) {
+export default function OrderHistoryCard({
+  data,
+  onViewAppointmentDetail,
+}: props) {
   return (
     <Container>
       <IDWrapper>
@@ -33,7 +36,8 @@ export default function OrderHistoryCard({ data, onViewAppointmentDetail }: prop
       <GeneralStyled>
         <DateStyled>
           <h5>
-            Date: <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
+            Date:{" "}
+            <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
           </h5>
           <div>
             <StatusTag status={data.status} />
