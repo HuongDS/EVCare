@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 
 interface GetAppointmentsParams {
   customerName?: string;
-  status?: number;
+  status?: string;
   beginTime?: Date;
   endTime?: Date;
   pageSize?: number;
