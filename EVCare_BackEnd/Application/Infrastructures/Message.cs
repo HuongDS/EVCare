@@ -60,6 +60,7 @@ namespace Application.Infrastructures
 
         // OrderParts
         public const string ORDER_PARTS_ADDED_SUCCESS = "Parts added to order successfully.";
+        public const string ORDER_PARTS_UPDATE_SUCCESS = "Parts update to order successfully.";
 
         // Parts
         public const string PART_NOT_FOUND = "Part not found.";
