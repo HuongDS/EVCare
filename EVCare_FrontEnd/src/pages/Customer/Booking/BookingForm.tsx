@@ -35,7 +35,7 @@ import ServiceSection from "./ServiceSection";
 import { Dayjs } from "dayjs";
 import TimeSection from "./TimeSection";
 import type { AppointmentCreateModel } from "../../../models/AppointmentsModel/AppointmentCreateModel";
-import { createAppointment } from "../../../services/appointmentServices";
+import { createAppointment } from "../../../services/appointmentServiceApi";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
 import { LICENSE_PLATE_REGEX } from "../../../constants/regexs/LicensePlateRegex";

@@ -5,7 +5,7 @@ import HomePage from "../pages/Users/HomePage/HomePage";
 import ServiceList from "../pages/Users/ServicesPage/ServiceList";
 import AboutUs from "../pages/Users/AboutUs/AboutUs";
 import ContactUs from "../pages/Users/Contact/ContactUs";
-import OrderDetail from "../pages/Customer/OrderHistory/OrderDetail/OrderDetail";
+// import OrderDetail from "../pages/Customer/OrderHistory/AppointmentDetail/AppointmentDetail";
 import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
 import Test from "../components/Test";
 import PageNotFound from "../components/Layouts/PageNotFound";
@@ -18,6 +18,9 @@ import Layout from "../components/Layouts/CustomerLayout";
 import Technician_General from "../pages/Technician/TechnicianGeneral/Technician_General";
 import TechnicianLayout from "../pages/Technician/Technician_Component/TechnicianLayout";
 import TechnicianOrder from "../pages/Technician/TechnicianOrder/Technician_Order";
+import OrderList from "../pages/Customer/OrderHistory/Appointment/AppointmentList";
+import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
+import { RoleEnum } from "../models/enums";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -33,27 +36,38 @@ const router = createBrowserRouter([
         path: "contact",
         element: <ContactUs />,
       },
+      // CUSTOMER ROUTES
       {
-        path: "orderDetail",
-        element: <OrderDetail />,
+        element: <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}></ProtectedRoute>,
+        children: [
+          // {
+          //   path: "orderDetail",
+          //   element: <OrderDetail />,
+          // },
+          {
+            path: "orderHistory",
+            element: <OrderList />,
+          },
+          { path: "rating", element: <Rating /> },
+        ],
       },
-      { path: "rating", element: <Rating /> },
+
       { path: "test", element: <Test /> },
     ],
   },
-
-  // Admin routes
+  // ADMIN ROUTES
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: <ProtectedRoute allowedRoles={[RoleEnum.ADMIN]}></ProtectedRoute>,
+    children: [{ element: <AdminLayout /> }],
     // children: [{ path: "general", element: <AdminGeneral /> }],
   },
-
-  // Staff routes
+  // STAFF ROUTES
   {
     path: "staff",
-    element: <StaffLayout />,
+    element: <ProtectedRoute allowedRoles={[RoleEnum.STAFF]}></ProtectedRoute>,
     children: [
+      { element: <StaffLayout /> },
       { path: "general", element: <Staff_General /> },
       { path: "inventory", element: <Staff_Inventory /> },
       { path: "technicians", element: <Manage_Technicians /> },
@@ -61,13 +75,12 @@ const router = createBrowserRouter([
       { path: "appointments", element: <Staff_Appoinments /> },
     ],
   },
-
-  // Technician routes
+  // TECHINICIAN ROUTES
   {
     path: "/technician",
-    element: <TechnicianLayout />,
+    element: <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}></ProtectedRoute>,
     children: [
-      { index: true, element: <Technician_General /> },
+      { element: <TechnicianLayout /> },
       { path: "general", element: <Technician_General /> },
       { path: "order", element: <TechnicianOrder /> },
     ],

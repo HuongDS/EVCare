@@ -4,7 +4,7 @@ export const StatusColors: Record<string, string> = {
   Paused: "#6b7280",
   Completed: "#10b981",
   Unpaid: "#f97316",
-  Cancelled: "#ef4444",
+  Canceled: "#ef4444",
   Confirmed: "#2563eb",
   "Checked In": "#0ea5e9",
   "In Progress": "#3b82f6",
