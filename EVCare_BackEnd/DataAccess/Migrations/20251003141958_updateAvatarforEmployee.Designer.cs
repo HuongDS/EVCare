@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251003141958_updateAvatarforEmployee")]
+    partial class updateAvatarforEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1115,14 +1118,16 @@ namespace DataAccess.Migrations
                     b.Property<TimeSpan>("OpenTime")
                         .HasColumnType("time");
 
-                    b.Property<int>("WorkEndDay")
-                        .HasColumnType("int");
+                    b.Property<string>("WorkEndDay")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("WorkSlot")
                         .HasColumnType("int");
 
-                    b.Property<int>("WorkStartDay")
-                        .HasColumnType("int");
+                    b.Property<string>("WorkStartDay")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

@@ -25,8 +25,15 @@ namespace Application.Services
 
         public async Task<int> CreateAppointment(AppointmentCreateModel model)
         {
-            // check số lần đặt của khách hàng
-            // check ngày hôm đó
+
+            var currentDay = model.Appointment_Date.DayOfWeek;
+            var serviceCenter = await _serviceCenterRepository.GetCenterInforAsync();
+            if(currentDay<serviceCenter.WorkStartDay || currentDay>serviceCenter.WorkEndDay)
+            {
+                throw new Exception($"You must book the appointment from {serviceCenter.WorkStartDay} to {serviceCenter.WorkEndDay} ");
+            }
+            
+
             if ((await CheckCustomerCreate(model.CustomerId)) == false)
             {
                 throw new Exception("You’ve reached your booking limit.");
@@ -56,17 +63,6 @@ namespace Application.Services
 
         }
 
-        private async Task<bool> CheckAppointmentsToday()
-        {
-            int appointments = await _appointmentRepository.CountAppointmnetToday();
-            int capacity = await _serviceCenterRepository.GetAppactityOfServiceCenter();
-            if (appointments > capacity)
-            {
-                return false;
-
-            }
-            return true;
-        }
         private async Task<bool> CheckCustomerCreate(int customerId)
         {
             int appointments = await _appointmentRepository.CountAppointmentsPerDay(customerId);

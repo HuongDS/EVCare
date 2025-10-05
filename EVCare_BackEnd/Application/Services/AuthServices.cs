@@ -234,7 +234,7 @@ namespace Application.Services
             var rtName = _configuration["Cookies:RefreshTokenName"];
             SetRefreshCookie(context, refreshToken, expires);
 
-            response.statusCode = 200;
+            response.statusCode = HttpStatus.OK;
             response.message = Message.LOGIN_SUCCESS;
             response.data = new LoginResponseDto
             {
