@@ -20,8 +20,8 @@ const fetchAppointmentsData = async (customerName?: string, payload?: number, pa
 
 export const useGetAllAppointments = (customerName?: string, payload?: number, pageindex?: number) => {
   return useQuery({
-    queryKey: ["Staff Appointments", customerName, payload, pageindex],
-    queryFn: () => fetchAppointmentsData(customerName, payload, pageindex),
+    queryKey: ["Staff Appointments", params],
+    queryFn: () => fetchAppointmentsData(params),
   });
 };
 

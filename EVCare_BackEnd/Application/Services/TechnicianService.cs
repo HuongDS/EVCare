@@ -18,6 +18,11 @@ namespace Application.Services
             _technicianRepository = technicianRepository;
         }
 
+        public async Task<TechnicianViewModel> GetTechnicianDetail(int technicianId)
+        {
+            return await _technicianRepository.GetTechnicianDetai(technicianId);
+        }
+
         public async Task<PageResultDto<TechnicianViewModel>> GetTechnicianToday(TechnicianQueryDto model)
         {
             return await _technicianRepository.GetTechniciansAsync(model);

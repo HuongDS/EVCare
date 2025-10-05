@@ -45,7 +45,7 @@ namespace API.Controllers
                 var appointmentId = await _appointmentService.CreateAppointment(model);
                 return Ok(new
                 {
-                    StatusCode = HttpStatus.OK,
+                    StatusCode = HttpStatus.CREATED,
                     Message = Message.APPOINTMENT_CREATED_SUCCESS,
                     AppointmentId = appointmentId
                 });
@@ -170,8 +170,8 @@ namespace API.Controllers
                 await _notificationServices.SendAppointmentInforAsync(appointmentDetails);
                 return Ok(new
                 {
-                    StatusCode = 200,
-                    Message = "Appointment created successfully",
+                    StatusCode = HttpStatus.CREATED,
+                    Message = Message.APPOINTMENT_CREATED_SUCCESS,
                     AppointmentId = appointmentId
                 });
 
@@ -180,7 +180,7 @@ namespace API.Controllers
             {
                 return BadRequest(new
                 {
-                    StatusCode = 400,
+                    StatusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                 });
             }
@@ -197,8 +197,8 @@ namespace API.Controllers
                 var result = await _appointmentService.UpdateAppointment(model, employeeId);
                 return Ok(new ResponseDto<bool>
                 {
-                    statusCode = 200,
-                    message = "Appointment updated successfully",
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_UPDATED_SUCCESS,
                     data = result
                 });
 
@@ -207,7 +207,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = 400,
+                    statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                     data = null
                 });
@@ -226,8 +226,8 @@ namespace API.Controllers
                 var result = await _appointmentService.DeleteAppointment(appointmentId);
                 return Ok(new ResponseDto<bool>
                 {
-                    statusCode = 200,
-                    message = "Appointment canceled successfully",
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_CANCEL_SUCCESS,
                     data = result
                 });
             }
@@ -235,7 +235,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = 400,
+                    statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                     data = null
                 });
@@ -250,21 +250,21 @@ namespace API.Controllers
         {
             try
             {
-                // This is a placeholder for actual implementation
+               
                 var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
 
                 return Ok(new ResponseDto<AppointmentViewDetailModel>
                 {
-                    statusCode = 200,
-                    message = "Appointments retrieved successfully",
-                    data = appointment // Replace null with actual appointments data
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = appointment
                 });
             }
             catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = 400,
+                    statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                     data = null
                 });
@@ -283,8 +283,8 @@ namespace API.Controllers
                 var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
                 {
-                    statusCode = 200,
-                    message = "Appointments retrieved successfully",
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
                     data = appointments
                 });
             }
@@ -292,7 +292,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = 400,
+                    statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
 
                 });
@@ -309,8 +309,8 @@ namespace API.Controllers
                 var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
                 {
-                    statusCode = 200,
-                    message = "Appointments retrieved successfully",
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
                     data = appointments
                 });
             }

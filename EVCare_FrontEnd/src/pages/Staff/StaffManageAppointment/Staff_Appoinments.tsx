@@ -4,6 +4,7 @@ import styled from "styled-components";
 import AppointmentCard from "../StaffComponents/AppointmentCard";
 import { useGetAllAppointments } from "../../../services/appointmentServiceApi";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import SearchBar from "../../../components/SearchBar/Search";
 
 const AppoitmentWrapper = styled.div``;
 
@@ -22,20 +23,35 @@ const TitleWrapper = styled.div`
 
 export default function Staff_Appoinments() {
   const name = AppointmentStatusEnum;
-  const { data, isSuccess, isLoading, isError } = useGetAllAppointments();
+  const { data, isSuccess, isLoading, isError } = useGetAllAppointments({
+    status: "Confirmed",
+  });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading appointments</div>;
-  const sortName = ["All", name.PENDING, name.CHECKED_IN, name.CONFIRMED, name.IN_PROGRESS, name.DONE, name.CANCELLED];
+  const sortName = [
+    "All",
+    name.PENDING,
+    name.CHECKED_IN,
+    name.CONFIRMED,
+    name.IN_PROGRESS,
+    name.DONE,
+    name.CANCELLED,
+  ];
   return (
     <AppoitmentWrapper>
       <TitleWrapper>
         <h2>Appoinments</h2>
-        {/* <SearchBar /> */}
+        <SearchBar
+          placeholder="Search appointments..."
+          handleSearchValue={() => 1}
+        />
       </TitleWrapper>
       <SortTable sortName={sortName} />
       <div>
         {isSuccess &&
-          data?.data?.items?.map((item: StaffAppointmentsDto) => <AppointmentCard key={item.id} data={item} />)}
+          data?.data?.items?.map((item: StaffAppointmentsDto) => (
+            <AppointmentCard key={item.id} data={item} />
+          ))}
       </div>
     </AppoitmentWrapper>
   );

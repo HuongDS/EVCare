@@ -1,52 +1,66 @@
-import { Typography } from "@mui/material";
 import styled from "styled-components";
+import { Typography, Button } from "@mui/material";
 
 export const CardContainer = styled.div`
-  font-family: "Outfit", sans-serif;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 16px;
 `;
 
-export const Image = styled.img`
-  width: 80%;
-  max-width: 300px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin: 0 auto;
-  background-color: #f3f3f3;
-
-  @media (max-width: 600px) {
-    height: 120px;
-  }
-`;
-
 export const ProductName = styled(Typography)`
-  font-weight: bold;
+  font-weight: 600;
   text-align: center;
 `;
 
-export const Descriptions = styled(Typography)`
-  color: #555;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  word-break: break-word;
-  max-height: 120px;
-  overflow-y: auto;
-  padding-right: 4px;
+export const Info = styled.div`
+  width: 100%;
+`;
 
-  &::-webkit-scrollbar {
-    width: 6px;
+export const TopRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 8px;
+`;
+
+export const PriceQuantity = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  span:first-child {
+    font-weight: 600;
   }
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+
+  span:last-child {
+    font-size: 14px;
+    color: #555;
   }
 `;
 
-export const Info = styled.div`
+export const AddToCartButton = styled(Button)`
+  background-color: #00a859;
+  color: white;
+  text-transform: none;
+  padding: 4px 12px;
+  font-weight: 600;
+  font-size: 0.875rem;
+
+  &:hover {
+    background-color: #00994f;
+  }
+`;
+
+export const QuantityControl = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const QuantityNumber = styled.span`
+  min-width: 24px;
+  text-align: center;
+  font-size: 1rem;
 `;

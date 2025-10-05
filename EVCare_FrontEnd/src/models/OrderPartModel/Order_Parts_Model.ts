@@ -5,11 +5,19 @@ export type ResponseDto<T> = {
 };
 
 export type OrderPartsResponseDto = {
-  partId: number;
-  partName: string;
+  id: number;
+  name: string;
   quantity: number;
   price: number;
   categoryId: number;
   isDeleted: boolean;
   imageUrl: string;
+};
+
+export type PageModel<T> = {
+  items: T[];
+  pageSize: number;
+  pageIndex: number;
+  totalItems: number;
+  totalPages: number;
 };

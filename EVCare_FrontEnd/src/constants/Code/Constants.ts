@@ -1,4 +1,5 @@
 export const LENGTH = {
   OTP_LENGTH: 6,
   IMAGES: 5,
+  VIEW_PARTCARD_MAX: 12,
 };
