@@ -4,8 +4,6 @@ import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Sta
 
 import { formatDate } from "../../../utils/formatDate";
 import ButtonAction from "../../../components/Button/ReviewButton";
-import Appoinment_Progress_Modal from "../StaffManageAppointment/Appoinment_Progress_Modal";
-import { useState } from "react";
 const ContainerStyled = styled.div`
   border: 1px solid #ccc;
   border-radius: 12px;
@@ -68,17 +66,12 @@ const GroupButtonStyled = styled.div`
 `;
 type AppointmentCardProps = {
   data: StaffAppointmentsDto;
+  onOpenProgress: () => void;
 };
-export default function AppointmentCard({ data }: AppointmentCardProps) {
-  const [show, setShow] = useState(false);
-
-  const handleShowProgress = () => {
-    setShow(true);
-  };
-
-  const handleCloseProgress = () => {
-    setShow(false);
-  };
+export default function AppointmentCard({
+  data,
+  onOpenProgress,
+}: AppointmentCardProps) {
   return (
     <>
       <ContainerStyled>
@@ -139,24 +132,19 @@ export default function AppointmentCard({ data }: AppointmentCardProps) {
                 text="View Details"
                 color="white"
                 backgroundColor="#1da1f2"
-                action={handleShowProgress}
+                action={onOpenProgress}
               />
-            ) : (
+            ) : data.status !== "Pending" ? (
               <ButtonAction
                 text="Progress"
                 color="white"
                 backgroundColor="#00AD4E"
-                action={handleShowProgress}
+                action={onOpenProgress}
               />
-            )}
+            ) : undefined}
           </GroupButtonStyled>
         </InformationStyled>
       </ContainerStyled>
-      <Appoinment_Progress_Modal
-        show={show}
-        close={handleCloseProgress}
-        data={data}
-      />
     </>
   );
 }

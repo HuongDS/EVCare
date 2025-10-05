@@ -4,6 +4,7 @@ export type ResponseDto<T> = {
   data?: T;
 };
 
+//Get appointment
 export type PageModel<T> = {
   items?: T[];
   pageSize: number;
@@ -24,3 +25,22 @@ export type StaffAppointmentsDto = {
   status: string;
   note: string;
 };
+
+export type GetAppointmentsParams = {
+  customerName?: string;
+  status?: string;
+  beginTime?: Date;
+  endTime?: Date;
+  pageSize?: number;
+  pageIndex?: number;
+  sortField?: string;
+  sortOrder?: string;
+};
+
+//Change appointment status
+export type ChangeAppointmentStatusParams = {
+  appointmentId: number;
+  status: string;
+};
+
+export type ListTechnicianToday = {};
