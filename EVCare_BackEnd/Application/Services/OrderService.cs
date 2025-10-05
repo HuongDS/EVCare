@@ -12,6 +12,7 @@ using DataAccess.Dtos.OrderPart;
 using DataAccess.Dtos.OrderParts;
 using DataAccess.Dtos.Orders;
 using DataAccess.Entities;
+using DataAccess.Enums;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -28,10 +29,13 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly IOrderPartRepository _orderPartRepository;
         private readonly IPartRepository _partRepository;
+        private readonly ITechnicianWorkingSessionRepository _technicianWorkingSessionRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public OrderService(IOrderRepository orderRepository, IAppointmentRepository appointmentRepository,
-            IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository,IUnitOfWork unitOfWork)
+            IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository,IUnitOfWork unitOfWork
+            ,ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
+            )
         {
             _orderRepository = orderRepository;
             _appointmentRepository = appointmentRepository;
@@ -39,6 +43,7 @@ namespace Application.Services
             _orderPartRepository = orderPartRepository;
             _partRepository = partRepository;
             _unitOfWork = unitOfWork;
+            _technicianWorkingSessionRepository = technicianWorkingSessionRepository;
         }
         public async Task<ResponseDto<OrderResponseDto>> CreateOrderAsync(OrderCreateRequestDto data)
         {
@@ -184,6 +189,23 @@ namespace Application.Services
                 }
 
             });
+            
+        }
+
+        public async Task UpdatePartToOrder(TechnicianOrderPartUpdateModel model)
+        {
+
+            var order = await _technicianWorkingSessionRepository.GetTechnicianWorkingSession(model.OrderId, model.TechnicianId);
+            if(order.Status != TechnicianWorkingSessionEnum.AddingPart)
+            {
+                throw new Exception("You are only updated when in adding part status");
+            }
+            
+            //await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            //{
+
+            //});
+
             
         }
     }

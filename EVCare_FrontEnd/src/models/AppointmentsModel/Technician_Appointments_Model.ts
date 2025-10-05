@@ -19,9 +19,10 @@ export type TechnicianAppointmentsDto = {
   customerName: string;
   phoneNumber: string;
   licensePlate: string;
-  services: [];
+  services: string[];
   parts: string[];
-  status: number;
+  status: string;
+  orderId: number;
 };
 
 //Get technicians for assigning appointment
