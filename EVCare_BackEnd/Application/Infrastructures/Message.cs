@@ -98,6 +98,8 @@ namespace Application.Infrastructures
 
         //Part
         public const string PART_GET_SUCCESSFULLY = "Get parts successfully";
+        //Part category
+        public const string PART_Category_GET_SUCCESSFULLY = "Get part categories successfully";
 
         //Customer
         public const string CUSTOMER_GET_SUCCESSFULLY = "Get customer successfully";
