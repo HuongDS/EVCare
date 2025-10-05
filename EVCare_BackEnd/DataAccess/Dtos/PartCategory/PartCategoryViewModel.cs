@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Dtos.Part
+namespace DataAccess.Dtos.PartCategory
 {
-    public class PartUpdateModel
+    public class PartCategoryViewModel
     {
         public int Id { get; set; }
-        public string? Name { get; set; } = null;
-        public int Quantity { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
     }
 }

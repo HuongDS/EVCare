@@ -48,7 +48,7 @@ export default function OrderHistoryCard({
       <ContentWrapper>
         <CustomerInformation>
           <ImageWrapper>
-            <img src={Car} alt="" />
+            <img src={data.vehicleImageUrl ? data.vehicleImageUrl[0] : Car} alt="" />
           </ImageWrapper>
           <ServiceWrapper>
             <List>

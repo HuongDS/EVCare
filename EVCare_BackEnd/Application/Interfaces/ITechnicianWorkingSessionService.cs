@@ -10,5 +10,6 @@ namespace Application.Interfaces
     public interface ITechnicianWorkingSessionService
     {
         Task UpdateWorkingSession(int technicianId,TechnicianWorkingSessionUpdateModel model);
+        Task<TechnicianWorkingSessionViewModel> GetTechnicianWorkingSession(int orderId, int technicianId);
     }
 }

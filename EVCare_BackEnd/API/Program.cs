@@ -88,6 +88,7 @@ builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
 builder.Services.AddScoped<ITechnicianWorkingSessionRepository, TechnicianWorkingSessionRepository>();
+builder.Services.AddScoped<IPartCategoryRepository, PartCategoryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
@@ -117,7 +118,7 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITechnicianService, TechnicianService>();
 builder.Services.AddScoped<IPartService, PartService>();
 builder.Services.AddScoped<ITechnicianWorkingSessionService, TechnicianWorkingSessionService>();
-
+builder.Services.AddScoped<IPartCategoryService, PartCategoryService>();
 builder.Services.AddScoped<IReplenishmentPlanner, GeminiReplenishmentPlanner>();
 
 
