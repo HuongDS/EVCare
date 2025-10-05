@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import ErrorIcon from "../IconsAnimation/errorIcon";
 
@@ -73,12 +73,7 @@ const ButtonContainer = styled.div`
   justify-content: flex-end;
 `;
 
-const PopUp = ({ header, message, action }: PopUpProps) => {
-  const onCLickOk = (ev: React.ChangeEvent) => {
-    ev.preventDefault();
-    action();
-  };
-
+const PopUp = ({ header, message }: PopUpProps) => {
   useEffect(() => {
     document.body.classList.add("no-scroll");
 

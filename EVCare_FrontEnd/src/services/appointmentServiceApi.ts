@@ -1,29 +1,13 @@
-import { useDispatch } from "react-redux";
 import { api } from "../api/api";
 import type {
+  ChangeAppointmentStatusParams,
+  GetAppointmentsParams,
   PageModel,
   ResponseDto,
   StaffAppointmentsDto,
 } from "../models/AppointmentsModel/Staff_Appointments_Model";
 import { useQuery } from "@tanstack/react-query";
-import type { AppDispatch } from "../states/store";
-import { useEffect } from "react";
-import {
-  setAppointments,
-  setError,
-  setLoading,
-} from "../states/appointmentSlice";
 
-interface GetAppointmentsParams {
-  customerName?: string;
-  status?: string;
-  beginTime?: Date;
-  endTime?: Date;
-  pageSize?: number;
-  pageIndex?: number;
-  sortField?: string;
-  sortOrder?: string;
-}
 import axios from "axios";
 import type { AppointmentCreateModel } from "../models/AppointmentsModel/AppointmentCreateModel";
 import { handleError } from "../utils/errorHandler";
@@ -31,36 +15,24 @@ import { ERROR_MESSAGE } from "../constants/messages/Message";
 import { store } from "../states/store";
 import { setGlobalError } from "../states/errorSlice";
 import type { AppointmentViewModel } from "../models/AppointmentsModel/AppointmentViewModel";
+import type {
+  GetTechnicianParams,
+  TechnicianModel,
+} from "../models/AppointmentsModel/Technician_Appointments_Model";
+import type { ServicesResponseDto } from "../models/ServicesModel/Customer_Services_Model";
 
 //[STAFF]: Get All appointments
-const fetchAppointmentsData = async (params: GetAppointmentsParams) => {
-  const response = await api.get<ResponseDto<PageModel<StaffAppointmentsDto>>>(
-    "api/Appointment/appointments/paged",
-    { params }
-  );
-  return response.data;
-};
 
 export const useGetAllAppointments = (params: GetAppointmentsParams = {}) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const query = useQuery({
+  return useQuery({
     queryKey: ["Staff Appointments", params],
-    queryFn: () => fetchAppointmentsData(params),
+    queryFn: async () => {
+      const response = await api.get<
+        ResponseDto<PageModel<StaffAppointmentsDto>>
+      >("api/Appointment/appointments/paged", { params });
+      return response.data;
+    },
   });
-
-  useEffect(() => {
-    if (query.data?.data) {
-      dispatch(setAppointments(query.data.data));
-      dispatch(setLoading(false));
-      dispatch(setError(null));
-    }
-    if (query.isError) {
-      dispatch(setError(query.error?.message ?? "Fetch error"));
-      dispatch(setLoading(false));
-    }
-  }, [query.data, dispatch, query.isError, query.error]);
-
-  return query;
 };
 
 export async function createAppointment(data: AppointmentCreateModel) {
@@ -103,3 +75,27 @@ export async function getCustomerAppointment() {
     throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }
+
+//[STAFF] - NGO CHI VY: Set Appointment Status - Appointment Steps
+export const changeAppointmentStatus = async (
+  params: ChangeAppointmentStatusParams
+) => {
+  const response = await api.put<ResponseDto<boolean | null>>(
+    "/api/Appointment/staff",
+    params
+  );
+  return response.data;
+};
+
+//[STAFF] - NGO CHI VY: Get technicians today for assigning work
+export const useGetTechniciansToday = (params: GetTechnicianParams) => {
+  return useQuery({
+    queryKey: ["TechniciansToday", params],
+    queryFn: async () => {
+      const response = await api.get<
+        ResponseDto<PageModel<TechnicianModel<ServicesResponseDto[]>>>
+      >("/api/Technician/get-technician-today", { params });
+      return response.data;
+    },
+  });
+};

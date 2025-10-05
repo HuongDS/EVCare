@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Steps } from "@chakra-ui/react";
+import { Steps } from "@chakra-ui/react";
 import type React from "react";
 
 interface Steps {
@@ -7,13 +7,12 @@ interface Steps {
 
 interface StepsProps {
   steps: Steps[];
+  currentStep: number;
   children: React.ReactNode;
-  // onNext: () => void;
-  // onPre: () => void;
 }
-export const ProgressSteps = ({ steps, children }: StepsProps) => {
+export const ProgressSteps = ({ steps, currentStep, children }: StepsProps) => {
   return (
-    <Steps.Root defaultStep={1} count={steps.length}>
+    <Steps.Root step={currentStep} count={steps.length}>
       <Steps.List style={{ padding: "20px" }}>
         {steps.map((step, index) => (
           <Steps.Item key={index} index={index} title={step.title}>
@@ -23,21 +22,12 @@ export const ProgressSteps = ({ steps, children }: StepsProps) => {
           </Steps.Item>
         ))}
       </Steps.List>
-
       {children}
-
-      <ButtonGroup size="sm" variant="outline">
-        <Steps.PrevTrigger asChild>
-          <Button>Prev</Button>
-        </Steps.PrevTrigger>
-        <Steps.NextTrigger asChild>
-          <Button>Next</Button>
-        </Steps.NextTrigger>
-      </ButtonGroup>
     </Steps.Root>
   );
 };
 
+//Title của Appoinment Steps:
 export const stepsAppoinment = [
   {
     title: "Check In",
@@ -46,9 +36,25 @@ export const stepsAppoinment = [
     title: "Assign",
   },
   {
-    title: "Order",
+    title: "Payment",
   },
   {
     title: "Completed",
   },
 ];
+
+//Thay đổi Step theo Appointment Status
+export const getAppointmentStepFromStatus = (status: string) => {
+  switch (status) {
+    case "Confirmed":
+      return 1;
+    case "CheckedIn":
+      return 2;
+    case "InProgress":
+      return 3;
+    case "ReadyForPickup":
+      return 3;
+    case "Done":
+      return 4;
+  }
+};

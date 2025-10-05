@@ -1,6 +1,11 @@
 import styled from "styled-components";
 import TextAreaDisabled from "../../../components/TextField/TextAreaDisabled";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import ButtonAction from "../../../components/Button/ReviewButton";
+import { useAppDispatch } from "../../../states/store";
+import { setStep } from "../../../states/appointmentSlice";
+import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
+import { CreateNewOrder } from "../../../services/orderServiceApi";
 
 const CheckInWrapper = styled.div`
   display: grid;
@@ -86,56 +91,93 @@ const TextAreaContainer = styled(Section)`
   grid-row: 2;
 `;
 
+const ButtonWapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 interface Props {
   data: StaffAppointmentsDto;
+  currentStep: number;
 }
 
-export default function Appointment_CheckIn({ data }: Props) {
+export default function Appointment_CheckIn({ data, currentStep }: Props) {
+  const dispatch = useAppDispatch();
+
+  const handleCheckIn = async () => {
+    const changeStatus = {
+      appointmentId: data.id,
+      status: "CheckedIn",
+    };
+    try {
+      await changeAppointmentStatus(changeStatus);
+      dispatch(setStep({ id: data.id, step: currentStep + 1 }));
+
+      const createNewOrderParams = {
+        appointmentID: data.id,
+        created_At: new Date().toISOString(),
+      };
+
+      await CreateNewOrder(createNewOrderParams);
+    } catch (error) {
+      console.error("Error changing appointment status:", error);
+    }
+  };
   return (
-    <CheckInWrapper>
-      <CustomerInformation>
-        <h5>
-          Appointment ID: <span>#{data.id}</span>
-        </h5>
-        <GroupField>
-          <div>Customer Name</div>
-          <p>{data.customerName}</p>
-        </GroupField>
-        <GroupField>
-          <div>Vehicle Model</div>
-          <p>{data.vehicleModel}</p>
-        </GroupField>
-        <GroupField>
-          <div>License Plate</div>
-          <p>{data.licensePlate}</p>
-        </GroupField>
-        <GroupField>
-          <div>Phone Number</div>
-          <p>{data.phoneNumber}</p>
-        </GroupField>
-      </CustomerInformation>
+    <>
+      <CheckInWrapper>
+        <CustomerInformation>
+          <h5>
+            Appointment ID: <span>#{data.id}</span>
+          </h5>
+          <GroupField>
+            <div>Customer Name</div>
+            <p>{data.customerName}</p>
+          </GroupField>
+          <GroupField>
+            <div>Vehicle Model</div>
+            <p>{data.vehicleModel}</p>
+          </GroupField>
+          <GroupField>
+            <div>License Plate</div>
+            <p>{data.licensePlate}</p>
+          </GroupField>
+          <GroupField>
+            <div>Phone Number</div>
+            <p>{data.phoneNumber}</p>
+          </GroupField>
+        </CustomerInformation>
 
-      <ServiceGroup>
-        <h5>Services</h5>
-        <Services>
-          {data.services.map((service, index) => (
-            <p key={index}>
-              {index + 1}. {service}
-            </p>
-          ))}
-        </Services>
-      </ServiceGroup>
+        <ServiceGroup>
+          <h5>Services</h5>
+          <Services>
+            {data.services.map((service, index) => (
+              <p key={index}>
+                {index + 1}. {service}
+              </p>
+            ))}
+          </Services>
+        </ServiceGroup>
 
-      <ImageGroup>
-        {/* Uncomment to display vehicle images */}
-        {/* {data?.vehicleImageUrl?.map((img, i) => (
+        <ImageGroup>
+          {/* Uncomment to display vehicle images */}
+          {/* {data?.vehicleImageUrl?.map((img, i) => (
           <img src={img} alt={`image ${i + 1}`} key={i} />
         ))} */}
-      </ImageGroup>
+        </ImageGroup>
 
-      <TextAreaContainer>
-        <TextAreaDisabled value={data.note} />
-      </TextAreaContainer>
-    </CheckInWrapper>
+        <TextAreaContainer>
+          <TextAreaDisabled value={data.note} />
+        </TextAreaContainer>
+      </CheckInWrapper>
+      <ButtonWapper>
+        <ButtonAction
+          text="Check In"
+          color="white"
+          backgroundColor="#00AD4E"
+          action={handleCheckIn}
+        />
+      </ButtonWapper>
+    </>
   );
 }
