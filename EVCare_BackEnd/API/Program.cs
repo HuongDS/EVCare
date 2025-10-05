@@ -294,10 +294,9 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
+app.UseMiddleware<RateLimitMiddleware>();
 app.UseAuthentication();
 app.UseMiddleware<BannedMiddleware>();
-
-
 
 app.UseAuthorization();
 
