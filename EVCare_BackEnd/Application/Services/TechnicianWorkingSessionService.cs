@@ -27,6 +27,11 @@ namespace Application.Services
             _notificationServices = notificationServices;
         }
 
+        public async Task<TechnicianWorkingSessionViewModel> GetTechnicianWorkingSession(int orderId, int technicianId)
+        {
+            return await _technicianWorkingSessionRepository.GetTechnicianWorkingSession(orderId, technicianId);
+        }
+
         public async Task UpdateWorkingSession(int technician,TechnicianWorkingSessionUpdateModel model)
         {
             await _technicianWorkingSessionRepository.UpdateStatusWorkingSession(technician, model);
