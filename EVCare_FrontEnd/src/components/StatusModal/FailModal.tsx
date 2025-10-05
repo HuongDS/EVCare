@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
-import SuccessIcon from "../IconsAnimation/successIcon";
 import ErrorIcon from "../IconsAnimation/errorIcon";
 
 const initBox = keyframes`
