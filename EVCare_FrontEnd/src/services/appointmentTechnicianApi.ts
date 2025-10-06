@@ -7,7 +7,7 @@ import type {
 import { handleError } from "../utils/errorHandler";
 
 export async function getTechnicianAppointments(params?: {
-  status?: number;
+  status?: string;
   beginTime?: string;
   endTime?: string;
   pageSize?: number;

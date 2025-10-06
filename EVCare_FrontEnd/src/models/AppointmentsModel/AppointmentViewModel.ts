@@ -13,3 +13,5 @@ export type AppointmentViewModel = {
   status: AppointmentStatusEnum;
   note?: string;
 };
+
+//này có trong Staff_Appointment_Model

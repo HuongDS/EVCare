@@ -16,7 +16,8 @@ export const StatusColors: Record<string, string> = {
   OnLeave: "#a855f7",
   Failed: "#dc2626",
   Refunded: "#14b8a6",
-  "In Stock": "#22c55e",
-  "Low Stock": "#f59e0b",
-  "Out Of Stock": "#ef4444",
+  InStock: "#22c55e",
+  LowStock: "#f59e0b",
+  OutOfStock: "#ef4444",
+  ReadyForPickup: "#14b8a6",
 };

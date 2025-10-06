@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Skeleton from "@mui/material/Skeleton";
 
 interface ImageSkeletonProps {
-  src: string;
+  src?: string | null; // 👈 cho phép null
   alt: string;
   className?: string;
   height?: number;
@@ -23,10 +23,20 @@ export default function ImageSkeleton({
         setLoading(false);
         setError(true);
       }
-    }, 30000); // after 30 seconds
-
+    }, 5000);
     return () => clearTimeout(timer);
   }, [loading, src]);
+
+  if (!src && !error) {
+    return (
+      <Skeleton
+        variant="rectangular"
+        width="100%"
+        height={height}
+        animation="wave"
+      />
+    );
+  }
 
   return (
     <>
@@ -39,7 +49,7 @@ export default function ImageSkeleton({
         />
       )}
       <img
-        src={error ? "https://placehold.co/300x180?text=No+Image" : src}
+        src={error || !src ? "https://placehold.co/300x180?text=No+Image" : src}
         alt={alt}
         className={className}
         style={{

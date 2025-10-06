@@ -15,6 +15,7 @@ namespace DataAccess.Interfaces
         public Task<int> GetCustomerIdByOrderId(int orderId);
         Task<OrderViewModel> GetOrderDetailAsync(int orderId);
         Task<Order> GetOrderPartsByOrderId(int orderId);
+        
         Task RemoveOrderPartsAsync(int id);
     }
 }

@@ -973,6 +973,10 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
 
@@ -983,102 +987,112 @@ namespace DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = 11,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Installation of new water and drainage pipes in residential and commercial buildings.",
                             Duration = 2.5m,
                             Name = "Pipe Installation",
+                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 2,
+                            Id = 12,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Detection and repair of pipe leaks to prevent water damage and reduce waste.",
                             Duration = 1.5m,
                             Name = "Leak Repair",
+                            Price = 400m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 3,
+                            Id = 13,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Installation of electrical wiring for new constructions or renovations.",
                             Duration = 3.0m,
                             Name = "Wiring Installation",
+                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 14,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Repair and replacement of broken or faulty light fixtures and switches.",
                             Duration = 1.0m,
                             Name = "Light Fixture Repair",
+                            Price = 200m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 15,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Installation of new air conditioning units for residential and office spaces.",
                             Duration = 4.0m,
                             Name = "Air Conditioner Installation",
+                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 16,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Regular inspection and maintenance of heating systems to ensure efficiency.",
                             Duration = 2.0m,
                             Name = "Heater Maintenance",
+                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 17,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Repair and restoration of wooden furniture such as chairs, tables, and cabinets.",
                             Duration = 2.0m,
                             Name = "Furniture Repair",
+                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 8,
+                            Id = 18,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Custom installation of wooden doors and windows with fittings.",
                             Duration = 3.5m,
                             Name = "Door and Window Installation",
+                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 19,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Painting of walls, ceilings, and trim inside residential and office buildings.",
                             Duration = 5.0m,
                             Name = "Interior Painting",
+                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 20,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Weather-resistant painting of exterior walls and structures.",
                             Duration = 6.0m,
                             Name = "Exterior Painting",
+                            Price = 100m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });

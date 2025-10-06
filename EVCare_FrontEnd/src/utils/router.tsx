@@ -16,7 +16,10 @@ import Manage_Customer from "../pages/Staff/StaffManageCustomer/Manage_Customer"
 import Staff_Appoinments from "../pages/Staff/StaffManageAppointment/Staff_Appoinments";
 import Layout from "../components/Layouts/CustomerLayout";
 import Technician_General from "../pages/Technician/TechnicianGeneral/Technician_General";
-import TechnicianLayout from "../pages/Technician/Technician_Component/TechnicianLayout";
+import {
+  TechnicianDefaultLayout,
+  TechnicianOrderLayout,
+} from "../pages/Technician/Technician_Component/TechnicianLayout";
 import TechnicianOrder from "../pages/Technician/TechnicianOrder/Technician_Order";
 import OrderList from "../pages/Customer/OrderHistory/Appointment/AppointmentList";
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
@@ -38,16 +41,17 @@ const router = createBrowserRouter([
       },
       // CUSTOMER ROUTES
       {
-        element: <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}></ProtectedRoute>,
+        path: "orderHistory",
+        element: (
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
+            <OrderList />
+          </ProtectedRoute>
+        ),
         children: [
           // {
           //   path: "orderDetail",
           //   element: <OrderDetail />,
           // },
-          {
-            path: "orderHistory",
-            element: <OrderList />,
-          },
           { path: "rating", element: <Rating /> },
         ],
       },
@@ -58,16 +62,23 @@ const router = createBrowserRouter([
   // ADMIN ROUTES
   {
     path: "/admin",
-    element: <ProtectedRoute allowedRoles={[RoleEnum.ADMIN]}></ProtectedRoute>,
-    children: [{ element: <AdminLayout /> }],
+    element: (
+      <ProtectedRoute allowedRoles={[RoleEnum.ADMIN]}>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [],
     // children: [{ path: "general", element: <AdminGeneral /> }],
   },
   // STAFF ROUTES
   {
-    path: "staff",
-    element: <ProtectedRoute allowedRoles={[RoleEnum.STAFF]}></ProtectedRoute>,
+    path: "/staff",
+    element: (
+      <ProtectedRoute allowedRoles={[RoleEnum.STAFF]}>
+        <StaffLayout />
+      </ProtectedRoute>
+    ),
     children: [
-      { element: <StaffLayout /> },
       { path: "general", element: <Staff_General /> },
       { path: "inventory", element: <Staff_Inventory /> },
       { path: "technicians", element: <Manage_Technicians /> },
@@ -78,12 +89,21 @@ const router = createBrowserRouter([
   // TECHINICIAN ROUTES
   {
     path: "/technician",
-    element: <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}></ProtectedRoute>,
-    children: [
-      { element: <TechnicianLayout /> },
-      { path: "general", element: <Technician_General /> },
-      { path: "order", element: <TechnicianOrder /> },
-    ],
+    element: (
+      <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
+        <TechnicianDefaultLayout />
+      </ProtectedRoute>
+    ),
+    children: [{ path: "general", element: <Technician_General /> }],
+  },
+  {
+    path: "/technician/order",
+    element: (
+      <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
+        <TechnicianOrderLayout />
+      </ProtectedRoute>
+    ),
+    children: [{ path: "", element: <TechnicianOrder /> }],
   },
 
   // Test route
