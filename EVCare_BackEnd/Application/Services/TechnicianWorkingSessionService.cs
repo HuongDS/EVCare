@@ -36,7 +36,7 @@ namespace Application.Services
                 OrderId = model.OrderId,
                 TechnicianId = x,
                 StartTime = DateTime.Now,
-                Status = DataAccess.Enums.TechnicianWorkingSessionEnum.InProgress
+                Status = DataAccess.Enums.TechnicianWorkingSessionEnum.Pending
             });
             await _technicianWorkingSessionRepository.AddRange(lists);
         }
