@@ -156,7 +156,6 @@ namespace Application.Services
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var data = await _orderRepository.GetOrderPartsByOrderId(model.Id);
-                //trả lại
                 foreach (var op in data.OrderParts)
                 {
                     var part = await _partRepository.GetByIdAsync(op.PartId);
@@ -164,12 +163,7 @@ namespace Application.Services
                     part.Stock += op.Quantity;
                     _partRepository.Update(part);
                 }
-
-                //Xóa hết cái cũ
                 await _orderRepository.RemoveOrderPartsAsync(model.Id);
-
-
-                //thêm mới
                 foreach (var part in model.OrderParts)
                 {
                     var originalPart = await _partRepository.GetByIdAsync(part.PartId);
