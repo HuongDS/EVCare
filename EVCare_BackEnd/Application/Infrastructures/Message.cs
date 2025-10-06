@@ -112,5 +112,6 @@ namespace Application.Infrastructures
         //AI
         public const string GET_AI_SUCCESSFULLY = "Get AI successfully";
 
+        public static string ADD_TECHNICIAN_SUCCESSFULLY = "Add technician successfully";
     }
 }
