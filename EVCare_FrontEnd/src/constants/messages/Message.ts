@@ -35,3 +35,7 @@ export const AUTH_FORM_MESSAGE = {
 export const LIST_SERVICES_MESSAGE = {
   EMPTY: "Sorry! No services found for:",
 };
+
+export const APPOINTMENT_MESSAGE = {
+  APPOINTMENT_DOES_NOT_EXIST: "Appointment does not exist!",
+};

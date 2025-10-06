@@ -13,16 +13,24 @@ import {
   ListItem,
   ServiceWrapper,
 } from "./AppointmentHistoryCard.styled";
-import type { AppointmentViewModel } from "../../../../models/AppointmentsModel/AppointmentViewModel";
 import dayjs from "dayjs";
 import { List } from "antd";
+import type { AppointmentViewDetailModel } from "../../../../models/AppointmentsModel/AppointmentViewDetailModel";
+import SpinnerComponent from "../../../../components/SpinnerComponent";
 
 interface props {
-  data: AppointmentViewModel;
+  data: AppointmentViewDetailModel;
   onViewAppointmentDetail: (appointmentId: number) => void;
+  appointmentId: number;
+  loadingModalDetail: number | null;
 }
 
-export default function OrderHistoryCard({ data, onViewAppointmentDetail }: props) {
+export default function AppointmentHistoryCard({
+  data,
+  onViewAppointmentDetail,
+  appointmentId,
+  loadingModalDetail,
+}: props) {
   return (
     <Container>
       <IDWrapper>
@@ -39,28 +47,32 @@ export default function OrderHistoryCard({ data, onViewAppointmentDetail }: prop
             <StatusTag status={data.status} />
           </div>
         </DateStyled>
-        <h5>{data.vehicleModel}</h5>
+        <h5>{data?.vehicleName}</h5>
       </GeneralStyled>
       <ContentWrapper>
         <CustomerInformation>
           <ImageWrapper>
-            <img src={data.vehicleImageUrl ? data.vehicleImageUrl[0] : Car} alt="" />
+            <img src={data.appointmentImages ? data.appointmentImages[0] : Car} alt="" />
           </ImageWrapper>
           <ServiceWrapper>
             <List>
-              {data.services.map((s, i) => (
-                <ListItem key={i}>{s}</ListItem>
+              {data?.services?.map((s) => (
+                <ListItem key={s.id}>{s.name}</ListItem>
               ))}
             </List>
           </ServiceWrapper>
         </CustomerInformation>
         <ButtonStyle>
-          <ButtonAction
-            text="View Detail"
-            color="white"
-            backgroundColor="#00ad4e"
-            action={() => onViewAppointmentDetail(62)}
-          />
+          {loadingModalDetail === data?.id ? (
+            <SpinnerComponent />
+          ) : (
+            <ButtonAction
+              text="View Detail"
+              color="white"
+              backgroundColor="#00ad4e"
+              action={() => onViewAppointmentDetail(appointmentId)}
+            />
+          )}
         </ButtonStyle>
       </ContentWrapper>
     </Container>

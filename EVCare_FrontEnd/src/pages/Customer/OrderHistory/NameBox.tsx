@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 interface NameBoxProps {
   label?: string;
-  name: string;
+  name?: string;
 }
 
 export default function NameBoxComponent({ label, name }: NameBoxProps) {
