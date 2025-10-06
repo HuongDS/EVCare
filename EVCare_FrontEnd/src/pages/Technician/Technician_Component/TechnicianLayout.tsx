@@ -1,9 +1,14 @@
-import React from "react";
 import EmployeeLayout from "../../../components/Layouts/EmployeeLayout";
 import { RoleEnum } from "../../../models/enums";
+import { technicianOrderMenu } from "./OrderMenu";
 
-const TechnicianLayout: React.FC = () => {
-  return <EmployeeLayout role={RoleEnum.TECHNICIAN} />;
-};
+export const TechnicianDefaultLayout = () => (
+  <EmployeeLayout role={RoleEnum.TECHNICIAN} />
+);
 
-export default TechnicianLayout;
+export const TechnicianOrderLayout = () => (
+  <EmployeeLayout
+    role={RoleEnum.TECHNICIAN}
+    menuOverride={technicianOrderMenu}
+  />
+);

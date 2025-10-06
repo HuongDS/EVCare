@@ -16,7 +16,10 @@ import Manage_Customer from "../pages/Staff/StaffManageCustomer/Manage_Customer"
 import Staff_Appoinments from "../pages/Staff/StaffManageAppointment/Staff_Appoinments";
 import Layout from "../components/Layouts/CustomerLayout";
 import Technician_General from "../pages/Technician/TechnicianGeneral/Technician_General";
-import TechnicianLayout from "../pages/Technician/Technician_Component/TechnicianLayout";
+import {
+  TechnicianDefaultLayout,
+  TechnicianOrderLayout,
+} from "../pages/Technician/Technician_Component/TechnicianLayout";
 import TechnicianOrder from "../pages/Technician/TechnicianOrder/Technician_Order";
 import OrderList from "../pages/Customer/OrderHistory/Appointment/AppointmentList";
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
@@ -88,13 +91,19 @@ const router = createBrowserRouter([
     path: "/technician",
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
-        <TechnicianLayout />
+        <TechnicianDefaultLayout />
       </ProtectedRoute>
     ),
-    children: [
-      { path: "general", element: <Technician_General /> },
-      { path: "order", element: <TechnicianOrder /> },
-    ],
+    children: [{ path: "general", element: <Technician_General /> }],
+  },
+  {
+    path: "/technician/order",
+    element: (
+      <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
+        <TechnicianOrderLayout />
+      </ProtectedRoute>
+    ),
+    children: [{ path: "", element: <TechnicianOrder /> }],
   },
 
   // Test route
