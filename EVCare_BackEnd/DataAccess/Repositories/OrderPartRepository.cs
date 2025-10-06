@@ -20,6 +20,12 @@ namespace DataAccess.Repositories
         {
             this._dbContext = dbContext;
         }
+
+        public async Task AddRange(IEnumerable<OrderPart> orderPartLists)
+        {
+            await _dbContext.AddRangeAsync(orderPartLists);
+        }
+
         public async Task AddRangeAsync(List<OrderPart> orderParts)
         {
             foreach (var orderPart in orderParts)
@@ -39,6 +45,12 @@ namespace DataAccess.Repositories
             }
             await _dbContext.SaveChangesAsync();
         }
+
+        public Task<Dictionary<int, OrderPart>> GetOrderPart(int orderId, int technicianId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<OrderPartViewModel>> GetOrderPartViewModelAsync(int orderId)
         {
             var result = await _dbContext.OrderParts.Include(o => o.Part).Where(o => o.OrderId == orderId).Select(o => new OrderPartViewModel
