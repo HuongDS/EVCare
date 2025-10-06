@@ -79,7 +79,7 @@ namespace API.Controllers
         [HttpPut("parts")]
         [Authorize(Roles ="Technician")]
         [ServiceFilter(typeof(SetTechnicianIdFilter))]
-        public async Task<IActionResult>UpdatePartsToOrder(TechnicianOrderPartUpdateModel model)
+        public async Task<IActionResult>UpdatePartsToOrder(OrderPartAddModel model)
         {
             try
             {

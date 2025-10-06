@@ -188,7 +188,7 @@ namespace Application.Services
         }
 
 
-        public async Task UpdatePartToOrder(TechnicianOrderPartUpdateModel model,int technicianId)
+        public async Task UpdatePartToOrder(OrderPartAddModel model,int technicianId)
         {
 
             var order = await _technicianWorkingSessionRepository.GetTechnicianWorkingSession(model.OrderId, technicianId);
@@ -203,11 +203,22 @@ namespace Application.Services
 
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
-                //trả lai
-                var partIds = await _orderPartRepository.GetOrderPart(model.OrderId,technicianId);
+             
+                var orderParts = await _orderPartRepository.GetOrderPart(model.OrderId, technicianId);
+                var partIds = orderParts.Select(x => x.PartId).ToList();
+                var partDics = await _partRepository.GetPartWithIDs(partIds);
 
+                foreach (var part in orderParts) {
 
-                //add lai
+                   if(partDics.ContainsKey(part.PartId)) partDics[part.PartId].Stock += part.Quantity;
+                
+                }
+
+                  await  _orderPartRepository.RemoveRange(model.OrderId, technicianId);
+
+                 await AddOrder(model, technicianId);
+
+                
             });
 
 
@@ -252,7 +263,7 @@ namespace Application.Services
                 throw new Exception("You are only updated when in adding part status");
             }
 
-            await _unitOfWork.ExecuteInTransactionAsync( async()=> AddOrder(model, technicianId));
+            await _unitOfWork.ExecuteInTransactionAsync( async()=> await AddOrder(model, technicianId));
         }
     }
 }
