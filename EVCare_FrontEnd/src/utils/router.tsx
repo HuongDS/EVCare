@@ -24,6 +24,7 @@ import TechnicianOrder from "../pages/Technician/TechnicianOrder/Technician_Orde
 import OrderList from "../pages/Customer/OrderHistory/Appointment/AppointmentList";
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
 import { RoleEnum } from "../models/enums";
+import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -41,17 +42,17 @@ const router = createBrowserRouter([
       },
       // CUSTOMER ROUTES
       {
-        path: "orderHistory",
+        path: "appointmentHistory",
         element: (
           <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
             <OrderList />
           </ProtectedRoute>
         ),
         children: [
-          // {
-          //   path: "orderDetail",
-          //   element: <OrderDetail />,
-          // },
+          {
+            path: "appointmentDetail",
+            element: <AppointmentList />,
+          },
           { path: "rating", element: <Rating /> },
         ],
       },
