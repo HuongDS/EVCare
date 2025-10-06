@@ -29,7 +29,7 @@ namespace DataAccess.Repositories
 
             var capacity = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
             var date = await _dbContext.Appointments
-                .Where(x => x.Appointment_Date > DateTime.Now)
+                .Where(x => x.Appointment_Date > DateTime.Now && x.Status!=Enums.AppointmentStatusEnum.Done && x.Status!=Enums.AppointmentStatusEnum.Canceled)
                 .GroupBy(x => DateOnly.FromDateTime(x.Appointment_Date))
                 .Select(g => new { g.Key, Count = g.Count() })
                 .Where(x => x.Count >= capacity.Capacity)

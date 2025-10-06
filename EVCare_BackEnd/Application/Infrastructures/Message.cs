@@ -60,6 +60,7 @@ namespace Application.Infrastructures
 
         // OrderParts
         public const string ORDER_PARTS_ADDED_SUCCESS = "Parts added to order successfully.";
+        public const string ORDER_PARTS_UPDATE_SUCCESS = "Parts update to order successfully.";
 
         // Parts
         public const string PART_NOT_FOUND = "Part not found.";
@@ -98,6 +99,8 @@ namespace Application.Infrastructures
 
         //Part
         public const string PART_GET_SUCCESSFULLY = "Get parts successfully";
+        //Part category
+        public const string PART_Category_GET_SUCCESSFULLY = "Get part categories successfully";
 
         //Customer
         public const string CUSTOMER_GET_SUCCESSFULLY = "Get customer successfully";
@@ -109,5 +112,6 @@ namespace Application.Infrastructures
         //AI
         public const string GET_AI_SUCCESSFULLY = "Get AI successfully";
 
+        public static string ADD_TECHNICIAN_SUCCESSFULLY = "Add technician successfully";
     }
 }

@@ -18,6 +18,13 @@ namespace DataAccess.Repositories
         {
             this._dbContext = dbContext;
         }
+
+        public async Task AddRange(IEnumerable<TechnicianWorkingSession> lists)
+        {
+             await _dbContext.AddRangeAsync(lists);
+             await _dbContext.SaveChangesAsync();
+        }
+
         public async Task AssignTechnicianToOrder(TechnicianWorkingSession data)
         {
             await _dbContext.TechnicianWorkingSessions.AddAsync(data);
@@ -29,6 +36,19 @@ namespace DataAccess.Repositories
             var anyComplete = await _dbContext.TechnicianWorkingSessions
                    .AnyAsync(x =>  x.OrderId == orderId && x.Status != Enums.TechnicianWorkingSessionEnum.Completed);
             return !anyComplete;
+        }
+
+        public async Task<TechnicianWorkingSessionViewModel> GetTechnicianWorkingSession(int orderId, int technicianId)
+        {
+            return await _dbContext.TechnicianWorkingSessions.AsNoTracking()
+                .Select(x => new TechnicianWorkingSessionViewModel
+                {
+                    OrderId = x.OrderId,
+                    Status = x.Status,
+                    TechnicianId = x.TechnicianId,
+                })
+                .FirstOrDefaultAsync(x => x.OrderId == orderId && technicianId == x.TechnicianId);
+
         }
 
         public async Task UpdateStatusWorkingSession(int technician, TechnicianWorkingSessionUpdateModel model)

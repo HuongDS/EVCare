@@ -3,6 +3,7 @@ using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.Others;
+using DataAccess.Dtos.Technician;
 using DataAccess.Dtos.Technicians;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,11 +18,16 @@ namespace API.Controllers
     {
         private readonly IEmployeeServices _employeeServices;
         private readonly IAppointmentService _appointmentService;
+        private readonly ITechnicianWorkingSessionService _technicianWorkingSessionService;
 
-        public EmployeeController(IEmployeeServices employeeServices, IAppointmentService appointmentService)
+        public EmployeeController(
+            IEmployeeServices employeeServices,
+            IAppointmentService appointmentService,
+            ITechnicianWorkingSessionService technicianWorkingSessionService)
         {
             this._employeeServices = employeeServices;
             this._appointmentService = appointmentService;
+            _technicianWorkingSessionService = technicianWorkingSessionService;
         }
         [HttpGet("check-slots")]
         public async Task<IActionResult> CheckSlotsAsync()
@@ -58,6 +64,45 @@ namespace API.Controllers
                 message = Message.ASSIGNED_TECHNICIAN_SUCCESSFUL,
                 data = null
             });
+        }
+
+        [HttpPost("assign-technicians")]
+
+        public async Task<IActionResult> AssignTechniciansToOrder(AssignTechniciansModel model)
+        {
+            try
+            {
+                //var (usedSlots, totalSlots) = await _employeeServices.CheckSlotsAsync();
+                //if (usedSlots >= totalSlots)
+                //{
+                //    return BadRequest(new ResponseDto<object>
+                //    {
+                //        statusCode = HttpStatus.BAD_REQUEST,
+                //        message = Message.SLOT_FULL,
+                //        data = null
+                //    });
+                //}
+
+                await _technicianWorkingSessionService.AddTechnicianToOrder(model);
+                return Ok(new ResponseDto<object>
+                        {
+                            statusCode = HttpStatus.CREATED,
+                            message = Message.ADD_TECHNICIAN_SUCCESSFULLY,
+                        }
+                );
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
         }
         [HttpPost("update-appointment-date")]
         public async Task<IActionResult> UpdateAppointmentDate(AppointmentUpdateDateDto data)

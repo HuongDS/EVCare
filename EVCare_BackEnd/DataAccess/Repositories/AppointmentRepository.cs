@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Payment;
+using DataAccess.Dtos.Service;
 
 namespace DataAccess.Repositories
 {
@@ -75,17 +76,22 @@ namespace DataAccess.Repositories
         {
 
             return await _dbContext.Appointments.Where(a => a.CustomerId == customerId)
-                .Include(a=>a.Customer).ThenInclude(a=>a.Account)
+                .Include(a => a.Customer).ThenInclude(a => a.Account)
                 .Include(a => a.Vehicle).ThenInclude(v => v.Category)
                 .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
+                .Include(a => a.AppointmentImages)
                 .Select(a => new AppointmentViewModel
                 {
                     Id = a.Id,
                     AppointmentDate = a.Appointment_Date,
-                    Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
+                    Services = a.AppointmentServices.Select(x => new Dtos.Service.ServiceViewFormModel
+                    {
+                        Id = x.ServiceId,
+                        Name = x.Service.Name
+                    }).ToList(),
                     Status = a.Status,
                     VehicleModel = a.Vehicle.Category.Name,
-                    VehicleImageUrl = a.Vehicle.Image,
+                    AppointmentImages = a.AppointmentImages.Select(x=>x.Image).ToList(),
                     Note = a.Note,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone
@@ -103,11 +109,15 @@ namespace DataAccess.Repositories
                 {
                     Id = a.Id,
                     AppointmentDate = a.Appointment_Date,
-                    Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
+                    Services = a.AppointmentServices.Select(x => new Dtos.Service.ServiceViewFormModel
+                    {
+                        Id = x.ServiceId,
+                        Name = x.Service.Name
+                    }).ToList(),
                     Status = a.Status,
                     VehicleModel = a.Vehicle.Category.Name,
                     LicensePlate = a.Vehicle.LicensePlate,
-                    VehicleImageUrl = a.Vehicle.Image,
+                    AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone
                 }).Where(x=>x.CustomerName.Contains(customername));
@@ -140,7 +150,11 @@ namespace DataAccess.Repositories
                         ? a.Employee.Account.First_Name + " " + a.Employee.Account.Last_Name
                         : null,
                     OrderId = a.OrderId,
-                    Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
+                    Services = a.AppointmentServices.Select(s => new ServiceViewFormModel
+                    {
+                        Id = s.ServiceId,
+                        Name = s.Service.Name
+                    }).ToList(),
                     ImagesUrls = a.AppointmentImages.Select(img => img.Image).ToList()
                 })
                 .FirstOrDefaultAsync();
@@ -238,11 +252,15 @@ namespace DataAccess.Repositories
                 {
                     Id = a.Id,
                     AppointmentDate = a.Appointment_Date,
-                    Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
+                    Services = a.AppointmentServices.Select(x=>new Dtos.Service.ServiceViewFormModel
+                    {
+                        Id = x.ServiceId,
+                        Name = x.Service.Name
+                    }).ToList(),
                     Status = a.Status,
                     VehicleModel = a.Vehicle.Category.Name,
                     LicensePlate = a.Vehicle.LicensePlate,
-                    VehicleImageUrl = a.Vehicle.Image,
+                    AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone,
                     Note = a.Note

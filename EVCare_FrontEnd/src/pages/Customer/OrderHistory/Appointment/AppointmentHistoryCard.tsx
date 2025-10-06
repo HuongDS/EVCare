@@ -41,7 +41,8 @@ export default function AppointmentHistoryCard({
       <GeneralStyled>
         <DateStyled>
           <h5>
-            Date: <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
+            Date:{" "}
+            <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
           </h5>
           <div>
             <StatusTag status={data.status} />

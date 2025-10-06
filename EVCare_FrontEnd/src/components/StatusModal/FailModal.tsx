@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
-import SuccessIcon from "../IconsAnimation/successIcon";
 import ErrorIcon from "../IconsAnimation/errorIcon";
 
 const initBox = keyframes`
@@ -74,12 +73,7 @@ const ButtonContainer = styled.div`
   justify-content: flex-end;
 `;
 
-const PopUp = ({ header, message, action }: PopUpProps) => {
-  const onCLickOk = (ev: React.ChangeEvent) => {
-    ev.preventDefault();
-    action();
-  };
-
+const PopUp = ({ header, message }: PopUpProps) => {
   useEffect(() => {
     document.body.classList.add("no-scroll");
 

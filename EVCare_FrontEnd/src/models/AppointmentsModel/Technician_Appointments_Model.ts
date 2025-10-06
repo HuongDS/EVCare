@@ -19,7 +19,37 @@ export type TechnicianAppointmentsDto = {
   customerName: string;
   phoneNumber: string;
   licensePlate: string;
-  services: [];
-  parts: string[];
-  status: number;
+  services: string[];
+  parts: {
+    technicianId: number;
+    id: number;
+    name: string;
+    quantity: number;
+    price: number;
+    imageUrl: string;
+  }[];
+  status: string;
+  orderId: number;
+};
+
+//Get technicians for assigning appointment
+
+export type TechnicianModel<T> = {
+  id: number;
+  fullName: "string string";
+  phone: "0907829278";
+  expYears: 8;
+  rating: null;
+  status: "Available";
+  skills: T[];
+  avatar?: string;
+};
+
+export type GetTechnicianParams = {
+  Status?: string;
+  Skills?: number;
+  PageSize?: number;
+  PageIndex?: number;
+  SortField?: string;
+  SortOrder?: string;
 };

@@ -17,6 +17,7 @@ export const ERROR_MESSAGE = {
   LICENSE_PLATE_WRONG: "License format was wrong format. Please try again!",
   SERVICES_MUST_NOT_BE_EMPTY: "Please choose at least 1 service!",
   DATE_AND_TIME_CAN_NOT_BE_EMPTY: "Please select a suitable day and time!",
+  CAN_NOT_UPDATE_STATUS: "Can't update status. Please try again!",
 };
 
 export const SUCCESS_MESSAGE = {

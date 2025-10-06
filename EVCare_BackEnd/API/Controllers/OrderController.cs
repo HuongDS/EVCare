@@ -2,6 +2,7 @@
 using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
+using DataAccess.Dtos.OrderPart;
 using DataAccess.Dtos.OrderParts;
 using DataAccess.Dtos.Orders;
 using DataAccess.Interfaces;
@@ -73,6 +74,35 @@ namespace API.Controllers
                     data = null
                 });
             }
+        }
+
+        [HttpPost("update-parts-to-order")]
+        [Authorize(Roles ="Technician")]
+        [ServiceFilter(typeof(SetTechnicianIdFilter))]
+        public async Task<IActionResult>UpdatePartsToOrder(TechnicianOrderPartUpdateModel model)
+        {
+            try
+            {
+                model.TechnicianId = (int)HttpContext.Items["TechnicianId"];
+                await _orderService.UpdatePartToOrder(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    data = model.OrderId,
+                    message = Message.ORDER_PARTS_UPDATE_SUCCESS
+                });
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+
+            }
+
         }
 
         [HttpPost("update-order-status")]
