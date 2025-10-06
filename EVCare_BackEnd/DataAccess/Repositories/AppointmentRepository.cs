@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Payment;
+using DataAccess.Dtos.Service;
 
 namespace DataAccess.Repositories
 {
@@ -149,7 +150,11 @@ namespace DataAccess.Repositories
                         ? a.Employee.Account.First_Name + " " + a.Employee.Account.Last_Name
                         : null,
                     OrderId = a.OrderId,
-                    Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
+                    Services = a.AppointmentServices.Select(s => new ServiceViewFormModel
+                    {
+                        Id = s.ServiceId,
+                        Name = s.Service.Name
+                    }).ToList(),
                     ImagesUrls = a.AppointmentImages.Select(img => img.Image).ToList()
                 })
                 .FirstOrDefaultAsync();
