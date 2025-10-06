@@ -7,9 +7,9 @@ using DataAccess.Dtos.Part;
 
 namespace DataAccess.Dtos.OrderPart
 {
-    public class TechnicianOrderPartUpdateModel
+     public class OrderPartAddModel
     {
-        public int OrderId { get; set; }  
-        public List<PartUpdateModel> Parts { get; set; }
+        public int OrderId { get; set; }
+        public IEnumerable<PartUpdateModel> Parts { get; set; }
     }
 }

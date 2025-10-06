@@ -76,15 +76,15 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("update-parts-to-order")]
+        [HttpPut("parts")]
         [Authorize(Roles ="Technician")]
         [ServiceFilter(typeof(SetTechnicianIdFilter))]
         public async Task<IActionResult>UpdatePartsToOrder(TechnicianOrderPartUpdateModel model)
         {
             try
             {
-                model.TechnicianId = (int)HttpContext.Items["TechnicianId"];
-                await _orderService.UpdatePartToOrder(model);
+                int technicianId = (int)HttpContext.Items["TechnicianId"];
+                await _orderService.UpdatePartToOrder(model,technicianId);
                 return Ok(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.OK,
@@ -168,6 +168,34 @@ namespace API.Controllers
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
+                });
+            }
+        }
+
+        [HttpPost("parts")]
+        [Authorize(Roles ="Technician")]
+        [ServiceFilter(typeof(SetTechnicianIdFilter))]
+        public async Task<IActionResult> AddOrderPart(OrderPartAddModel model)
+        {
+            try
+            {
+                int technicianId = (int)HttpContext.Items["TechnicianId"];
+                await _orderService.AddPartsToAnOrder(model,technicianId);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.CREATED,
+                    message = Message.ORDER_PARTS_ADDED_SUCCESS,
+                    data = model.OrderId
+                });
+
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
                 });
             }
         }
