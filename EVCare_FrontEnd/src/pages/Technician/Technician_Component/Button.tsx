@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import styled from "styled-components";
 
@@ -23,9 +24,24 @@ const ButtonStyled = styled.button<ButtonProps>`
 interface ReviewButtonProps {
   status: TechnicianWorkingSessionEnum;
   onAction: (nextStatus: TechnicianWorkingSessionEnum) => void;
+  orderId?: number;
 }
 
-const ReviewButton: React.FC<ReviewButtonProps> = ({ status, onAction }) => {
+const ReviewButton: React.FC<ReviewButtonProps> = ({
+  status,
+  onAction,
+  orderId,
+}) => {
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    if (!orderId) {
+      console.error("OrderId is missing! Cannot navigate to order page.");
+      return;
+    }
+    navigate("/technician/order", { state: { orderId } });
+  };
+
   switch (status) {
     case TechnicianWorkingSessionEnum.PENDING:
       return (
@@ -44,9 +60,13 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({ status, onAction }) => {
           >
             Done
           </ButtonStyled>
+
           <ButtonStyled
             variant="secondary"
-            onClick={() => onAction(TechnicianWorkingSessionEnum.ADDING_PART)}
+            onClick={() => {
+              onAction(TechnicianWorkingSessionEnum.ADDING_PART);
+              handleNavigate();
+            }}
           >
             Order
           </ButtonStyled>
@@ -55,11 +75,17 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({ status, onAction }) => {
 
     case TechnicianWorkingSessionEnum.ADDING_PART:
       return (
-        <ButtonStyled
-          onClick={() => onAction(TechnicianWorkingSessionEnum.INPROGRESS)}
-        >
-          Continue
-        </ButtonStyled>
+        <>
+          <ButtonStyled variant="secondary" onClick={handleNavigate}>
+            Order
+          </ButtonStyled>
+
+          <ButtonStyled
+            onClick={() => onAction(TechnicianWorkingSessionEnum.INPROGRESS)}
+          >
+            Continue
+          </ButtonStyled>
+        </>
       );
 
     case TechnicianWorkingSessionEnum.COMPLETED:

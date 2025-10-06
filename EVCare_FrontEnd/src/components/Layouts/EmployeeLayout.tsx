@@ -3,10 +3,14 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../SideBar/SideBar";
 import HeaderStaff from "../Header/HeaderStaff";
 import { RoleEnum } from "../../models/enums/RoleEnum";
+import type { MenuItem } from "../SideBar/SideBar";
 
 const { Content, Sider } = Layout;
 
-const EmployeeLayout: React.FC<{ role: RoleEnum }> = ({ role }) => {
+const EmployeeLayout: React.FC<{
+  role: RoleEnum;
+  menuOverride?: MenuItem[];
+}> = ({ role, menuOverride }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -20,7 +24,7 @@ const EmployeeLayout: React.FC<{ role: RoleEnum }> = ({ role }) => {
           trigger={null}
           style={{ background: colorBgContainer }}
         >
-          <Sidebar role={role} />
+          <Sidebar role={role} menuOverride={menuOverride} />
         </Sider>
         <Layout style={{ padding: "0 24px 24px" }}>
           <Content
