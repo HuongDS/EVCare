@@ -60,8 +60,11 @@ export default function ProductModal({
     if (quantity > 1) setQuantity((prev) => prev - 1);
   };
 
-  const handleAddToCart = () => {
-    if (part) onAddToCart?.(part, quantity);
+  const handleAdd = () => {
+    if (part) {
+      console.log("Adding to cart from modal:", part, quantity);
+      onAddToCart?.(part, quantity);
+    }
     onClose();
   };
 
@@ -84,22 +87,19 @@ export default function ProductModal({
               alt={part?.name || "Product"}
               height={180}
             />
-
             <ProductName variant="h6">
               {part?.name || "Product Name"}
             </ProductName>
-
             <Info>
               <TopRow>
                 <PriceQuantity>
-                  <span>{(part?.price ?? 0).toLocaleString("vi-VN")}VNĐ</span>
-                  <span>Quantity: {part?.quantity ?? 0}</span>
+                  <span>{(part?.price ?? 0).toLocaleString("vi-VN")} VNĐ</span>
+                  <span>Stock: {part?.quantity ?? 0}</span>
                 </PriceQuantity>
-
                 <MuiButton
                   variant="contained"
                   color="success"
-                  onClick={handleAddToCart}
+                  onClick={handleAdd}
                   disabled={!part}
                   sx={{ minWidth: "120px" }}
                 >
@@ -121,9 +121,7 @@ export default function ProductModal({
                 >
                   –
                 </IconButton>
-
                 <QuantityNumber>{quantity}</QuantityNumber>
-
                 <IconButton
                   size="small"
                   onClick={handleIncrease}
