@@ -20,6 +20,12 @@ namespace DataAccess.Repositories
         {
             this._dbContext = dbContext;
         }
+
+        public async Task AddRange(IEnumerable<OrderPart> orderPartLists)
+        {
+            await _dbContext.AddRangeAsync(orderPartLists);
+        }
+
         public async Task AddRangeAsync(List<OrderPart> orderParts)
         {
             foreach (var orderPart in orderParts)
@@ -39,6 +45,14 @@ namespace DataAccess.Repositories
             }
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<OrderPart>> GetOrderPart(int orderId, int technicianId)
+        {
+            return await _dbContext.OrderParts.Where(x => x.OrderId == orderId && x.TechnicianId == technicianId)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<OrderPartViewModel>> GetOrderPartViewModelAsync(int orderId)
         {
             var result = await _dbContext.OrderParts.Include(o => o.Part).Where(o => o.OrderId == orderId).Select(o => new OrderPartViewModel
@@ -90,6 +104,11 @@ namespace DataAccess.Repositories
                 return new PartBrief { PartId = p.Id, Name = p.Name, Stock = p.Stock, AvgUse7d = s7 / 7d, AvgUse30d = s30 / 30d };
             }).ToList();
 
+        }
+
+        public async Task RemoveRange(int orderId, int technicianId)
+        {
+            await _dbContext.OrderParts.Where(x => x.OrderId == orderId && x.TechnicianId == technicianId).ExecuteDeleteAsync();
         }
     }
 }

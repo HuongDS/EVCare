@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DataAccess.Helpers;
 using DataAccess.Dtos.Appointment;
-using DataAccess.Entities;
-using DataAccess.Enums;
-using DataAccess.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Payment;
 using DataAccess.Dtos.Service;
+using DataAccess.Entities;
+using DataAccess.Enums;
+using DataAccess.Helpers;
+using DataAccess.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
@@ -234,11 +235,14 @@ namespace DataAccess.Repositories
         {
             var today = DateOnly.FromDateTime(DateTime.Now);
             await _dbContext.Appointments
-                .Where(a => DateOnly.FromDateTime(a.Appointment_Date) < today && (a.Status==AppointmentStatusEnum.Pending || a.Status == AppointmentStatusEnum.Confirmed))
+                .Where(a => 
+                (DateOnly.FromDateTime(a.Appointment_Date) < today && (a.Status==AppointmentStatusEnum.Pending || a.Status == AppointmentStatusEnum.Confirmed))||
+                 DateOnly.FromDateTime(a.Create_At) < today && a.Status == AppointmentStatusEnum.Pending
+                )
                 .ExecuteUpdateAsync(s => s
                 .SetProperty(x=>x.Status,AppointmentStatusEnum.Canceled)   
                 );
-
+            
         }
 
         public async Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model)
@@ -274,38 +278,37 @@ namespace DataAccess.Repositories
 
         public async Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentTechnicianViewModelByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model)
         {
-            var query = _dbContext.Technicians.AsNoTracking()
-                 .Where(t => t.Id == technicianId)
-                 .SelectMany(t => t.TechnicianWorkingSessions)
-                 .Include(x => x.Order).ThenInclude(x => x.OrderParts).ThenInclude(x => x.Part)
-                 .Include(x => x.Order).ThenInclude(x => x.Appointment).ThenInclude(x => x.Customer).ThenInclude(x => x.Account)
-                 .Include(x => x.Order).ThenInclude(x => x.Appointment).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Category)
-                 .Include(x => x.Order).ThenInclude(x => x.Appointment).ThenInclude(x => x.AppointmentServices)
-                 
-                 .Select(x => new AppointmentTechnicianViewModel
-                 {
-                     Id = x.Order.Appointment.Id,
-                     CustomerName = x.Order.Appointment.Customer.Account.Last_Name + " " + x.Order.Appointment.Customer.Account.First_Name,
-                     AppointmentDate = x.Order.Appointment.Appointment_Date,
-                     LicensePlate = x.Order.Appointment.Vehicle.LicensePlate,
-                     PhoneNumber = x.Order.Appointment.Customer.Account.Phone,
-                     Status = x.Status,
-                     VehicleModel = x.Order.Appointment.Vehicle.Category.Name,
-                     Services = x.Order.Appointment.AppointmentServices.Select(x => x.Service.Name).ToList(),
-                     OrderId = x.OrderId,
-                     Parts = x.Technician.OrderParts.Select(x => new Dtos.Part.PartTechnicianViewModel
-                     {
-                         Id = x.PartId,
-                         Name = x.Part.Name,
-                         Quantity = x.Quantity,
-                         ImageUrl = x.Part.Image,
-                         Price = x.Price,
-                         TechnicianId = x.TechnicianId,
-                         
-                     }).ToList()
-                 })
-                 .Where(x => x.Status == model.Status
-                 && DateOnly.FromDateTime(x.AppointmentDate) >= model.BeginTime && DateOnly.FromDateTime(x.AppointmentDate) <= model.EndTime);
+            var query = _dbContext.TechnicianWorkingSessions
+               .AsNoTracking()
+               .Where(s => s.TechnicianId == technicianId
+                        && s.Status == model.Status
+                        && DateOnly.FromDateTime(s.Order.Appointment.Appointment_Date) >= model.BeginTime
+                        && DateOnly.FromDateTime(s.Order.Appointment.Appointment_Date) <= model.EndTime)
+                   .Select(s => new AppointmentTechnicianViewModel
+                   {
+                            Id = s.Order.Appointment.Id,
+                            CustomerName = s.Order.Appointment.Customer.Account.Last_Name + " " +
+                                                    s.Order.Appointment.Customer.Account.First_Name,
+                            AppointmentDate = s.Order.Appointment.Appointment_Date,
+                            LicensePlate = s.Order.Appointment.Vehicle.LicensePlate,
+                            PhoneNumber = s.Order.Appointment.Customer.Account.Phone,
+                            Status = s.Status,
+                            VehicleModel = s.Order.Appointment.Vehicle.Category.Name,
+                            Services = s.Order.Appointment.AppointmentServices
+                                                .Select(asv => asv.Service.Name).ToList(),
+                            OrderId = s.OrderId,
+                            Parts = s.Order.OrderParts
+                                .Where(op => op.TechnicianId == s.TechnicianId) 
+                                .Select(op => new Dtos.Part.PartTechnicianViewModel
+                                {
+                                    Id = op.PartId,
+                                    Name = op.Part.Name,
+                                    Quantity = op.Quantity,
+                                    ImageUrl = op.Part.Image,
+                                    Price = op.Price,
+                                    TechnicianId = op.TechnicianId
+                                }).ToList()
+                   });
 
             query = query.ApplySorting(model.SortField, model.SortOrder);
 

@@ -41,6 +41,11 @@ namespace DataAccess.Repositories
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
         }
 
+        public async Task<Dictionary<int,Part>> GetPartWithIDs(List<int> partIds)
+        {
+            return await _dbContext.Parts.Where(x=>partIds.Contains(x.Id)).ToDictionaryAsync(p=>p.Id);
+        }
+
         public void Update(Part part)
         {
             _dbContext.Update(part);
