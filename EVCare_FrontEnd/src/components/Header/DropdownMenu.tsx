@@ -20,7 +20,7 @@ const DropdownMenu = ({ handleLogout }: props) => {
           <legend>Menu</legend>
           <ul>
             <li>
-              <button onClick={() => navigate("/orderHistory")}>
+              <button onClick={() => navigate("/appointmentHistory")}>
                 <svg
                   width={14}
                   height={14}
