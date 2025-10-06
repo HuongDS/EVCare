@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Service;
 using DataAccess.Enums;
 using Microsoft.Identity.Client;
 
@@ -17,8 +18,8 @@ namespace DataAccess.Dtos.Appointment
         public string CustomerName {  get; set; }
         public string? PhoneNumber { get; set; }
         public string LicensePlate { get; set; }
-        public List<string>? Services { get; set; }
-        public string? VehicleImageUrl { get; set; }
+        public List<ServiceViewFormModel>? Services { get; set; }
+        public List<string>? AppointmentImages { get; set; }
         public AppointmentStatusEnum Status { get; set; }
         public string? Note { get; set; }
     }
