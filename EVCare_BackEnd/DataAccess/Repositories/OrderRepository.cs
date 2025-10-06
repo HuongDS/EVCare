@@ -52,20 +52,13 @@ namespace DataAccess.Repositories
 
         public async Task<Order> GetOrderPartsByOrderId(int orderId)
         {
-            return await _dbSet.Include(x => x.OrderParts).FirstOrDefaultAsync(x => x.Id == orderId);
+            return await _dbSet.AsNoTracking().Include(x => x.OrderParts).FirstOrDefaultAsync(x => x.Id == orderId);
 
         }
 
         public async Task RemoveOrderPartsAsync(int orderId)
         {
-            var orderParts = await _dbContext.OrderParts
-                            .Where(op => op.OrderId == orderId)
-                            .ToListAsync();
-            if (orderParts.Any())
-            {
-                _dbContext.OrderParts.RemoveRange(orderParts);
-                //await _dbContext.SaveChangesAsync();
-            }
+            await _dbContext.OrderParts.Where(op => op.OrderId == orderId).ExecuteDeleteAsync();
 
         }
 
