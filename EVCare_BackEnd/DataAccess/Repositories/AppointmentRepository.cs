@@ -235,11 +235,14 @@ namespace DataAccess.Repositories
         {
             var today = DateOnly.FromDateTime(DateTime.Now);
             await _dbContext.Appointments
-                .Where(a => DateOnly.FromDateTime(a.Appointment_Date) < today && (a.Status==AppointmentStatusEnum.Pending || a.Status == AppointmentStatusEnum.Confirmed))
+                .Where(a => 
+                (DateOnly.FromDateTime(a.Appointment_Date) < today && (a.Status==AppointmentStatusEnum.Pending || a.Status == AppointmentStatusEnum.Confirmed))||
+                 DateOnly.FromDateTime(a.Create_At) < today && a.Status == AppointmentStatusEnum.Pending
+                )
                 .ExecuteUpdateAsync(s => s
                 .SetProperty(x=>x.Status,AppointmentStatusEnum.Canceled)   
                 );
-
+            
         }
 
         public async Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model)

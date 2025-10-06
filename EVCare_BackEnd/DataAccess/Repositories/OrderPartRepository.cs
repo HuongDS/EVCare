@@ -46,9 +46,11 @@ namespace DataAccess.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public Task<Dictionary<int, OrderPart>> GetOrderPart(int orderId, int technicianId)
+        public async Task<IEnumerable<OrderPart>> GetOrderPart(int orderId, int technicianId)
         {
-            throw new NotImplementedException();
+            return await _dbContext.OrderParts.Where(x => x.OrderId == orderId && x.TechnicianId == technicianId)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<OrderPartViewModel>> GetOrderPartViewModelAsync(int orderId)
@@ -102,6 +104,11 @@ namespace DataAccess.Repositories
                 return new PartBrief { PartId = p.Id, Name = p.Name, Stock = p.Stock, AvgUse7d = s7 / 7d, AvgUse30d = s30 / 30d };
             }).ToList();
 
+        }
+
+        public async Task RemoveRange(int orderId, int technicianId)
+        {
+            await _dbContext.OrderParts.Where(x => x.OrderId == orderId && x.TechnicianId == technicianId).ExecuteDeleteAsync();
         }
     }
 }
