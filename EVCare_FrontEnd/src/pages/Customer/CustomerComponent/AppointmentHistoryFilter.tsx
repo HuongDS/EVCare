@@ -39,7 +39,7 @@ const OrderHistorySort: React.FC<MyComponentProps> = ({ sortName, onSelectCatego
     <Container>
       {sortName.map((name) => (
         <Category
-          to={`/orderHistory`}
+          to={`/appointmentHistory`}
           key={name}
           $active={selectedCategory === name}
           onClick={() => selectCategory(name)}
