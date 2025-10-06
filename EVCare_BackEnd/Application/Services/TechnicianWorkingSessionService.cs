@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces;
 using DataAccess.Dtos.Technician;
+using DataAccess.Entities;
 using DataAccess.Interfaces;
 
 namespace Application.Services
@@ -25,6 +26,19 @@ namespace Application.Services
             _appointmentRepository = appointmentRepository;
             _technicianWorkingSessionRepository = technicianWorkingSessionRepository;
             _notificationServices = notificationServices;
+        }
+
+        public async Task AddTechnicianToOrder(AssignTechniciansModel model)
+        {
+
+            var lists = model.TechnicianIds.Select(x => new TechnicianWorkingSession
+            {
+                OrderId = model.OrderId,
+                TechnicianId = x,
+                StartTime = DateTime.Now,
+                Status = DataAccess.Enums.TechnicianWorkingSessionEnum.InProgress
+            });
+            await _technicianWorkingSessionRepository.AddRange(lists);
         }
 
         public async Task<TechnicianWorkingSessionViewModel> GetTechnicianWorkingSession(int orderId, int technicianId)

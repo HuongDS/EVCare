@@ -18,6 +18,13 @@ namespace DataAccess.Repositories
         {
             this._dbContext = dbContext;
         }
+
+        public async Task AddRange(IEnumerable<TechnicianWorkingSession> lists)
+        {
+             await _dbContext.AddRangeAsync(lists);
+             await _dbContext.SaveChangesAsync();
+        }
+
         public async Task AssignTechnicianToOrder(TechnicianWorkingSession data)
         {
             await _dbContext.TechnicianWorkingSessions.AddAsync(data);
