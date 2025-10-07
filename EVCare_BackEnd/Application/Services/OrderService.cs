@@ -249,6 +249,7 @@ namespace Application.Services
                 PartId = req.Id,
                 Quantity = req.Quantity,
                 Price = partsDict[req.Id].Price,
+                ReplacementPrice = partsDict[req.Id].ReplacementPrice
             }).ToList();
             await _orderPartRepository.AddRangeAsync(orderParts);
             foreach (var req in model.Parts)

@@ -30,8 +30,8 @@ namespace DataAccess.Repositories
 
         public async Task<OrderViewModel> GetOrderDetailAsync(int orderId)
         {
+            var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
             var query = await _dbSet.AsNoTracking().Where(x => x.Id == orderId)
-                .Include(x => x.OrderParts).ThenInclude(x => x.Part)
                 .Select(x => new OrderViewModel
                 {
                     Id = x.Id,
@@ -43,9 +43,14 @@ namespace DataAccess.Repositories
                         Price = x.Price,
                         Quantity = x.Quantity,
                         TechnicianId = x.TechnicianId,
+                        ReplacementPrice = x.Part.ReplacementPrice
+
                     }),
-                    Price = x.OrderParts.Sum(x => x.Price * x.Quantity)
+                    Vat = center.Vat,
+                    Price = x.OrderParts.Sum(x => (x.Price + x.ReplacementPrice) * x.Quantity) * (1 + center.Vat / 100m)
+
                 }).FirstOrDefaultAsync();
+
             return query;
 
         }
