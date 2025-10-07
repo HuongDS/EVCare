@@ -1,6 +1,6 @@
 export type VehicleViewDto = {
   id: number;
-  categoryName: string;
+  categoryName?: string;
   licensePlate: string;
   image?: string;
   cateId: number;

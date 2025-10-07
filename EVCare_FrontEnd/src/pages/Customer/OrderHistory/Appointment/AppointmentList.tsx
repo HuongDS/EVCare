@@ -65,10 +65,6 @@ export default function OrderList() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log(filteredList);
-  }, [filteredList]);
-
   return (
     <>
       <Title>Appointments History</Title>

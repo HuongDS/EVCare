@@ -18,7 +18,7 @@ namespace DataAccess.Repositories
 
         public async Task<bool> CheckLicensePlate(string licensePlate)
         {
-            return await _dbSet.AnyAsync(x=>x.LicensePlate == licensePlate);
+            return await _dbSet.AnyAsync(x => x.LicensePlate == licensePlate);
         }
 
         public async Task<int> GetCustomerIdByVehicleId(int vehicleId)
@@ -32,8 +32,8 @@ namespace DataAccess.Repositories
         {
             return await _dbContext.Vehicles
                 .Where(v => v.Id == vehicleId)
-                .Include(v=>v.Category)
-                .Select(x=>new VehicleDetailViewModel
+                .Include(v => v.Category)
+                .Select(x => new VehicleDetailViewModel
                 {
                     Id = x.Id,
                     Image = x.Image,
@@ -51,26 +51,26 @@ namespace DataAccess.Repositories
             var serviceCenter = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
             return await _dbContext.Vehicles.AsNoTracking()
                 .Include(x => x.Customer)
-                .Include(x=>x.Customer.Account)
+                .Include(x => x.Customer.Account)
                 .Where(x => x.NextServiceDate.HasValue
                               && DateOnly.FromDateTime(x.NextServiceDate.Value) <= today)
                 .Select(x => new VehicleReminderDto
                 {
                     Id = x.Id,
-                    CustomerName = x.Customer.Account.First_Name+" " +x.Customer.Account.Last_Name,
+                    CustomerName = x.Customer.Account.First_Name + " " + x.Customer.Account.Last_Name,
                     Email = x.Customer.Account.Email,
                     HotLine = serviceCenter.Hotline,
                     LicensePlate = x.LicensePlate,
                     ServiceCenterName = serviceCenter.Name
 
                 }).ToListAsync();
-                
+
         }
 
         public async Task<IEnumerable<Vehicle>> GetVehiclesByCustomerId(int customerId)
         {
-            return await _dbSet.Where(x=>x.CustomerId==customerId).Include(x=>x.Category).ToListAsync();
-                
+            return await _dbSet.Where(x => x.CustomerId == customerId && x.Deleted_At == DateTime.MinValue).Include(x => x.Category).ToListAsync();
+
         }
     }
 }
