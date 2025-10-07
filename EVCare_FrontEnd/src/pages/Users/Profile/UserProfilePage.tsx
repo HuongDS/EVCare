@@ -11,9 +11,8 @@ import { getAccountInformation, updateAccount } from "../../../services/accountS
 import { getCustomerId } from "../../../services/customerServices";
 import { getUser } from "../../../token/tokenStore";
 import { handleError } from "../../../utils/errorHandler";
-import { ERROR_MESSAGE, MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
+import { ERROR_MESSAGE } from "../../../constants/messages/Message";
 import { CustomerRankEnum } from "../../../models/enums";
-import NotificationComponent from "../../../components/NotificationComponent";
 import type { AccountUpdateDto } from "../../../models/Accounts/AccountUpdateDto";
 import type { CustomerViewDto } from "../../../models/CustomerModels/CustomerViewDto";
 import type { AccountViewModel } from "../../../models/Accounts/accountViewModel";
@@ -71,7 +70,6 @@ function UserProfileComponent() {
   const profileTitle = useMemo(() => "Personal Information", []);
   const [profileData, setProfileData] = useState<AccountViewModel>();
   const [cusProfile, setCusProfile] = useState<CustomerViewDto>();
-  const [error, setError] = useState<string>("");
 
   const handleSaveUser = async (updated: Pick<UserProfile, "firstName" | "lastName" | "phone">) => {
     setUser((prev) => ({ ...prev, ...updated }));
@@ -83,14 +81,11 @@ function UserProfileComponent() {
       };
       const response = await updateAccount(data);
       if (response == null) {
-        setError(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
       }
       setProfileData(response?.data);
     } catch (error) {
       handleError(error);
-      const message = error instanceof Error ? error.message : ERROR_MESSAGE.SOME_THING_WENT_WRONG;
-      setError(message);
     }
   };
 
@@ -110,24 +105,25 @@ function UserProfileComponent() {
         const response01 = await getAccountInformation();
         const user = getUser();
         if (user == null) {
-          setError(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
           throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         }
         const response02 = await getCustomerId(user?.accountId);
         if (user == null || response01 == null || response02 == null) {
-          setError(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
           throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         }
         setProfileData(response01?.data);
         setCusProfile(response02?.data);
       } catch (error) {
         handleError(error);
-        const message = error instanceof Error ? error.message : ERROR_MESSAGE.SOME_THING_WENT_WRONG;
-        setError(message);
       }
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    console.log(profileData);
+    console.log(cusProfile);
+  }, [profileData, cusProfile]);
 
   return (
     <ContainerWrapper>
@@ -160,16 +156,6 @@ function UserProfileComponent() {
           <VehiclesSection vehicles={vehicles} onAdd={handleAddVehicle} onDelete={handleDeleteVehicle} />
         </div>
       </div>
-
-      {error ? (
-        <NotificationComponent type="error" title={MSG_TITLE.UPDATE_PROFILE} msg={error} />
-      ) : (
-        <NotificationComponent
-          type="success"
-          title={MSG_TITLE.UPDATE_PROFILE}
-          msg={SUCCESS_MESSAGE.UPDATE_ACCOUNT_SUCCESSFULLY}
-        />
-      )}
     </ContainerWrapper>
   );
 }
