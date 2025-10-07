@@ -1,3 +1,4 @@
+//Technician_General.tsx
 import { useEffect, useState, useCallback } from "react";
 import AppointmentCard from "../Technician_Component/AppointmentCard";
 import LoadingOverlay from "../Technician_Component/LoadingOverlay";
@@ -34,13 +35,13 @@ export default function Technician_General() {
     setFade(true);
     try {
       const data = await getTechnicianAppointments({
-        status: activeStatus,
-        pageSize: 1000,
-        pageIndex: 1,
+        Status: activeStatus,
+        PageSize: 1000,
+        PageIndex: 1,
       });
       setAppointments(data.items ?? []);
     } catch (e) {
-      console.error("❌ Failed to fetch appointments", e);
+      console.error("Failed to fetch appointments", e);
       setIsError(true);
     } finally {
       setTimeout(() => setFade(false), 80);
@@ -52,7 +53,6 @@ export default function Technician_General() {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  /* Update status của appointment cụ thể */
   const handleUpdateStatus = async (
     orderId: number,
     newStatus: TechnicianWorkingSessionEnum
@@ -80,6 +80,7 @@ export default function Technician_General() {
     TechnicianWorkingSessionEnum.PENDING,
     TechnicianWorkingSessionEnum.INPROGRESS,
     TechnicianWorkingSessionEnum.ADDING_PART,
+    TechnicianWorkingSessionEnum.CONFIRM,
     TechnicianWorkingSessionEnum.COMPLETED,
     TechnicianWorkingSessionEnum.CANCELLED,
   ];
@@ -99,7 +100,7 @@ export default function Technician_General() {
       />
 
       {isError ? (
-        <ErrorMessage>⚠️ Error loading technician appointments</ErrorMessage>
+        <ErrorMessage>Error loading technician appointments</ErrorMessage>
       ) : appointments.length === 0 ? (
         <Watermark>No appointments found</Watermark>
       ) : (
