@@ -12,6 +12,7 @@ namespace Application.Interfaces
     {
         Task<int> CreateInvoice(InvoiceCreateModel model);
         public Task<string> CreatePaymentUrl(HttpContext context, InvoiceCreateModel model);
+        Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId);
         public Task PaymentCallback(IQueryCollection query);
         Task SendMailToPayAsync(string paymentUrl, InvoiceCreateModel model);
     }
