@@ -1,7 +1,7 @@
-import type { Rank } from "../../../models/enums/AccountRankingEnum";
+import type { CustomerRankEnum } from "../../../models/enums";
 
-export default function RankBadge({ rank }: { rank: Rank }) {
-  const mapClass = (r: Rank) => {
+export default function RankBadge({ rank }: { rank: CustomerRankEnum }) {
+  const mapClass = (r: CustomerRankEnum) => {
     switch (r) {
       case "REGULAR":
         return "rank-badge rank-regular";

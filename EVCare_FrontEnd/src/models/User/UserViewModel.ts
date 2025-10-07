@@ -1,10 +1,10 @@
-import type { Rank } from "../enums/AccountRankingEnum";
+import type { CustomerRankEnum } from "../enums";
 
 export interface UserProfile {
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
-  rank: Rank;
+  rank: CustomerRankEnum;
   totalSpending: number;
 }
