@@ -18,11 +18,18 @@ export const ERROR_MESSAGE = {
   SERVICES_MUST_NOT_BE_EMPTY: "Please choose at least 1 service!",
   DATE_AND_TIME_CAN_NOT_BE_EMPTY: "Please select a suitable day and time!",
   CAN_NOT_UPDATE_STATUS: "Can't update status. Please try again!",
+  FAILED_TO_UPDATE_ACCOUNT: "Failed to update account profile!",
+};
+
+export const MSG_TITLE = {
+  UPDATE_PROFILE: "Update Profile",
+  LOGIN: "Login",
 };
 
 export const SUCCESS_MESSAGE = {
   REGISTER_SUCCESS: "OTP verified! Account created.",
   LOGIN_SUCCESS: "Login Successfully!",
+  UPDATE_ACCOUNT_SUCCESSFULLY: "Update Successfully ",
 };
 
 export const AUTH_FORM_MESSAGE = {
@@ -35,4 +42,8 @@ export const AUTH_FORM_MESSAGE = {
 
 export const LIST_SERVICES_MESSAGE = {
   EMPTY: "Sorry! No services found for:",
+};
+
+export const APPOINTMENT_MESSAGE = {
+  APPOINTMENT_DOES_NOT_EXIST: "Appointment does not exist!",
 };

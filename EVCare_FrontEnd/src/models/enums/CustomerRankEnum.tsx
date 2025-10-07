@@ -1,6 +1,6 @@
 //CustomerRankEnum
 export enum CustomerRankEnum {
-  VIP = "Vip",
-  MEMBER = "Member",
-  REGULAR = "Regular",
+  VIP = "VIP",
+  MEMBER = "MEMBER",
+  REGULAR = "REGULAR",
 }

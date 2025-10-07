@@ -104,5 +104,9 @@ namespace Application.Services
 
             }
         }
+        public async Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId)
+        {
+            return await _invoiceRepository.GetInvoicesByCustomerId(customerId);
+        }
     }
 }

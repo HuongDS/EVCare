@@ -28,7 +28,7 @@ namespace DataAccess.Repositories
             }
             var query = _dbSet
                 .AsNoTracking()
-                .Where(s => s.Deleted_At == DateTime.MinValue && s.Name.Contains(model.Keyword))
+                .Where(s => s.Deleted_At == null && s.Name.Contains(model.Keyword))
                 .Select(x=>new ServiceViewModel
                 {
                     Description = x.Description,
@@ -46,7 +46,7 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<Service>> GetAllActiveServices(string keyword)
         {
             return await _dbSet.AsNoTracking() 
-                .Where(s => s.Name.Contains(keyword) && s.Deleted_At==DateTime.MinValue).
+                .Where(s => s.Name.Contains(keyword) && s.Deleted_At==null).
                 ToListAsync();
         }
 

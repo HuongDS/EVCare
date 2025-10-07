@@ -25,7 +25,7 @@ namespace DataAccess.Configuration
                     Id = 1,
                     AccountId = 3,
                     Address = "123 Main St, Anytown, USA",
-                    Rank = Enums.CustomerRankEnum.Member
+                    Rank = Enums.CustomerRankEnum.MEMBER
                 }
                 );
 

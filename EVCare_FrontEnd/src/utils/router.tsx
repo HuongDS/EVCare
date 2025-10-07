@@ -22,6 +22,8 @@ import OrderList from "../pages/Customer/OrderHistory/Appointment/AppointmentLis
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
 import { RoleEnum } from "../models/enums";
 import TechnicianOrderLayout from "../pages/Technician/Technician_Component/Technician_OrderLayout";
+import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
+import UserProfilePage from "../pages/Users/Profile/UserProfilePage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -39,19 +41,27 @@ const router = createBrowserRouter([
       },
       // CUSTOMER ROUTES
       {
-        path: "orderHistory",
+        path: "appointmentHistory",
         element: (
           <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
             <OrderList />
           </ProtectedRoute>
         ),
         children: [
-          // {
-          //   path: "orderDetail",
-          //   element: <OrderDetail />,
-          // },
+          {
+            path: "appointmentDetail",
+            element: <AppointmentList />,
+          },
           { path: "rating", element: <Rating /> },
         ],
+      },
+      {
+        path: "account-information",
+        element: (
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
+            <UserProfilePage />
+          </ProtectedRoute>
+        ),
       },
 
       { path: "test", element: <Test /> },
