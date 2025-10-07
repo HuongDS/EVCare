@@ -267,7 +267,8 @@ namespace DataAccess.Repositories
                     AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone,
-                    Note = a.Note
+                    Note = a.Note,
+                    OrderId = a.OrderId
 
                 }).Where(x => x.CustomerName.Contains(model.CustomerName));
             
