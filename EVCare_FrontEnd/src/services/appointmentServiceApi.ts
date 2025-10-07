@@ -15,11 +15,7 @@ import { APPOINTMENT_MESSAGE, ERROR_MESSAGE } from "../constants/messages/Messag
 import { store } from "../states/store";
 import { setGlobalError } from "../states/errorSlice";
 import type { AppointmentViewDetailModel } from "../models/AppointmentsModel/AppointmentViewDetailModel";
-import type { AppointmentViewModel } from "../models/AppointmentsModel/AppointmentViewModel";
-import type {
-  GetTechnicianParams,
-  TechnicianModel,
-} from "../models/AppointmentsModel/Technician_Appointments_Model";
+import type { GetTechnicianParams, TechnicianModel } from "../models/AppointmentsModel/Technician_Appointments_Model";
 import type { ServicesResponseDto } from "../models/ServicesModel/Customer_Services_Model";
 
 //[STAFF]: Get All appointments
@@ -28,9 +24,10 @@ export const useGetAllAppointments = (params: GetAppointmentsParams = {}) => {
   return useQuery({
     queryKey: ["Staff Appointments", params],
     queryFn: async () => {
-      const response = await api.get<
-        ResponseDto<PageModel<StaffAppointmentsDto>>
-      >("api/Appointment/appointments/paged", { params });
+      const response = await api.get<ResponseDto<PageModel<StaffAppointmentsDto>>>(
+        "api/Appointment/appointments/paged",
+        { params }
+      );
       return response.data;
     },
   });
@@ -38,18 +35,12 @@ export const useGetAllAppointments = (params: GetAppointmentsParams = {}) => {
 
 export async function createAppointment(data: AppointmentCreateModel) {
   try {
-    const response = await api.post<ResponseDto<number | null>>(
-      "/api/Appointment/customer",
-      data
-    );
+    const response = await api.post<ResponseDto<number | null>>("/api/Appointment/customer", data);
     return response.data;
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
-      const errMsg =
-        error.response?.data.message ||
-        error.message ||
-        ERROR_MESSAGE.CREATE_APPOINTMENT_FAILED;
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.CREATE_APPOINTMENT_FAILED;
       store.dispatch(setGlobalError(errMsg));
       throw new Error(errMsg);
     }
@@ -64,10 +55,7 @@ export async function getCustomerAppointment() {
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
-      const errMsg =
-        error.response?.data.message ||
-        error.message ||
-        ERROR_MESSAGE.FETCH_DATA_FAILED;
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
       store.dispatch(setGlobalError(errMsg));
       throw new Error(errMsg);
     }
@@ -89,13 +77,8 @@ export async function getAppointmentById(appointmentId: number) {
   }
 }
 //[STAFF] - NGO CHI VY: Set Appointment Status - Appointment Steps
-export const changeAppointmentStatus = async (
-  params: ChangeAppointmentStatusParams
-) => {
-  const response = await api.put<ResponseDto<boolean | null>>(
-    "/api/Appointment/staff",
-    params
-  );
+export const changeAppointmentStatus = async (params: ChangeAppointmentStatusParams) => {
+  const response = await api.put<ResponseDto<boolean | null>>("/api/Appointment/staff", params);
   return response.data;
 };
 
@@ -104,9 +87,10 @@ export const useGetTechniciansToday = (params: GetTechnicianParams) => {
   return useQuery({
     queryKey: ["TechniciansToday", params],
     queryFn: async () => {
-      const response = await api.get<
-        ResponseDto<PageModel<TechnicianModel<ServicesResponseDto[]>>>
-      >("/api/Technician/get-technician-today", { params });
+      const response = await api.get<ResponseDto<PageModel<TechnicianModel<ServicesResponseDto[]>>>>(
+        "/api/Technician/get-technician-today",
+        { params }
+      );
       return response.data;
     },
   });

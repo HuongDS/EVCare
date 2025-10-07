@@ -25,6 +25,7 @@ import OrderList from "../pages/Customer/OrderHistory/Appointment/AppointmentLis
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
 import { RoleEnum } from "../models/enums";
 import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
+import UserProfilePage from "../pages/Users/Profile/UserProfilePage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -55,6 +56,14 @@ const router = createBrowserRouter([
           },
           { path: "rating", element: <Rating /> },
         ],
+      },
+      {
+        path: "account-information",
+        element: (
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
+            <UserProfilePage />
+          </ProtectedRoute>
+        ),
       },
 
       { path: "test", element: <Test /> },

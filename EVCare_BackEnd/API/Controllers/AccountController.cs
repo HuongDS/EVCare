@@ -14,9 +14,10 @@ namespace API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        public AccountController(IAccountService accountService) { 
-        
-           _accountService = accountService;    
+        public AccountController(IAccountService accountService)
+        {
+
+            _accountService = accountService;
         }
         [HttpGet("me")]
         [Authorize]
@@ -35,7 +36,8 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
                 return BadRequest(new ResponseDto<object>
                 {
@@ -44,7 +46,33 @@ namespace API.Controllers
                     message = ex.Message
 
                 });
-            
+
+            }
+        }
+        [HttpPut("update-me")]
+        [Authorize]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+        public async Task<IActionResult> UpdateAccountDetail(AccountUpdateDto data)
+        {
+            var accountId = (int)HttpContext.Items["AccountId"];
+            try
+            {
+                var response = await _accountService.UpdateAccountByAccountID(data, accountId);
+                return Ok(new ResponseDto<AccountViewModel>
+                {
+                    data = response,
+                    statusCode = HttpStatus.OK,
+                    message = Message.UPDATE_ACCOUNT_SUCCESS
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
             }
         }
     }

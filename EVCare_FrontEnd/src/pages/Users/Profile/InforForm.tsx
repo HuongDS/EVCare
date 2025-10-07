@@ -1,4 +1,7 @@
+import { notification } from "antd";
 import { useRef, useState } from "react";
+import { ERROR_MESSAGE, MSG_TITLE } from "../../../constants/messages/Message";
+import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
 
 interface Props {
   defaultValues: {
@@ -34,11 +37,31 @@ export default function PersonalInfoForm({ defaultValues, onSave }: Props) {
 
   const onSaveClick = () => {
     onSave({ firstName, lastName, phone });
+    if (firstName == null || lastName == null || firstName.trim().length == 0 || lastName.trim().length == 0) {
+      notification.error({
+        message: MSG_TITLE.UPDATE_PROFILE,
+        description: ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED,
+        showProgress: true,
+      });
+      return;
+    }
+    if (!PHONE_NUMBER_REGEX.test(phone)) {
+      notification.error({
+        message: MSG_TITLE.UPDATE_PROFILE,
+        description: ERROR_MESSAGE.INVALID_PHONE,
+        showProgress: true,
+      });
+      return;
+    }
     firstName0.current = firstName;
     lastName0.current = lastName;
     phone0.current = phone;
     setEditMode(false);
-    alert("Changes saved successfully!");
+    notification.success({
+      message: MSG_TITLE.UPDATE_PROFILE,
+      description: "Changes saved successfully!",
+      showProgress: true,
+    });
   };
 
   return (
