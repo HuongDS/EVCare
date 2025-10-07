@@ -31,7 +31,7 @@ export const TitleContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* ✅ Để không bị vỡ layout trên mobile */
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 24px;
 `;
@@ -85,7 +85,6 @@ const BaseButton = styled.button`
   gap: 6px;
 `;
 
-/* 🔙 Nút quay lại */
 export const BackButton = styled(BaseButton)`
   background-color: ${COLORS.grayMedium};
   color: #fff;
@@ -96,7 +95,6 @@ export const BackButton = styled(BaseButton)`
   }
 `;
 
-/* 🛒 Nút giỏ hàng */
 export const CartButton = styled(BaseButton)`
   background-color: ${COLORS.primary};
   color: #fff;
