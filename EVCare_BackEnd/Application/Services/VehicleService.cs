@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Infrastructures;
 using Application.IService;
 using AutoMapper;
 using DataAccess.Dtos.Vehicle;
@@ -13,9 +14,9 @@ namespace Application.Services
 {
     public class VehicleService : IVehicleService
     {
-        private readonly IVehicleRepository _vehicleRepository; 
+        private readonly IVehicleRepository _vehicleRepository;
         private readonly IMapper _mapper;
-        public VehicleService(IVehicleRepository vehicleRepository,IMapper mapper)
+        public VehicleService(IVehicleRepository vehicleRepository, IMapper mapper)
         {
             _vehicleRepository = vehicleRepository;
             _mapper = mapper;
@@ -24,7 +25,7 @@ namespace Application.Services
         {
             try
             {
-                var ok =  await _vehicleRepository.CheckLicensePlate(model.LicensePlate);
+                var ok = await _vehicleRepository.CheckLicensePlate(model.LicensePlate);
                 if (ok == true) throw new Exception("Licese Plate has exits");
                 var vehicle = _mapper.Map<Vehicle>(model);
                 vehicle.CustomerId = customerId;
@@ -35,18 +36,18 @@ namespace Application.Services
             {
                 throw new Exception(ex.Message);
             }
-            
+
         }
 
         public Task<VehicleDetailViewModel> GetVehicleDetailById(int vehicleId)
         {
             try
             {
-                var vehicle =  _vehicleRepository.GetVehicleDetailById(vehicleId);
+                var vehicle = _vehicleRepository.GetVehicleDetailById(vehicleId);
                 return _mapper.Map<Task<VehicleDetailViewModel>>(vehicle);
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -69,7 +70,7 @@ namespace Application.Services
         {
             try
             {
-                var vehicle =await _vehicleRepository.GetByIdAsync(model.Id);
+                var vehicle = await _vehicleRepository.GetByIdAsync(model.Id);
                 vehicle = _mapper.Map(model, vehicle);
 
                 var createdVehicle = await _vehicleRepository.UpdateAsync(vehicle);

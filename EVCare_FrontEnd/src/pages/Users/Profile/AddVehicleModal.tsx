@@ -1,5 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
+import UploadImage from "../../../components/UploadFields/uploadImage";
 
 interface Props {
   open: boolean;
@@ -25,19 +26,19 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
   const [categoryName, setCategoryName] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement | null>(null);
+  // const fileRef = useRef<HTMLInputElement | null>(null);
   const [categoryId, setCategoryId] = useState(0);
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) {
-      setPreview(null);
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (ev) => setPreview(String(ev.target?.result || ""));
-    reader.readAsDataURL(f);
-  };
+  // const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const f = e.target.files?.[0];
+  //   if (!f) {
+  //     setPreview(null);
+  //     return;
+  //   }
+  //   const reader = new FileReader();
+  //   reader.onload = (ev) => setPreview(String(ev.target?.result || ""));
+  //   reader.readAsDataURL(f);
+  // };
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +56,7 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
     setLicensePlate("");
     setCategoryId(0);
     setPreview(null);
-    if (fileRef.current) fileRef.current.value = "";
+    // if (fileRef.current) fileRef.current.value = "";
   };
 
   const onBackdropClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
@@ -93,11 +94,15 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
 
           <div className="form-group">
             <label>Vehicle Photo</label>
-            <div className="image-upload" onClick={() => fileRef.current?.click()}>
-              <div> Click to upload photo</div>
-              <input ref={fileRef} type="file" accept="image/*" onChange={onFileChange} />
-              {preview && <img src={preview} className="preview-image" style={{ display: "block" }} />}
-            </div>
+            <UploadImage handleFileSubmit={(url) => setPreview(url)} />
+            {preview && (
+              <img
+                src={preview}
+                alt="Vehicle"
+                className="preview-image"
+                style={{ marginTop: "10px", width: "200px", borderRadius: "8px" }}
+              />
+            )}
           </div>
 
           <div className="modal-buttons">
