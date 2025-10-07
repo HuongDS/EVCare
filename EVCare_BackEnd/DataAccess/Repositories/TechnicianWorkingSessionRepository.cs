@@ -31,6 +31,13 @@ namespace DataAccess.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<bool> CheckOrderConfirm(int orderId)
+        {
+            var anyConfirm = await _dbContext.TechnicianWorkingSessions
+                    .AnyAsync(x => x.OrderId == orderId && x.Status != Enums.TechnicianWorkingSessionEnum.Confirm);
+            return !anyConfirm;
+        }
+
         public async Task<bool> CheckOrderDone(int orderId)
         {
             var anyComplete = await _dbContext.TechnicianWorkingSessions
@@ -56,6 +63,13 @@ namespace DataAccess.Repositories
             await _dbContext.TechnicianWorkingSessions.Where(x => x.OrderId == id).ExecuteUpdateAsync(
                 x => x.SetProperty(s => s.EndTime, DateTime.Now)
                     .SetProperty(s => s.Status, Enums.TechnicianWorkingSessionEnum.Canceled)
+                );
+        }
+
+        public async Task MakeProcessing(int id)
+        {
+            await _dbContext.TechnicianWorkingSessions.Where(x => x.OrderId == id).ExecuteUpdateAsync(
+                x => x.SetProperty(s => s.Status, Enums.TechnicianWorkingSessionEnum.InProgress)
                 );
         }
 
