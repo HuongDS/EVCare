@@ -2,10 +2,11 @@ import { useState } from "react";
 import VehiclesGrid from "./VehicleGrid";
 import AddVehicleModal from "./AddVehicleModal";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
+import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
 
 interface Props {
   vehicles: VehicleViewDto[];
-  onAdd: (v: Omit<VehicleViewDto, "id">) => void;
+  onAdd: (v: VehicleCreateDto) => void;
   onDelete: (id: number) => void;
 }
 
