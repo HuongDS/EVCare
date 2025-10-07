@@ -21,6 +21,9 @@ namespace DataAccess.Dtos.Appointment
         public List<ServiceViewFormModel>? Services { get; set; }
         public List<string>? AppointmentImages { get; set; }
         public AppointmentStatusEnum Status { get; set; }
+
+        public int? OrderId { get; set; }
+
         public string? Note { get; set; }
     }
 }

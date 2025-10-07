@@ -267,7 +267,8 @@ namespace DataAccess.Repositories
                     AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone,
-                    Note = a.Note
+                    Note = a.Note,
+                    OrderId = a.OrderId
 
                 }).Where(x => x.CustomerName.Contains(model.CustomerName));
             
@@ -347,6 +348,14 @@ namespace DataAccess.Repositories
                     VehicleModel = x.Vehicle.Category.Name
                 })
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> CheckAllReadyForPickup(int vehicleId)
+        {
+           var anyReadyForPickUp =  await _dbContext.Appointments
+                .Where(x=> x.VehicleId == vehicleId && x.Status!=AppointmentStatusEnum.Done)
+                .AnyAsync(x => x.VehicleId == vehicleId && x.Status != AppointmentStatusEnum.ReadyForPickup);
+            return !anyReadyForPickUp;
         }
     }
 }
