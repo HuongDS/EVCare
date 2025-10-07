@@ -1,7 +1,9 @@
-import { notification } from "antd";
-import { useRef, useState } from "react";
-import { ERROR_MESSAGE, MSG_TITLE } from "../../../constants/messages/Message";
+// import { notification } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { ERROR_MESSAGE, MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
+import { useNotification } from "../../../context/useNotification";
+import { useAlert } from "../../../context/useAlert";
 
 interface Props {
   defaultValues: {
@@ -24,6 +26,9 @@ export default function PersonalInfoForm({ defaultValues, onSave }: Props) {
   const lastName0 = useRef(defaultValues.lastName);
   const phone0 = useRef(defaultValues.phone);
 
+  const notification = useNotification();
+  const { showAlert } = useAlert();
+
   const onToggleEdit = () => {
     setEditMode(true);
   };
@@ -36,45 +41,59 @@ export default function PersonalInfoForm({ defaultValues, onSave }: Props) {
   };
 
   const onSaveClick = () => {
-    onSave({ firstName, lastName, phone });
     if (firstName == null || lastName == null || firstName.trim().length == 0 || lastName.trim().length == 0) {
-      notification.error({
-        message: MSG_TITLE.UPDATE_PROFILE,
-        description: ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED,
-        showProgress: true,
-      });
+      showAlert("error", MSG_TITLE.UPDATE_PROFILE, ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
       return;
     }
     if (!PHONE_NUMBER_REGEX.test(phone)) {
-      notification.error({
-        message: MSG_TITLE.UPDATE_PROFILE,
-        description: ERROR_MESSAGE.INVALID_PHONE,
-        showProgress: true,
-      });
+      showAlert("error", MSG_TITLE.UPDATE_PROFILE, ERROR_MESSAGE.INVALID_PHONE);
       return;
     }
+    onSave({ firstName, lastName, phone });
     firstName0.current = firstName;
     lastName0.current = lastName;
     phone0.current = phone;
     setEditMode(false);
     notification.success({
       message: MSG_TITLE.UPDATE_PROFILE,
-      description: "Changes saved successfully!",
+      description: SUCCESS_MESSAGE.UPDATE_ACCOUNT_SUCCESSFULLY,
       showProgress: true,
     });
   };
+
+  useEffect(() => {
+    setFirstName(defaultValues.firstName);
+    setLastName(defaultValues.lastName);
+    setPhone(defaultValues.phone);
+
+    firstName0.current = defaultValues.firstName;
+    lastName0.current = defaultValues.lastName;
+    phone0.current = defaultValues.phone;
+  }, [defaultValues]);
 
   return (
     <>
       <div className="info-grid">
         <div className="info-field">
           <label>First Name</label>
-          <input type="text" value={firstName} disabled={!editMode} onChange={(e) => setFirstName(e.target.value)} />
+          <input
+            required={true}
+            type="text"
+            value={firstName}
+            disabled={!editMode}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
         </div>
 
         <div className="info-field">
           <label>Last Name</label>
-          <input type="text" value={lastName} disabled={!editMode} onChange={(e) => setLastName(e.target.value)} />
+          <input
+            required={true}
+            type="text"
+            value={lastName}
+            disabled={!editMode}
+            onChange={(e) => setLastName(e.target.value)}
+          />
         </div>
 
         <div className="info-field">
@@ -84,7 +103,13 @@ export default function PersonalInfoForm({ defaultValues, onSave }: Props) {
 
         <div className="info-field">
           <label>Phone Number</label>
-          <input type="tel" value={phone} disabled={!editMode} onChange={(e) => setPhone(e.target.value)} />
+          <input
+            required={true}
+            type="tel"
+            value={phone}
+            disabled={!editMode}
+            onChange={(e) => setPhone(e.target.value)}
+          />
         </div>
       </div>
 

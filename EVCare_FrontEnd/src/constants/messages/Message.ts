@@ -23,6 +23,7 @@ export const ERROR_MESSAGE = {
 
 export const MSG_TITLE = {
   UPDATE_PROFILE: "Update Profile",
+  LOGIN: "Login",
 };
 
 export const SUCCESS_MESSAGE = {
