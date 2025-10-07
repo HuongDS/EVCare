@@ -33,5 +33,6 @@ namespace DataAccess.Interfaces
         Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentTechnicianViewModelByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model);
         Task<int> CountAppointment(DateOnly appointment_Date);
         Task<PaymentPendingPickupEmailModel> GetPaymentPendingPickupEmailModel(int id);
+        Task<bool> CheckAllReadyForPickup(int vehicleId);
     }
 }

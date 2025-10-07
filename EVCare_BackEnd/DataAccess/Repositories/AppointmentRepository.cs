@@ -349,5 +349,13 @@ namespace DataAccess.Repositories
                 })
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<bool> CheckAllReadyForPickup(int vehicleId)
+        {
+           var anyReadyForPickUp =  await _dbContext.Appointments
+                .Where(x=> x.VehicleId == vehicleId && x.Status!=AppointmentStatusEnum.Done)
+                .AnyAsync(x => x.VehicleId == vehicleId && x.Status != AppointmentStatusEnum.ReadyForPickup);
+            return !anyReadyForPickUp;
+        }
     }
 }
