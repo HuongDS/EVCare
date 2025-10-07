@@ -13,11 +13,13 @@ namespace Application.Mappings
     {
         public VehicleProfile()
         {
-            CreateMap<VehicleCreateModel, Vehicle>();
+            CreateMap<VehicleCreateModel, Vehicle>()
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.img));
             CreateMap<VehicleCustomerUpdateModel, Vehicle>();
             CreateMap<Vehicle, VehicleViewModel>()
                 .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category.Name))
-                .ForMember(dest => dest.cateId, otp => otp.MapFrom(src => src.CategoryId));
+                .ForMember(dest => dest.cateId, otp => otp.MapFrom(src => src.CategoryId))
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image));
             CreateMap<Vehicle, VehicleDetailViewModel>()
                 .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category.Name));
 

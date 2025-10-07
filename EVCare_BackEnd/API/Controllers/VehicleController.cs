@@ -148,5 +148,28 @@ namespace API.Controllers
                 });
             }
         }
+        [HttpPut("delete-vehicle")]
+        [Authorize]
+        public async Task<IActionResult> SoftDeleteVehicle(int vehicleId)
+        {
+            try
+            {
+                await _vehicleService.SoftDeleteVehicle(vehicleId);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.VEHICLE_DELETE_SUCCESSFULLY,
+                    data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.NOT_FOUND,
+                    message = ex.Message
+                });
+            }
+        }
     }
 }
