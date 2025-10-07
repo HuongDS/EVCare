@@ -50,6 +50,18 @@ namespace Application.Services
         {
             await _technicianWorkingSessionRepository.UpdateStatusWorkingSession(technician, model);
             if (model.Status != DataAccess.Enums.TechnicianWorkingSessionEnum.Completed) return;
+
+            if(model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Confirm)
+            {
+                var order = await _orderRepository.GetByIdAsync(model.OrderId);
+                order.Status = DataAccess.Enums.OrderStatusEnum.Processing;
+                await _orderRepository.UpdateAsync(order);
+                var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(model.OrderId);
+                appointment.Status = DataAccess.Enums.AppointmentStatusEnum.InProgress;
+                await _appointmentRepository.UpdateAsync(appointment);
+
+            }
+
             if(await _technicianWorkingSessionRepository.CheckOrderDone(model.OrderId))
             {
                 var order = await _orderRepository.GetByIdAsync(model.OrderId);
