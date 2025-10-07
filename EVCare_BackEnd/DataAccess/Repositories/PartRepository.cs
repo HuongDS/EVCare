@@ -34,7 +34,8 @@ namespace DataAccess.Repositories
                      Price = x.Price,
                      Quantity = x.Stock,
                      ImageUrl = x.Image,
-                 });
+                     ReplacementPrice = x.ReplacementPrice
+                });
             if (model.CategoryId.HasValue) query = query.Where(x => x.CategoryId == model.CategoryId.Value);
 
             query = query.ApplySorting(model.SortField, model.SortOrder);
