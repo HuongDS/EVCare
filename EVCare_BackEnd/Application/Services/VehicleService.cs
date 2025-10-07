@@ -97,5 +97,15 @@ namespace Application.Services
                 throw new Exception(ex.Message);
             }
         }
+        public async Task SoftDeleteVehicle(int vehicleId)
+        {
+            var vehicle = await _vehicleRepository.GetByIdAsync(vehicleId);
+            if (vehicle == null)
+            {
+                throw new Exception(Message.VEHICLE_NOT_FOUND);
+            }
+            vehicle.Deleted_At = DateTime.Now;
+            await _vehicleRepository.UpdateAsync(vehicle);
+        }
     }
 }

@@ -1,7 +1,7 @@
 export default function SpendingSection({ amount }: { amount: number }) {
   const formatted = new Intl.NumberFormat(undefined, {
     style: "currency",
-    currency: "USD",
+    currency: "VND",
     maximumFractionDigits: 0,
   }).format(amount);
 

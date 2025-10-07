@@ -101,6 +101,8 @@ namespace Application.Infrastructures
         //Vehicle
         public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
         public const string VEHICLE_EXISTS = "Vehicle already exists.";
+        public const string VEHICLE_NOT_FOUND = "Vehicle not found.";
+        public const string VEHICLE_DELETE_SUCCESSFULLY = "Delete vehicle successfully";
 
         //Part
         public const string PART_GET_SUCCESSFULLY = "Get parts successfully";
