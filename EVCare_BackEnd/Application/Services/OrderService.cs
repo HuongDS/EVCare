@@ -103,6 +103,10 @@ namespace Application.Services
                 throw new Exception(Message.ORDER_NOT_FOUND);
             }
             order.Status = data.status;
+            if(order.Status == OrderStatusEnum.Canceled)
+            {
+                await _technicianWorkingSessionRepository.MakeCancel(order.Id);
+            }
             await _orderRepository.UpdateAsync(order);
             return new ResponseDto<OrderResponseDto>
             {

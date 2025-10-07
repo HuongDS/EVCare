@@ -20,5 +20,6 @@ namespace DataAccess.Entities
         public string Hotline {  get; set; }
         public DayOfWeek WorkStartDay { get; set; }
         public DayOfWeek WorkEndDay { get; set; }
+        public decimal VAT { get; set; }
     }
 }

@@ -51,6 +51,14 @@ namespace DataAccess.Repositories
 
         }
 
+        public async Task MakeCancel(int id)
+        {
+            await _dbContext.TechnicianWorkingSessions.Where(x => x.OrderId == id).ExecuteUpdateAsync(
+                x => x.SetProperty(s => s.EndTime, DateTime.Now)
+                    .SetProperty(s => s.Status, Enums.TechnicianWorkingSessionEnum.Canceled)
+                );
+        }
+
         public async Task UpdateStatusWorkingSession(int technician, TechnicianWorkingSessionUpdateModel model)
         {
             var data = await _dbContext.TechnicianWorkingSessions.Where(x=>x.TechnicianId == technician && x.OrderId == model.OrderId).FirstOrDefaultAsync();

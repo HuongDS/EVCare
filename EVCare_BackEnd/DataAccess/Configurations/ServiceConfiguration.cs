@@ -14,7 +14,7 @@ namespace DataAccess.Configuration
         public void Configure(EntityTypeBuilder<Service> builder)
         {
             builder.HasKey(s => s.Id);
-            builder.Property(x=>x.Price).HasPrecision(18, 2);
+           // builder.Property(x=>x.Price).HasPrecision(18, 2);
             builder.HasData(
                 // 🔧 Plumbing
                 new Service
@@ -27,7 +27,7 @@ namespace DataAccess.Configuration
                     Create_At = new DateTime(2025, 01, 01),
                     Updated_At = new DateTime(2025, 01, 01),
                     Deleted_At = DateTime.MinValue,
-                    Price = 300
+                   
                 },
                 new Service
                 {
@@ -39,7 +39,7 @@ namespace DataAccess.Configuration
                     Create_At = new DateTime(2025, 01, 01),
                     Updated_At = new DateTime(2025, 01, 01),
                     Deleted_At = DateTime.MinValue,
-                    Price = 400
+                   
                 },
 
                 // ⚡ Electrical
@@ -53,7 +53,7 @@ namespace DataAccess.Configuration
                     Create_At = new DateTime(2025, 01, 01),
                     Updated_At = new DateTime(2025, 01, 01),
                     Deleted_At = DateTime.MinValue,
-                    Price = 300
+                   
                 },
                 new Service
                 {
@@ -65,7 +65,7 @@ namespace DataAccess.Configuration
                     Create_At = new DateTime(2025, 01, 01),
                     Updated_At = new DateTime(2025, 01, 01),
                     Deleted_At = DateTime.MinValue,
-                    Price = 200
+                  
                 },
 
                 // ❄ HVAC
@@ -79,7 +79,7 @@ namespace DataAccess.Configuration
                     Create_At = new DateTime(2025, 01, 01),
                     Updated_At = new DateTime(2025, 01, 01),
                     Deleted_At = DateTime.MinValue,
-                    Price = 300
+                
                 },
                 new Service
                 {
@@ -91,7 +91,7 @@ namespace DataAccess.Configuration
                     Create_At = new DateTime(2025, 01, 01),
                     Updated_At = new DateTime(2025, 01, 01),
                     Deleted_At = DateTime.MinValue,
-                    Price = 300
+                   
                 },
 
            
@@ -105,7 +105,7 @@ namespace DataAccess.Configuration
                     Create_At = new DateTime(2025, 01, 01),
                     Updated_At = new DateTime(2025, 01, 01),
                     Deleted_At = DateTime.MinValue,
-                    Price = 300
+                    
                 },
                 new Service
                 {
@@ -117,7 +117,7 @@ namespace DataAccess.Configuration
                     Create_At = new DateTime(2025, 01, 01),
                     Updated_At = new DateTime(2025, 01, 01),
                     Deleted_At = DateTime.MinValue,
-                    Price = 300
+                    
                 },
 
                 // 🎨 Painting
@@ -131,7 +131,7 @@ namespace DataAccess.Configuration
                     Create_At = new DateTime(2025, 01, 01),
                     Updated_At = new DateTime(2025, 01, 01),
                     Deleted_At = DateTime.MinValue,
-                    Price = 300
+                    
                 },
                 new Service
                 {
@@ -143,7 +143,7 @@ namespace DataAccess.Configuration
                     Create_At = new DateTime(2025, 01, 01),
                     Updated_At = new DateTime(2025, 01, 01),
                     Deleted_At = DateTime.MinValue,
-                    Price = 100
+                    
                 }
 
             );
