@@ -34,11 +34,13 @@ namespace Application.Infrastructures
         public const string PASSWORD_MISMATCH = "Password and Confirm Password do not match.";
         public const string PASSWORD_RESET_SUCCESS = "Password reset successfully.";
         public const string GET_ACCOUNT_SUCCESS = "Get Acccount successfully";
+        public const string UPDATE_ACCOUNT_SUCCESS = "Update Account successfully";
 
         // Parttern
         public const string WEAK_PASSWORD = "Password is too weak. It must be at least 8 characters, at least 1 letter, 1 number and 1 special character.";
         public const string INVALID_EMAIL = "Email is not valid.";
         public const string INVALID_PHONE = "Phone number is not valid.";
+        public const string THIS_FIELD_IS_REQUIRED = "This field is required.";
 
         // Appointment
         public const string APPOINTMENT_NOT_FOUND = "Appointment not found.";
