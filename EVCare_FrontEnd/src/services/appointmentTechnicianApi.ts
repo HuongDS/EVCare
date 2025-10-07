@@ -7,11 +7,11 @@ import type {
 import { handleError } from "../utils/errorHandler";
 
 export async function getTechnicianAppointments(params?: {
-  status?: string;
-  beginTime?: string;
-  endTime?: string;
-  pageSize?: number;
-  pageIndex?: number;
+  Status?: string;
+  BeginTime?: string;
+  EndTime?: string;
+  PageSize?: number;
+  PageIndex?: number;
 }) {
   try {
     const response = await api.get<
@@ -21,8 +21,8 @@ export async function getTechnicianAppointments(params?: {
     return (
       response.data.data ?? {
         items: [],
-        pageSize: params?.pageSize ?? 10,
-        pageIndex: params?.pageIndex ?? 1,
+        pageSize: params?.PageSize ?? 10,
+        pageIndex: params?.PageIndex ?? 1,
         totalItems: 0,
         totalPages: 1,
       }
@@ -31,8 +31,8 @@ export async function getTechnicianAppointments(params?: {
     handleError(error);
     return {
       items: [],
-      pageSize: params?.pageSize ?? 10,
-      pageIndex: params?.pageIndex ?? 1,
+      pageSize: params?.PageSize ?? 10,
+      pageIndex: params?.PageIndex ?? 1,
       totalItems: 0,
       totalPages: 1,
     };

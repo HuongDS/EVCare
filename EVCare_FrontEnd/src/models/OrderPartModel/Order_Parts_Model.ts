@@ -1,3 +1,4 @@
+//Order_Parts_Model.ts
 export type ResponseDto<T> = {
   statusCode: number;
   message?: string;
@@ -20,4 +21,12 @@ export type PageModel<T> = {
   pageIndex: number;
   totalItems: number;
   totalPages: number;
+};
+
+export type UpdateOrderPartDto = {
+  orderId: number;
+  parts: {
+    id: number;
+    quantity: number;
+  }[];
 };

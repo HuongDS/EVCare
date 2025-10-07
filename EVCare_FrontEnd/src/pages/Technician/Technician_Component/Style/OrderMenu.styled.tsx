@@ -1,5 +1,6 @@
+//OrderMenu.styled.tsx
 import { Menu } from "antd";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const SidebarContainer = styled.div`
@@ -46,48 +47,67 @@ export const Logo = styled.div`
 `;
 
 export const MenuStyled = styled(Menu)`
-  font-family: "Outfit", sans-serif !important;
-  border-right: none !important;
-  background: transparent !important;
+  font-family: "Outfit", sans-serif;
+  border-right: none;
+  background: transparent;
 
   .ant-menu-item,
   .ant-menu-submenu-title {
-    font-size: 20px !important;
-    height: 45px !important;
-    line-height: 48px !important;
-    margin: 4px 8px !important;
-    border-radius: 8px !important;
-    transition: all 0.3s ease !important;
+    font-size: 20px;
+    height: 45px;
+    line-height: 48px;
+    margin: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    @media (max-width: 768px) {
+      font-size: 15px;
+      height: 44px;
+      line-height: 44px;
+      margin: 2px 8px;
+    }
   }
 
   .ant-menu-item-selected {
-    background: linear-gradient(135deg, #00ad4e 0%, #00ad4e 100%) !important;
-    border-radius: 30px !important;
-    color: white !important;
-    font-weight: 600 !important;
+    background: linear-gradient(135deg, #00ad4e 0%, #00ad4e 100%);
+    border-radius: 30px;
+    color: white;
+    font-weight: 600;
 
     a {
       color: white !important;
     }
 
     .ant-menu-item-icon {
-      color: white !important;
+      color: white;
     }
   }
 
   .ant-menu-item:hover,
   .ant-menu-submenu-title:hover {
-    background: rgba(24, 144, 255, 0.1) !important;
-    color: #00ad4e !important;
-    border-radius: 30px !important;
+    background: rgba(24, 144, 255, 0.1);
+    color: #00ad4e;
+    border-radius: 30px;
+  }
+
+  .ant-menu-submenu-selected > .ant-menu-submenu-title {
+    color: #00ad4e;
   }
 
   .ant-menu-item-icon {
-    font-size: 18px !important;
+    font-size: 18px;
+
+    @media (max-width: 768px) {
+      font-size: 16px;
+    }
   }
 
   span {
-    font-size: 16px !important;
+    font-size: 16px;
+
+    @media (max-width: 768px) {
+      font-size: 15px;
+    }
   }
 `;
 
