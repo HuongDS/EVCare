@@ -8,8 +8,8 @@ namespace DataAccess.Enums
 {
     public enum CustomerRankEnum
     {
-        Vip,
-        Member,
-        Regular
+        VIP,
+        MEMBER,
+        REGULAR
     }
 }

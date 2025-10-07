@@ -9,8 +9,7 @@ namespace DataAccess.Dtos.OrderPart
 {
     public class TechnicianOrderPartUpdateModel
     {
-        public int OrderId { get; set; }
-        public int TechnicianId { get; set; }   
+        public int OrderId { get; set; }  
         public List<PartUpdateModel> Parts { get; set; }
     }
 }

@@ -25,14 +25,16 @@ namespace DataAccess.Repositories
                 .Select(g => new ServiceCategoryViewModel
                 {
                     Name = g.Key,
-                    Services = g.Select(x => new Dtos.Service.ServiceViewFormModel
+                    Services = g.Where(x=>x.Service.Deleted_At==null)
+                    .Select(x => new Dtos.Service.ServiceViewFormModel
                     {
                         Id = x.ServiceId,
                         Name = x.Service.Name,
                     }).Distinct().ToList()
 
 
-                }).ToListAsync();
+                })
+                .ToListAsync();
         }
     }
 }
