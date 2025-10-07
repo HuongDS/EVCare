@@ -40,7 +40,7 @@ export default function PersonalInfoForm({ defaultValues, onSave }: Props) {
     setPhone(phone0.current);
   };
 
-  const onSaveClick = () => {
+  const onSaveClick = async () => {
     if (firstName == null || lastName == null || firstName.trim().length == 0 || lastName.trim().length == 0) {
       showAlert("error", MSG_TITLE.UPDATE_PROFILE, ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
       return;
@@ -49,16 +49,24 @@ export default function PersonalInfoForm({ defaultValues, onSave }: Props) {
       showAlert("error", MSG_TITLE.UPDATE_PROFILE, ERROR_MESSAGE.INVALID_PHONE);
       return;
     }
-    onSave({ firstName, lastName, phone });
-    firstName0.current = firstName;
-    lastName0.current = lastName;
-    phone0.current = phone;
-    setEditMode(false);
-    notification.success({
-      message: MSG_TITLE.UPDATE_PROFILE,
-      description: SUCCESS_MESSAGE.UPDATE_ACCOUNT_SUCCESSFULLY,
-      showProgress: true,
-    });
+    try {
+      await onSave({ firstName, lastName, phone });
+      firstName0.current = firstName;
+      lastName0.current = lastName;
+      phone0.current = phone;
+      setEditMode(false);
+      notification.success({
+        message: MSG_TITLE.UPDATE_PROFILE,
+        description: SUCCESS_MESSAGE.UPDATE_ACCOUNT_SUCCESSFULLY,
+        showProgress: true,
+      });
+    } catch (error) {
+      notification.error({
+        message: MSG_TITLE.UPDATE_PROFILE,
+        description: (error as Error).message,
+        showProgress: true,
+      });
+    }
   };
 
   useEffect(() => {
