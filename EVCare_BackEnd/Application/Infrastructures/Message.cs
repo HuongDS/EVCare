@@ -100,6 +100,7 @@ namespace Application.Infrastructures
 
         //Vehicle
         public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
+        public const string VEHICLE_EXISTS = "Vehicle already exists.";
 
         //Part
         public const string PART_GET_SUCCESSFULLY = "Get parts successfully";
@@ -115,7 +116,10 @@ namespace Application.Infrastructures
 
         //AI
         public const string GET_AI_SUCCESSFULLY = "Get AI successfully";
-
         public static string ADD_TECHNICIAN_SUCCESSFULLY = "Add technician successfully";
+
+        // Invoice
+        public const string INVOICE_CREATED_SUCCESS = "Invoice created successfully.";
+        public const string INVOICE_GET_SUCCESS = "Invoice get successfully.";
     }
 }

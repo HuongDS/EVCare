@@ -16,15 +16,9 @@ import { CustomerRankEnum } from "../../../models/enums";
 import type { AccountUpdateDto } from "../../../models/Accounts/AccountUpdateDto";
 import type { CustomerViewDto } from "../../../models/CustomerModels/CustomerViewDto";
 import type { AccountViewModel } from "../../../models/Accounts/accountViewModel";
-
-const initialUser: UserProfile = {
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@example.com",
-  phone: "+84 123 456 789",
-  rank: CustomerRankEnum.MEMBER,
-  totalSpending: 12450,
-};
+import InvoiceSection from "./InvoiceSection";
+import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
+import { getInvoices } from "../../../services/invoicesService";
 
 const initialVehicles: VehicleViewDto[] = [
   {
@@ -64,15 +58,34 @@ const initialVehicles: VehicleViewDto[] = [
   },
 ];
 
+// const mockInvoice: InvoiceViewModel[] = [
+//   {
+//     id: 1,
+//     appointmentDate: "06-10-2025",
+//     totalPrice: 9999,
+//     paymentMethod: PaymentMethodEnum.CASH,
+//     paymentDate: "06-10-2025",
+//     status: PaymentStatusEnum.COMPLETED,
+//   },
+//   {
+//     id: 2,
+//     appointmentDate: "06-10-2025",
+//     totalPrice: 9999,
+//     paymentMethod: PaymentMethodEnum.CASH,
+//     paymentDate: "06-10-2025",
+//     status: PaymentStatusEnum.COMPLETED,
+//   },
+// ];
+
 function UserProfileComponent() {
-  const [user, setUser] = useState<UserProfile>(initialUser);
   const [vehicles, setVehicles] = useState<VehicleViewDto[]>(initialVehicles);
   const profileTitle = useMemo(() => "Personal Information", []);
   const [profileData, setProfileData] = useState<AccountViewModel>();
   const [cusProfile, setCusProfile] = useState<CustomerViewDto>();
+  const [totalSpending, setTotalSpending] = useState<number>(0);
+  const [invoices, setInvoices] = useState<InvoiceViewModel[]>([]);
 
   const handleSaveUser = async (updated: Pick<UserProfile, "firstName" | "lastName" | "phone">) => {
-    setUser((prev) => ({ ...prev, ...updated }));
     try {
       const data: AccountUpdateDto = {
         firstName: updated.firstName,
@@ -86,6 +99,7 @@ function UserProfileComponent() {
       setProfileData(response?.data);
     } catch (error) {
       handleError(error);
+      throw error;
     }
   };
 
@@ -111,8 +125,14 @@ function UserProfileComponent() {
         if (user == null || response01 == null || response02 == null) {
           throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         }
+        const response03 = await getInvoices();
+        if (response03 == null) {
+          throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+        }
+        setInvoices(response03?.data || []);
         setProfileData(response01?.data);
         setCusProfile(response02?.data);
+        setTotalSpending(response03?.data ? response03.data.reduce((acc, item) => acc + item.totalPrice, 0) : 0);
       } catch (error) {
         handleError(error);
       }
@@ -149,11 +169,15 @@ function UserProfileComponent() {
             onSave={handleSaveUser}
           />
 
-          <SpendingSection amount={user.totalSpending} />
+          <SpendingSection amount={totalSpending} />
         </div>
 
         <div className="profile-card vehicles-section">
           <VehiclesSection vehicles={vehicles} onAdd={handleAddVehicle} onDelete={handleDeleteVehicle} />
+        </div>
+
+        <div className="profile-card invoices-section">
+          <InvoiceSection invoices={invoices} />
         </div>
       </div>
     </ContainerWrapper>
