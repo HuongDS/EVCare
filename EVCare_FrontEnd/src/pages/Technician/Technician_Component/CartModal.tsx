@@ -6,15 +6,25 @@ import {
   Button as MuiButton,
   IconButton,
 } from "@mui/material";
-import { CartItem, ItemInfo } from "./Style/CartModal.styled";
-import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  CartItem,
+  ItemDetails,
+  ItemLeft,
+  ItemRight,
+  QuantityControl,
+  QuantityNumber,
+  EmptyCartMessage,
+  PriceTag,
+} from "./Style/CartModal.styled";
 
+import DeleteIcon from "@mui/icons-material/Delete";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 
 interface CartModalProps {
   open: boolean;
   onClose: () => void;
   cart: { part: OrderPartsResponseDto; quantity: number }[];
+  onQuantityChange: (partId: number, newQty: number) => void;
   onRemove: (partId: number) => void;
   onSend: () => void;
 }
@@ -25,7 +35,7 @@ const boxStyle = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "90%",
-  maxWidth: 500,
+  maxWidth: 600,
   bgcolor: "background.paper",
   borderRadius: "12px",
   boxShadow: 24,
@@ -38,6 +48,7 @@ export default function CartModal({
   open,
   onClose,
   cart,
+  onQuantityChange,
   onRemove,
   onSend,
 }: CartModalProps) {
@@ -51,22 +62,71 @@ export default function CartModal({
     >
       <Fade in={open} timeout={400}>
         <Box sx={boxStyle}>
-          <h2>Cart ({cart.length})</h2>
+          <h2>🛒 Cart ({cart.length})</h2>
 
-          {cart.length === 0 && <p>Your cart is empty</p>}
+          {cart.length === 0 && (
+            <EmptyCartMessage>Your cart is empty</EmptyCartMessage>
+          )}
 
           {cart.map(({ part, quantity }) => (
             <CartItem key={part.id}>
-              <ItemInfo>
-                <span>{part.name}</span>
-                <span>Quantity: {quantity}</span>
-                <span>
-                  Price: {(part.price ?? 0).toLocaleString("vi-VN")} VNĐ
-                </span>
-              </ItemInfo>
-              <IconButton color="error" onClick={() => onRemove(part.id)}>
-                <DeleteIcon />
-              </IconButton>
+              {/* Bên trái: tên và giá */}
+              <ItemLeft>
+                <ItemDetails>{part.name}</ItemDetails>
+                <PriceTag>
+                  {(part.price ?? 0).toLocaleString("vi-VN")} VNĐ
+                </PriceTag>
+              </ItemLeft>
+
+              {/* Bên phải: bộ chỉnh số lượng + nút xoá */}
+              <ItemRight>
+                <QuantityControl>
+                  <IconButton
+                    size="small"
+                    onClick={() =>
+                      onQuantityChange(part.id, Math.max(1, quantity - 1))
+                    }
+                    disabled={quantity <= 1}
+                    sx={{
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      width: "32px",
+                      height: "32px",
+                    }}
+                  >
+                    –
+                  </IconButton>
+
+                  <QuantityNumber>{quantity}</QuantityNumber>
+
+                  <IconButton
+                    size="small"
+                    onClick={() =>
+                      onQuantityChange(
+                        part.id,
+                        Math.min(quantity + 1, part.quantity ?? quantity + 1)
+                      )
+                    }
+                    disabled={quantity >= (part.quantity ?? 1)}
+                    sx={{
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      width: "32px",
+                      height: "32px",
+                    }}
+                  >
+                    +
+                  </IconButton>
+                </QuantityControl>
+
+                <IconButton
+                  color="error"
+                  onClick={() => onRemove(part.id)}
+                  sx={{ ml: 1 }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </ItemRight>
             </CartItem>
           ))}
 
@@ -75,7 +135,7 @@ export default function CartModal({
               variant="contained"
               color="success"
               fullWidth
-              sx={{ mt: 2 }}
+              sx={{ mt: 3 }}
               onClick={onSend}
             >
               Send Cart

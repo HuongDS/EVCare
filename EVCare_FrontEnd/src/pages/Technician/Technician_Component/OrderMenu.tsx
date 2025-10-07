@@ -1,3 +1,4 @@
+import { type MenuProps } from "antd";
 import {
   HomeOutlined,
   ApartmentOutlined,
@@ -7,82 +8,68 @@ import {
   SolutionOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
+import { SidebarContainer, MenuStyled } from "./Style/OrderMenu.styled";
+import { useGetPartCategories } from "../../../services/partCategoryApi";
 
-interface MenuItem {
+export interface MenuItem {
   key: string;
   icon: React.ReactNode;
   label: string | React.ReactNode;
-  route?: string;
-  children?: MenuItem[];
 }
 
-export const technicianOrderMenu: MenuItem[] = [
-  {
-    key: "1",
-    icon: <HomeOutlined />,
-    label: "High-Voltage Battery System",
-
-    children: [
-      {
-        key: "1.1",
-        icon: <HomeOutlined />,
-        label: "Battery Modules",
-        route: "/technician/general/battery-modules",
-      },
-      {
-        key: "1.2",
-        icon: <HomeOutlined />,
-        label: "High-voltage cables & connectors",
-        route: "/technician/general/battery-packs",
-      },
-      {
-        key: "1.3",
-        icon: <HomeOutlined />,
-        label: "On-board charger",
-        route: "/technician/general/bms",
-      },
-      {
-        key: "1.4",
-        icon: <HomeOutlined />,
-        label: "HV fuses, contactors, relays",
-        route: "/technician/general/battery-management-system",
-      },
-    ],
-  },
-  {
-    key: "2",
-    icon: <ApartmentOutlined />,
-    label: "Electric Drive System",
-    route: "/technician/my-jobs",
-  },
-  {
-    key: "3",
-    icon: <CalendarOutlined />,
-    label: "Control & Electronics",
-    route: "/technician/schedule",
-  },
-  {
-    key: "4",
-    icon: <ClockCircleOutlined />,
-    label: "Braking & Suspension System",
-    route: "/technician/history",
-  },
-  {
-    key: "5",
-    icon: <LogoutOutlined />,
-    label: "Steering & Body",
-    route: "/technician/logout",
-  },
-  {
-    key: "6",
-    icon: <SolutionOutlined />,
-    label: "Interior Accessories",
-    route: "/technician/application",
-  },
-  {
-    key: "7",
-    icon: <QuestionCircleOutlined />,
-    label: "Tools & Repair Materials",
-    route: "/technician/help",
-  },
+const icons = [
+  <HomeOutlined />,
+  <ApartmentOutlined />,
+  <CalendarOutlined />,
+  <ClockCircleOutlined />,
+  <LogoutOutlined />,
+  <SolutionOutlined />,
+  <QuestionCircleOutlined />,
 ];
+
+export const TechnicianOrderMenu: React.FC<{
+  selectedCategory: string;
+  onSelectCategory: (id: string) => void;
+}> = ({ selectedCategory, onSelectCategory }) => {
+  const { data, isLoading } = useGetPartCategories({
+    pageSize: 10,
+    pageIndex: 1,
+  });
+
+  // 🔹 Thêm mục "All" vào đầu menu
+  const technicianOrderMenu: MenuItem[] = [
+    {
+      key: "", // key rỗng biểu thị All
+      icon: <HomeOutlined />,
+      label: "All",
+    },
+    ...(data?.data?.items.map((cat, index) => ({
+      key: cat.id.toString(),
+      icon: icons[index] || <QuestionCircleOutlined />,
+      label: cat.name,
+    })) || []),
+  ];
+
+  return (
+    <SidebarContainer>
+      <MenuStyled
+        mode="inline"
+        selectedKeys={[selectedCategory]} // sẽ là "" khi chọn All
+        items={
+          isLoading ? [] : renderMenu(technicianOrderMenu, onSelectCategory)
+        }
+      />
+    </SidebarContainer>
+  );
+};
+
+const renderMenu = (
+  menu: MenuItem[],
+  onSelect: (key: string) => void
+): MenuProps["items"] =>
+  menu.map((item) => ({
+    key: item.key,
+    icon: item.icon,
+    label: <span>{item.label}</span>,
+    onClick: () => onSelect(item.key),
+  }));

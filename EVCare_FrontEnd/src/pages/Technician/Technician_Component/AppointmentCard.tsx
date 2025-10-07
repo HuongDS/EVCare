@@ -51,7 +51,7 @@ export default function AppointmentCard({
         orderId: data.orderId,
         status: nextStatus,
       });
-      onPartsUpdated?.(data.orderId); // 🔹 chỉ gọi callback với appointment hiện tại
+      onPartsUpdated?.(data.orderId);
     } catch (err) {
       console.error(err);
       setCurrentStatus(prevStatus);
@@ -122,6 +122,7 @@ export default function AppointmentCard({
         <ReviewButton
           status={currentStatus}
           onAction={handleAction}
+          appointment={data}
           orderId={data.orderId}
         />
       </ButtonStyled>

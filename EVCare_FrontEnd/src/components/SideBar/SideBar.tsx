@@ -1,3 +1,4 @@
+//SideBar.tsx
 import type { MenuProps } from "antd";
 import { RoleEnum } from "../../models/enums/RoleEnum";
 import { SidebarContainer, MenuStyled, LinkStyled } from "./SideBar.styled";
@@ -186,10 +187,10 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
 
 interface SidebarProps {
   role: RoleEnum;
-  menuOverride?: MenuItem[]; // menu đặc biệt cho trang Order
+  collapsed?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ role, menuOverride }) => {
+const Sidebar: React.FC<SidebarProps> = ({ role }) => {
   const renderMenuItems = (menu: MenuItem[]): MenuProps["items"] => {
     return menu.map((item) => {
       if (item.children) {
@@ -202,13 +203,14 @@ const Sidebar: React.FC<SidebarProps> = ({ role, menuOverride }) => {
     });
   };
 
-  const items = menuOverride ?? menuByRole[role];
+  const items = menuByRole[role];
 
   return (
     <SidebarContainer>
       <MenuStyled
         mode="inline"
         defaultSelectedKeys={["1"]}
+        inlineCollapsed={false}
         items={renderMenuItems(items)}
       />
     </SidebarContainer>

@@ -16,14 +16,12 @@ import Manage_Customer from "../pages/Staff/StaffManageCustomer/Manage_Customer"
 import Staff_Appoinments from "../pages/Staff/StaffManageAppointment/Staff_Appoinments";
 import Layout from "../components/Layouts/CustomerLayout";
 import Technician_General from "../pages/Technician/TechnicianGeneral/Technician_General";
-import {
-  TechnicianDefaultLayout,
-  TechnicianOrderLayout,
-} from "../pages/Technician/Technician_Component/TechnicianLayout";
+import { TechnicianDefaultLayout } from "../pages/Technician/Technician_Component/TechnicianLayout";
 import TechnicianOrder from "../pages/Technician/TechnicianOrder/Technician_Order";
 import OrderList from "../pages/Customer/OrderHistory/Appointment/AppointmentList";
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
 import { RoleEnum } from "../models/enums";
+import TechnicianOrderLayout from "../pages/Technician/Technician_Component/Technician_OrderLayout";
 const router = createBrowserRouter([
   {
     path: "/",
