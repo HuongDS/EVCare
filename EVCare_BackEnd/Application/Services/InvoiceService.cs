@@ -132,5 +132,12 @@ namespace Application.Services
             return await _invoiceRepository.GetInvoicesByCustomerId(customerId);
 
         }
+
+        public async Task CancelPayOSOrder(int orderId)
+        {
+            var invoice = await _invoiceRepository.GetInvoiceByOrderId(orderId);
+            if (invoice == null) throw new Exception("Invoice not found");
+            await _invoiceRepository.DeleteAsync(invoice.Id);  
+        }
     }
 }
