@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 export const Card = styled.div`
+font-family: 'Outfit', sans-serif;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   margin: 15px;
@@ -228,7 +229,7 @@ export const ButtonStyled = styled.div`
   display: flex;
   flex-direction: row;
   gap: 0.75rem;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   margin-top: 10px;
 

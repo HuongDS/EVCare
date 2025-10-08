@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-/* 🎨 Màu sắc & responsive breakpoints */
 const COLORS = {
   primary: "#00ad4e",
   primaryDark: "#008c3a",
@@ -15,42 +14,61 @@ const BREAKPOINTS = {
 };
 
 export const PageContainer = styled.div`
+  font-family: "Outfit", sans-serif;
   display: flex;
   flex-direction: column;
+  min-height: 95vh;
   padding: 24px;
-  min-height: 100vh;
   background-color: ${COLORS.grayLight};
-  font-family: "Outfit", sans-serif;
 
   @media (max-width: ${BREAKPOINTS.tablet}) {
     padding: 16px;
   }
 `;
 
+export const ContentWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
 export const TitleContainer = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
+  justify-content: space-between; /* 2 nút kéo ra 2 bên */
   margin-bottom: 24px;
+  flex-wrap: wrap; /* responsive */
+
+  @media (max-width: ${BREAKPOINTS.mobile}) {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+`;
+
+export const CenterWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* title + search căn giữa */
+  gap: 8px;
 `;
 
 export const Title = styled.h1`
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  color: ${COLORS.grayDark};
+  color: ${COLORS.primary};
+  text-align: center;
 
   @media (max-width: ${BREAKPOINTS.mobile}) {
     font-size: 1.6rem;
   }
 `;
 
-export const ActionsContainer = styled.div`
+export const SearchWrapper = styled.div`
+  width: 100%;
+  max-width: 300px;
   display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  justify-content: center;
 `;
 
 export const CardWrapper = styled.div`
@@ -68,7 +86,8 @@ export const CardWrapper = styled.div`
 export const PaginationContainer = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 28px;
+  margin-top: auto;
+  padding-top: 24px;
 `;
 
 /* 🌟 Base Button */
