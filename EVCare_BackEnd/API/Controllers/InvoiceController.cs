@@ -1,7 +1,9 @@
-﻿using Application.Interfaces;
-using Application.Services;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Application.Dtos;
+using Application.Infrastructures;
+using Application.Interfaces;
+using Application.Services;
 using DataAccess.Dtos.Invoice;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -44,23 +46,33 @@ namespace API.Controllers
                     await _invoiceService.SendMailToPayAsync(paymentUrl, model);
                     return Ok(new ResponseDto<string>
                     {
-                        statusCode = 201,
+                        statusCode = HttpStatus.CREATED,
                         message = "Payment URL created successfully",
                         data = paymentUrl
                     });
 
                 }
-                else
+                else if(model.Payment_Method== DataAccess.Enums.PaymentMethodEnum.Cash)
                 {
                     var invoiceId = await _invoiceService.CreateInvoice(model);
                     return Ok(new ResponseDto<int>
                     {
-                        statusCode = 201,
+                        statusCode = HttpStatus.CREATED,
                         message = "Create successfully",
                         data = invoiceId
-
                     });
                 }
+                else
+                {
+                   var paymentUrl = await _invoiceService.CreatePayOSUrl(model);
+                    return Ok(new ResponseDto<string>
+                    {
+                        statusCode = HttpStatus.CREATED,
+                        message = "Payment URL created successfully",
+                        data = paymentUrl
+                    });
+                }
+              
 
             }
             catch (Exception ex)
@@ -97,6 +109,22 @@ namespace API.Controllers
 
             }
         }
+
+
+        [HttpPost("webhook")]
+        public async Task<IActionResult> Webhook()
+        {
+            using var sr = new StreamReader(Request.Body, Encoding.UTF8);
+            var raw = await sr.ReadToEndAsync();
+
+            string? sig = Request.Headers["x-payos-signature"].FirstOrDefault()
+                       ?? Request.Headers["x-signature"].FirstOrDefault()
+                       ?? Request.Headers["x-checksum"].FirstOrDefault();
+
+            await _invoiceService.HandleWebhookAsync(raw, sig);
+            return Ok();
+         }
+
         [HttpGet("invoices")]
         [Authorize(Roles = "Customer")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
@@ -144,6 +172,7 @@ namespace API.Controllers
                     message = ex.Message
                 });
             }
+
         }
     }
 }
