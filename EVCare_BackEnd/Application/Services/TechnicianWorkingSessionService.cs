@@ -82,8 +82,14 @@ namespace Application.Services
 
                     if(await _appointmentRepository.CheckAllReadyForPickup(appointment.VehicleId))
                     {
-                        var data = await _appointmentRepository.GetPaymentPendingPickupEmailModel(appointment.Id);
-                        await _notificationServices.SendPaymentPendingPickupEmailAsync(data);
+                        var ids = await _appointmentRepository.GetAppointmentReadyForPickUpByVehicleId(appointment.VehicleId);
+                        foreach(var id in ids)
+                        {
+                            var data = await _appointmentRepository.GetPaymentPendingPickupEmailModel(id);
+                            await _notificationServices.SendPaymentPendingPickupEmailAsync(data);
+
+                        }
+                        
                     }
                 }
             }
