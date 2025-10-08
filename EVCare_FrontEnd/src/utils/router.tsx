@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import {createBrowserRouter} from "react-router-dom";
 import AdminLayout from "../pages/Admin/AdminComponents/AdminLayout";
 import StaffLayout from "../components/Layouts/StaffLayout";
 import HomePage from "../pages/Users/HomePage/HomePage";
@@ -16,14 +16,15 @@ import Manage_Customer from "../pages/Staff/StaffManageCustomer/Manage_Customer"
 import Staff_Appoinments from "../pages/Staff/StaffManageAppointment/Staff_Appoinments";
 import Layout from "../components/Layouts/CustomerLayout";
 import Technician_General from "../pages/Technician/TechnicianGeneral/Technician_General";
-import { TechnicianDefaultLayout } from "../pages/Technician/Technician_Component/TechnicianLayout";
+import {TechnicianDefaultLayout} from "../pages/Technician/Technician_Component/TechnicianLayout";
 import TechnicianOrder from "../pages/Technician/TechnicianOrder/Technician_Order";
 import OrderList from "../pages/Customer/OrderHistory/Appointment/AppointmentList";
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
-import { RoleEnum } from "../models/enums";
+import {RoleEnum} from "../models/enums";
 import TechnicianOrderLayout from "../pages/Technician/Technician_Component/Technician_OrderLayout";
-import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
+import {AppointmentList} from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
 import UserProfilePage from "../pages/Users/Profile/UserProfilePage";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
       {
         path: "account-information",
         element: (
-          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER, RoleEnum.STAFF, RoleEnum.TECHNICIAN]}>
             <UserProfilePage />
           </ProtectedRoute>
         ),

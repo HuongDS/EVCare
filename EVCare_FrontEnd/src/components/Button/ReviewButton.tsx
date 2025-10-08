@@ -17,6 +17,7 @@ const ActionButton = styled.button<{ color: string; $bg: string }>`
   font-weight: bold;
   cursor: pointer;
   background-color: ${({ $bg }) => $bg || "green"};
+    margin-right: 10px;
 `;
 
 export default function ButtonAction({ text, color, backgroundColor, action }: ActionButtonProps) {
