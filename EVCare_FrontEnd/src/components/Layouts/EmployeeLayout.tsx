@@ -1,19 +1,26 @@
 import { Layout, theme } from "antd";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../SideBar/SideBar";
 import HeaderStaff from "../Header/HeaderStaff";
 import { RoleEnum } from "../../models/enums/RoleEnum";
-import type { MenuItem } from "../SideBar/SideBar";
+import { useState } from "react";
 
 const { Content, Sider } = Layout;
 
 const EmployeeLayout: React.FC<{
   role: RoleEnum;
-  menuOverride?: MenuItem[];
-}> = ({ role, menuOverride }) => {
+  menuOverride?: React.ReactNode;
+  children?: React.ReactNode;
+}> = ({ role, menuOverride, children }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const location = useLocation();
+  const isOrderPage = location.pathname.includes("/technician/order");
+
+  // 🟩 State cho collapsed
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <Layout style={{ minHeight: "100vh", fontFamily: "'Outfit', sans-serif" }}>
@@ -21,11 +28,19 @@ const EmployeeLayout: React.FC<{
       <Layout style={{ flexDirection: "row" }}>
         <Sider
           width={250}
-          trigger={null}
-          style={{ background: colorBgContainer }}
+          collapsible
+          collapsed={collapsed}
+          breakpoint="lg"
+          collapsedWidth={60}
+          onCollapse={(val) => setCollapsed(val)}
+          style={{
+            background: colorBgContainer,
+            transition: "all 0.3s ease",
+          }}
         >
-          <Sidebar role={role} menuOverride={menuOverride} />
+          {menuOverride ?? <Sidebar role={role} collapsed={collapsed} />}
         </Sider>
+
         <Layout style={{ padding: "0 24px 24px" }}>
           <Content
             style={{
@@ -36,7 +51,7 @@ const EmployeeLayout: React.FC<{
               borderRadius: borderRadiusLG,
             }}
           >
-            <Outlet />
+            {isOrderPage ? children : <Outlet />}
           </Content>
         </Layout>
       </Layout>

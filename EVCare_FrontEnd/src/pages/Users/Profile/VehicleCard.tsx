@@ -1,3 +1,5 @@
+import { MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
+import { useAlert } from "../../../context/useAlert";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
 
 export default function VehicleCard({
@@ -7,10 +9,12 @@ export default function VehicleCard({
   vehicle: VehicleViewDto;
   onDelete: (id: number) => void;
 }) {
-  const handleDelete = () => {
+  const { showAlert } = useAlert();
+  const handleDelete = async () => {
     if (confirm("Are you sure you want to delete this vehicle?")) {
-      onDelete(vehicle.id);
+      await onDelete(vehicle.id);
     }
+    showAlert("info", MSG_TITLE.DELETE_VEHICLE, SUCCESS_MESSAGE.DELETE_VEHICLE_SUCCESS);
   };
 
   return (

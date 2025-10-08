@@ -108,7 +108,6 @@ namespace Application.Services
 
             }
         }
-
         public async Task<string> CreatePayOSUrl(InvoiceCreateModel model)
         {
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
@@ -118,10 +117,14 @@ namespace Application.Services
             await _invoiceRepository.AddAsync(invoice);
             return await _payOSService.CreateCheckoutUrlAsync(model);
         }
-
         public async Task HandleWebhookAsync(string raw, string? sig)
         {
             await _payOSService.HandleWebhookAsync(raw, sig);
+
+        public async Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId)
+        {
+            return await _invoiceRepository.GetInvoicesByCustomerId(customerId);
+
         }
     }
 }

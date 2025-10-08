@@ -1,3 +1,4 @@
+//Product Card
 import { CardContainer, Info } from "./Style/ProductCard.styled";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 import ImageSkeleton from "./ImageSkeleton";
