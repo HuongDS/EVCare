@@ -102,7 +102,7 @@ const router = createBrowserRouter([
         <TechnicianDefaultLayout />
       </ProtectedRoute>
     ),
-    children: [{ path: "general", element: <Technician_General /> }],
+    children: [{ path: "", element: <Technician_General /> }],
   },
   {
     path: "/technician/order",

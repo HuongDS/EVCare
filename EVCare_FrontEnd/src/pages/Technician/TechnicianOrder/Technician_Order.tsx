@@ -24,13 +24,14 @@ import {
   TitleContainer,
   Title,
   CardWrapper,
+  CenterWrapper,
   PaginationContainer,
-  ActionsContainer,
-  BackButton,
-  CartButton,
+  SearchWrapper,
+  ContentWrapper,
 } from "./Technician_Order.styled";
 
 import { LENGTH } from "../../../constants/Code/Constants";
+import ButtonAction from "../../../components/Button/ReviewButton";
 
 interface TechnicianOrderProps {
   orderId?: number;
@@ -83,7 +84,6 @@ export default function TechnicianOrder({
   const [isLoading, setIsLoading] = useState(true);
   const pageSize = LENGTH.VIEW_PARTCARD_MAX;
 
-  /** Lấy orderId từ props hoặc location */
   useEffect(() => {
     if (propOrderId) setCurrentOrderId(propOrderId);
   }, [propOrderId]);
@@ -149,16 +149,17 @@ export default function TechnicianOrder({
     }
   }, [currentOrderId]);
 
-  /** ✅ Tự động load parts của order */
   useEffect(() => {
     if (currentOrderId) fetchExistingOrderParts();
   }, [currentOrderId, fetchExistingOrderParts]);
 
-  /** Lọc + phân trang parts */
   const updateDisplayParts = useCallback(() => {
+    const query = searchQuery.trim().toLowerCase();
+
     const filtered = allParts.filter(
       (p) =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        p.quantity > 0 &&
+        (query === "" || p.name.toLowerCase().includes(query)) &&
         (selectedCategory ? p.categoryId === Number(selectedCategory) : true)
     );
 
@@ -191,11 +192,12 @@ export default function TechnicianOrder({
   const handleRemoveFromCart = (partId: number) => {
     setCart((prev) => prev.filter((item) => item.part.id !== partId));
   };
-
+  const [isSending, setIsSending] = useState(false);
   /** Gửi giỏ lên server */
   const handleSendCart = async () => {
-    if (!currentOrderId || cart.length === 0) return;
+    if (!currentOrderId || isSending) return; // ⬅️ chặn spam
 
+    setIsSending(true); // ⬅️ bật loading
     const payload: UpdateOrderPartDto = {
       orderId: currentOrderId,
       parts: cart.map((c) => ({ id: c.part.id, quantity: c.quantity })),
@@ -205,10 +207,12 @@ export default function TechnicianOrder({
       await updateOrderParts(payload);
       onPartsUpdated?.(currentOrderId);
       setCartOpen(false);
-      alert("Order parts updated successfully!");
+      alert("✅ Order parts updated successfully!");
     } catch (err) {
       console.error(err);
-      alert("Failed to update order parts");
+      alert("❌ Failed to update order parts");
+    } finally {
+      setIsSending(false); // ⬅️ tắt loading
     }
   };
 
@@ -217,58 +221,68 @@ export default function TechnicianOrder({
   return (
     <PageContainer>
       <TitleContainer>
-        <Title>Technician Order</Title>
-
-        <ActionsContainer>
-          <BackButton onClick={handleBack}>← Back</BackButton>
-
-          <SearchBar
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Search for parts..."
-          />
-
-          <CartButton onClick={() => setCartOpen(true)}>
-            Open Cart ({cart.length})
-          </CartButton>
-        </ActionsContainer>
-      </TitleContainer>
-
-      <CardWrapper>
-        {isLoading
-          ? Array.from({ length: pageSize }).map((_, idx) => (
-              <div key={idx} style={{ width: "200px", margin: "0.5rem" }}>
-                <ImageSkeleton alt="loading" height={150} />
-              </div>
-            ))
-          : displayParts.map((part) => (
-              <ProductCard
-                key={part.id}
-                part={part}
-                onClick={() => {
-                  setSelectedPart(part);
-                  setOpen(true);
-                }}
-              />
-            ))}
-      </CardWrapper>
-
-      <PaginationContainer>
-        <Pagination
-          count={totalPages}
-          page={page}
-          onChange={(_, value) => setPage(value)}
-          renderItem={(item) => (
-            <PaginationItem
-              slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
-              {...item}
-            />
-          )}
+        <ButtonAction
+          text="← Back"
+          color="white"
+          backgroundColor="#888"
+          action={handleBack}
         />
-      </PaginationContainer>
+
+        <CenterWrapper>
+          <Title>Technician Order</Title>
+          <SearchWrapper>
+            <SearchBar
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setPage(1);
+              }}
+              placeholder="Search for parts..."
+            />
+          </SearchWrapper>
+        </CenterWrapper>
+
+        <ButtonAction
+          text={`Open Cart (${cart.length})`}
+          color="white"
+          backgroundColor="#00AD4E"
+          action={() => setCartOpen(true)}
+        />
+      </TitleContainer>
+      <ContentWrapper>
+        <CardWrapper>
+          {isLoading
+            ? Array.from({ length: pageSize }).map((_, idx) => (
+                <div key={idx} style={{ width: "200px", margin: "0.5rem" }}>
+                  <ImageSkeleton alt="loading" height={150} />
+                </div>
+              ))
+            : displayParts.map((part) => (
+                <ProductCard
+                  key={part.id}
+                  part={part}
+                  onClick={() => {
+                    setSelectedPart(part);
+                    setOpen(true);
+                  }}
+                />
+              ))}
+        </CardWrapper>
+
+        <PaginationContainer>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(_, value) => setPage(value)}
+            renderItem={(item) => (
+              <PaginationItem
+                slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                {...item}
+              />
+            )}
+          />
+        </PaginationContainer>
+      </ContentWrapper>
 
       <ProductModal
         open={open}
@@ -290,6 +304,7 @@ export default function TechnicianOrder({
         }
         onRemove={handleRemoveFromCart}
         onSend={handleSendCart}
+        loading={isSending}
       />
     </PageContainer>
   );

@@ -12,10 +12,8 @@ export type OrderPartAddTechnicianDto = {
 };
 
 export type AddPartsRequest = {
-  orderId?: number;
-  listParts: OrderPartAddTechnicianDto[];
+  orderId: number;
+  parts: { id: number; quantity: number }[];
 };
 
-export type AddPartsResponse = {
-  listParts: OrderPartAddTechnicianDto[];
-};
+export type AddPartsResponse = number;

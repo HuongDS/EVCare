@@ -148,7 +148,7 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       key: "1",
       icon: <HomeOutlined />,
       label: "General",
-      route: "/technician/general",
+      route: "/technician",
     },
     {
       key: "2",
