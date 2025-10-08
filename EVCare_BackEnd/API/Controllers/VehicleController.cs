@@ -148,8 +148,9 @@ namespace API.Controllers
                 });
             }
         }
-        [HttpPut("delete-vehicle")]
+        [HttpPut("delete-vehicle/{vehicleId}")]
         [Authorize]
+        [ServiceFilter(typeof(AuthorizeVehicleOwnerFilter))]
         public async Task<IActionResult> SoftDeleteVehicle(int vehicleId)
         {
             try
