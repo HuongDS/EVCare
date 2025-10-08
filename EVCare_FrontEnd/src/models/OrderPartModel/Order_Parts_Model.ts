@@ -9,6 +9,7 @@ export type OrderPartsResponseDto = {
   id: number;
   name: string;
   quantity: number;
+  replacementPrice: number;
   price: number;
   categoryId: number;
   isDeleted: boolean;
