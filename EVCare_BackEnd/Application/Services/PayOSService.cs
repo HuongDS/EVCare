@@ -19,12 +19,18 @@ namespace Application.Services
         private readonly IPayOSGateWay _gw;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-        public PayOSService(IInvoiceRepository invoiceRepository, IPayOSGateWay gw, IConfiguration configuration,IMapper mapper)
+        private readonly IAppointmentRepository _appointmentRepository;
+        public PayOSService(
+            IInvoiceRepository invoiceRepository, IPayOSGateWay gw, IConfiguration configuration,
+            IMapper mapper
+            ,IAppointmentRepository appointmentRepository
+            )
         {
             _invoiceRepository = invoiceRepository;
             _gw = gw;
             _mapper = mapper;
             _configuration = configuration;
+            _appointmentRepository = appointmentRepository;
         }
         private string Cfg(string key) => _configuration[$"PayOS:{key}"] ?? "";
         public async Task<(string, long)> CreateCheckoutUrlAsync(InvoiceCreateModel model)
@@ -58,6 +64,9 @@ namespace Application.Services
             {
                 invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
                 await _invoiceRepository.UpdateAsync(invoice);
+                var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(invoice.OrderId);
+                appointment.Status = DataAccess.Enums.AppointmentStatusEnum.Done;
+                await _appointmentRepository.UpdateAsync(appointment);
             }
             else
             {

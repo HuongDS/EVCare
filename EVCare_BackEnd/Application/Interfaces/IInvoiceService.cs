@@ -17,5 +17,6 @@ namespace Application.Interfaces
         Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId);
         public Task PaymentCallback(IQueryCollection query);
         Task SendMailToPayAsync(string paymentUrl, InvoiceCreateModel model);
+        Task CancelPayOSOrder(int orderId);
     }
 }

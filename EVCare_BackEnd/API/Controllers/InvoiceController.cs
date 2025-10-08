@@ -174,5 +174,30 @@ namespace API.Controllers
             }
 
         }
+
+        [HttpDelete("order/{orderId}")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> CancelPayOSOrder(int orderId)
+        {
+            try
+            {
+                await _invoiceService.CancelPayOSOrder(orderId);
+                return Ok(new ResponseDto<string>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = "Cancel PayOS order successfully",
+                    data = "Cancel PayOS order successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+        }
+
     }
 }
