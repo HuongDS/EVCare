@@ -25,6 +25,7 @@ namespace Application.Services
         private readonly IAppointmentService _appointmentService;
         private readonly IServiceCenterService _serviceCenterService;
         private readonly IOrderService _orderService;
+        private readonly IPayOSService _payOSService;
 
         public InvoiceService(IVnPayService vnPayService, IMapper mapper,
             IInvoiceRepository invoiceRepository
@@ -32,7 +33,9 @@ namespace Application.Services
             INotificationServices notificationServices,
             IAppointmentService appointmentService,
             IServiceCenterService serviceCenterService,
-            IOrderService orderService)
+            IOrderService orderService
+            ,IPayOSService payOSService
+            )
         {
             _vnPayService = vnPayService;
             _mapper = mapper;
@@ -42,6 +45,7 @@ namespace Application.Services
             _appointmentService = appointmentService;
             _serviceCenterService = serviceCenterService;
             _orderService = orderService;
+            _payOSService = payOSService;
         }
 
         public async Task<int> CreateInvoice(InvoiceCreateModel model)
@@ -104,9 +108,23 @@ namespace Application.Services
 
             }
         }
+        public async Task<string> CreatePayOSUrl(InvoiceCreateModel model)
+        {
+            var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
+            var invoice = _mapper.Map<Invoice>(model);
+            invoice.CustomerId = customerId;
+            invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
+            await _invoiceRepository.AddAsync(invoice);
+            return await _payOSService.CreateCheckoutUrlAsync(model);
+        }
+        public async Task HandleWebhookAsync(string raw, string? sig)
+        {
+            await _payOSService.HandleWebhookAsync(raw, sig);
+
         public async Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId)
         {
             return await _invoiceRepository.GetInvoicesByCustomerId(customerId);
+
         }
     }
 }

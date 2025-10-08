@@ -34,5 +34,6 @@ namespace DataAccess.Interfaces
         Task<int> CountAppointment(DateOnly appointment_Date);
         Task<PaymentPendingPickupEmailModel> GetPaymentPendingPickupEmailModel(int id);
         Task<bool> CheckAllReadyForPickup(int vehicleId);
+        Task<IEnumerable<int>> GetAppointmentReadyForPickUpByVehicleId(int vehicleId);
     }
 }
