@@ -11,5 +11,6 @@ namespace Application.Interfaces
     {
         public Task<string> CreateCheckoutUrlAsync(InvoiceCreateModel model);
         public Task HandleWebhookAsync(string rawBody, string? headerSignature);
+        public Task CancelPayOSOrder(int orderCode);
     }
 }

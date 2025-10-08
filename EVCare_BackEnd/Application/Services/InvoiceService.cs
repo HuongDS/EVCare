@@ -110,12 +110,16 @@ namespace Application.Services
         }
         public async Task<string> CreatePayOSUrl(InvoiceCreateModel model)
         {
+           
+            var url =  await _payOSService.CreateCheckoutUrlAsync(model);
+
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
             await _invoiceRepository.AddAsync(invoice);
-            return await _payOSService.CreateCheckoutUrlAsync(model);
+
+            return url;
         }
         public async Task HandleWebhookAsync(string raw, string? sig)
         {
