@@ -1,47 +1,10 @@
-// ReviewButton.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import ViewDetailsModal from "./ViewDetailsModal";
-
-interface ButtonProps {
-  $variant?: "primary" | "secondary";
-}
-
-const ButtonStyled = styled.button<ButtonProps>`
-  background-color: ${({ $variant }) =>
-    $variant === "secondary" ? "#0073AD" : "#00AD4E"};
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  margin-right: 8px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-
-  &:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-`;
-
+import ButtonAction from "../../../components/Button/ReviewButton";
+import AlertModal from "./AlertModal";
 interface ReviewButtonProps {
   status: TechnicianWorkingSessionEnum;
   orderId?: number;
@@ -58,16 +21,12 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  /**
-   * Chuyển sang trang order và truyền kèm danh sách part đã có
-   */
   const handleNavigate = () => {
     if (!orderId) {
       console.error("OrderId is missing! Cannot navigate to order page.");
       return;
     }
 
-    // truyền cả existingParts để trang Order nhận và load vào cart
     navigate("/technician/order", {
       state: {
         orderId,
@@ -75,71 +34,99 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
       },
     });
   };
-
+  const [showAlert, setShowAlert] = useState(false);
   return (
     <>
       {status === TechnicianWorkingSessionEnum.PENDING && (
-        <ButtonStyled
-          onClick={() => onAction(TechnicianWorkingSessionEnum.INPROGRESS)}
-        >
-          Confirm
-        </ButtonStyled>
+        <ButtonAction
+          text="Confirm"
+          color="#fff"
+          backgroundColor="#00AD4E"
+          action={() => onAction(TechnicianWorkingSessionEnum.INPROGRESS)}
+        />
       )}
 
       {status === TechnicianWorkingSessionEnum.INPROGRESS && (
         <>
-          <ButtonStyled
-            onClick={() => onAction(TechnicianWorkingSessionEnum.CONFIRM)}
-          >
-            Done
-          </ButtonStyled>
-          <ButtonStyled
-            $variant="secondary"
-            onClick={() => onAction(TechnicianWorkingSessionEnum.ADDING_PART)}
-          >
-            Add Part
-          </ButtonStyled>
+          <ButtonAction
+            text="Done"
+            color="#fff"
+            backgroundColor="#00AD4E"
+            action={() => onAction(TechnicianWorkingSessionEnum.CONFIRM)}
+          />
         </>
       )}
 
       {status === TechnicianWorkingSessionEnum.ADDING_PART && (
         <>
-          <ButtonStyled $variant="secondary" onClick={handleNavigate}>
-            {appointment.parts && appointment.parts.length > 0
-              ? "Update Order"
-              : "Order"}
-          </ButtonStyled>
-
-          <ButtonStyled
-            onClick={() => onAction(TechnicianWorkingSessionEnum.INPROGRESS)}
-          >
-            Continue
-          </ButtonStyled>
+          <ButtonAction
+            text={
+              appointment.parts && appointment.parts.length > 0
+                ? "Update Order"
+                : "Order"
+            }
+            color="#fff"
+            backgroundColor="#0073AD"
+            action={handleNavigate}
+          />
+          <ButtonAction
+            text="Continue"
+            color="#fff"
+            backgroundColor="#00AD4E"
+            action={() => setShowAlert(true)}
+          />
         </>
       )}
 
       {status === TechnicianWorkingSessionEnum.CONFIRM && (
         <>
-          <ButtonStyled
-            $variant="secondary"
-            onClick={() => onAction(TechnicianWorkingSessionEnum.INPROGRESS)}
-          >
-            Back
-          </ButtonStyled>
-          <ButtonStyled onClick={() => setIsModalOpen(true)}>
-            View Details
-          </ButtonStyled>
-          <ButtonStyled>Confirm</ButtonStyled>
+          <ButtonAction
+            text="Back"
+            color="#fff"
+            backgroundColor="#0073AD"
+            action={() => onAction(TechnicianWorkingSessionEnum.INPROGRESS)}
+          />
+          <ButtonAction
+            text="View Details"
+            color="#fff"
+            backgroundColor="#FFA500"
+            action={() => setIsModalOpen(true)}
+          />
+          <ButtonAction
+            text="Confirm"
+            color="#fff"
+            backgroundColor="#00AD4E"
+            action={() => setShowAlert(true)} // bật alert modal
+          />
         </>
       )}
 
       {(status === TechnicianWorkingSessionEnum.COMPLETED ||
         status === TechnicianWorkingSessionEnum.CANCELLED) && (
-        <ButtonStyled $variant="secondary" onClick={() => setIsModalOpen(true)}>
-          View Details
-        </ButtonStyled>
+        <ButtonAction
+          text="View Details"
+          color="#fff"
+          backgroundColor="#FFA500"
+          action={() => setIsModalOpen(true)}
+        />
       )}
-
+      <AlertModal
+        open={showAlert}
+        onClose={() => setShowAlert(false)}
+        message={
+          status === TechnicianWorkingSessionEnum.ADDING_PART
+            ? "You will not be able to add parts after confirming. Are you sure you want to continue?"
+            : "Are you sure you have finished and want to confirm?"
+        }
+        onConfirm={() => {
+          if (status === TechnicianWorkingSessionEnum.ADDING_PART) {
+            onAction(TechnicianWorkingSessionEnum.INPROGRESS);
+          } else if (status === TechnicianWorkingSessionEnum.CONFIRM) {
+            onAction(TechnicianWorkingSessionEnum.COMPLETED);
+          }
+          setShowAlert(false);
+        }}
+      />
       <ViewDetailsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

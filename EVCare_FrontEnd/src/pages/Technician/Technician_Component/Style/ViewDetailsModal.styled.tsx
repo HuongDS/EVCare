@@ -48,7 +48,6 @@ export const InfoItem = styled.div`
   }
 `;
 
-/* HÀNG DƯỚI: LIST SERVICES + PARTS */
 export const ListSection = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr; /* 2 cột: Services - Parts */

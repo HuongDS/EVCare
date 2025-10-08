@@ -1,12 +1,14 @@
 import { type MenuProps } from "antd";
 import {
+  CarOutlined,
+  DashboardOutlined,
+  FireOutlined,
   HomeOutlined,
-  ApartmentOutlined,
-  CalendarOutlined,
-  ClockCircleOutlined,
-  LogoutOutlined,
-  SolutionOutlined,
   QuestionCircleOutlined,
+  RiseOutlined,
+  StopOutlined,
+  ThunderboltOutlined,
+  ToolOutlined,
 } from "@ant-design/icons";
 import { SidebarContainer, MenuStyled } from "./Style/OrderMenu.styled";
 import { useGetPartCategories } from "../../../services/partCategoryApi";
@@ -18,13 +20,13 @@ export interface MenuItem {
 }
 
 const icons = [
-  <HomeOutlined />,
-  <ApartmentOutlined />,
-  <CalendarOutlined />,
-  <ClockCircleOutlined />,
-  <LogoutOutlined />,
-  <SolutionOutlined />,
-  <QuestionCircleOutlined />,
+  <ToolOutlined />,
+  <StopOutlined />,
+  <ThunderboltOutlined />,
+  <CarOutlined />,
+  <RiseOutlined />,
+  <DashboardOutlined />,
+  <FireOutlined />,
 ];
 
 export const TechnicianOrderMenu: React.FC<{
@@ -36,10 +38,9 @@ export const TechnicianOrderMenu: React.FC<{
     pageIndex: 1,
   });
 
-  // 🔹 Thêm mục "All" vào đầu menu
   const technicianOrderMenu: MenuItem[] = [
     {
-      key: "", // key rỗng biểu thị All
+      key: "",
       icon: <HomeOutlined />,
       label: "All",
     },
@@ -54,7 +55,7 @@ export const TechnicianOrderMenu: React.FC<{
     <SidebarContainer>
       <MenuStyled
         mode="inline"
-        selectedKeys={[selectedCategory]} // sẽ là "" khi chọn All
+        selectedKeys={[selectedCategory]}
         items={
           isLoading ? [] : renderMenu(technicianOrderMenu, onSelectCategory)
         }

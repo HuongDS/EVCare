@@ -30,8 +30,8 @@ const EmployeeLayout: React.FC<{
           width={250}
           collapsible
           collapsed={collapsed}
-          breakpoint="lg" // tự collapse khi < 992px
-          collapsedWidth={60} // chiều rộng khi thu gọn
+          breakpoint="lg"
+          collapsedWidth={60}
           onCollapse={(val) => setCollapsed(val)}
           style={{
             background: colorBgContainer,
