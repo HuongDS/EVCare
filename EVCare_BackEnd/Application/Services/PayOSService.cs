@@ -29,7 +29,7 @@ namespace Application.Services
         private string Cfg(string key) => _configuration[$"PayOS:{key}"] ?? "";
         public async Task<string> CreateCheckoutUrlAsync(InvoiceCreateModel model)
         {
-            var orderCode = long.Parse(Guid.NewGuid().ToString("N").Substring(0, 9));
+            var orderCode = long.Parse($"{model.OrderId}{DateTimeOffset.UtcNow.ToUnixTimeSeconds() % 10000}");
             long amount = (long)decimal.Truncate(model.Total_Price);
 
             var returnUrl =  Cfg("ReturnUrl");
