@@ -122,5 +122,28 @@ namespace API.Controllers
                 });
             }
         }
+        [HttpGet("invoices/employeee/{customerId}")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetInvoicesByCustomerId(int customerId)
+        {
+            try
+            {
+                var response = await _invoiceService.GetInvoicesByCustomerId(customerId);
+                return Ok(new ResponseDto<IEnumerable<InvoiceViewModel>?>
+                {
+                    statusCode = 200,
+                    message = Message.INVOICE_GET_SUCCESS,
+                    data = response
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+        }
     }
 }
