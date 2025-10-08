@@ -44,7 +44,7 @@ export async function createVehicle(data: VehicleCreateDto) {
 
 export async function deleteVehicle(vehicleId: number) {
   try {
-    const response = await api.put<ResponseDto<number>>("/api/Vehicle/delete-vehicle", vehicleId);
+    const response = await api.put<ResponseDto<number>>(`/api/Vehicle/delete-vehicle/${vehicleId}`);
     return response.data;
   } catch (error) {
     handleError(error);

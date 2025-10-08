@@ -22,6 +22,7 @@ import { getInvoices } from "../../../services/invoicesService";
 import type { User } from "../../../models/AuthModel/authModel";
 import { createVehicle, deleteVehicle, getVehicleByCustomerId } from "../../../services/vehicleServicesApi";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 function UserProfileComponent() {
   const [vehicles, setVehicles] = useState<VehicleViewDto[]>([]);
@@ -31,8 +32,10 @@ function UserProfileComponent() {
   const [totalSpending, setTotalSpending] = useState<number>(0);
   const [invoices, setInvoices] = useState<InvoiceViewModel[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSaveUser = async (updated: Pick<UserProfile, "firstName" | "lastName" | "phone">) => {
+    setIsLoading(true);
     try {
       const data: AccountUpdateDto = {
         firstName: updated.firstName,
@@ -47,10 +50,13 @@ function UserProfileComponent() {
     } catch (error) {
       handleError(error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleAddVehicle = async (a: VehicleCreateDto) => {
+    setIsLoading(true);
     try {
       const response = await createVehicle(a);
       if (response == null) {
@@ -67,10 +73,13 @@ function UserProfileComponent() {
     } catch (error) {
       handleError(error);
       throw Error(error as string);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDeleteVehicle = async (id: number) => {
+    setIsLoading(true);
     try {
       const response = await deleteVehicle(id);
       if (response == null) {
@@ -81,10 +90,12 @@ function UserProfileComponent() {
       handleError(error);
       throw Error(error as string);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response01 = await getAccountInformation();
         const user = getUser();
@@ -111,51 +122,67 @@ function UserProfileComponent() {
         setTotalSpending(response03?.data ? response03.data.reduce((acc, item) => acc + item.totalPrice, 0) : 0);
       } catch (error) {
         handleError(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
   }, []);
 
   return (
-    <ContainerWrapper>
-      <div className="container">
-        <div className="header">
-          <HeaderBar />
-          <div className="logo">EVCare</div>
+    <>
+      {isLoading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "15px",
+          }}
+        >
+          <SpinnerComponent />
         </div>
+      ) : (
+        <ContainerWrapper>
+          <div className="container">
+            <div className="header">
+              <HeaderBar />
+              <div className="logo">EVCare</div>
+            </div>
 
-        <div className="profile-card">
-          <div className="profile-header">
-            <h1 className="profile-title">{profileTitle}</h1>
-            <RankBadge rank={cusProfile?.rank || CustomerRankEnum.REGULAR} />
+            <div className="profile-card">
+              <div className="profile-header">
+                <h1 className="profile-title">{profileTitle}</h1>
+                <RankBadge rank={cusProfile?.rank || CustomerRankEnum.REGULAR} />
+              </div>
+
+              <PersonalInfoForm
+                defaultValues={{
+                  firstName: profileData?.first_Name || "",
+                  lastName: profileData?.last_Name || "",
+                  phone: profileData?.phone || "",
+                  email: profileData?.email || "",
+                }}
+                onSave={handleSaveUser}
+              />
+              {user?.role == RoleEnum.CUSTOMER ? <SpendingSection amount={totalSpending} /> : <></>}
+            </div>
+            {user?.role == RoleEnum.CUSTOMER ? (
+              <>
+                <div className="profile-card vehicles-section">
+                  <VehiclesSection vehicles={vehicles} onAdd={handleAddVehicle} onDelete={handleDeleteVehicle} />
+                </div>
+
+                <div className="profile-card invoices-section">
+                  <InvoiceSection invoices={invoices} />
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
           </div>
-
-          <PersonalInfoForm
-            defaultValues={{
-              firstName: profileData?.first_Name || "",
-              lastName: profileData?.last_Name || "",
-              phone: profileData?.phone || "",
-              email: profileData?.email || "",
-            }}
-            onSave={handleSaveUser}
-          />
-          {user?.role == RoleEnum.CUSTOMER ? <SpendingSection amount={totalSpending} /> : <></>}
-        </div>
-        {user?.role == RoleEnum.CUSTOMER ? (
-          <>
-            <div className="profile-card vehicles-section">
-              <VehiclesSection vehicles={vehicles} onAdd={handleAddVehicle} onDelete={handleDeleteVehicle} />
-            </div>
-
-            <div className="profile-card invoices-section">
-              <InvoiceSection invoices={invoices} />
-            </div>
-          </>
-        ) : (
-          <></>
-        )}
-      </div>
-    </ContainerWrapper>
+        </ContainerWrapper>
+      )}
+    </>
   );
 }
 

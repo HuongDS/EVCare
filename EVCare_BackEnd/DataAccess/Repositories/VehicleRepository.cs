@@ -18,7 +18,7 @@ namespace DataAccess.Repositories
 
         public async Task<bool> CheckLicensePlate(string licensePlate)
         {
-            return await _dbSet.AnyAsync(x => x.LicensePlate == licensePlate);
+            return await _dbSet.AnyAsync(x => x.LicensePlate == licensePlate && x.Deleted_At == DateTime.MinValue);
         }
 
         public async Task<int> GetCustomerIdByVehicleId(int vehicleId)
@@ -31,7 +31,7 @@ namespace DataAccess.Repositories
         public async Task<VehicleDetailViewModel> GetVehicleDetailById(int vehicleId)
         {
             return await _dbContext.Vehicles
-                .Where(v => v.Id == vehicleId)
+                .Where(v => v.Id == vehicleId && v.Deleted_At == DateTime.MinValue)
                 .Include(v => v.Category)
                 .Select(x => new VehicleDetailViewModel
                 {
