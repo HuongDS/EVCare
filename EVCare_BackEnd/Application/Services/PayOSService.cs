@@ -48,7 +48,7 @@ namespace Application.Services
             if (!_gw.Verify(rawBody, headerSignature)) return;
             dynamic p = JsonConvert.DeserializeObject(rawBody);
             string? oc = p?.data?.orderCode;     
-            string? st = p?.data?.status;
+            string? st = p?.data?.desc;
             if (string.IsNullOrWhiteSpace(oc)) return;
             var orderCode = long.Parse(oc);  
             var invoice = await _invoiceRepository.GetInvoiceByOrderCode(orderCode);
