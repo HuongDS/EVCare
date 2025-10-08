@@ -9,6 +9,8 @@ using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using API.Filters;
+using Application.Infrastructures;
 
 namespace API.Controllers
 {
@@ -32,7 +34,7 @@ namespace API.Controllers
             _serviceCenterService = serviceCenterService;
             _orderService = orderService;
         }
-        [Authorize(Roles ="Staff")]
+        [Authorize(Roles = "Staff")]
         [HttpPost]
         public async Task<IActionResult> CreateInvoice(InvoiceCreateModel model)
         {
@@ -108,6 +110,7 @@ namespace API.Controllers
             }
         }
 
+
         [HttpPost("webhook")]
         public async Task<IActionResult> Webhook()
         {
@@ -120,6 +123,56 @@ namespace API.Controllers
 
             await _invoiceService.HandleWebhookAsync(raw, sig);
             return Ok();
+         }
+
+        [HttpGet("invoices")]
+        [Authorize(Roles = "Customer")]
+        [ServiceFilter(typeof(SetCustomerIdFilter))]
+        public async Task<IActionResult> GetInvoicesByCustomerId()
+        {
+            var customerId = (int)HttpContext.Items["CustomerId"];
+            try
+            {
+                var response = await _invoiceService.GetInvoicesByCustomerId(customerId);
+                return Ok(new ResponseDto<IEnumerable<InvoiceViewModel>?>
+                {
+                    statusCode = 200,
+                    message = Message.INVOICE_GET_SUCCESS,
+                    data = response
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpGet("invoices/employeee/{customerId}")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetInvoicesByCustomerId(int customerId)
+        {
+            try
+            {
+                var response = await _invoiceService.GetInvoicesByCustomerId(customerId);
+                return Ok(new ResponseDto<IEnumerable<InvoiceViewModel>?>
+                {
+                    statusCode = 200,
+                    message = Message.INVOICE_GET_SUCCESS,
+                    data = response
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+
         }
     }
 }

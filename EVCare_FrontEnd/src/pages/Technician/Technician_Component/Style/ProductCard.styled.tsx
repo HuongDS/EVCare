@@ -15,6 +15,18 @@ export const CardContainer = styled.div`
     transform: translateY(-6px) scale(1.03);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
   }
+
+  /* 📱 Responsive cho mobile, ví dụ iPhone 14 Pro Max */
+  @media (max-width: 480px) {
+    max-width: 90%; /* rộng hơn so với 250px */
+    margin: 0 auto; /* căn giữa card */
+    border-radius: 10px; /* bo tròn nhẹ hơn */
+
+    &:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    }
+  }
 `;
 
 export const Image = styled.img`
@@ -25,6 +37,11 @@ export const Image = styled.img`
 
   ${CardContainer}:hover & {
     transform: scale(1.05);
+  }
+
+  /* 📱 Responsive cho mobile */
+  @media (max-width: 480px) {
+    height: 140px; /* thấp hơn một chút để vừa màn hình */
   }
 `;
 
@@ -37,5 +54,11 @@ export const Info = styled.div`
 
   ${CardContainer}:hover & {
     color: #111;
+  }
+
+  /* 📱 Responsive cho mobile */
+  @media (max-width: 480px) {
+    padding: 10px 12px;
+    font-size: 0.85rem;
   }
 `;

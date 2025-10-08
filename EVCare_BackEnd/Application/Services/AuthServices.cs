@@ -76,9 +76,13 @@ namespace Application.Services
         {
             var checkEmailExist = await _accountRepository.GetAccountByEmail(data.email);
             var checkPhoneExist = await _accountRepository.GetAccountByPhoneAsync(data.phone);
-            if (checkEmailExist != null || checkPhoneExist != null)
+            if (checkEmailExist != null)
             {
-                throw new Exception(Message.ACCOUNT_EXISTS);
+                throw new Exception(Message.EMAIL_EXISTS);
+            }
+            if (checkPhoneExist != null)
+            {
+                throw new Exception(Message.PHONE_EXISTS);
             }
             if (!Regex.IsMatch(data.email, RegexPartterns.EMAIL_PATTERN))
             {
@@ -139,7 +143,7 @@ namespace Application.Services
             var newCustomer = new Customer
             {
                 AccountId = account.accountId,
-                Rank = CustomerRankEnum.Regular,
+                Rank = CustomerRankEnum.REGULAR,
             };
             await _customerRepository.AddAsync(newCustomer);
         }

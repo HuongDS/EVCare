@@ -48,6 +48,11 @@ namespace Application.Services
             {
                 throw new Exception(Message.INVALID_PHONE);
             }
+            var checkAccountExist = await _accountRepository.GetAccountByPhoneAsync(data.phone);
+            if (checkAccountExist != null)
+            {
+                throw new Exception(Message.PHONE_EXISTS);
+            }
             account.First_Name = data.firstName;
             account.Last_Name = data.lastName;
             account.Phone = data.phone;

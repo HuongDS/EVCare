@@ -14,6 +14,7 @@ namespace Application.Interfaces
         public Task<string> CreatePaymentUrl(HttpContext context, InvoiceCreateModel model);
         Task<string> CreatePayOSUrl(InvoiceCreateModel model);
         Task HandleWebhookAsync(string raw, string? sig);
+        Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId);
         public Task PaymentCallback(IQueryCollection query);
         Task SendMailToPayAsync(string paymentUrl, InvoiceCreateModel model);
     }

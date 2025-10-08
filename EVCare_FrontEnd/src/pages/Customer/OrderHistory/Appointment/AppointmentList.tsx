@@ -9,7 +9,7 @@ import AppointmentHistoryCard from "./AppointmentHistoryCard";
 import { handleError } from "../../../../utils/errorHandler";
 
 export default function OrderList() {
-  const sortBy = useMemo(() => ["All", "Pending", "Confirmed", "InProgress", "Done", "Canceled"], []);
+  const sortBy = useMemo(() => ["Pending", "Confirmed", "InProgress", "Done", "Canceled"], []);
   const [listAppointment, setListAppointment] = useState<AppointmentViewDetailModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(sortBy[0]);
@@ -59,15 +59,11 @@ export default function OrderList() {
       setIsLoading(true);
       const response = await getCustomerAppointment();
       setListAppointment(response.data ?? []);
-      setFilteredList(response.data ?? []);
+      setFilteredList(response.data ? response.data.filter((a) => a.status === selectedCategory) : []);
       setIsLoading(false);
     };
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    console.log(filteredList);
-  }, [filteredList]);
+  }, [setFilteredList, selectedCategory]);
 
   return (
     <>

@@ -19,16 +19,23 @@ export const ERROR_MESSAGE = {
   DATE_AND_TIME_CAN_NOT_BE_EMPTY: "Please select a suitable day and time!",
   CAN_NOT_UPDATE_STATUS: "Can't update status. Please try again!",
   FAILED_TO_UPDATE_ACCOUNT: "Failed to update account profile!",
+  FAILED_TO_ADD_VEHICLE: "Failed to add vehicle!",
+  FAILED_TO_DELETE_VEHICLE: "Failed to delete vehicle!",
 };
 
 export const MSG_TITLE = {
   UPDATE_PROFILE: "Update Profile",
+  LOGIN: "Login",
+  ADD_VEHICLE: "Add Vehicle",
+  DELETE_VEHICLE: "Delete Vehicle",
 };
 
 export const SUCCESS_MESSAGE = {
   REGISTER_SUCCESS: "OTP verified! Account created.",
   LOGIN_SUCCESS: "Login Successfully!",
   UPDATE_ACCOUNT_SUCCESSFULLY: "Update Successfully ",
+  ADD_VEHICLE_SUCCESSFULLY: "Added Vehicle successfully!",
+  DELETE_VEHICLE_SUCCESS: "Delete vehicle successfully",
 };
 
 export const AUTH_FORM_MESSAGE = {

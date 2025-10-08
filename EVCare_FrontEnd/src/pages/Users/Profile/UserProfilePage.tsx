@@ -11,70 +11,31 @@ import { getAccountInformation, updateAccount } from "../../../services/accountS
 import { getCustomerId } from "../../../services/customerServices";
 import { getUser } from "../../../token/tokenStore";
 import { handleError } from "../../../utils/errorHandler";
-import { ERROR_MESSAGE, MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
-import { CustomerRankEnum } from "../../../models/enums";
-import NotificationComponent from "../../../components/NotificationComponent";
+import { ERROR_MESSAGE } from "../../../constants/messages/Message";
+import { CustomerRankEnum, RoleEnum } from "../../../models/enums";
 import type { AccountUpdateDto } from "../../../models/Accounts/AccountUpdateDto";
 import type { CustomerViewDto } from "../../../models/CustomerModels/CustomerViewDto";
 import type { AccountViewModel } from "../../../models/Accounts/accountViewModel";
-
-const initialUser: UserProfile = {
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@example.com",
-  phone: "+84 123 456 789",
-  rank: CustomerRankEnum.MEMBER,
-  totalSpending: 12450,
-};
-
-const initialVehicles: VehicleViewDto[] = [
-  {
-    id: 1,
-    categoryName: "Tesla Model 3",
-    licensePlate: "29A-12345",
-    image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&h=300&fit=crop",
-    cateId: 1,
-  },
-  {
-    id: 2,
-    categoryName: "BMW i4",
-    licensePlate: "30B-67890",
-    image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=400&h=300&fit=crop",
-    cateId: 3,
-  },
-  {
-    id: 2,
-    categoryName: "BMW i4",
-    licensePlate: "30B-67890",
-    image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=400&h=300&fit=crop",
-    cateId: 3,
-  },
-  {
-    id: 2,
-    categoryName: "BMW i4",
-    licensePlate: "30B-67890",
-    image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=400&h=300&fit=crop",
-    cateId: 3,
-  },
-  {
-    id: 2,
-    categoryName: "BMW i4",
-    licensePlate: "30B-67890",
-    image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=400&h=300&fit=crop",
-    cateId: 3,
-  },
-];
+import InvoiceSection from "./InvoiceSection";
+import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
+import { getInvoices } from "../../../services/invoicesService";
+import type { User } from "../../../models/AuthModel/authModel";
+import { createVehicle, deleteVehicle, getVehicleByCustomerId } from "../../../services/vehicleServicesApi";
+import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 function UserProfileComponent() {
-  const [user, setUser] = useState<UserProfile>(initialUser);
-  const [vehicles, setVehicles] = useState<VehicleViewDto[]>(initialVehicles);
+  const [vehicles, setVehicles] = useState<VehicleViewDto[]>([]);
   const profileTitle = useMemo(() => "Personal Information", []);
   const [profileData, setProfileData] = useState<AccountViewModel>();
   const [cusProfile, setCusProfile] = useState<CustomerViewDto>();
-  const [error, setError] = useState<string>("");
+  const [totalSpending, setTotalSpending] = useState<number>(0);
+  const [invoices, setInvoices] = useState<InvoiceViewModel[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSaveUser = async (updated: Pick<UserProfile, "firstName" | "lastName" | "phone">) => {
-    setUser((prev) => ({ ...prev, ...updated }));
+    setIsLoading(true);
     try {
       const data: AccountUpdateDto = {
         firstName: updated.firstName,
@@ -83,94 +44,145 @@ function UserProfileComponent() {
       };
       const response = await updateAccount(data);
       if (response == null) {
-        setError(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
       }
       setProfileData(response?.data);
     } catch (error) {
       handleError(error);
-      const message = error instanceof Error ? error.message : ERROR_MESSAGE.SOME_THING_WENT_WRONG;
-      setError(message);
+      throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleAddVehicle = (v: Omit<VehicleViewDto, "id">) => {
-    setVehicles((prev) => [...prev, { ...v, id: (prev.at(-1)?.id ?? 0) + 1 }]);
-    // TODO: call API add vehicle nếu cần
+  const handleAddVehicle = async (a: VehicleCreateDto) => {
+    setIsLoading(true);
+    try {
+      const response = await createVehicle(a);
+      if (response == null) {
+        throw new Error(ERROR_MESSAGE.FAILED_TO_ADD_VEHICLE);
+      }
+      const newVehicleId = response.data;
+      const v: VehicleViewDto = {
+        id: newVehicleId || 0,
+        cateId: a.categoryId,
+        licensePlate: a.licensePlate,
+        image: a.img,
+      };
+      setVehicles((prev) => [...prev, { ...v, id: (prev.at(-1)?.id ?? 0) + 1 }]);
+    } catch (error) {
+      handleError(error);
+      throw Error(error as string);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDeleteVehicle = (id: number) => {
-    setVehicles((prev) => prev.filter((v) => v.id !== id));
-    // TODO: call API delete vehicle nếu cần
+  const handleDeleteVehicle = async (id: number) => {
+    setIsLoading(true);
+    try {
+      const response = await deleteVehicle(id);
+      if (response == null) {
+        throw new Error(ERROR_MESSAGE.FAILED_TO_DELETE_VEHICLE);
+      }
+      setVehicles((prev) => prev.filter((v) => v.id !== id));
+    } catch (error) {
+      handleError(error);
+      throw Error(error as string);
+    }
+    setIsLoading(false);
   };
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response01 = await getAccountInformation();
         const user = getUser();
         if (user == null) {
-          setError(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
           throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         }
         const response02 = await getCustomerId(user?.accountId);
         if (user == null || response01 == null || response02 == null) {
-          setError(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
           throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         }
+        const response03 = await getInvoices();
+        if (response03 == null) {
+          throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+        }
+        const response04 = await getVehicleByCustomerId(response02.data?.id || 0);
+        if (response03 == null) {
+          throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+        }
+        setVehicles(response04?.data || []);
+        setUser(user);
+        setInvoices(response03?.data || []);
         setProfileData(response01?.data);
         setCusProfile(response02?.data);
+        setTotalSpending(response03?.data ? response03.data.reduce((acc, item) => acc + item.totalPrice, 0) : 0);
       } catch (error) {
         handleError(error);
-        const message = error instanceof Error ? error.message : ERROR_MESSAGE.SOME_THING_WENT_WRONG;
-        setError(message);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
   }, []);
 
   return (
-    <ContainerWrapper>
-      <div className="container">
-        <div className="header">
-          <HeaderBar />
-          <div className="logo">EVCare</div>
+    <>
+      {isLoading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "15px",
+          }}
+        >
+          <SpinnerComponent />
         </div>
-
-        <div className="profile-card">
-          <div className="profile-header">
-            <h1 className="profile-title">{profileTitle}</h1>
-            <RankBadge rank={cusProfile?.rank || CustomerRankEnum.REGULAR} />
-          </div>
-
-          <PersonalInfoForm
-            defaultValues={{
-              firstName: profileData?.first_Name || "",
-              lastName: profileData?.last_Name || "",
-              phone: profileData?.phone || "",
-              email: profileData?.email || "",
-            }}
-            onSave={handleSaveUser}
-          />
-
-          <SpendingSection amount={user.totalSpending} />
-        </div>
-
-        <div className="profile-card vehicles-section">
-          <VehiclesSection vehicles={vehicles} onAdd={handleAddVehicle} onDelete={handleDeleteVehicle} />
-        </div>
-      </div>
-
-      {error ? (
-        <NotificationComponent type="error" title={MSG_TITLE.UPDATE_PROFILE} msg={error} />
       ) : (
-        <NotificationComponent
-          type="success"
-          title={MSG_TITLE.UPDATE_PROFILE}
-          msg={SUCCESS_MESSAGE.UPDATE_ACCOUNT_SUCCESSFULLY}
-        />
+        <ContainerWrapper>
+          <div className="container">
+            <div className="header">
+              <HeaderBar />
+              <div className="logo">EVCare</div>
+            </div>
+
+            <div className="profile-card">
+              <div className="profile-header">
+                <h1 className="profile-title">{profileTitle}</h1>
+                <RankBadge rank={cusProfile?.rank || CustomerRankEnum.REGULAR} />
+              </div>
+
+              <PersonalInfoForm
+                defaultValues={{
+                  firstName: profileData?.first_Name || "",
+                  lastName: profileData?.last_Name || "",
+                  phone: profileData?.phone || "",
+                  email: profileData?.email || "",
+                }}
+                onSave={handleSaveUser}
+              />
+              {user?.role == RoleEnum.CUSTOMER ? <SpendingSection amount={totalSpending} /> : <></>}
+            </div>
+            {user?.role == RoleEnum.CUSTOMER ? (
+              <>
+                <div className="profile-card vehicles-section">
+                  <VehiclesSection vehicles={vehicles} onAdd={handleAddVehicle} onDelete={handleDeleteVehicle} />
+                </div>
+
+                <div className="profile-card invoices-section">
+                  <InvoiceSection invoices={invoices} />
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
+        </ContainerWrapper>
       )}
-    </ContainerWrapper>
+    </>
   );
 }
 

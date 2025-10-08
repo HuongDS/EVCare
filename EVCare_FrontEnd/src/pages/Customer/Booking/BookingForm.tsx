@@ -40,6 +40,7 @@ import SpinnerComponent from "../../../components/SpinnerComponent";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
 import { LICENSE_PLATE_REGEX } from "../../../constants/regexs/LicensePlateRegex";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
+import { LENGTH } from "../../../constants/Code/Constants";
 
 interface Props {
   show: boolean;
@@ -291,7 +292,29 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
             />
             <FormGroup>
               <Label>Image</Label>
-              <UploadImage handleFileSubmit={handleFileSubmit}></UploadImage>
+              <UploadImage
+                handleFileRemove={(url) => setUrls((prev) => prev.filter((item) => item != url))}
+                imgQuantity={LENGTH.IMAGES}
+                handleFileSubmit={handleFileSubmit}
+              ></UploadImage>
+              {urls.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", marginTop: "10px", gap: "10px" }}>
+                  {urls.map((url, index) => (
+                    <img
+                      key={index}
+                      src={url}
+                      alt={`Preview ${index}`}
+                      style={{
+                        width: "120px",
+                        height: "90px",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </FormGroup>
           </SubSection>
         </LeftBody>
