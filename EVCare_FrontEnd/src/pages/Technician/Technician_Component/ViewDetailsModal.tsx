@@ -12,6 +12,7 @@ import {
   SectionTitle,
   ListWrapper,
 } from "./Style/ViewDetailsModal.styled";
+import { formatDate } from "../../../utils/formatDate";
 
 interface Props {
   isOpen: boolean;
@@ -66,7 +67,7 @@ const ViewDetailsModal: React.FC<Props> = ({
                 </InfoItem>
                 <InfoItem>
                   <span className="label">Date:</span>{" "}
-                  {appointment.appointmentDate}
+                  {formatDate(appointment.appointmentDate)}
                 </InfoItem>
               </div>
             </InfoSection>

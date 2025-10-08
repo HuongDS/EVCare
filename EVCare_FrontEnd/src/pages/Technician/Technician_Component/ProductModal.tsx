@@ -1,12 +1,6 @@
+// ProductModal.tsx
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Modal,
-  Button as MuiButton,
-  Fade,
-  Backdrop,
-  IconButton,
-} from "@mui/material";
+import { Box, Modal, Fade, Backdrop, IconButton } from "@mui/material";
 import ImageSkeleton from "./ImageSkeleton";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 
@@ -19,6 +13,8 @@ import {
   QuantityControl,
   QuantityNumber,
 } from "./Style/ProductModal.styled";
+
+import ButtonAction from "../../../components/Button/ReviewButton";
 
 interface ProductModalProps {
   open: boolean;
@@ -96,15 +92,14 @@ export default function ProductModal({
                   <span>{(part?.price ?? 0).toLocaleString("vi-VN")} VNĐ</span>
                   <span>Stock: {part?.quantity ?? 0}</span>
                 </PriceQuantity>
-                <MuiButton
-                  variant="contained"
-                  color="success"
-                  onClick={handleAdd}
-                  disabled={!part}
-                  sx={{ minWidth: "120px" }}
-                >
-                  Add To Cart
-                </MuiButton>
+
+                {/* 👉 dùng ButtonAction thay cho MuiButton */}
+                <ButtonAction
+                  text="Add To Cart"
+                  color="white"
+                  backgroundColor={part ? "#00AD4E" : "#ccc"}
+                  action={handleAdd}
+                />
               </TopRow>
 
               <QuantityControl>

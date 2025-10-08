@@ -78,8 +78,8 @@ export default function Technician_General() {
 
   const sortName: TechnicianWorkingSessionEnum[] = [
     TechnicianWorkingSessionEnum.PENDING,
-    TechnicianWorkingSessionEnum.INPROGRESS,
     TechnicianWorkingSessionEnum.ADDING_PART,
+    TechnicianWorkingSessionEnum.INPROGRESS,
     TechnicianWorkingSessionEnum.CONFIRM,
     TechnicianWorkingSessionEnum.COMPLETED,
     TechnicianWorkingSessionEnum.CANCELLED,
