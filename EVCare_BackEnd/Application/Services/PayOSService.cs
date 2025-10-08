@@ -29,7 +29,7 @@ namespace Application.Services
         private string Cfg(string key) => _configuration[$"PayOS:{key}"] ?? "";
         public async Task<string> CreateCheckoutUrlAsync(InvoiceCreateModel model)
         {
-            var orderCode = model.OrderId;
+            var orderCode = long.Parse(Guid.NewGuid().ToString("N").Substring(0, 9));
             long amount = (long)decimal.Truncate(model.Total_Price);
 
             var returnUrl =  Cfg("ReturnUrl");
@@ -56,12 +56,23 @@ namespace Application.Services
             if (string.Equals(st, "SUCCESS", StringComparison.OrdinalIgnoreCase))
             {
                 invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
-                _invoiceRepository.UpdateAsync(invoice);
+                await _invoiceRepository.UpdateAsync(invoice);
             }
             else
             {
-                _invoiceRepository.DeleteAsync(invoice.Id);
+              
+               await  _invoiceRepository.DeleteAsync(invoice.Id);
             }
+        }
+
+        public async Task CancelPayOSOrder(int orderCode)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("x-client-id", Cfg("ClientId"));
+            client.DefaultRequestHeaders.Add("x-api-key", Cfg("ApiKey"));
+
+            var response = await client.DeleteAsync($"https://api-merchant.payos.vn/v2/payment-requests/{orderCode}");
+            var result = await response.Content.ReadAsStringAsync();
         }
     }
 }
