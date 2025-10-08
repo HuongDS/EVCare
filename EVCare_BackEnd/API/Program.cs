@@ -120,6 +120,8 @@ builder.Services.AddScoped<IPartService, PartService>();
 builder.Services.AddScoped<ITechnicianWorkingSessionService, TechnicianWorkingSessionService>();
 builder.Services.AddScoped<IPartCategoryService, PartCategoryService>();
 builder.Services.AddScoped<IReplenishmentPlanner, GeminiReplenishmentPlanner>();
+builder.Services.AddHttpClient<IPayOSGateWay, PayOSGateWay>();
+builder.Services.AddScoped<IPayOSService, PayOSService>();
 
 
 // AutoMapper
