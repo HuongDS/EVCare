@@ -27,7 +27,7 @@ namespace Application.Services
             _configuration = configuration;
         }
         private string Cfg(string key) => _configuration[$"PayOS:{key}"] ?? "";
-        public async Task<string> CreateCheckoutUrlAsync(InvoiceCreateModel model)
+        public async Task<(string, long)> CreateCheckoutUrlAsync(InvoiceCreateModel model)
         {
             var orderCode = long.Parse($"{model.OrderId}{DateTimeOffset.UtcNow.ToUnixTimeSeconds() % 10000}");
             long amount = (long)decimal.Truncate(model.Total_Price);
@@ -38,7 +38,8 @@ namespace Application.Services
             orderCode, amount, $"Thanh toán hóa đơn #{model.OrderId}",
             returnUrl, cancelUrl);
             if (!ok) throw new Exception($"PayOS create failed: {raw}");
-            return url ?? throw new Exception("PayOS missing checkoutUrl");
+            if(url==null) throw new Exception("PayOS create failed: url is null");
+            return (url, orderCode);
 
         }
 
@@ -49,8 +50,8 @@ namespace Application.Services
             string? oc = p?.data?.orderCode;     
             string? st = p?.data?.status;
             if (string.IsNullOrWhiteSpace(oc)) return;
-            var invoiceId = int.Parse(oc);  
-            var invoice = await _invoiceRepository.GetInvoiceById(invoiceId);
+            var orderCode = long.Parse(oc);  
+            var invoice = await _invoiceRepository.GetInvoiceByOrderCode(orderCode);
             
             invoice.Updated_At = DateTime.Now;
             if (string.Equals(st, "SUCCESS", StringComparison.OrdinalIgnoreCase))

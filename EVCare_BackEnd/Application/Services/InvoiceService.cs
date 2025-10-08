@@ -111,11 +111,12 @@ namespace Application.Services
         public async Task<string> CreatePayOSUrl(InvoiceCreateModel model)
         {
            
-            var url =  await _payOSService.CreateCheckoutUrlAsync(model);
+            var (url,orderCode) =  await _payOSService.CreateCheckoutUrlAsync(model);
 
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
+            invoice.OrderCode = orderCode;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
             await _invoiceRepository.AddAsync(invoice);
 
