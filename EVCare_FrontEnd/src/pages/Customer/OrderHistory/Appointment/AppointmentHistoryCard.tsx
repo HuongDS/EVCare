@@ -17,6 +17,9 @@ import dayjs from "dayjs";
 import { List } from "antd";
 import type { AppointmentViewDetailModel } from "../../../../models/AppointmentsModel/AppointmentViewDetailModel";
 import SpinnerComponent from "../../../../components/SpinnerComponent";
+import { ReviewWrapper } from "../../../../components/Review/Review.styled";
+import ReviewButton from "../../../../components/Review/ReviewButton";
+import { useState } from "react";
 
 interface props {
   data: AppointmentViewDetailModel;
@@ -31,6 +34,12 @@ export default function AppointmentHistoryCard({
   appointmentId,
   loadingModalDetail,
 }: props) {
+  const [isOpenReviewForm, setIsOpenReviewForm] = useState(false);
+
+  const onOpen = () => {
+    setIsOpenReviewForm(true);
+  };
+
   return (
     <Container>
       <IDWrapper>
@@ -41,8 +50,7 @@ export default function AppointmentHistoryCard({
       <GeneralStyled>
         <DateStyled>
           <h5>
-            Date:{" "}
-            <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
+            Date: <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
           </h5>
           <div>
             <StatusTag status={data.status} />
@@ -67,12 +75,19 @@ export default function AppointmentHistoryCard({
           {loadingModalDetail === data?.id ? (
             <SpinnerComponent />
           ) : (
-            <ButtonAction
-              text="View Detail"
-              color="white"
-              backgroundColor="#00ad4e"
-              action={() => onViewAppointmentDetail(appointmentId)}
-            />
+            <>
+              <ButtonAction
+                text="View Detail"
+                color="white"
+                backgroundColor="#00ad4e"
+                action={() => onViewAppointmentDetail(appointmentId)}
+              />
+              {isOpenReviewForm && (
+                <ReviewWrapper>
+                  <ReviewButton onOpen={onOpen} />
+                </ReviewWrapper>
+              )}
+            </>
           )}
         </ButtonStyle>
       </ContentWrapper>
