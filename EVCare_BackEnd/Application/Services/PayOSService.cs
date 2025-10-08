@@ -48,8 +48,8 @@ namespace Application.Services
             dynamic p = JsonConvert.DeserializeObject(rawBody);
             string? oc = p?.data?.orderCode;     
             string? st = p?.data?.status;
-            if (string.IsNullOrWhiteSpace(oc) || !oc.StartsWith("INV-")) return;
-            if (!int.TryParse(oc[4..], out var invoiceId)) return;
+            if (string.IsNullOrWhiteSpace(oc)) return;
+            var invoiceId = int.Parse(oc);  
             var invoice = await _invoiceRepository.GetInvoiceById(invoiceId);
             
             invoice.Updated_At = DateTime.Now;
