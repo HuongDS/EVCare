@@ -120,6 +120,7 @@ namespace Application.Services
         public async Task HandleWebhookAsync(string raw, string? sig)
         {
             await _payOSService.HandleWebhookAsync(raw, sig);
+        }
 
         public async Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId)
         {
