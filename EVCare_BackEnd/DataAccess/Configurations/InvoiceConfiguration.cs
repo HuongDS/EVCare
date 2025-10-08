@@ -22,6 +22,7 @@ namespace DataAccess.Configuration
                 .WithOne(Order => Order.Invoice)
                 .HasForeignKey<Invoice>(i => i.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
+            builder.HasIndex(x => x.OrderCode).IsUnique();
         }
     }
 }

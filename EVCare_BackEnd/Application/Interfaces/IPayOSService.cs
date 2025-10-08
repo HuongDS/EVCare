@@ -9,7 +9,7 @@ namespace Application.Interfaces
 {
     public interface IPayOSService
     {
-        public Task<string> CreateCheckoutUrlAsync(InvoiceCreateModel model);
+        public Task<(string,long)> CreateCheckoutUrlAsync(InvoiceCreateModel model);
         public Task HandleWebhookAsync(string rawBody, string? headerSignature);
         public Task CancelPayOSOrder(int orderCode);
     }

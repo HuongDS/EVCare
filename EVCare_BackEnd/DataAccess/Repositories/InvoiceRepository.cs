@@ -74,5 +74,10 @@ namespace DataAccess.Repositories
                 }).ToListAsync();
             return invoices;
         }
+
+        public async Task<Invoice> GetInvoiceByOrderCode(long orderCode)
+        {
+           return await _dbContext.Invoices.FirstAsync(i => i.OrderCode == orderCode);
+        }
     }
 }

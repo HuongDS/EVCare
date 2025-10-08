@@ -15,5 +15,6 @@ namespace DataAccess.Interfaces
         public Task<int> DeleteAsync(int id);
         public Task<int> UpdateAsync(Invoice entity);
         Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId);
+        Task<Invoice> GetInvoiceByOrderCode(long orderCode);
     }
 }
