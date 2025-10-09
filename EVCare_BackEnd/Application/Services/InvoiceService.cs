@@ -144,7 +144,7 @@ namespace Application.Services
                     Console.WriteLine("❌ Signature verification failed");
                     return;
                 }
-
+                Console.WriteLine("❌ Signature verification success");
                 dynamic p = JsonConvert.DeserializeObject(raw);
                 string? oc = p?.data?.orderCode?.ToString();
                 string? code = p?.data?.code?.ToString();
