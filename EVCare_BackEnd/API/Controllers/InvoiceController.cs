@@ -114,15 +114,26 @@ namespace API.Controllers
         [HttpPost("webhook")]
         public async Task<IActionResult> Webhook()
         {
-            using var sr = new StreamReader(Request.Body, Encoding.UTF8);
-            var raw = await sr.ReadToEndAsync();
+            try
+            {
+                using var sr = new StreamReader(Request.Body, Encoding.UTF8);
+                var raw = await sr.ReadToEndAsync();
 
-            string? sig = Request.Headers["x-payos-signature"].FirstOrDefault()
-                       ?? Request.Headers["x-signature"].FirstOrDefault()
-                       ?? Request.Headers["x-checksum"].FirstOrDefault();
+                string? sig = Request.Headers["x-payos-signature"].FirstOrDefault()
+                           ?? Request.Headers["x-signature"].FirstOrDefault()
+                           ?? Request.Headers["x-checksum"].FirstOrDefault();
 
-            await _invoiceService.HandleWebhookAsync(raw, sig);
-            return Ok();
+                await _invoiceService.HandleWebhookAsync(raw, sig);
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Error");
+
+            }
+           
          }
 
         [HttpGet("invoices")]
