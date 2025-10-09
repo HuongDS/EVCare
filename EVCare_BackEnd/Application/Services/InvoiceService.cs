@@ -128,7 +128,7 @@ namespace Application.Services
             invoice.CustomerId = customerId;
             invoice.OrderCode = orderCode;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
-            //await _invoiceRepository.AddAsync(invoice);
+            await _invoiceRepository.AddAsync(invoice);
             _db.StringSet(orderCode.ToString(), 
                 System.Text.Json.JsonSerializer.Serialize(invoice)
                 , TimeSpan.FromMinutes(10));
