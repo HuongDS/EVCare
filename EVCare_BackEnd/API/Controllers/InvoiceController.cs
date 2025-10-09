@@ -190,15 +190,47 @@ namespace API.Controllers
         [HttpDelete("order/{orderId}")]
         [Authorize(Roles = "Staff")]
         public async Task<IActionResult> CancelPayOSOrder(int orderId)
+
+        [HttpGet("get-recently-invoices")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetRecentInVoices([FromQuery] InvoiceQueryDto model)
         {
             try
             {
                 await _invoiceService.CancelPayOSOrder(orderId);
                 return Ok(new ResponseDto<string>
+                var invoices = await _invoiceService.GetRecentInVoices(model);
+                return Ok(new ResponseDto<PageResultDto<InvoiceViewModel>>
                 {
                     statusCode = HttpStatus.OK,
                     message = "Cancel PayOS order successfully",
                     data = "Cancel PayOS order successfully"
+                    statusCode = 200,
+                    message = Message.GET_RECENT_INVOICES_SUCCESS,
+                    data = invoices
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpGet("get-revenue/{year}/{month}")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetRevenue(int year, int month)
+        {
+            try
+            {
+                var revenue = await _invoiceService.GetRevenue(year, month);
+                return Ok(new ResponseDto<decimal>
+                {
+                    statusCode = 200,
+                    message = Message.GET_REVENUE_SUCCESS,
+                    data = revenue
                 });
             }
             catch (Exception ex)
