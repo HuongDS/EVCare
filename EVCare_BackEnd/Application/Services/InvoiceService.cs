@@ -9,6 +9,7 @@ using System.Web;
 using Application.Interfaces;
 using AutoMapper;
 using DataAccess.Dtos.Invoice;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
 using DataAccess.Enums;
 using DataAccess.Interfaces;
@@ -197,6 +198,14 @@ namespace Application.Services
         {
             return await _invoiceRepository.GetInvoicesByCustomerId(customerId);
 
+        }
+        public async Task<decimal> GetRevenue(int year, int month)
+        {
+            return await _invoiceRepository.GetRevenue(year, month);
+        }
+        public async Task<PageResultDto<InvoiceViewModel>> GetRecentInVoices(InvoiceQueryDto model)
+        {
+            return await _invoiceRepository.GetRecentInVoices(model);
         }
 
         public async Task CancelPayOSOrder(int orderId)

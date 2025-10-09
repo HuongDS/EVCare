@@ -376,5 +376,30 @@ namespace DataAccess.Repositories
                 && a.Status != Enums.AppointmentStatusEnum.Canceled
                 && a.Status != Enums.AppointmentStatusEnum.Pending);
         }
+
+        public async Task<int> CountCustomersInMonth(int year, int month)
+        {
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1);
+            return await _dbContext
+            .Appointments
+            .Where(a => a.Status != AppointmentStatusEnum.Pending 
+            && a.Status != AppointmentStatusEnum.Canceled
+            && a.Appointment_Date >= startDate 
+            && a.Appointment_Date <= endDate)
+            .GroupBy(a => a.CustomerId)
+            .CountAsync();
+        }
+
+        public async Task<int> CountAppointmentsInMonthWithStatus(int year, int month, AppointmentStatusEnum status)
+        {
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1);
+            return await _dbContext
+                .Appointments
+                .CountAsync(a => a.Appointment_Date >= startDate
+                && a.Appointment_Date <= endDate
+                && a.Status == status);
+        }
     }
 }

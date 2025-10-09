@@ -29,6 +29,7 @@ export const MSG_TITLE = {
     LOGIN: "Login",
     ADD_VEHICLE: "Add Vehicle",
     DELETE_VEHICLE: "Delete Vehicle",
+    ADMIN: "Admin",
 };
 
 export const SUCCESS_MESSAGE = {

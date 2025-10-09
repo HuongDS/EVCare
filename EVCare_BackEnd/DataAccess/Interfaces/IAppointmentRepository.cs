@@ -36,5 +36,7 @@ namespace DataAccess.Interfaces
         Task<bool> CheckAllReadyForPickup(int vehicleId);
         Task<IEnumerable<int>> GetAppointmentReadyForPickUpByVehicleId(int vehicleId);
         Task<int> CountAppointmentsInMonth(int year, int month);
+        Task<int> CountCustomersInMonth(int year, int month);
+        Task<int> CountAppointmentsInMonthWithStatus(int year, int month, AppointmentStatusEnum status);
     }
 }

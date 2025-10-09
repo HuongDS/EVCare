@@ -265,5 +265,13 @@ namespace Application.Services
         {
             return await _appointmentRepository.CountAppointmentsInMonth(year, month);
         }
+        public async Task<int> CountCustomersInMonths(int year, int month)
+        {
+            return await _appointmentRepository.CountCustomersInMonth(year, month);
+        }
+        public async Task<int> CountAppointmentsInMonthsWithStatus(int year, int month, AppointmentStatusEnum status)
+        {
+            return await _appointmentRepository.CountAppointmentsInMonthWithStatus(year, month, status);
+        }
     }
 }
