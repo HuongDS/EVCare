@@ -42,7 +42,7 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
           text="Confirm"
           color="#fff"
           backgroundColor="#00AD4E"
-          action={() => onAction(TechnicianWorkingSessionEnum.INPROGRESS)}
+          action={() => onAction(TechnicianWorkingSessionEnum.ADDING_PART)}
         />
       )}
 
@@ -53,6 +53,12 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
             color="#fff"
             backgroundColor="#00AD4E"
             action={() => onAction(TechnicianWorkingSessionEnum.CONFIRM)}
+          />
+          <ButtonAction
+            text="Back"
+            color="#fff"
+            backgroundColor="#FFA500"
+            action={() => onAction(TechnicianWorkingSessionEnum.ADDING_PART)}
           />
         </>
       )}
