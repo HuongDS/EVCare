@@ -10,6 +10,7 @@ using Application.Interfaces;
 using AutoMapper;
 using DataAccess.Dtos.Invoice;
 using DataAccess.Entities;
+using DataAccess.Enums;
 using DataAccess.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -138,38 +139,67 @@ namespace Application.Services
         {
             try
             {
-                if (!_gw.Verify(raw, sig)) return;
+                if (!_gw.Verify(raw, sig))
+                {
+                    Console.WriteLine("❌ Signature verification failed");
+                    return;
+                }
+
                 dynamic p = JsonConvert.DeserializeObject(raw);
                 string? oc = p?.data?.orderCode?.ToString();
                 string? code = p?.data?.code?.ToString();
                 string? desc = p?.data?.desc?.ToString();
 
-                if (string.IsNullOrWhiteSpace(oc)) return;
+                if (string.IsNullOrWhiteSpace(oc))
+                {
+                    Console.WriteLine("⚠️ Missing orderCode in webhook");
+                    return;
+                }
 
                 var orderCode = long.Parse(oc);
                 var invoiceJson = await _db.StringGetAsync(orderCode.ToString());
-                if (!invoiceJson.HasValue) return;
+                if (!invoiceJson.HasValue)
+                {
+                    Console.WriteLine($"⚠️ Redis key {orderCode} not found or expired");
+                    return;
+                }
 
                 var invoice = System.Text.Json.JsonSerializer.Deserialize<Invoice>(invoiceJson!);
-                if (invoice == null) return;
+                if (invoice == null)
+                {
+                    Console.WriteLine("⚠️ Invoice deserialize failed");
+                    return;
+                }
 
                 if (code == "00" || string.Equals(desc, "success", StringComparison.OrdinalIgnoreCase))
                 {
                     invoice.Id = 0;
                     invoice.Customer = null;
                     invoice.Order = null;
-                    invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
-                    await _db.KeyDeleteAsync(orderCode.ToString());
-                    await _invoiceRepository.AddAsync(invoice);
-                   
+                    invoice.Status = PaymentStatusEnum.Completed;
+                    invoice.Updated_At = DateTime.Now;
+
+                    try
+                    {
+                        await _invoiceRepository.AddAsync(invoice);
+                        await _db.KeyDeleteAsync(orderCode.ToString());
+                        Console.WriteLine($"✅ Invoice inserted: orderCode={orderCode}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"❌ EF Insert error: {ex}");
+                    }
                 }
-
+                else
+                {
+                    Console.WriteLine($"⚠️ Payment failed: code={code}, desc={desc}");
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                Console.WriteLine($"❌ Webhook outer error: {ex}");
+                throw; 
             }
-
         }
 
         public async Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId)
