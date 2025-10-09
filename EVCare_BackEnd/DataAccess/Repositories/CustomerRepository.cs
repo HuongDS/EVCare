@@ -27,5 +27,7 @@ namespace DataAccess.Repositories
                 rank = x.Rank,
             }).FirstOrDefaultAsync();
         }
+
+
     }
 }
