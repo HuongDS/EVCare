@@ -19,17 +19,23 @@ namespace Application.Services
         private readonly IPayOSGateWay _gw;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-        public PayOSService(IInvoiceRepository invoiceRepository, IPayOSGateWay gw, IConfiguration configuration,IMapper mapper)
+        private readonly IAppointmentRepository _appointmentRepository;
+        public PayOSService(
+            IInvoiceRepository invoiceRepository, IPayOSGateWay gw, IConfiguration configuration,
+            IMapper mapper
+            ,IAppointmentRepository appointmentRepository
+            )
         {
             _invoiceRepository = invoiceRepository;
             _gw = gw;
             _mapper = mapper;
             _configuration = configuration;
+            _appointmentRepository = appointmentRepository;
         }
         private string Cfg(string key) => _configuration[$"PayOS:{key}"] ?? "";
-        public async Task<string> CreateCheckoutUrlAsync(InvoiceCreateModel model)
+        public async Task<(string, long)> CreateCheckoutUrlAsync(InvoiceCreateModel model)
         {
-            var orderCode = model.OrderId;
+            var orderCode = long.Parse($"{model.OrderId}{DateTimeOffset.UtcNow.ToUnixTimeSeconds() % 10000}");
             long amount = (long)decimal.Truncate(model.Total_Price);
 
             var returnUrl =  Cfg("ReturnUrl");
@@ -38,7 +44,8 @@ namespace Application.Services
             orderCode, amount, $"Thanh toán hóa đơn #{model.OrderId}",
             returnUrl, cancelUrl);
             if (!ok) throw new Exception($"PayOS create failed: {raw}");
-            return url ?? throw new Exception("PayOS missing checkoutUrl");
+            if(url==null) throw new Exception("PayOS create failed: url is null");
+            return (url, orderCode);
 
         }
 
@@ -47,21 +54,20 @@ namespace Application.Services
             if (!_gw.Verify(rawBody, headerSignature)) return;
             dynamic p = JsonConvert.DeserializeObject(rawBody);
             string? oc = p?.data?.orderCode;     
-            string? st = p?.data?.status;
+            string? st = p?.data?.desc;
             if (string.IsNullOrWhiteSpace(oc)) return;
-            var invoiceId = int.Parse(oc);  
-            var invoice = await _invoiceRepository.GetInvoiceById(invoiceId);
+            var orderCode = long.Parse(oc);  
             
-            invoice.Updated_At = DateTime.Now;
-            if (string.Equals(st, "SUCCESS", StringComparison.OrdinalIgnoreCase))
-            {
-                invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
-                _invoiceRepository.UpdateAsync(invoice);
-            }
-            else
-            {
-                _invoiceRepository.DeleteAsync(invoice.Id);
-            }
+        }
+
+        public async Task CancelPayOSOrder(int orderCode)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("x-client-id", Cfg("ClientId"));
+            client.DefaultRequestHeaders.Add("x-api-key", Cfg("ApiKey"));
+
+            var response = await client.DeleteAsync($"https://api-merchant.payos.vn/v2/payment-requests/{orderCode}");
+            var result = await response.Content.ReadAsStringAsync();
         }
     }
 }

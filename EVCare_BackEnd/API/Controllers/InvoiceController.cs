@@ -115,16 +115,27 @@ namespace API.Controllers
         [HttpPost("webhook")]
         public async Task<IActionResult> Webhook()
         {
-            using var sr = new StreamReader(Request.Body, Encoding.UTF8);
-            var raw = await sr.ReadToEndAsync();
+            try
+            {
+                using var sr = new StreamReader(Request.Body, Encoding.UTF8);
+                var raw = await sr.ReadToEndAsync();
 
-            string? sig = Request.Headers["x-payos-signature"].FirstOrDefault()
-                       ?? Request.Headers["x-signature"].FirstOrDefault()
-                       ?? Request.Headers["x-checksum"].FirstOrDefault();
+                string? sig = Request.Headers["x-payos-signature"].FirstOrDefault()
+                           ?? Request.Headers["x-signature"].FirstOrDefault()
+                           ?? Request.Headers["x-checksum"].FirstOrDefault();
 
-            await _invoiceService.HandleWebhookAsync(raw, sig);
-            return Ok();
-        }
+                await _invoiceService.HandleWebhookAsync(raw, sig);
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Error");
+
+            }
+           
+         }
 
         [HttpGet("invoices")]
         [Authorize(Roles = "Customer")]
@@ -176,15 +187,24 @@ namespace API.Controllers
 
         }
 
+        [HttpDelete("order/{orderId}")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> CancelPayOSOrder(int orderId)
+
         [HttpGet("get-recently-invoices")]
         [Authorize(Roles = "Staff, Admin")]
         public async Task<IActionResult> GetRecentInVoices([FromQuery] InvoiceQueryDto model)
         {
             try
             {
+                await _invoiceService.CancelPayOSOrder(orderId);
+                return Ok(new ResponseDto<string>
                 var invoices = await _invoiceService.GetRecentInVoices(model);
                 return Ok(new ResponseDto<PageResultDto<InvoiceViewModel>>
                 {
+                    statusCode = HttpStatus.OK,
+                    message = "Cancel PayOS order successfully",
+                    data = "Cancel PayOS order successfully"
                     statusCode = 200,
                     message = Message.GET_RECENT_INVOICES_SUCCESS,
                     data = invoices
@@ -222,5 +242,6 @@ namespace API.Controllers
                 });
             }
         }
+
     }
 }
