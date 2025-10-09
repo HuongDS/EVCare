@@ -129,7 +129,7 @@ namespace Application.Services
             invoice.OrderCode = orderCode;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
          //   await _invoiceRepository.AddAsync(invoice);
-            _db.StringSet("11111", 
+           await  _db.StringSetAsync(orderCode.ToString(), 
                 System.Text.Json.JsonSerializer.Serialize(invoice)
                 , TimeSpan.FromMinutes(10));
             return url;
@@ -144,7 +144,7 @@ namespace Application.Services
                 string? st = p?.data?.desc;
                 if (string.IsNullOrWhiteSpace(oc)) return;
                 var orderCode = long.Parse(oc);
-                var invoiceJson = await _db.StringGetAsync("11111");
+                var invoiceJson = await _db.StringGetAsync(orderCode.ToString());
                 if (!invoiceJson.HasValue) return;
                 var invoice = System.Text.Json.JsonSerializer.Deserialize<Invoice>(invoiceJson!);
                 if (invoice == null) return;
