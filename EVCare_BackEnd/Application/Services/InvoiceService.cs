@@ -35,7 +35,7 @@ namespace Application.Services
 
         public InvoiceService(IVnPayService vnPayService, IMapper mapper,
             IInvoiceRepository invoiceRepository
-            , IOrderRepository orderRepository,
+            ,IOrderRepository orderRepository,
             INotificationServices notificationServices,
             IAppointmentService appointmentService,
             IServiceCenterService serviceCenterService,
@@ -128,6 +128,7 @@ namespace Application.Services
             invoice.CustomerId = customerId;
             invoice.OrderCode = orderCode;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
+            await _invoiceRepository.AddAsync(invoice);
             _db.StringSet(orderCode.ToString(), 
                 System.Text.Json.JsonSerializer.Serialize(invoice)
                 , TimeSpan.FromMinutes(10));
@@ -135,22 +136,31 @@ namespace Application.Services
         }
         public async Task HandleWebhookAsync(string raw, string? sig)
         {
-            if (!_gw.Verify(raw, sig)) return;
-            dynamic p = JsonConvert.DeserializeObject(sig);
-            string? oc = p?.data?.orderCode;
-            string? st = p?.data?.desc;
-            if (string.IsNullOrWhiteSpace(oc)) return;
-            var orderCode = long.Parse(oc);
-            var invoiceJson = _db.StringGet(orderCode.ToString());
-            if (!invoiceJson.HasValue) return;
-            var invoice = System.Text.Json.JsonSerializer.Deserialize<Invoice>(invoiceJson!);
-            if (invoice == null) return;
-            if(string.Equals(st,"success",StringComparison.OrdinalIgnoreCase))
+            try
             {
-                invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
-                await _invoiceRepository.AddAsync(invoice);
-                _db.KeyDelete(orderCode.ToString());
+                if (!_gw.Verify(raw, sig)) return;
+                dynamic p = JsonConvert.DeserializeObject(sig);
+                string? oc = p?.data?.orderCode;
+                string? st = p?.data?.desc;
+                if (string.IsNullOrWhiteSpace(oc)) return;
+                var orderCode = long.Parse(oc);
+                var invoiceJson = _db.StringGet(orderCode.ToString());
+                if (!invoiceJson.HasValue) return;
+                var invoice = System.Text.Json.JsonSerializer.Deserialize<Invoice>(invoiceJson!);
+                if (invoice == null) return;
+                if (string.Equals(st, "success", StringComparison.OrdinalIgnoreCase))
+                {
+                    invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+                    await _invoiceRepository.AddAsync(invoice);
+                    _db.KeyDelete(orderCode.ToString());
+                }
+
             }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
         }
 
         public async Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId)
