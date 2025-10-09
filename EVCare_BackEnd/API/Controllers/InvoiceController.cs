@@ -175,29 +175,7 @@ namespace API.Controllers
             }
 
         }
-        [HttpGet("get-revenue/{year}/{month}")]
-        [Authorize(Roles = "Staff, Admin")]
-        public async Task<IActionResult> GetRevenue(int year, int month)
-        {
-            try
-            {
-                var revenue = await _invoiceService.GetRevenue(year, month);
-                return Ok(new ResponseDto<decimal>
-                {
-                    statusCode = 200,
-                    message = Message.GET_REVENUE_SUCCESS,
-                    data = revenue
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new ResponseDto<object>
-                {
-                    statusCode = 400,
-                    message = ex.Message
-                });
-            }
-        }
+
         [HttpGet("get-recently-invoices")]
         [Authorize(Roles = "Staff, Admin")]
         public async Task<IActionResult> GetRecentInVoices([FromQuery] InvoiceQueryDto model)
@@ -210,6 +188,29 @@ namespace API.Controllers
                     statusCode = 200,
                     message = Message.GET_RECENT_INVOICES_SUCCESS,
                     data = invoices
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpGet("get-revenue/{year}/{month}")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetRevenue(int year, int month)
+        {
+            try
+            {
+                var revenue = await _invoiceService.GetRevenue(year, month);
+                return Ok(new ResponseDto<decimal>
+                {
+                    statusCode = 200,
+                    message = Message.GET_REVENUE_SUCCESS,
+                    data = revenue
                 });
             }
             catch (Exception ex)
