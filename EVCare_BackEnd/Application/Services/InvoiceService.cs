@@ -140,20 +140,25 @@ namespace Application.Services
             {
                 if (!_gw.Verify(raw, sig)) return;
                 dynamic p = JsonConvert.DeserializeObject(raw);
-                string? oc = p?.data?.orderCode;
-                string? st = p?.data?.desc;
+                string? oc = p?.data?.orderCode?.ToString();
+                string? code = p?.data?.code?.ToString();
+                string? desc = p?.data?.desc?.ToString();
+
                 if (string.IsNullOrWhiteSpace(oc)) return;
+
                 var orderCode = long.Parse(oc);
                 var invoiceJson = await _db.StringGetAsync(orderCode.ToString());
                 if (!invoiceJson.HasValue) return;
+
                 var invoice = System.Text.Json.JsonSerializer.Deserialize<Invoice>(invoiceJson!);
                 if (invoice == null) return;
-               
-                if (string.Equals(st, "success", StringComparison.OrdinalIgnoreCase))
+
+                if (code == "00" || string.Equals(desc, "success", StringComparison.OrdinalIgnoreCase))
                 {
                     invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
-                    await _invoiceRepository.AddAsync(invoice);
                     await _db.KeyDeleteAsync(orderCode.ToString());
+                    await _invoiceRepository.AddAsync(invoice);
+                   
                 }
 
             }
