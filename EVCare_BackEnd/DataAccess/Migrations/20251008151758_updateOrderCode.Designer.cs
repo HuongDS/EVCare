@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251008151758_updateOrderCode")]
+    partial class updateOrderCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,6 +357,9 @@ namespace DataAccess.Migrations
                     b.Property<string>("Avatar")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("BaseSalary")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("CCCD")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -367,6 +373,9 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("rate")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId")
@@ -379,24 +388,29 @@ namespace DataAccess.Migrations
                         {
                             Id = 1,
                             AccountId = 1,
+                            BaseSalary = 12000000m,
                             CCCD = "079123456789",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 0,
-                            Updated_At = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Updated_At = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            rate = 5
                         },
                         new
                         {
                             Id = 2,
                             AccountId = 2,
+                            BaseSalary = 10000000m,
                             CCCD = "079987654321",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 0,
-                            Updated_At = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Updated_At = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            rate = 4
                         },
                         new
                         {
                             Id = 3,
                             AccountId = 4,
+                            BaseSalary = 15000000m,
                             CCCD = "079555666777",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 0,
@@ -896,15 +910,72 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<int>("Rating")
+                    b.Property<DateTime>("Updated_At")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.ReviewEmployee", b =>
+                {
+                    b.Property<int>("ReviewId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Create_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("Rates")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReviewId", "EmployeeId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("ReviewEmployees");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Salary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Bonus")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Create_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DayWork")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppointmentId")
-                        .IsUnique();
+                    b.HasIndex("EmployeeId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Salaries");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Service", b =>
@@ -1507,12 +1578,42 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.Review", b =>
                 {
                     b.HasOne("DataAccess.Entities.Appointment", "Appointment")
-                        .WithOne("Reviews")
-                        .HasForeignKey("DataAccess.Entities.Review", "AppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany("Reviews")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Appointment");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.ReviewEmployee", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Employee", "Employee")
+                        .WithMany("ReviewEmployees")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccess.Entities.Review", "Review")
+                        .WithMany("ReviewEmployees")
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Review");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Salary", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Employee", "Employee")
+                        .WithMany("Salaries")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
@@ -1610,8 +1711,7 @@ namespace DataAccess.Migrations
 
                     b.Navigation("Order");
 
-                    b.Navigation("Reviews")
-                        .IsRequired();
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
@@ -1628,6 +1728,10 @@ namespace DataAccess.Migrations
                     b.Navigation("Applications");
 
                     b.Navigation("Appointments");
+
+                    b.Navigation("ReviewEmployees");
+
+                    b.Navigation("Salaries");
 
                     b.Navigation("Technician");
                 });
@@ -1649,6 +1753,11 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.PartCategory", b =>
                 {
                     b.Navigation("Parts");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Review", b =>
+                {
+                    b.Navigation("ReviewEmployees");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Service", b =>
