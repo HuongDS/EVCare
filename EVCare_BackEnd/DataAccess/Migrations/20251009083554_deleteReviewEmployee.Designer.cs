@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251009083554_deleteReviewEmployee")]
+    partial class deleteReviewEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -901,10 +904,42 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppointmentId")
-                        .IsUnique();
+                    b.HasIndex("AppointmentId");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Salary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Bonus")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Create_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DayWork")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Salaries");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Service", b =>
@@ -1507,12 +1542,23 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.Review", b =>
                 {
                     b.HasOne("DataAccess.Entities.Appointment", "Appointment")
-                        .WithOne("Reviews")
-                        .HasForeignKey("DataAccess.Entities.Review", "AppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany("Reviews")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Appointment");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Salary", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Employee", "Employee")
+                        .WithMany("Salaries")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
@@ -1610,8 +1656,7 @@ namespace DataAccess.Migrations
 
                     b.Navigation("Order");
 
-                    b.Navigation("Reviews")
-                        .IsRequired();
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
@@ -1628,6 +1673,8 @@ namespace DataAccess.Migrations
                     b.Navigation("Applications");
 
                     b.Navigation("Appointments");
+
+                    b.Navigation("Salaries");
 
                     b.Navigation("Technician");
                 });

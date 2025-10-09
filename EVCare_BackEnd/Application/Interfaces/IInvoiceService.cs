@@ -20,5 +20,6 @@ namespace Application.Interfaces
         Task SendMailToPayAsync(string paymentUrl, InvoiceCreateModel model);
         Task<decimal> GetRevenue(int year, int month);
         Task<PageResultDto<InvoiceViewModel>> GetRecentInVoices(InvoiceQueryDto model);
+        Task CancelPayOSOrder(int orderId);
     }
 }
