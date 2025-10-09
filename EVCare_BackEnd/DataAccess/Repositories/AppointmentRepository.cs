@@ -365,5 +365,16 @@ namespace DataAccess.Repositories
                 .Select(x => x.Id)
                 .ToListAsync();
         }
+        public async Task<int> CountAppointmentsInMonth(int year, int month)
+        {
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1);
+            return await _dbContext
+                .Appointments
+                .CountAsync(a => a.Appointment_Date >= startDate
+                && a.Appointment_Date <= endDate
+                && a.Status != Enums.AppointmentStatusEnum.Canceled
+                && a.Status != Enums.AppointmentStatusEnum.Pending);
+        }
     }
 }

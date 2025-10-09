@@ -29,6 +29,7 @@ namespace Application.Services
                 if (ok == true) throw new Exception("Licese Plate has exits");
                 var vehicle = _mapper.Map<Vehicle>(model);
                 vehicle.CustomerId = customerId;
+                vehicle.Deleted_At = DateTime.MinValue;
                 var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
                 return createdVehicle.Id;
             }
