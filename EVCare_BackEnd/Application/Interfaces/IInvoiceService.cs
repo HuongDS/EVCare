@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Invoice;
+using DataAccess.Dtos.Pagination;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Interfaces
@@ -17,6 +18,8 @@ namespace Application.Interfaces
         Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId);
         public Task PaymentCallback(IQueryCollection query);
         Task SendMailToPayAsync(string paymentUrl, InvoiceCreateModel model);
+        Task<decimal> GetRevenue(int year, int month);
+        Task<PageResultDto<InvoiceViewModel>> GetRecentInVoices(InvoiceQueryDto model);
         Task CancelPayOSOrder(int orderId);
     }
 }

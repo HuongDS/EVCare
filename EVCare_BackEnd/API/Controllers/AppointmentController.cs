@@ -501,8 +501,8 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("count-appointments-in-month")]
-        [Authorize(Roles = "Admin")]
+        [HttpGet("count-appointments-in-month/{year}/{month}")]
+        [Authorize(Roles = "Admin, Staff")]
         public async Task<IActionResult> CountAppointmentsInMonth(int year, int month)
         {
             return Ok(new ResponseDto<int>
@@ -510,6 +510,29 @@ namespace API.Controllers
                 statusCode = HttpStatus.OK,
                 message = Message.APPOINTMENT_GET_SUCCESS,
                 data = await _appointmentService.CountAppointmentsInMonths(year, month)
+            });
+        }
+        [HttpGet("count-customers-in-month/{year}/{month}")]
+        [Authorize(Roles = "Admin, Staff")]
+        public async Task<IActionResult> CountCustomersInMonth(int year, int month)
+        {
+            var result = await _appointmentService.CountCustomersInMonths(year, month);
+            return Ok(new ResponseDto<int>
+            {
+                statusCode = HttpStatus.OK,
+                message = Message.APPOINTMENT_GET_SUCCESS,
+                data = result
+            });
+        }
+        [HttpGet("count-appointments-with-status-in-month/{year}/{month}")]
+        [Authorize(Roles = "Admin, Staff")]
+        public async Task<IActionResult> CountAppointmentsInMonthWithStatus(int year, int month, AppointmentStatusEnum status)
+        {
+            return Ok(new ResponseDto<int>
+            {
+                statusCode = HttpStatus.OK,
+                message = Message.APPOINTMENT_GET_SUCCESS,
+                data = await _appointmentService.CountAppointmentsInMonthsWithStatus(year, month, status)
             });
         }
     }

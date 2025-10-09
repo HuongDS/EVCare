@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using API.Filters;
 using Application.Infrastructures;
+using DataAccess.Dtos.Pagination;
 
 namespace API.Controllers
 {
@@ -52,7 +53,7 @@ namespace API.Controllers
                     });
 
                 }
-                else if(model.Payment_Method== DataAccess.Enums.PaymentMethodEnum.Cash)
+                else if (model.Payment_Method == DataAccess.Enums.PaymentMethodEnum.Cash)
                 {
                     var invoiceId = await _invoiceService.CreateInvoice(model);
                     return Ok(new ResponseDto<int>
@@ -64,7 +65,7 @@ namespace API.Controllers
                 }
                 else
                 {
-                   var paymentUrl = await _invoiceService.CreatePayOSUrl(model);
+                    var paymentUrl = await _invoiceService.CreatePayOSUrl(model);
                     return Ok(new ResponseDto<string>
                     {
                         statusCode = HttpStatus.CREATED,
@@ -72,7 +73,7 @@ namespace API.Controllers
                         data = paymentUrl
                     });
                 }
-              
+
 
             }
             catch (Exception ex)
