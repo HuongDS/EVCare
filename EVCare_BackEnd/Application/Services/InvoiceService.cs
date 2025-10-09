@@ -173,7 +173,6 @@ namespace Application.Services
 
                 if (code == "00" || string.Equals(desc, "success", StringComparison.OrdinalIgnoreCase))
                 {
-                    invoice.Id = 0;
                     invoice.Customer = null;
                     invoice.Order = null;
                     invoice.Status = PaymentStatusEnum.Completed;
