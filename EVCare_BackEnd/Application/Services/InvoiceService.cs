@@ -8,6 +8,7 @@ using System.Web;
 using Application.Interfaces;
 using AutoMapper;
 using DataAccess.Dtos.Invoice;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +35,7 @@ namespace Application.Services
             IAppointmentService appointmentService,
             IServiceCenterService serviceCenterService,
             IOrderService orderService
-            ,IPayOSService payOSService
+            , IPayOSService payOSService
             )
         {
             _vnPayService = vnPayService;
@@ -126,6 +127,14 @@ namespace Application.Services
         {
             return await _invoiceRepository.GetInvoicesByCustomerId(customerId);
 
+        }
+        public async Task<decimal> GetRevenue(int year, int month)
+        {
+            return await _invoiceRepository.GetRevenue(year, month);
+        }
+        public async Task<PageResultDto<InvoiceViewModel>> GetRecentInVoices(InvoiceQueryDto model)
+        {
+            return await _invoiceRepository.GetRecentInVoices(model);
         }
     }
 }

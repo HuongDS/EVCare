@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using API.Filters;
 using Application.Infrastructures;
+using DataAccess.Dtos.Pagination;
 
 namespace API.Controllers
 {
@@ -52,7 +53,7 @@ namespace API.Controllers
                     });
 
                 }
-                else if(model.Payment_Method== DataAccess.Enums.PaymentMethodEnum.Cash)
+                else if (model.Payment_Method == DataAccess.Enums.PaymentMethodEnum.Cash)
                 {
                     var invoiceId = await _invoiceService.CreateInvoice(model);
                     return Ok(new ResponseDto<int>
@@ -64,7 +65,7 @@ namespace API.Controllers
                 }
                 else
                 {
-                   var paymentUrl = await _invoiceService.CreatePayOSUrl(model);
+                    var paymentUrl = await _invoiceService.CreatePayOSUrl(model);
                     return Ok(new ResponseDto<string>
                     {
                         statusCode = HttpStatus.CREATED,
@@ -72,7 +73,7 @@ namespace API.Controllers
                         data = paymentUrl
                     });
                 }
-              
+
 
             }
             catch (Exception ex)
@@ -123,7 +124,7 @@ namespace API.Controllers
 
             await _invoiceService.HandleWebhookAsync(raw, sig);
             return Ok();
-         }
+        }
 
         [HttpGet("invoices")]
         [Authorize(Roles = "Customer")]
@@ -173,6 +174,52 @@ namespace API.Controllers
                 });
             }
 
+        }
+        [HttpGet("get-revenue/{year}/{month}")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetRevenue(int year, int month)
+        {
+            try
+            {
+                var revenue = await _invoiceService.GetRevenue(year, month);
+                return Ok(new ResponseDto<decimal>
+                {
+                    statusCode = 200,
+                    message = Message.GET_REVENUE_SUCCESS,
+                    data = revenue
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpGet("get-recently-invoices")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetRecentInVoices([FromQuery] InvoiceQueryDto model)
+        {
+            try
+            {
+                var invoices = await _invoiceService.GetRecentInVoices(model);
+                return Ok(new ResponseDto<PageResultDto<InvoiceViewModel>>
+                {
+                    statusCode = 200,
+                    message = Message.GET_RECENT_INVOICES_SUCCESS,
+                    data = invoices
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
         }
     }
 }
