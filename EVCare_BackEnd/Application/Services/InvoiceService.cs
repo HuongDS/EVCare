@@ -177,7 +177,7 @@ namespace Application.Services
                     invoice.Order = null;
                     invoice.Status = PaymentStatusEnum.Completed;
                     invoice.Updated_At = DateTime.Now;
-
+                    invoice.OrderCode = orderCode;
                     try
                     {
                         await _invoiceRepository.AddAsync(invoice);
