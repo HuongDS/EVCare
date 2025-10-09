@@ -132,7 +132,7 @@ namespace Application.Services
          //   await _invoiceRepository.AddAsync(invoice);
            await  _db.StringSetAsync(orderCode.ToString(), 
                 System.Text.Json.JsonSerializer.Serialize(invoice)
-                , TimeSpan.FromMinutes(10));
+                , TimeSpan.FromMinutes(30));
             return url;
         }
         public async Task HandleWebhookAsync(string raw, string? sig)
@@ -173,6 +173,7 @@ namespace Application.Services
 
                 if (code == "00" || string.Equals(desc, "success", StringComparison.OrdinalIgnoreCase))
                 {
+                    invoice.Id = 0;
                     invoice.Customer = null;
                     invoice.Order = null;
                     invoice.Status = PaymentStatusEnum.Completed;
