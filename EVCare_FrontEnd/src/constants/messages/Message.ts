@@ -33,6 +33,14 @@ export const AUTH_FORM_MESSAGE = {
   FORGOT_PASSWORD: "Forgot Password",
 };
 
+//List of services
 export const LIST_SERVICES_MESSAGE = {
-  EMPTY: "Sorry! No services found for:",
+  EMPTY: "Sorry! No services found for: ",
+};
+
+//List of appointment
+export const LIST_APPOINTMENTS_MESSAGE = {
+  EMPTY_PENDING: (status: string) =>
+    `There are currently no ${status} appointments`,
+  NO_APPOINTMENT_FOUND: "No appointments found for: ",
 };
