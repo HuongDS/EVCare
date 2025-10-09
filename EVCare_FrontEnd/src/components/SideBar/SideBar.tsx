@@ -16,6 +16,7 @@ import {
   LogoutOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
+import { useEffect, useState } from "react";
 
 interface MenuItem {
   key: string;
@@ -181,76 +182,6 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     { key: "7", icon: <LogoutOutlined />, label: "Logout" },
   ],
   [RoleEnum.CUSTOMER]: [],
-  // [RoleEnum.TECHNICIAN]: [
-  //   {
-  //     key: "1",
-  //     icon: <HomeOutlined />,
-  //     label: "High-Voltage Battery System",
-
-  //     children: [
-  //       {
-  //         key: "1.1",
-  //         icon: <HomeOutlined />,
-  //         label: "Battery Modules",
-  //         route: "/technician/general/battery-modules",
-  //       },
-  //       {
-  //         key: "1.2",
-  //         icon: <HomeOutlined />,
-  //         label: "High-voltage cables & connectors",
-  //         route: "/technician/general/battery-packs",
-  //       },
-  //       {
-  //         key: "1.3",
-  //         icon: <HomeOutlined />,
-  //         label: "On-board charger",
-  //         route: "/technician/general/bms",
-  //       },
-  //       {
-  //         key: "1.4",
-  //         icon: <HomeOutlined />,
-  //         label: "HV fuses, contactors, relays",
-  //         route: "/technician/general/battery-management-system",
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     key: "2",
-  //     icon: <ApartmentOutlined />,
-  //     label: "Electric Drive System",
-  //     route: "/technician/my-jobs",
-  //   },
-  //   {
-  //     key: "3",
-  //     icon: <CalendarOutlined />,
-  //     label: "Control & Electronics",
-  //     route: "/technician/schedule",
-  //   },
-  //   {
-  //     key: "4",
-  //     icon: <ClockCircleOutlined />,
-  //     label: "Braking & Suspension System",
-  //     route: "/technician/history",
-  //   },
-  //   {
-  //     key: "5",
-  //     icon: <LogoutOutlined />,
-  //     label: "Steering & Body",
-  //     route: "/technician/logout",
-  //   },
-  //   {
-  //     key: "6",
-  //     icon: <SolutionOutlined />,
-  //     label: "Interior Accessories",
-  //     route: "/technician/application",
-  //   },
-  //   {
-  //     key: "7",
-  //     icon: <QuestionCircleOutlined />,
-  //     label: "Tools & Repair Materials",
-  //     route: "/technician/help",
-  //   },
-  // ],
 };
 
 interface SidebarProps {
@@ -258,6 +189,19 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ role }) => {
+  const [selectedKey, setSelectedKey] = useState<string[]>(["1"]);
+
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    const foundKey = menuByRole[role].find(
+      (item) => item.route === currentPath
+    )?.key;
+
+    if (foundKey) {
+      setSelectedKey([foundKey]);
+    }
+  }, [role]);
+
   const renderMenuItems = (menu: MenuItem[]): MenuProps["items"] => {
     return menu.map((item) => {
       if (item.children) {
@@ -274,8 +218,9 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
     <SidebarContainer>
       <MenuStyled
         mode="inline"
-        defaultSelectedKeys={["1"]}
+        selectedKeys={selectedKey}
         items={renderMenuItems(menuByRole[role])}
+        onClick={({ key }) => setSelectedKey([key])}
       />
     </SidebarContainer>
   );
