@@ -57,22 +57,7 @@ namespace Application.Services
             string? st = p?.data?.desc;
             if (string.IsNullOrWhiteSpace(oc)) return;
             var orderCode = long.Parse(oc);  
-            var invoice = await _invoiceRepository.GetInvoiceByOrderCode(orderCode);
             
-            invoice.Updated_At = DateTime.Now;
-            if (string.Equals(st, "SUCCESS", StringComparison.OrdinalIgnoreCase))
-            {
-                invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
-                await _invoiceRepository.UpdateAsync(invoice);
-                var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(invoice.OrderId);
-                appointment.Status = DataAccess.Enums.AppointmentStatusEnum.Done;
-                await _appointmentRepository.UpdateAsync(appointment);
-            }
-            else
-            {
-              
-               await  _invoiceRepository.DeleteAsync(invoice.Id);
-            }
         }
 
         public async Task CancelPayOSOrder(int orderCode)

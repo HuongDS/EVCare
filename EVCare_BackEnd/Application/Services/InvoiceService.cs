@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 using Application.Interfaces;
@@ -11,7 +12,10 @@ using DataAccess.Dtos.Invoice;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace Application.Services
 {
@@ -26,6 +30,8 @@ namespace Application.Services
         private readonly IServiceCenterService _serviceCenterService;
         private readonly IOrderService _orderService;
         private readonly IPayOSService _payOSService;
+        private readonly StackExchange.Redis.IDatabase _db;
+        private readonly IPayOSGateWay _gw;
 
         public InvoiceService(IVnPayService vnPayService, IMapper mapper,
             IInvoiceRepository invoiceRepository
@@ -34,7 +40,9 @@ namespace Application.Services
             IAppointmentService appointmentService,
             IServiceCenterService serviceCenterService,
             IOrderService orderService
-            ,IPayOSService payOSService
+            ,IPayOSService payOSService,
+            IConnectionMultiplexer redis,
+            IPayOSGateWay gw
             )
         {
             _vnPayService = vnPayService;
@@ -46,6 +54,8 @@ namespace Application.Services
             _serviceCenterService = serviceCenterService;
             _orderService = orderService;
             _payOSService = payOSService;
+            _gw = gw;
+            _db = redis.GetDatabase();
         }
 
         public async Task<int> CreateInvoice(InvoiceCreateModel model)
@@ -118,13 +128,29 @@ namespace Application.Services
             invoice.CustomerId = customerId;
             invoice.OrderCode = orderCode;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
-            await _invoiceRepository.AddAsync(invoice);
-
+            _db.StringSet(orderCode.ToString(), 
+                System.Text.Json.JsonSerializer.Serialize(invoice)
+                , TimeSpan.FromMinutes(10));
             return url;
         }
         public async Task HandleWebhookAsync(string raw, string? sig)
         {
-            await _payOSService.HandleWebhookAsync(raw, sig);
+            if (!_gw.Verify(raw, sig)) return;
+            dynamic p = JsonConvert.DeserializeObject(sig);
+            string? oc = p?.data?.orderCode;
+            string? st = p?.data?.desc;
+            if (string.IsNullOrWhiteSpace(oc)) return;
+            var orderCode = long.Parse(oc);
+            var invoiceJson = _db.StringGet(orderCode.ToString());
+            if (!invoiceJson.HasValue) return;
+            var invoice = System.Text.Json.JsonSerializer.Deserialize<Invoice>(invoiceJson!);
+            if (invoice == null) return;
+            if(string.Equals(st,"success",StringComparison.OrdinalIgnoreCase))
+            {
+                invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+                await _invoiceRepository.AddAsync(invoice);
+                _db.KeyDelete(orderCode.ToString());
+            }
         }
 
         public async Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId)
