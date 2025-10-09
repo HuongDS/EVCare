@@ -13,11 +13,15 @@ interface StepsProps {
 export const ProgressSteps = ({ steps, currentStep, children }: StepsProps) => {
   return (
     <Steps.Root step={currentStep} count={steps.length}>
-      <Steps.List style={{ padding: "20px" }}>
+      <Steps.List style={{ margin: "2%" }}>
         {steps.map((step, index) => (
           <Steps.Item key={index} index={index} title={step.title}>
-            <Steps.Indicator style={{ fontSize: "2px" }} />
-            <Steps.Title>{step.title}</Steps.Title>
+            <Steps.Indicator boxSize={8} />
+            <Steps.Title
+              style={{ fontSize: "15px", fontFamily: "'Outfit', sans-serif" }}
+            >
+              {step.title}
+            </Steps.Title>
             <Steps.Separator />
           </Steps.Item>
         ))}
@@ -28,12 +32,15 @@ export const ProgressSteps = ({ steps, currentStep, children }: StepsProps) => {
 };
 
 //Title của Appoinment Steps:
-export const stepsAppoinment = [
+export const stepsAppointment = [
   {
     title: "Check In",
   },
   {
     title: "Assign",
+  },
+  {
+    title: "Orders",
   },
   {
     title: "Payment",
@@ -50,11 +57,12 @@ export const getAppointmentStepFromStatus = (status: string) => {
       return 1;
     case "CheckedIn":
       return 2;
+    case "AddingPart":
+      return 3;
     case "InProgress":
-      return 3;
     case "ReadyForPickup":
-      return 3;
-    case "Done":
       return 4;
+    case "Done":
+      return 5;
   }
 };
