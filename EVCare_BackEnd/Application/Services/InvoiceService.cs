@@ -31,7 +31,7 @@ namespace Application.Services
         private readonly IServiceCenterService _serviceCenterService;
         private readonly IOrderService _orderService;
         private readonly IPayOSService _payOSService;
-        private readonly StackExchange.Redis.IDatabase _db;
+        private readonly IRedisService _redisService;
         private readonly IPayOSGateWay _gw;
 
         public InvoiceService(IVnPayService vnPayService, IMapper mapper,
@@ -42,7 +42,7 @@ namespace Application.Services
             IServiceCenterService serviceCenterService,
             IOrderService orderService
             ,IPayOSService payOSService,
-            IConnectionMultiplexer redis,
+            IRedisService redisService,
             IPayOSGateWay gw
             )
         {
@@ -56,7 +56,7 @@ namespace Application.Services
             _orderService = orderService;
             _payOSService = payOSService;
             _gw = gw;
-            _db = redis.GetDatabase();
+            _redisService = redisService;
         }
 
         public async Task<int> CreateInvoice(InvoiceCreateModel model)
@@ -129,10 +129,8 @@ namespace Application.Services
             invoice.CustomerId = customerId;
             invoice.OrderCode = orderCode;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
-         //   await _invoiceRepository.AddAsync(invoice);
-           await  _db.StringSetAsync(orderCode.ToString(), 
-                System.Text.Json.JsonSerializer.Serialize(invoice)
-                , TimeSpan.FromMinutes(30));
+            //   await _invoiceRepository.AddAsync(invoice);
+            await _redisService.SaveDate(invoice,orderCode.ToString());
             return url;
         }
         public async Task HandleWebhookAsync(string raw, string? sig)
@@ -157,14 +155,8 @@ namespace Application.Services
                 }
 
                 var orderCode = long.Parse(oc);
-                var invoiceJson = await _db.StringGetAsync(orderCode.ToString());
-                if (!invoiceJson.HasValue)
-                {
-                    Console.WriteLine($"⚠️ Redis key {orderCode} not found or expired");
-                    return;
-                }
-
-                var invoice = System.Text.Json.JsonSerializer.Deserialize<Invoice>(invoiceJson!);
+                var invoice = await _redisService.GetObjectData<Invoice>(orderCode.ToString());
+               
                 if (invoice == null)
                 {
                     Console.WriteLine("⚠️ Invoice deserialize failed");
@@ -182,7 +174,7 @@ namespace Application.Services
                     try
                     {
                         await _invoiceRepository.AddAsync(invoice);
-                        await _db.KeyDeleteAsync(orderCode.ToString());
+                        await _redisService.DeleteAsync(orderCode.ToString());
                         Console.WriteLine($"✅ Invoice inserted: orderCode={orderCode}");
                     }
                     catch (Exception ex)
