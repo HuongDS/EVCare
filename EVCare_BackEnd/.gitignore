@@ -3,6 +3,6 @@ bin/
 obj/
 node_modules/
 build/
+application.*.settings
 appsettings.json
 appsettings.*.json
-application.*.settings

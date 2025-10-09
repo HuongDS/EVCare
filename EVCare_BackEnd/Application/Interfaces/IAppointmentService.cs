@@ -32,5 +32,7 @@ namespace Application.Interfaces
         Task<CenterDailyCapacityModel> GetAppointmentWithCountDaily();
         Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model);
         Task<int> CountAppointmentsInMonths(int year, int month);
+        Task<int> CountCustomersInMonths(int year, int month);
+        Task<int> CountAppointmentsInMonthsWithStatus(int year, int month, AppointmentStatusEnum status);
     }
 }
