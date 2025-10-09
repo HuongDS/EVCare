@@ -158,7 +158,6 @@ namespace Application.Services
                 AccountId = account.accountId,
                 CCCD = data.CCCD,
                 Status = EmployeeStatusEnum.Available,
-                BaseSalary = data.baseSalary,
                 Deleted_At = DateTime.MinValue,
                 Updated_At = DateTime.UtcNow,
             };

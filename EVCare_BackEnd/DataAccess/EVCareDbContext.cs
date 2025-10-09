@@ -23,7 +23,7 @@ namespace DataAccess
         public DbSet<Part> Parts { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Account> Accounts { get; set; }
-        public DbSet<Salary> Salaries { get; set; }
+       
         public DbSet<TechnicianCategory> TechnicianCategories { get; set; }
         public DbSet<Technician> Technicians { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -38,7 +38,7 @@ namespace DataAccess
         public DbSet<AppointmentService> AppointmentServices { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<TechnicianSkill> TechnicianSkills { get; set; }
-        public DbSet<ReviewEmployee> ReviewEmployees { get; set; }
+      
         public DbSet<OrderPart> OrderParts { get; set; }
         public DbSet<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
@@ -56,14 +56,12 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
             //modelBuilder.ApplyConfiguration(new ServiceCategoryConfiguration());
             modelBuilder.ApplyConfiguration(new TechnicianSkillConfigruation());
-            modelBuilder.ApplyConfiguration(new SalaryConfiguration());
             modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
             modelBuilder.ApplyConfiguration(new PartCategoryConfiguration());
             modelBuilder.ApplyConfiguration(new PartConfiguration());
             modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
             modelBuilder.ApplyConfiguration(new AppointmentServiceConfigurations());
             modelBuilder.ApplyConfiguration(new ReviewConfiguration());
-            modelBuilder.ApplyConfiguration(new ReviewEmployeeConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new TechnicianWorkingSessionConfiguration());
             modelBuilder.ApplyConfiguration(new OrderPartConfiguration());
