@@ -102,5 +102,15 @@ namespace DataAccess.Repositories
                 }).AsQueryable();
             return await PaginationHelper.PaginationAsync<InvoiceViewModel>(invoices, model.pageSize, model.pageIndex);
         }
+
+        public async Task<Invoice> GetInvoiceByOrderCode(long orderCode)
+        {
+           return await _dbContext.Invoices.FirstAsync(i => i.OrderCode == orderCode);
+        }
+
+        public async Task<Invoice> GetInvoiceByOrderId(int orderId)
+        {
+            return await _dbContext.Invoices.FirstAsync(i => i.OrderId == orderId);
+        }
     }
 }

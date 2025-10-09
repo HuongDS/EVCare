@@ -36,6 +36,11 @@ const EmployeeLayout: React.FC<{
           style={{
             background: colorBgContainer,
             transition: "all 0.3s ease",
+            position: "sticky",
+            top: 56,
+            left: 0,
+            height: "calc(100vh - 56px)",
+            zIndex: 1000,
           }}
         >
           {menuOverride ?? <Sidebar role={role} collapsed={collapsed} />}

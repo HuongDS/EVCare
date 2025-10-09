@@ -18,5 +18,7 @@ namespace DataAccess.Interfaces
         Task<IEnumerable<InvoiceViewModel>?> GetInvoicesByCustomerId(int customerId);
         Task<decimal> GetRevenue(int year, int month);
         Task<PageResultDto<InvoiceViewModel>> GetRecentInVoices(InvoiceQueryDto model);
+        Task<Invoice> GetInvoiceByOrderCode(long orderCode);
+        Task<Invoice> GetInvoiceByOrderId(int orderId);
     }
 }
