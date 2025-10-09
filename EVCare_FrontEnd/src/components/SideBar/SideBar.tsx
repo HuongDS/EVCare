@@ -17,12 +17,17 @@ import {
   QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
+import { deleteToken, logout } from "../../services/authService";
+import { useNavigate } from "react-router";
+import { useAppDispatch } from "../../states/store";
+import { logoutRedux } from "../../states/authSlice";
 
 interface MenuItem {
   key: string;
   icon: React.ReactNode;
   label: string | React.ReactNode;
   route?: string;
+  action?: () => void;
   children?: MenuItem[];
 }
 
@@ -101,7 +106,12 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       label: "Help & Information",
       route: "/admin/help",
     },
-    { key: "9", icon: <LogoutOutlined />, label: "Logout" },
+    {
+      key: "9",
+      icon: <LogoutOutlined />,
+      label: "Logout",
+      action: () => logout,
+    },
   ],
   [RoleEnum.STAFF]: [
     {
@@ -140,7 +150,12 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       label: "Application",
       route: "/staff/customers",
     },
-    { key: "8", icon: <LogoutOutlined />, label: "Logout" },
+    {
+      key: "8",
+      icon: <LogoutOutlined />,
+      label: "Logout",
+      action: () => logout,
+    },
   ],
   [RoleEnum.TECHNICIAN]: [
     {
@@ -179,7 +194,12 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       label: "Help & Information",
       route: "/technician/help",
     },
-    { key: "7", icon: <LogoutOutlined />, label: "Logout" },
+    {
+      key: "7",
+      icon: <LogoutOutlined />,
+      label: "Logout",
+      action: () => logout,
+    },
   ],
   [RoleEnum.CUSTOMER]: [],
 };
@@ -190,6 +210,8 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ role }) => {
   const [selectedKey, setSelectedKey] = useState<string[]>(["1"]);
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const currentPath = window.location.pathname;
@@ -201,6 +223,18 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
       setSelectedKey([foundKey]);
     }
   }, [role]);
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    const selectedItem = menuByRole[role].find((item) => item.key === key);
+
+    if (selectedItem?.action) {
+      selectedItem.action();
+      deleteToken();
+      dispatch(logoutRedux());
+      navigate("/");
+    }
+    setSelectedKey([key]);
+  };
 
   const renderMenuItems = (menu: MenuItem[]): MenuProps["items"] => {
     return menu.map((item) => {
@@ -220,7 +254,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
         mode="inline"
         selectedKeys={selectedKey}
         items={renderMenuItems(menuByRole[role])}
-        onClick={({ key }) => setSelectedKey([key])}
+        onClick={handleMenuClick}
       />
     </SidebarContainer>
   );
