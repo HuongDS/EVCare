@@ -23,8 +23,6 @@ namespace DataAccess.Configuration
                 Id = 1,
                 AccountId = 1,
                 CCCD = "079123456789",
-                rate = 5,
-                BaseSalary = 12000000m,
                 Updated_At = new DateTime(2025, 01, 10),
                 Deleted_At = DateTime.MinValue
             }, new Employee
@@ -32,8 +30,6 @@ namespace DataAccess.Configuration
                 Id = 2,
                 AccountId = 2,
                 CCCD = "079987654321",
-                rate = 4,
-                BaseSalary = 10000000m,
                 Updated_At = new DateTime(2025, 02, 05),
                 Deleted_At = DateTime.MinValue
             },
@@ -42,8 +38,6 @@ namespace DataAccess.Configuration
                 Id = 3,
                 AccountId = 4,
                 CCCD = "079555666777",
-                rate = null, // chưa có đánh giá
-                BaseSalary = 15000000m,
                 Updated_At = new DateTime(2025, 03, 01),
                 Deleted_At = DateTime.MinValue
             });
