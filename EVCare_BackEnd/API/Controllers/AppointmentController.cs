@@ -250,7 +250,7 @@ namespace API.Controllers
         {
             try
             {
-               
+
                 var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
 
                 return Ok(new ResponseDto<AppointmentViewDetailModel>
@@ -499,6 +499,18 @@ namespace API.Controllers
                     data = null
                 });
             }
+        }
+
+        [HttpGet("count-appointments-in-month")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CountAppointmentsInMonth(int year, int month)
+        {
+            return Ok(new ResponseDto<int>
+            {
+                statusCode = HttpStatus.OK,
+                message = Message.APPOINTMENT_GET_SUCCESS,
+                data = await _appointmentService.CountAppointmentsInMonths(year, month)
+            });
         }
     }
 }

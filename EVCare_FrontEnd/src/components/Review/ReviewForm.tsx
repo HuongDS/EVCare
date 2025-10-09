@@ -50,7 +50,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({onSubmit, onCancel, appointmentD
                         {data?.services.map((item) => (
                             <div className="info-value" key={item.id}>{item.name}</div>
                         ))}
-                        {/*<div className="info-value">Battery Health Check & Maintenance</div>*/}
                     </div>
                 </div>
 
