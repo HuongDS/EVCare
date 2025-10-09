@@ -14,10 +14,10 @@ namespace DataAccess.Configuration
         public void Configure(EntityTypeBuilder<Review> builder)
         {
             builder.HasKey(r => r.Id);
-            builder.HasOne(r=>r.Appointment)
-                .WithMany(x=>x.Reviews)
-                .HasForeignKey(r=>r.AppointmentId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(r => r.Appointment)
+                .WithOne(x => x.Reviews)
+                .HasForeignKey<Review>(r => r.AppointmentId);
+
 
             builder.Property(r => r.Create_At)
                    .HasDefaultValueSql("GETDATE()")
