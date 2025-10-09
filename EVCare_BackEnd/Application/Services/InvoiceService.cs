@@ -28,6 +28,7 @@ namespace Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly INotificationServices _notificationServices;
         private readonly IAppointmentService _appointmentService;
+        private readonly IAppointmentRepository _appointmentRepository;
         private readonly IServiceCenterService _serviceCenterService;
         private readonly IOrderService _orderService;
         private readonly IPayOSService _payOSService;
@@ -43,7 +44,8 @@ namespace Application.Services
             IOrderService orderService
             ,IPayOSService payOSService,
             IRedisService redisService,
-            IPayOSGateWay gw
+            IPayOSGateWay gw,
+            IAppointmentRepository appointmentRepository
             )
         {
             _vnPayService = vnPayService;
@@ -57,6 +59,7 @@ namespace Application.Services
             _payOSService = payOSService;
             _gw = gw;
             _redisService = redisService;
+            _appointmentRepository = appointmentRepository;
         }
 
         public async Task<int> CreateInvoice(InvoiceCreateModel model)
@@ -122,14 +125,14 @@ namespace Application.Services
         public async Task<string> CreatePayOSUrl(InvoiceCreateModel model)
         {
            
+            var invoices = await _invoiceRepository.GetInvoiceByOrderId(model.OrderId);
+            if (invoices != null) throw new Exception("Order has existed");
             var (url,orderCode) =  await _payOSService.CreateCheckoutUrlAsync(model);
-
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.OrderCode = orderCode;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
-            //   await _invoiceRepository.AddAsync(invoice);
             await _redisService.SaveDate(invoice,orderCode.ToString());
             return url;
         }
@@ -139,10 +142,8 @@ namespace Application.Services
             {
                 if (!_gw.Verify(raw, sig))
                 {
-                    Console.WriteLine("❌ Signature verification failed");
                     return;
                 }
-                Console.WriteLine("❌ Signature verification success");
                 dynamic p = JsonConvert.DeserializeObject(raw);
                 string? oc = p?.data?.orderCode?.ToString();
                 string? code = p?.data?.code?.ToString();
@@ -150,7 +151,6 @@ namespace Application.Services
 
                 if (string.IsNullOrWhiteSpace(oc))
                 {
-                    Console.WriteLine("⚠️ Missing orderCode in webhook");
                     return;
                 }
 
@@ -159,7 +159,6 @@ namespace Application.Services
                
                 if (invoice == null)
                 {
-                    Console.WriteLine("⚠️ Invoice deserialize failed");
                     return;
                 }
 
@@ -173,23 +172,23 @@ namespace Application.Services
                     invoice.OrderCode = orderCode;
                     try
                     {
-                        await _invoiceRepository.AddAsync(invoice);
                         await _redisService.DeleteAsync(orderCode.ToString());
-                        Console.WriteLine($"✅ Invoice inserted: orderCode={orderCode}");
+                        await _invoiceRepository.AddAsync(invoice);
+                        var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(invoice.OrderId);
+                        appointment.Status = AppointmentStatusEnum.Confirmed;
+                        await _appointmentRepository.UpdateAsync(appointment);
+
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"❌ EF Insert error: {ex}");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"⚠️ Payment failed: code={code}, desc={desc}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Webhook outer error: {ex}");
                 throw; 
             }
         }

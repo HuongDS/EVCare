@@ -22,9 +22,7 @@ namespace DataAccess.Configuration
             builder.Property(r => r.Create_At)
                    .HasDefaultValueSql("GETDATE()")
                    .ValueGeneratedOnAdd();
-            builder.Property(r => r.Updated_At)
-                   .HasDefaultValueSql("GETDATE()")
-                   .ValueGeneratedOnAddOrUpdate();
+            
         }
     }
 }
