@@ -148,11 +148,12 @@ namespace Application.Services
                 if (!invoiceJson.HasValue) return;
                 var invoice = System.Text.Json.JsonSerializer.Deserialize<Invoice>(invoiceJson!);
                 if (invoice == null) return;
+                await _db.KeyDeleteAsync(orderCode.ToString());
                 if (string.Equals(st, "success", StringComparison.OrdinalIgnoreCase))
                 {
                     invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
                     await _invoiceRepository.AddAsync(invoice);
-                    await _db.KeyDeleteAsync(orderCode.ToString());
+                    
                 }
 
             }
