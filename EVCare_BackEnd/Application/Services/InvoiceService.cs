@@ -139,7 +139,7 @@ namespace Application.Services
             try
             {
                 if (!_gw.Verify(raw, sig)) return;
-                dynamic p = JsonConvert.DeserializeObject(sig);
+                dynamic p = JsonConvert.DeserializeObject(raw);
                 string? oc = p?.data?.orderCode;
                 string? st = p?.data?.desc;
                 if (string.IsNullOrWhiteSpace(oc)) return;
@@ -148,12 +148,12 @@ namespace Application.Services
                 if (!invoiceJson.HasValue) return;
                 var invoice = System.Text.Json.JsonSerializer.Deserialize<Invoice>(invoiceJson!);
                 if (invoice == null) return;
-                await _db.KeyDeleteAsync(orderCode.ToString());
+               
                 if (string.Equals(st, "success", StringComparison.OrdinalIgnoreCase))
                 {
                     invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
                     await _invoiceRepository.AddAsync(invoice);
-                    
+                    await _db.KeyDeleteAsync(orderCode.ToString());
                 }
 
             }
