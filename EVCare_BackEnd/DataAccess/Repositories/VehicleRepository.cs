@@ -23,7 +23,7 @@ namespace DataAccess.Repositories
 
         public async Task<int> GetCustomerIdByVehicleId(int vehicleId)
         {
-            return await _dbContext.Vehicles.Where(v => v.Id == vehicleId)
+            return await _dbContext.Vehicles.Where(v => v.Id == vehicleId && v.Deleted_At == DateTime.MinValue)
                 .Select(v => v.CustomerId)
                 .FirstOrDefaultAsync();
         }
