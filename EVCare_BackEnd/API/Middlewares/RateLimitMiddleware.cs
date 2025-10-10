@@ -20,6 +20,12 @@ namespace API.Middlewares
         }
         public async Task InvokeAsync(HttpContext context)
         {
+            if (context.Request.Path.StartsWithSegments("/hubs", StringComparison.OrdinalIgnoreCase))
+            {
+                await _next(context);
+                return;
+            }
+
             bool reject;
             double retryAfterSec;
 
