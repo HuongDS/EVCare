@@ -33,6 +33,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
+using Microsoft.Azure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +47,10 @@ builder.Services.AddControllers()
     });
 
 // SignalR
-builder.Services.AddSignalR();
+//builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -351,5 +355,9 @@ app.UseMiddleware<BannedMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<AdminDashboardHub>("/hubs/adminDashboard").RequireAuthorization();
+//app.MapHub<AdminDashboardHub>("/hubs/adminDashboard").RequireAuthorization();
+app.UseAzureSignalR(routes =>
+{
+    routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+});
 app.Run();
