@@ -188,9 +188,9 @@ namespace API.Controllers
 
         }
 
-        [HttpDelete("order/{orderId}")]
-        [Authorize(Roles = "Staff")]
-        public async Task<IActionResult> CancelPayOSOrder(int orderId)
+        //[HttpDelete("order/{orderId}")]
+        //[Authorize(Roles = "Staff")]
+        //public async Task<IActionResult> CancelPayOSOrder(int orderId)
 
         [HttpGet("get-recently-invoices")]
         [Authorize(Roles = "Staff, Admin")]
@@ -198,16 +198,13 @@ namespace API.Controllers
         {
             try
             {
-                await _invoiceService.CancelPayOSOrder(orderId);
-                return Ok(new ResponseDto<string>
+                //await _invoiceService.CancelPayOSOrder(orderId);
+                //return Ok(new ResponseDto<string>
                 var invoices = await _invoiceService.GetRecentInVoices(model);
                 return Ok(new ResponseDto<PageResultDto<InvoiceViewModel>>
                 {
                     statusCode = HttpStatus.OK,
                     message = "Cancel PayOS order successfully",
-                    data = "Cancel PayOS order successfully"
-                    statusCode = 200,
-                    message = Message.GET_RECENT_INVOICES_SUCCESS,
                     data = invoices
                 });
             }
