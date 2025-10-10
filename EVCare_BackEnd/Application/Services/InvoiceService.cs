@@ -68,6 +68,12 @@ namespace Application.Services
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+            var order = await _orderRepository.GetByIdAsync(invoice.OrderId);
+            order.Status = OrderStatusEnum.Completed;
+            await _orderRepository.UpdateAsync(order);
+            var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(invoice.OrderId);
+            appointment.Status = AppointmentStatusEnum.Done;
+            await _appointmentRepository.UpdateAsync(appointment);
             await _invoiceRepository.AddAsync(invoice);
             return invoice.Id;
         }
@@ -115,7 +121,12 @@ namespace Application.Services
                     throw new Exception("Invoice not found");
                 }
                 invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
-
+                var order = await _orderRepository.GetByIdAsync(invoice.OrderId);
+                order.Status = OrderStatusEnum.Completed;
+                await _orderRepository.UpdateAsync(order);
+                var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(invoice.OrderId);
+                appointment.Status = AppointmentStatusEnum.Done;
+                await _appointmentRepository.UpdateAsync(appointment);
                 await _invoiceRepository.UpdateAsync(invoice);
 
 
@@ -174,7 +185,7 @@ namespace Application.Services
                     order.Status = OrderStatusEnum.Completed;
                     await _orderRepository.UpdateAsync(order);
                     var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(invoice.OrderId);
-                    appointment.Status = AppointmentStatusEnum.Confirmed;
+                    appointment.Status = AppointmentStatusEnum.Done;
                     await _appointmentRepository.UpdateAsync(appointment);
                     try
                     {
