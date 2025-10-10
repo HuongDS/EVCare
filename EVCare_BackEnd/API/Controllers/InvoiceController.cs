@@ -37,6 +37,7 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Staff")]
         [HttpPost]
+        //update to merger
         public async Task<IActionResult> CreateInvoice(InvoiceCreateModel model)
         {
             try
