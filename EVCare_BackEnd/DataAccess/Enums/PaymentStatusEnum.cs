@@ -10,7 +10,6 @@ namespace DataAccess.Enums
     {
         Pending,
         Completed,
-        Failed,
-        Refunded
+        Failed
     }
 }

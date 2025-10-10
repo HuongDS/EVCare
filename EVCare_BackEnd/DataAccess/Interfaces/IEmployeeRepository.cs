@@ -11,6 +11,7 @@ namespace DataAccess.Interfaces
     {
         Task<Employee> GetEmployeeByAccountId(int userId);
         Task MarkAvaliableAllEmployees();
-       
+        Task MarkBusyForTechnician(IEnumerable<int> technicianIds);
+        Task MarkBusyForTechnician();
     }
 }

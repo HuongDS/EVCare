@@ -273,5 +273,10 @@ namespace Application.Services
         {
             return await _appointmentRepository.CountAppointmentsInMonthWithStatus(year, month, status);
         }
+
+        public async Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model)
+        {
+           return await _appointmentRepository.GetUnderstaffedInProgressAsync(model);
+        }
     }
 }

@@ -501,6 +501,31 @@ namespace API.Controllers
             }
         }
 
+
+        [HttpGet("in-progress-understaffed")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> GetUnderstaffedInProgressAsync([FromQuery] AppointmentQueryDto model)
+        {
+            try
+            {
+                var data = await _appointmentService.GetUnderstaffedInProgressAsync(model);
+                return Ok(new ResponseDto<PageResultDto<AppointmentInProgressUnderstaffedViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = data
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    data = null
+                });
+            }
+
         [HttpGet("count-appointments-in-month/{year}/{month}")]
         [Authorize(Roles = "Admin, Staff")]
         public async Task<IActionResult> CountAppointmentsInMonth(int year, int month)
@@ -534,6 +559,7 @@ namespace API.Controllers
                 message = Message.APPOINTMENT_GET_SUCCESS,
                 data = await _appointmentService.CountAppointmentsInMonthsWithStatus(year, month, status)
             });
+
         }
     }
 }

@@ -35,6 +35,7 @@ namespace DataAccess.Interfaces
         Task<PaymentPendingPickupEmailModel> GetPaymentPendingPickupEmailModel(int id);
         Task<bool> CheckAllReadyForPickup(int vehicleId);
         Task<IEnumerable<int>> GetAppointmentReadyForPickUpByVehicleId(int vehicleId);
+        Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model);
         Task<int> CountAppointmentsInMonth(int year, int month);
         Task<int> CountCustomersInMonth(int year, int month);
         Task<int> CountAppointmentsInMonthWithStatus(int year, int month, AppointmentStatusEnum status);
