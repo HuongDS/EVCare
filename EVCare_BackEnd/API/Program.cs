@@ -345,7 +345,7 @@ if (swaggerEnabled)
 //app.UseSwagger();
 //app.UseSwaggerUI();
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseCors("AllowAll");
 
 app.UseMiddleware<RateLimitMiddleware>();
@@ -354,10 +354,15 @@ app.UseMiddleware<BannedMiddleware>();
 
 app.UseAuthorization();
 
+
 app.MapControllers();
 //app.MapHub<AdminDashboardHub>("/hubs/adminDashboard").RequireAuthorization();
-app.UseAzureSignalR(routes =>
+//app.UseAzureSignalR(routes =>
+//{
+//    routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+//});
+app.UseEndpoints(endpoints =>
 {
-    routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
 });
 app.Run();
