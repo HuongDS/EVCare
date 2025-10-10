@@ -15,7 +15,7 @@ namespace DataAccess.Configuration
         {
             builder.HasKey(r => r.Id);
             builder.HasOne(r => r.Appointment)
-                .WithOne(x => x.Reviews)
+                .WithOne(x => x.Review)
                 .HasForeignKey<Review>(r => r.AppointmentId);
 
 
