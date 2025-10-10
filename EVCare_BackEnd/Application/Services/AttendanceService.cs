@@ -28,6 +28,7 @@ namespace Application.Services
                 employee.Status = DataAccess.Enums.EmployeeStatusEnum.OnLeave;
                 await _employeeRepository.UpdateAsync(employee);
             }
+            await _employeeRepository.MarkBusyForTechnician();
         }
     }
 }

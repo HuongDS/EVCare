@@ -83,6 +83,8 @@ namespace DataAccess.Repositories
             data.Status = model.Status;
             if (model.Status == Enums.TechnicianWorkingSessionEnum.Completed) {
 
+                var employee = await _dbContext.Employees.FirstOrDefaultAsync(x=>x.Technician.Id == technician);
+                employee.Status = Enums.EmployeeStatusEnum.Available;
                 data.EndTime = DateTime.Now;
             }
             await _dbContext.SaveChangesAsync();
