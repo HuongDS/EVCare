@@ -59,9 +59,12 @@ namespace API.Controllers
         }
 
         [HttpGet("performance")]
-        public async Task<IActionResult> Performance([FromQuery] DateTime from, [FromQuery] DateTime to)
+        public async Task<IActionResult> Performance([FromQuery] DateTime? from, [FromQuery] DateTime? to)
         {
-            return Ok(await _adminDashboardServices.GetPerformanceAsync(from, to));
+            var now = DateTime.Now;
+            var fromDate = from ?? now.AddDays(-6);
+            var toDate = to ?? now;
+            return Ok(await _adminDashboardServices.GetSummaryCachedAsync(fromDate, toDate));
         }
 
         [HttpGet("insights")]
