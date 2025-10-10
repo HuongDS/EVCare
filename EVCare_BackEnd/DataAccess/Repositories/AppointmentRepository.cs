@@ -9,6 +9,7 @@ using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Payment;
 using DataAccess.Dtos.Service;
+using DataAccess.Dtos.Technician;
 using DataAccess.Entities;
 using DataAccess.Enums;
 using DataAccess.Helpers;
@@ -365,6 +366,48 @@ namespace DataAccess.Repositories
                 .Select(x => x.Id)
                 .ToListAsync();
         }
+        public async Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model)
+        {
+            var query =  _dbContext.Appointments.AsNoTracking()
+                .Where(x => x.Status == AppointmentStatusEnum.InProgress)
+                .Select(x => new AppointmentInProgressUnderstaffedViewModel
+                {
+                    AppointmentDate = x.Appointment_Date,
+                    CustomerName = x.Customer.Account.First_Name+" " + x.Customer.Account.First_Name,
+                    CustomerPhone = x.Customer.Account.Phone,
+                    Id = x.Id,
+                    CustomerEmail = x.Customer.Account.Email,
+                    Services = x.AppointmentServices.Select(s => new ServiceViewFormModel
+                    {
+                        Id = s.ServiceId,
+                        Name = s.Service.Name
+                    }).ToList(),
+                    VehicleName = x.Vehicle.Category.Name,
+                    VehiclePlateNumber = x.Vehicle.LicensePlate,
+                    Technicians= x.Order.TechnicianWorkingSessions
+                                .Select(t => new TechnicianViewModel
+                                {
+                                    Id = t.TechnicianId,
+                                    ExpYears = t.Technician.ExpYear,
+                                    FullName = t.Technician.Employee.Account.First_Name + " " + t.Technician.Employee.Account.Last_Name,
+                                    Phone = t.Technician.Employee.Account.Phone,
+                                    Skills = t.Technician.TechnicianSkills
+                                                .Select(ts =>new ServiceViewFormModel
+                                                {
+                                                    Id = ts.ServiceId,
+                                                    Name = ts.Service.Name
+                                                })
+                                                .ToList(),
+                                    Status = t.Technician.Employee.Status
+                                }).ToList()
+
+                })
+                .Where(x=>x.Technicians.Any(x=>x.Status == EmployeeStatusEnum.OnLeave))
+                .ApplySorting(model.SortField, model.SortOrder)
+                ;
+           return await PaginationHelper.PaginationAsync(query,model.PageSize.Value,model.PageIndex.Value);
+          }
+          
         public async Task<int> CountAppointmentsInMonth(int year, int month)
         {
             var startDate = new DateTime(year, month, 1);
