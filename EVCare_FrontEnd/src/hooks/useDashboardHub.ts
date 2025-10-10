@@ -10,7 +10,7 @@ export function useDashboardHub(onUpdate: (data: DashboardUpdateDto) => void) {
     const connect = async () => {
       conn = new signalR.HubConnectionBuilder()
         .withUrl(`${import.meta.env.VITE_API_BASE}/hubs/adminDashboard`, {
-          withCredentials: true,
+          // withCredentials: true,
           // accessTokenFactory: () => getAccessToken() || "",
         })
         .withAutomaticReconnect()
