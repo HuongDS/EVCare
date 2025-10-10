@@ -171,14 +171,17 @@ namespace Application.Services
                     invoice.Status = PaymentStatusEnum.Completed;
                     invoice.Updated_At = DateTime.Now;
                     invoice.OrderCode = orderCode;
+                    var order = await _orderRepository.GetByIdAsync(invoice.OrderId);
+                    order.Status = OrderStatusEnum.Completed;
+                    await _orderRepository.UpdateAsync(order);
+                    var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(invoice.OrderId);
+                    appointment.Status = AppointmentStatusEnum.Confirmed;
+                    await _appointmentRepository.UpdateAsync(appointment);
                     try
                     {
                         await _redisService.DeleteAsync(orderCode.ToString());
                         await _invoiceRepository.AddAsync(invoice);
-                        var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(invoice.OrderId);
-                        appointment.Status = AppointmentStatusEnum.Confirmed;
-                        await _appointmentRepository.UpdateAsync(appointment);
-
+                        
                     }
                     catch (Exception ex)
                     {
