@@ -15,11 +15,13 @@ namespace Application.Services
         private readonly ITechnicianWorkingSessionRepository _technicianWorkingSessionRepository;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IOrderRepository _orderRepository;
-        private readonly INotificationServices _notificationServices;   
+        private readonly INotificationServices _notificationServices;  
+        private readonly IEmployeeRepository _employeeRepository;
         public TechnicianWorkingSessionService(ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
             ,IOrderRepository orderRepository
             ,IAppointmentRepository appointmentRepository
             ,INotificationServices notificationServices
+            ,IEmployeeRepository employeeRepository
             )
         {
             _orderRepository = orderRepository;
@@ -36,8 +38,9 @@ namespace Application.Services
                 OrderId = model.OrderId,
                 TechnicianId = x,
                 StartTime = DateTime.Now,
-                Status = DataAccess.Enums.TechnicianWorkingSessionEnum.Pending
+                Status = model.Status
             });
+            await _employeeRepository.MarkBusyForTechnician(model.TechnicianIds);
             await _technicianWorkingSessionRepository.AddRange(lists);
         }
 

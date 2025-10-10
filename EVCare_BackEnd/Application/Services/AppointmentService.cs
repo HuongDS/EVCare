@@ -261,5 +261,10 @@ namespace Application.Services
         {
             return await _appointmentRepository.GetAppointmentTechnicianViewModelByTechnicianId(technicianId,model);
         }
+
+        public async Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model)
+        {
+           return await _appointmentRepository.GetUnderstaffedInProgressAsync(model);
+        }
     }
 }
