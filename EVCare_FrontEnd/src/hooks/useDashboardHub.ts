@@ -5,6 +5,7 @@ import * as signalR from "@microsoft/signalr";
 
 export function useDashboardHub(onUpdate: (data: DashboardUpdateDto) => void) {
   const connectionRef = useRef<signalR.HubConnection | null>(null);
+
   useEffect(() => {
     let conn: signalR.HubConnection | null = null;
     const connect = async () => {
