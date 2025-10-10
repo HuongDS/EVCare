@@ -145,6 +145,7 @@ builder.Services.AddScoped<AppointmentAuthorizationFilter>();
 builder.Services.AddScoped<SetAccountIdFilter>();
 builder.Services.AddScoped<SetTechnicianIdFilter>();
 builder.Services.AddScoped<AuthorizeTechnicianDetail>();
+builder.Services.AddScoped<ValidateInvoiceTotalFilter>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
