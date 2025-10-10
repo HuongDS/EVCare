@@ -130,10 +130,15 @@ builder.Services.AddHttpClient<IPayOSGateWay, PayOSGateWay>();
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<IRedisService, RedisService>();
 builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
+//builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
+//{
+//    c.BaseAddress = new Uri(builder.Configuration["AiService:BaseUrl"]!);
+//});
 builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
 {
-    c.BaseAddress = new Uri(builder.Configuration["AiService:BaseUrl"]!);
+    c.BaseAddress = new Uri("https://generativelanguage.googleapis.com/v1beta/");
 });
+//builder.Services.AddScoped<IAiInsightServices, MockAiInsightServices>();
 builder.Services.AddScoped<OnInvoiceCompleteHandler>();
 
 
