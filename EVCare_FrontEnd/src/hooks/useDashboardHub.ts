@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { DashboardUpdateDto } from "../models/Dashboard/dashBoardUpdateDto";
 import * as signalR from "@microsoft/signalr";
-import { getAccessToken } from "../token/tokenStore";
+// import { getAccessToken } from "../token/tokenStore";
 
 export function useDashboardHub(onUpdate: (data: DashboardUpdateDto) => void) {
   const connectionRef = useRef<signalR.HubConnection | null>(null);
@@ -11,7 +11,7 @@ export function useDashboardHub(onUpdate: (data: DashboardUpdateDto) => void) {
       conn = new signalR.HubConnectionBuilder()
         .withUrl(`${import.meta.env.VITE_API_BASE}/hubs/adminDashboard`, {
           withCredentials: true,
-          accessTokenFactory: () => getAccessToken() || "",
+          // accessTokenFactory: () => getAccessToken() || "",
         })
         .withAutomaticReconnect()
         .configureLogging(signalR.LogLevel.Information)

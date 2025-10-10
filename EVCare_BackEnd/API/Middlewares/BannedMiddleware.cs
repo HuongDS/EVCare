@@ -11,14 +11,22 @@ namespace API.Middlewares
         public BannedMiddleware(RequestDelegate next)
         {
             _next = next;
-           
+
         }
         public async Task InvokeAsync(HttpContext context, IAccountRepository _accountRepository)
         {
-            if (context.User?.Identity?.IsAuthenticated == true) {
+            if (context.Request.Path.StartsWithSegments("/hubs", StringComparison.OrdinalIgnoreCase))
+            {
+                await _next(context);
+                return;
+            }
+
+
+            if (context.User?.Identity?.IsAuthenticated == true)
+            {
                 var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var banned = await _accountRepository.CheckAccountIsBanned(int.Parse(userId));
-                if(banned == true)
+                if (banned == true)
                 {
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
                     context.Response.ContentType = "application/json; charset=utf-8";
@@ -29,14 +37,14 @@ namespace API.Middlewares
                     }, cancellationToken: context.RequestAborted);
                     return;
                 }
-                
-            
+
+
             }
             await _next(context);
 
-           
 
-            
+
+
         }
     }
 }
