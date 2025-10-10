@@ -90,7 +90,6 @@ namespace DataAccess.Repositories
                 .Include(o => o.Order)
                 .ThenInclude(a => a.Appointment)
                 .OrderByDescending(i => i.Updated_At)
-                .Take(model.pageSize)
                 .Select(i => new InvoiceViewModel
                 {
                     id = i.Id,
@@ -99,13 +98,14 @@ namespace DataAccess.Repositories
                     paymentMethod = i.Payment_Method,
                     paymentDate = i.Updated_At,
                     status = i.Status
-                }).AsQueryable();
+                })
+                .AsQueryable();
             return await PaginationHelper.PaginationAsync<InvoiceViewModel>(invoices, model.pageSize, model.pageIndex);
         }
 
         public async Task<Invoice> GetInvoiceByOrderCode(long orderCode)
         {
-           return await _dbContext.Invoices.FirstAsync(i => i.OrderCode == orderCode);
+            return await _dbContext.Invoices.FirstAsync(i => i.OrderCode == orderCode);
         }
 
         public async Task<Invoice> GetInvoiceByOrderId(int orderId)

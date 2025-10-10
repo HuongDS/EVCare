@@ -4,7 +4,6 @@ import { ERROR_MESSAGE } from "../constants/messages/Message";
 import type { InvoiceViewModel } from "../models/Invoice/InvoiceViewModel";
 import { api } from "../api/api";
 import type { ResponseDto } from "../models/AuthModel/authModel";
-import type { InvoiceQueryDto } from "../models/Invoice/InvoiceQueryDto";
 import type { PageResultDto } from "../models/PageResult/PageResultDto";
 
 export async function getInvoices() {
@@ -35,11 +34,12 @@ export async function getRevenue(year: number, month: number) {
   }
 }
 
-export async function getInvoicesWithPagination(data: InvoiceQueryDto) {
+export async function getInvoicesWithPagination(pageSize: number, pageIndex: number) {
   try {
     const response = await api.get<ResponseDto<PageResultDto<InvoiceViewModel>>>("/api/Invoice/get-recently-invoices", {
       params: {
-        data,
+        pageSize: pageSize,
+        pageIndex: pageIndex,
       },
     });
     return response.data;

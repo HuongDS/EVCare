@@ -2,7 +2,9 @@
 using System.Security.Authentication;
 using System.Text;
 using API.Filters;
+using API.Hubs;
 using API.Middlewares;
+using Application.DomainEvents;
 using Application.Interfaces;
 using Application.IService;
 using Application.Mapping;
@@ -40,8 +42,12 @@ builder.Services.AddControllers()
     .AddFluentValidation()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()); 
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+
+// SignalR
+builder.Services.AddSignalR();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -123,6 +129,12 @@ builder.Services.AddScoped<IReplenishmentPlanner, GeminiReplenishmentPlanner>();
 builder.Services.AddHttpClient<IPayOSGateWay, PayOSGateWay>();
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<IRedisService, RedisService>();
+builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
+builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
+{
+    c.BaseAddress = new Uri(builder.Configuration["AiService:BaseUrl"]!);
+});
+builder.Services.AddScoped<OnInvoiceCompleteHandler>();
 
 
 // AutoMapper
@@ -164,15 +176,24 @@ builder.Services.AddValidatorsFromAssemblyContaining<BlockedDatePostModelValidat
 
 
 // Add Cors
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll", builder =>
+//    {
+//        builder.WithOrigins("https://localhost:7228", "http://localhost:5173")
+//                .AllowAnyMethod()
+//               .AllowAnyHeader()
+//               .AllowCredentials();
+//    });
+//});
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
-    {
-        builder.WithOrigins("https://localhost:7228", "http://localhost:5173")
-                .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
-    });
+    options.AddPolicy("AllowAll", p => p
+        .WithOrigins("http://localhost:5173", "https://ev-care.netlify.app", "https://localhost:7228")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials());
 });
 
 // Authentication
@@ -194,7 +215,22 @@ builder.Services.AddAuthentication(opt =>
         IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key),
         ClockSkew = TimeSpan.Zero
     };
+    opt.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                (path.StartsWithSegments("/hubs/adminDashboard")))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 })
+
     .AddGoogle(opt =>
     {
         opt.ClientId = builder.Configuration["Authentication:Google:ClientId"];
@@ -254,6 +290,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 
     return ConnectionMultiplexer.Connect(options);
 });
+//builder.Services.AddStackExchangeRedisCache(o => { o.Configuration = builder.Configuration["Redis:ConnectionString"]; });
 
 //hangfire
 builder.Services.AddHangfire(cfg => cfg
@@ -275,13 +312,13 @@ RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
     );
 RecurringJob.AddOrUpdate<IReminderService>(
     "reminder-service",
-     job=>job.SendEmailRemindersAsync(),
+     job => job.SendEmailRemindersAsync(),
      Cron.Daily(10),
      tzVn
     );
 RecurringJob.AddOrUpdate<IAttendanceService>(
     "attendacne-service",
-    job=>job.MarkAttendanceAsync(),
+    job => job.MarkAttendanceAsync(),
     Cron.Daily(5),
     tzVn
     );
@@ -306,5 +343,5 @@ app.UseMiddleware<BannedMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHub<AdminDashboardHub>("/hubs/adminDashboard").RequireAuthorization();
 app.Run();
