@@ -1,47 +1,64 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ClipboardClock, HandCoins, TicketX, Users } from "lucide-react";
+import { getInsights, getSummary } from "../../../services/aiService";
+import type { SummaryRes } from "../../../models/Dashboard/dashBoardSummaryDto";
+import { useDashboardHub } from "../../../hooks/useDashboardHub";
 
 const stats = [
-  { icon: <Users />, label: "Customers", value: "1,250", color: "#adaa00" },
-  { icon: <ClipboardClock />, label: "Appointments", value: "1,250", color: "#2196f3" },
-  { icon: <TicketX />, label: "Canceled Appointments", value: "1,250", color: "#ff1500" },
-  { icon: <HandCoins />, label: "Total Revenue", value: "1,250", color: "#00ad4e" },
+  { icon: <Users />, label: "Customers", value: "", color: "#adaa00" },
+  { icon: <ClipboardClock />, label: "Appointments", value: "", color: "#2196f3" },
+  { icon: <TicketX />, label: "Canceled Appointments", value: "", color: "#ff1500" },
+  { icon: <HandCoins />, label: "Total Revenue", value: "", color: "#00ad4e" },
 ];
 
-interface Props {
-  revenue: number;
-  numberOfCustomers: number;
-  numberOfAppointments: number;
-  numberOfCanceledAppointments: number;
-}
+const StatsGrid: React.FC = () => {
+  const [data, setData] = useState<SummaryRes | null>(null);
+  const [insight, setInsight] = useState("");
 
-const StatsGrid: React.FC<Props> = ({
-  revenue,
-  numberOfCustomers,
-  numberOfAppointments,
-  numberOfCanceledAppointments,
-}: Props) => {
+  const from = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString();
+  const to = new Date().toISOString();
+
+  const refresh = async () => await getSummary().then((r) => setData(r));
+
   useEffect(() => {
-    stats[0].value = numberOfCustomers.toString();
-    stats[1].value = numberOfAppointments.toString();
-    stats[2].value = numberOfCanceledAppointments.toString();
-    stats[3].value = revenue.toString();
-  }, [revenue, numberOfAppointments, numberOfCanceledAppointments, numberOfCustomers]);
+    refresh();
+    getInsights(from, to).then((r) => setInsight(r.message));
+  }, [from, to]);
+
+  useDashboardHub(() => {
+    // when realtime event comes, refresh quick summary
+    refresh();
+  });
+
+  useEffect(() => {
+    stats[0].value = data?.customers.toString() ?? "";
+    stats[1].value = data?.appointments.toString() ?? "";
+    stats[2].value = data?.cancelAppointments.toString() ?? "";
+    stats[3].value = data?.totalRevenue.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) ?? "0";
+  }, [data?.customers, data?.appointments, data?.cancelAppointments, data?.totalRevenue]);
 
   return (
-    <div className="stats-grid">
-      {stats.map((s, i) => (
-        <div className="stat-card" key={i}>
-          <div className="stat-icon">{s.icon}</div>
-          <div className="stat-info">
-            <div className="stat-label">{s.label}</div>
-            <div className="stat-value" style={{ color: s.color }}>
-              {s.value}
+    <>
+      <div className="stats-grid">
+        {stats.map((s, i) => (
+          <div className="stat-card" key={i}>
+            <div className="stat-icon">{s.icon}</div>
+            <div className="stat-info">
+              <div className="stat-label">{s.label}</div>
+              <div className="stat-value" style={{ color: s.color }}>
+                {s.value}
+              </div>
             </div>
           </div>
+        ))}
+      </div>
+      <div className="chart-card" style={{ marginTop: 12 }}>
+        <div className="chart-header">
+          <h3>AI Insight</h3>
         </div>
-      ))}
-    </div>
+        <p>💡 {insight || "Generating insight..."}</p>
+      </div>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import React from "react";
 import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
+import { formatDate } from "../../../utils/formatDate";
 
 // const orders = [
 //     {id: "#00775", date: "2023-12-08", customer: "Jenny Wilson", status: "Completed", total: "$1,552.00"},
@@ -32,17 +33,17 @@ const OrdersTable: React.FC<Props> = ({ listInvoices }: Props) => {
           </tr>
         </thead>
         <tbody>
-          {listInvoices.map((o) => (
+          {listInvoices.map((o, i) => (
             <tr key={o.id}>
               <td>
-                <span className="order-number">{o.id}</span>
+                <span className="order-number">{++i}</span>
               </td>
-              <td>{o.appointmentDate}</td>
+              <td>{formatDate(o.appointmentDate)}</td>
               <td>{o.paymentMethod}</td>
               <td>
                 <span className={`status-badge status-${o.status.toLowerCase()}`}>{o.status}</span>
               </td>
-              <td>{o.totalPrice}</td>
+              <td>{o.totalPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</td>
             </tr>
           ))}
         </tbody>
