@@ -10,6 +10,9 @@ using DataAccess.Enums;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace Application.Services
 {
@@ -18,12 +21,17 @@ namespace Application.Services
         private readonly EVCareDbContext _dbContext;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IInvoiceRepository _invoiceRepository;
+        private readonly IDatabase _redis;
 
-        public AdminDashboardServices(EVCareDbContext dbContext, IAppointmentRepository appointmentRepository, IInvoiceRepository invoiceRepository)
+        public AdminDashboardServices(EVCareDbContext dbContext,
+            IAppointmentRepository appointmentRepository,
+            IInvoiceRepository invoiceRepository,
+            IConnectionMultiplexer redis)
         {
             _dbContext = dbContext;
             _appointmentRepository = appointmentRepository;
             _invoiceRepository = invoiceRepository;
+            _redis = redis.GetDatabase();
         }
 
         public async Task<DashboardSummaryDto> GetSummaryAsync(DateTime? from = null, DateTime? to = null)
@@ -59,7 +67,8 @@ namespace Application.Services
 
 
             // Last month range for comparison
-            var lastFrom = from.AddMonths(-1); var lastTo = to.AddMonths(-1);
+            var lastFrom = from > DateTime.MinValue.AddMonths(1) ? from.AddMonths(-1) : from;
+            var lastTo = to > DateTime.MinValue.AddMonths(1) ? to.AddMonths(-1) : to;
             var revLast = await _dbContext.Invoices
             .Where(i => i.Status == PaymentStatusEnum.Completed && i.Updated_At >= lastFrom && i.Updated_At <= lastTo)
             .GroupBy(i => i.Updated_At!.Date)
@@ -73,6 +82,20 @@ namespace Application.Services
 
 
             return new PerformanceDto(labels, thisSeries, lastSeries);
+        }
+
+        public async Task<DashboardSummaryDto> GetSummaryCachedAsync(DateTime? from = null, DateTime? to = null)
+        {
+            var key = "dashboard:summary";
+            var cached = await _redis.StringGetAsync(key);
+            if (!string.IsNullOrEmpty(cached))
+                return JsonConvert.DeserializeObject<DashboardSummaryDto>(cached)!;
+
+
+            var fresh = await GetSummaryAsync(from, to);
+            await _redis.StringSetAsync(key, JsonConvert.SerializeObject(fresh),
+            TimeSpan.FromMinutes(5));
+            return fresh;
         }
     }
 }

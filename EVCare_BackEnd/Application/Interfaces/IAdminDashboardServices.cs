@@ -11,5 +11,6 @@ namespace Application.Interfaces
     {
         Task<PerformanceDto> GetPerformanceAsync(DateTime from, DateTime to);
         Task<DashboardSummaryDto> GetSummaryAsync(DateTime? from = null, DateTime? to = null);
+        Task<DashboardSummaryDto> GetSummaryCachedAsync(DateTime? from = null, DateTime? to = null);
     }
 }
