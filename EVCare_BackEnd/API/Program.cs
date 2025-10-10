@@ -345,11 +345,10 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("AllowAll");
 
-app.UseMiddleware<RateLimitMiddleware>();
 app.UseAuthentication();
-app.UseMiddleware<BannedMiddleware>();
-
 app.UseAuthorization();
+app.UseMiddleware<RateLimitMiddleware>();
+app.UseMiddleware<BannedMiddleware>();
 
 
 app.MapControllers();
