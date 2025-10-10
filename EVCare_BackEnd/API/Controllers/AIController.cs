@@ -1,6 +1,7 @@
 ﻿using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
+using Application.Services;
 using DataAccess.Dtos.AI;
 using DataAccess.Dtos.Pagination;
 using Microsoft.AspNetCore.Authorization;
@@ -14,14 +15,21 @@ namespace API.Controllers
     public class AIController : ControllerBase
     {
         private readonly IReplenishmentPlanner _replenishmentPlanner;
-        public AIController(IReplenishmentPlanner replenishmentPlanner)
+        private readonly IAdminDashboardServices _adminDashboardServices;
+        private readonly IAiInsightServices _aiInsightServices;
+
+        public AIController(IReplenishmentPlanner replenishmentPlanner,
+            IAdminDashboardServices adminDashboardServices,
+            IAiInsightServices aiInsightServices)
         {
             _replenishmentPlanner = replenishmentPlanner;
+            _adminDashboardServices = adminDashboardServices;
+            _aiInsightServices = aiInsightServices;
         }
 
         [HttpGet("replenishment-gemini")]
-        [Authorize(Roles ="Admin")]
-        public async Task<IActionResult> Get([FromQuery]AIQueryDto model)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Get([FromQuery] AIQueryDto model)
         {
             try
             {
@@ -33,7 +41,8 @@ namespace API.Controllers
                     statusCode = HttpStatus.OK
                 });
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
@@ -41,6 +50,30 @@ namespace API.Controllers
                     message = ex.Message,
                 });
             }
+        }
+
+        [HttpGet("summary")]
+        public async Task<IActionResult> Summary()
+        {
+            return Ok(await _adminDashboardServices.GetSummaryAsync());
+        }
+
+        [HttpGet("performance")]
+        public async Task<IActionResult> Performance([FromQuery] DateTime from, [FromQuery] DateTime to)
+        {
+            return Ok(await _adminDashboardServices.GetPerformanceAsync(from, to));
+        }
+
+        [HttpGet("insights")]
+        public async Task<IActionResult> Insights([FromQuery] DateTime from, [FromQuery] DateTime to)
+        {
+            return Ok(await _aiInsightServices.GenerateInsightAsync(from, to));
+        }
+
+        [HttpGet("predict-revenue")]
+        public async Task<IActionResult> PredictRevenue([FromQuery] DateTime from, [FromQuery] int nextDays = 7)
+        {
+            return Ok(await _aiInsightServices.PredictRevenueAsync(from, nextDays));
         }
     }
 }

@@ -136,8 +136,8 @@ namespace API.Controllers
                 return BadRequest("Error");
 
             }
-           
-         }
+
+        }
 
         [HttpGet("invoices")]
         [Authorize(Roles = "Customer")]
@@ -205,7 +205,7 @@ namespace API.Controllers
                 return Ok(new ResponseDto<PageResultDto<InvoiceViewModel>>
                 {
                     statusCode = HttpStatus.OK,
-                    message = "Cancel PayOS order successfully",
+                    message = Message.INVOICE_GET_SUCCESS,
                     data = invoices
                 });
             }
