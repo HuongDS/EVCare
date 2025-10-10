@@ -525,6 +525,7 @@ namespace API.Controllers
                     data = null
                 });
             }
+        }
 
         [HttpGet("count-appointments-in-month/{year}/{month}")]
         [Authorize(Roles = "Admin, Staff")]
