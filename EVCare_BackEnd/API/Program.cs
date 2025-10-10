@@ -202,7 +202,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<BlockedDatePostModelValidat
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", p => p
-        .WithOrigins("http://localhost:5173", "https://ev-care.netlify.app", "https://localhost:7228")
+        .WithOrigins("http://localhost:5173", "https://ev-care.netlify.app", "https://localhost:7228", "https://evcare.service.signalr.net")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials());
