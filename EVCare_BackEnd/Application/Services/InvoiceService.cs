@@ -6,9 +6,11 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
+using Application.DomainEvents;
 using Application.Interfaces;
 using AutoMapper;
 using DataAccess.Dtos.Invoice;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
 using DataAccess.Enums;
 using DataAccess.Interfaces;
@@ -29,6 +31,7 @@ namespace Application.Services
         private readonly INotificationServices _notificationServices;
         private readonly IAppointmentService _appointmentService;
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly OnInvoiceCompleteHandler _onInvoiceCompleteHandler;
         private readonly IServiceCenterService _serviceCenterService;
         private readonly IOrderService _orderService;
         private readonly IPayOSService _payOSService;
@@ -37,15 +40,17 @@ namespace Application.Services
 
         public InvoiceService(IVnPayService vnPayService, IMapper mapper,
             IInvoiceRepository invoiceRepository
-            ,IOrderRepository orderRepository,
+            , IOrderRepository orderRepository,
             INotificationServices notificationServices,
             IAppointmentService appointmentService,
             IServiceCenterService serviceCenterService,
             IOrderService orderService
-            ,IPayOSService payOSService,
+            , IPayOSService payOSService,
             IRedisService redisService,
             IPayOSGateWay gw,
-            IAppointmentRepository appointmentRepository
+            IAppointmentRepository appointmentRepository,
+            OnInvoiceCompleteHandler onInvoiceCompleteHandler
+
             )
         {
             _vnPayService = vnPayService;
@@ -60,6 +65,7 @@ namespace Application.Services
             _gw = gw;
             _redisService = redisService;
             _appointmentRepository = appointmentRepository;
+            _onInvoiceCompleteHandler = onInvoiceCompleteHandler;
         }
 
         public async Task<int> CreateInvoice(InvoiceCreateModel model)
@@ -75,6 +81,8 @@ namespace Application.Services
             appointment.Status = AppointmentStatusEnum.Done;
             await _appointmentRepository.UpdateAsync(appointment);
             await _invoiceRepository.AddAsync(invoice);
+            // send noti to admin dashboard
+            await _onInvoiceCompleteHandler.HandleAsync();
             return invoice.Id;
         }
 
@@ -128,23 +136,24 @@ namespace Application.Services
                 appointment.Status = AppointmentStatusEnum.Done;
                 await _appointmentRepository.UpdateAsync(appointment);
                 await _invoiceRepository.UpdateAsync(invoice);
-
+                // send noti to admin dashboard
+                await _onInvoiceCompleteHandler.HandleAsync();
 
 
             }
         }
         public async Task<string> CreatePayOSUrl(InvoiceCreateModel model)
         {
-           
+
             var invoices = await _invoiceRepository.GetInvoiceByOrderId(model.OrderId);
             if (invoices != null) throw new Exception("Order has existed");
-            var (url,orderCode) =  await _payOSService.CreateCheckoutUrlAsync(model);
+            var (url, orderCode) = await _payOSService.CreateCheckoutUrlAsync(model);
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.OrderCode = orderCode;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
-            await _redisService.SaveDate(invoice,orderCode.ToString());
+            await _redisService.SaveDate(invoice, orderCode.ToString());
             return url;
         }
         public async Task HandleWebhookAsync(string raw, string? sig)
@@ -167,7 +176,7 @@ namespace Application.Services
 
                 var orderCode = long.Parse(oc);
                 var invoice = await _redisService.GetObjectData<Invoice>(orderCode.ToString());
-               
+
                 if (invoice == null)
                 {
                     return;
@@ -191,7 +200,8 @@ namespace Application.Services
                     {
                         await _redisService.DeleteAsync(orderCode.ToString());
                         await _invoiceRepository.AddAsync(invoice);
-                        
+                        // send noti to admin dashboard
+                        await _onInvoiceCompleteHandler.HandleAsync();
                     }
                     catch (Exception ex)
                     {
@@ -203,7 +213,7 @@ namespace Application.Services
             }
             catch (Exception ex)
             {
-                throw; 
+                throw;
             }
         }
 
@@ -212,12 +222,20 @@ namespace Application.Services
             return await _invoiceRepository.GetInvoicesByCustomerId(customerId);
 
         }
+        public async Task<decimal> GetRevenue(int year, int month)
+        {
+            return await _invoiceRepository.GetRevenue(year, month);
+        }
+        public async Task<PageResultDto<InvoiceViewModel>> GetRecentInVoices(InvoiceQueryDto model)
+        {
+            return await _invoiceRepository.GetRecentInVoices(model);
+        }
 
         public async Task CancelPayOSOrder(int orderId)
         {
             var invoice = await _invoiceRepository.GetInvoiceByOrderId(orderId);
             if (invoice == null) throw new Exception("Invoice not found");
-            await _invoiceRepository.DeleteAsync(invoice.Id);  
+            await _invoiceRepository.DeleteAsync(invoice.Id);
         }
     }
 }
