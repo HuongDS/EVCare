@@ -55,7 +55,7 @@ namespace API.Controllers
         [HttpGet("summary")]
         public async Task<IActionResult> Summary()
         {
-            return Ok(await _adminDashboardServices.GetSummaryAsync());
+            return Ok(await _adminDashboardServices.GetSummaryCachedAsync());
         }
 
         [HttpGet("performance")]
@@ -64,7 +64,7 @@ namespace API.Controllers
             var now = DateTime.Now;
             var fromDate = from ?? now.AddDays(-6);
             var toDate = to ?? now;
-            return Ok(await _adminDashboardServices.GetSummaryCachedAsync(fromDate, toDate));
+            return Ok(await _adminDashboardServices.GetPerformanceAsync(fromDate, toDate));
         }
 
         [HttpGet("insights")]

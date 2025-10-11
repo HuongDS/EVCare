@@ -2,31 +2,33 @@ import React, { useEffect, useMemo, useState } from "react";
 import { getPerformance } from "../../../services/aiService";
 import { useDashboardHub } from "../../../hooks/useDashboardHub";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+// import type { PerfRes } from "../../../models/Dashboard/perfRes";
 import type { PerfRes } from "../../../models/Dashboard/perfRes";
 
 const PerformanceChart: React.FC = () => {
-  const [data, setData] = useState<PerfRes | null>(null);
+  const [perfData, setPerfData] = useState<PerfRes | null>(null);
 
   const from = useMemo(() => new Date(Date.now() - 6 * 24 * 3600 * 1000).toISOString(), []);
   const to = useMemo(() => new Date().toISOString(), []);
 
   useEffect(() => {
-    getPerformance(from, to).then((r) => setData(r));
+    const fetchData = async () => {
+      await getPerformance(from, to).then((r) => setPerfData(r));
+    };
+    fetchData();
   }, [from, to]);
 
   useDashboardHub(() => {
     // on any realtime update, refetch
-    getPerformance(from, to).then((r) => setData(r));
+    getPerformance(from, to).then((r) => setPerfData(r));
   });
 
-  const merged = useMemo(() => {
-    if (!data) return [];
-    return data.labels.map((label, i) => ({
+  const merger =
+    perfData?.labels.map((label, i) => ({
       label,
-      thisMonth: data.thisMonth[i] ?? 0,
-      lastMonth: data.lastMonth[i] ?? 0,
-    }));
-  }, [data]);
+      thisMonth: perfData.thisMonth[i],
+      lastMonth: perfData.lastMonth[i],
+    })) || [];
 
   return (
     <div className="chart-card">
@@ -42,7 +44,7 @@ const PerformanceChart: React.FC = () => {
 
       {/* <canvas ref={canvasRef} height={80}></canvas> */}
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={merged} margin={{ top: 10, right: 16, left: -10, bottom: 0 }}>
+        <LineChart data={merger} margin={{ top: 10, right: 16, left: -10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis tickFormatter={(v) => `${v}₫`} />
