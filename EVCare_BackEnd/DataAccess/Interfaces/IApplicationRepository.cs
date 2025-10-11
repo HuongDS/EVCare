@@ -14,5 +14,6 @@ namespace DataAccess.Interfaces
         Task<bool> GetApplicationByEmployeeIDAndDateOffAsync(int employeeId, DateTime dateOff);
         Task<PageResultDto<ApplicationViewDto>> GetApplicationByEmployeeIdAsync(ApplicationQueryDto query, int employeeId);
         Task<IEnumerable<DataAccess.Entities.Application>> GetApplicationsToday();
+        Task<List<DateOnly>> GetDateoff(int employeeId);
     }
 }

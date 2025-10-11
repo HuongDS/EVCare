@@ -50,5 +50,13 @@ namespace DataAccess.Repositories
                 .Where(x => DateOnly.FromDateTime(x.DateOff) == DateOnly.FromDateTime(DateTime.Now) && x.IsApproved == true)
                 .ToListAsync();
         }
+
+        public async Task<List<DateOnly>> GetDateoff(int employeeId)
+        {
+            return await _dbContext.Applications.AsNoTracking()
+                .Where(a => a.EmployeeId == employeeId && DateTime.Now<=a.DateOff)
+                .Select(a => DateOnly.FromDateTime(a.DateOff))
+                .ToListAsync();
+        }
     }
 }
