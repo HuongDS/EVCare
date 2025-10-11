@@ -126,5 +126,7 @@ namespace Application.Infrastructures
         public const string INVOICE_PAYMENT_SUCCESS = "Invoice payment processed successfully.";
         public const string GET_REVENUE_SUCCESS = "Get revenue successfully.";
         public const string GET_RECENT_INVOICES_SUCCESS = "Get recent invoices successfully.";
+
+        public static string APPLICATION_GET_SUCCESS = "Application get successfully";
     }
 }
