@@ -28,10 +28,14 @@ namespace DataAccess.Repositories
 
         public async Task MarkBusyForTechnician()
         {
+            var activeTechnicianIds = await _dbContext.TechnicianWorkingSessions
+                                       .Where(tws => tws.EndTime == null)
+                                       .Select(tws => tws.TechnicianId)
+                                       .Distinct()
+                                       .ToListAsync();
             await _dbContext.Employees
-                .Where(x=> x.Status !=EmployeeStatusEnum.OnLeave && 
-                x.Technician!=null && x.Technician.TechnicianWorkingSessions.Any(x=>x.EndTime!=null))
-                .ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Busy));
+                   .Where(e => e.Status == EmployeeStatusEnum.Available && activeTechnicianIds.Contains(e.TechnicianId.Value))
+                   .ExecuteUpdateAsync(e => e.SetProperty(e => e.Status, _ => EmployeeStatusEnum.Busy));
 
 
         }
