@@ -20,7 +20,7 @@ namespace DataAccess.Entities
         public string? Avatar { get; set; }
         public ICollection<Application> Applications { get; set; }
       
-       
+       public int? TechnicianId { get; set; }
         public Technician? Technician { get; set; }
         public ICollection<Appointment> Appointments { get; set; }
 
