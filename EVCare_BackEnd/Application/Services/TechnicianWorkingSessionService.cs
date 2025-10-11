@@ -28,6 +28,7 @@ namespace Application.Services
             _appointmentRepository = appointmentRepository;
             _technicianWorkingSessionRepository = technicianWorkingSessionRepository;
             _notificationServices = notificationServices;
+            _employeeRepository = employeeRepository;
         }
 
         public async Task AddTechnicianToOrder(AssignTechniciansModel model)
@@ -40,6 +41,9 @@ namespace Application.Services
                 StartTime = DateTime.Now,
                 Status = model.Status
             });
+            var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(model.OrderId); 
+            appointment.Status = DataAccess.Enums.AppointmentStatusEnum.AddingPart;
+            await _appointmentRepository.UpdateAsync(appointment);
             await _employeeRepository.MarkBusyForTechnician(model.TechnicianIds);
             await _technicianWorkingSessionRepository.AddRange(lists);
         }
