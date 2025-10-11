@@ -1,41 +1,22 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import type { DashboardUpdateDto } from "../models/Dashboard/dashBoardUpdateDto";
-import * as signalR from "@microsoft/signalr";
+import { getAdminDashboardConnection } from "../signalr/adminConnection";
 // import { getAccessToken } from "../token/tokenStore";
+import * as signalR from "@microsoft/signalr";
 
 export function useDashboardHub(onUpdate: (data: DashboardUpdateDto) => void) {
-  const connectionRef = useRef<signalR.HubConnection | null>(null);
-
   useEffect(() => {
-    let conn: signalR.HubConnection | null = null;
-    const connect = async () => {
-      conn = new signalR.HubConnectionBuilder()
-        .withUrl(`${import.meta.env.VITE_API_BASE}/hubs/adminDashboard`, {
-          // withCredentials: true,
-          // accessTokenFactory: () => getAccessToken() || "",
-        })
-        .withAutomaticReconnect()
-        .configureLogging(signalR.LogLevel.Information)
-        .build();
-
-      try {
-        await conn.start();
-        console.log("Connected to Admin Dashboard Hub");
-
-        conn.on("AdminDashboardUpdate", (payload: DashboardUpdateDto) => {
-          onUpdate(payload);
-        });
-
-        connectionRef.current = conn;
-      } catch (err) {
-        console.error("Failed to connect SignalR:", err);
-      }
-    };
-
-    connect();
-
+    const conn = getAdminDashboardConnection(import.meta.env.VITE_API_BASE);
+    const handler = (payload: DashboardUpdateDto) => onUpdate(payload);
+    conn.on("AdminDashboardUpdate", handler);
+    if (conn.state === signalR.HubConnectionState.Disconnected) {
+      conn
+        .start()
+        .then(() => console.log("[Hub] Connected"))
+        .catch((err) => console.error("[Hub] Start failed", err));
+    }
     return () => {
-      if (conn) conn.stop().catch(() => {});
+      conn.off("AdminDashboardUpdate", handler);
     };
   }, [onUpdate]);
 }
