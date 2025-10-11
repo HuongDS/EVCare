@@ -2,6 +2,7 @@
 using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Review;
 using DataAccess.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -38,7 +39,59 @@ namespace API.Controllers
 
                     });
 
-                    
+
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                });
+            }
+        }
+
+        [Authorize(Roles = "Customer")]
+        [ServiceFilter(typeof(CheckAuthorizationOfCustomerFilter))]
+        [HttpGet("by-appointment/{appointmentId}")]
+        public async Task<IActionResult> GetReviewByAppointment(int appointmentId)
+        {
+            try
+            {
+                var result = await _reviewService.GetByAppointmentId(appointmentId);
+                return Ok(
+                    new ResponseDto<ReviewViewDetailModel>
+                    {
+                        statusCode = HttpStatus.OK,
+                        message = "Get review successfully",
+                        data = result
+                    });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllReviews([FromQuery] ReviewQueryDto query)
+        {
+
+            try
+            {
+                var result = await _reviewService.GetAllReviews(query);
+                return Ok(
+                    new ResponseDto<PageResultDto<ReviewViewDetailModel>>
+                    {
+                        statusCode = HttpStatus.OK,
+                        message = "Get reviews successfully",
+                        data = result
+                    });
 
             }
             catch (Exception ex)
