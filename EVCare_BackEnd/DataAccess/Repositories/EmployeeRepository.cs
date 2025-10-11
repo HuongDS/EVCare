@@ -38,7 +38,7 @@ namespace DataAccess.Repositories
 
         public async Task MarkBusyForTechnician(IEnumerable<int> technicianIds)
         {
-            await _dbContext.Employees.Where(x=>technicianIds.Contains(x.Id))
+            await _dbContext.Employees.Where(x=>technicianIds.Contains(x.TechnicianId.Value))
                 .ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Busy));
         }
     }

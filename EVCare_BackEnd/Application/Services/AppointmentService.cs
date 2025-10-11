@@ -175,7 +175,7 @@ namespace Application.Services
                 throw new Exception("Appointment not found");
             }
             _mapper.Map(model, appointment);
-            appointment.EmployeeId = employeeId;
+            if(appointment.Employee == null) appointment.EmployeeId = employeeId;
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
 
