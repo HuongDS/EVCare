@@ -69,6 +69,7 @@ namespace Application.Services
             }
             if(model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Completed)
             {
+                //await _employeeRepository.MarkAvaliableTechnician(technician);
                 if (await _technicianWorkingSessionRepository.CheckOrderDone(model.OrderId))
                 {
                     var order = await _orderRepository.GetByIdAsync(model.OrderId);
