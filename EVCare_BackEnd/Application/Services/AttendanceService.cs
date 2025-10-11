@@ -22,8 +22,9 @@ namespace Application.Services
         {
             await _employeeRepository.MarkAvaliableAllEmployees();
             var applications = await _applicationRepository.GetApplicationsToday();
-            foreach (var application in applications) {
-                
+            foreach (var application in applications)
+            {
+
                 var employee = await _employeeRepository.GetByIdAsync(application.EmployeeId);
                 employee.Status = DataAccess.Enums.EmployeeStatusEnum.OnLeave;
                 await _employeeRepository.UpdateAsync(employee);
