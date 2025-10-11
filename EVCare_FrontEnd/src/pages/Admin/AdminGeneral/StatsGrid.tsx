@@ -15,15 +15,15 @@ const StatsGrid: React.FC = () => {
   const [data, setData] = useState<SummaryRes | null>(null);
   const [insight, setInsight] = useState("");
 
-  const from = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString();
-  const to = new Date().toISOString();
+  const from = React.useMemo(() => new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString(), []);
+  const to = React.useMemo(() => new Date().toISOString(), []);
 
   const refresh = async () => await getSummary().then((r) => setData(r));
 
   useEffect(() => {
     refresh();
     getInsights(from, to).then((r) => setInsight(r.message));
-  }, [from, to]);
+  }, []);
 
   useDashboardHub(() => {
     // when realtime event comes, refresh quick summary
@@ -31,10 +31,10 @@ const StatsGrid: React.FC = () => {
   });
 
   useEffect(() => {
-    stats[0].value = data?.customers.toString() ?? "";
-    stats[1].value = data?.appointments.toString() ?? "";
-    stats[2].value = data?.cancelAppointments.toString() ?? "";
-    stats[3].value = data?.totalRevenue.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) ?? "0";
+    stats[0].value = data?.customers?.toString() ?? "";
+    stats[1].value = data?.appointments?.toString() ?? "";
+    stats[2].value = data?.cancelAppointments?.toString() ?? "";
+    stats[3].value = data?.totalRevenue?.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) ?? "0";
   }, [data?.customers, data?.appointments, data?.cancelAppointments, data?.totalRevenue]);
 
   return (
