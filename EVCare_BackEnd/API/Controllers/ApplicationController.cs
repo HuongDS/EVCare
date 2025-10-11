@@ -3,6 +3,7 @@ using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Applications;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -35,8 +36,14 @@ namespace API.Controllers
                     dateOff = data.dateOff,
                     reason = data.reason
                 };
-                var result = await _applicationServices.SendApplicationAsync(createData);
-                return Ok(result);
+                var result = await _applicationServices.CreateApplicationAsync(createData);
+                return Ok(new ResponseDto<int>
+                {
+
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPLICATION_SENT_SUCCESS,
+                    data = result
+                });
             }
             catch (Exception ex)
             {
@@ -48,5 +55,61 @@ namespace API.Controllers
                 });
             }
         }
+
+        [HttpGet("get-application")]
+        [Authorize(Roles = "Staff,Technician")]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
+        public async Task<IActionResult> GetApplicationAsync([FromQuery] ApplicationQueryDto query)
+        {
+            try
+            {
+                var employeeId = (int)HttpContext.Items["EmployeeId"];
+                var result = await _applicationServices.GetApplicationAsync(query,employeeId);
+                return Ok(new ResponseDto<PageResultDto<ApplicationViewDto>>
+                {
+                    statusCode = HttpStatus.OK,
+                    data = result,
+                    message = Message.APPLICATION_GET_SUCCESS
+
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+
+        [HttpGet("get-dateoff")]
+        [Authorize(Roles = "Staff,Technician")]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
+        public async Task<IActionResult> GetDateOffAsync()
+        {
+            try
+            {
+                var employeeId = (int)HttpContext.Items["EmployeeId"];
+                var result = await _applicationServices.GetDateOffAsync(employeeId);
+                return Ok(new ResponseDto<List<DateOnly>>
+                {
+                    statusCode = HttpStatus.OK,
+                    data = result,
+                    message = Message.APPLICATION_GET_SUCCESS
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+
     }
 }
