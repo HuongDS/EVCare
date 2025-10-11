@@ -356,10 +356,10 @@ app.UseMiddleware<BannedMiddleware>();
 
 app.MapControllers();
 //app.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
-app.UseAzureSignalR(routes =>
-{
-    routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
-});
+//app.UseAzureSignalR(routes =>
+//{
+//    routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+//});
 //app.UseEndpoints(endpoints =>
 //{
 //    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
