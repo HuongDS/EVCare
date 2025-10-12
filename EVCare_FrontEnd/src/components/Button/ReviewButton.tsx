@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 type ActionButtonProps = {
   text: string;
@@ -6,6 +6,8 @@ type ActionButtonProps = {
   backgroundColor: string;
   action: () => void;
   icon?: React.ReactNode;
+  type?: "button" | "submit";
+  disabled?: boolean;
 };
 
 const ActionButton = styled.button<{ $color: string; $bg: string }>`
@@ -30,9 +32,17 @@ export default function ButtonAction({
   color,
   backgroundColor,
   action,
+  type = "button",
+  disabled = false,
 }: ActionButtonProps) {
   return (
-    <ActionButton $color={color} $bg={backgroundColor} onClick={action}>
+    <ActionButton
+      $color={color}
+      $bg={backgroundColor}
+      onClick={action}
+      type={type}
+      disabled={disabled}
+    >
       {icon}
       {text}
     </ActionButton>

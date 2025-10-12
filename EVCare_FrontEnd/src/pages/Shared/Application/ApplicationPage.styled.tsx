@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const PageWrapper = styled.div`
   width: 100%;
+  min-height: 95vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -54,4 +55,8 @@ export const EmptyText = styled.p`
   font-size: 1em;
   color: #555;
   text-align: center;
+`;
+
+export const PaginationWrapper = styled.div`
+  margin-top: auto;
 `;

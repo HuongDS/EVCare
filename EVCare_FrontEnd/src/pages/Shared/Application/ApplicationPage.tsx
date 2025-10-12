@@ -1,10 +1,15 @@
-import React from "react";
+// src/pages/Shared/Application/ApplicationPage.tsx
+import React, { useState } from "react";
 import ApplicationForm from "../../../components/Application/Application";
 import SortTable from "../../Technician/Technician_Component/SortTable";
 import ApplicationCard from "./ApplicationCard";
 import { useQuery } from "@tanstack/react-query";
 import { getApplications } from "../../../services/getApplicationApi";
-import type { ApplicationResponseDTO } from "../../../models/ApplicationModel/ApplicationModels";
+import type {
+  ApplicationResponseDTO,
+  ResponseDto,
+  PageModel,
+} from "../../../models/ApplicationModel/ApplicationModels";
 import {
   PageWrapper,
   SectionTitle,
@@ -12,7 +17,9 @@ import {
   LoadingText,
   ErrorText,
   EmptyText,
+  PaginationWrapper,
 } from "./ApplicationPage.styled";
+import { Pagination } from "../../../components/Paginations/Pagination";
 
 interface ApplicationPageProps {
   tabs: string[];
@@ -22,6 +29,8 @@ interface ApplicationPageProps {
   onError?: (message: string) => void;
 }
 
+const PAGE_SIZE = 3; // Số card hiển thị mỗi trang
+
 const ApplicationPage: React.FC<ApplicationPageProps> = ({
   tabs,
   activeTab,
@@ -29,19 +38,43 @@ const ApplicationPage: React.FC<ApplicationPageProps> = ({
   onSuccess,
   onError,
 }) => {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["myApplications"],
-    queryFn: () => getApplications({ isApproved: undefined, pageSize: 50 }),
+  const [pageIndex, setPageIndex] = useState(1);
+
+  const {
+    data: applicationsData,
+    isLoading,
+    isError,
+  } = useQuery<ResponseDto<PageModel<ApplicationResponseDTO>>, Error>({
+    queryKey: ["myApplications", pageIndex],
+    queryFn: () =>
+      getApplications({
+        isApproved: undefined,
+        pageSize: PAGE_SIZE,
+        pageIndex,
+      }),
+    staleTime: 1000 * 60, // cache 1 phút
   });
 
-  const applications: ApplicationResponseDTO[] = data?.data?.items ?? [];
+  const applications = applicationsData?.data?.items ?? [];
+  const totalPages = applicationsData?.data?.totalPages ?? 1;
+  const totalItems = applicationsData?.data?.totalItems ?? 0;
+
+  const handlePageChange = (page: number) => {
+    setPageIndex(page);
+  };
 
   return (
     <PageWrapper>
       <SortTable sortName={tabs} active={activeTab} onChange={onTabChange} />
 
       {activeTab === "Send Application" ? (
-        <ApplicationForm onSuccess={onSuccess} onError={onError} />
+        <ApplicationForm
+          onSuccess={(data) => {
+            onSuccess?.(data);
+            setPageIndex(1); // Reset về page 1 sau khi gửi đơn thành công
+          }}
+          onError={onError}
+        />
       ) : activeTab === "My Applications" ? (
         <>
           <SectionTitle>My Applications</SectionTitle>
@@ -52,9 +85,20 @@ const ApplicationPage: React.FC<ApplicationPageProps> = ({
               <EmptyText>You have no leave applications yet.</EmptyText>
             )}
             {applications.map((app) => (
-              <ApplicationCard key={app.createdAt} application={app} />
+              <ApplicationCard application={app} />
             ))}
           </ApplicationsContainer>
+          <PaginationWrapper>
+            {totalPages > 1 && (
+              <Pagination
+                pageIndex={pageIndex}
+                pageSize={PAGE_SIZE}
+                totalItems={totalItems}
+                totalPage={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </PaginationWrapper>
         </>
       ) : (
         <div style={{ width: "100%", textAlign: "center", marginTop: "40px" }}>

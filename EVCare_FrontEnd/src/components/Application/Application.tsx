@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAccountInformation } from "../../services/accountService";
-import { getCenterInformation } from "../../services/serviceCenterService";
+import {
+  getCenterInformation,
+  getBlockedDate,
+} from "../../services/serviceCenterService";
 import { sendApplication } from "../../services/sendApplicationApi";
-import { getDateOff } from "../../services/getApplicationApi"; // ngày bạn đã xin nghỉ
-import { getBlockedDate } from "../../services/serviceCenterService"; // ngày center đóng cửa
+import { getDateOff } from "../../services/getApplicationApi";
 import type {
   ApplicationRequestDTO,
   ApplicationResponseDTO,
@@ -32,6 +34,8 @@ export default function ApplicationForm({
   onSuccess?: (data: ApplicationResponseDTO) => void;
   onError?: (message: string) => void;
 }) {
+  const queryClient = useQueryClient();
+
   const [dateOff, setDateOff] = useState("");
   const [reason, setReason] = useState("");
   const [dateMessage, setDateMessage] = useState<string | null>(null);
@@ -39,28 +43,23 @@ export default function ApplicationForm({
     "idle" | "pending" | "success" | "error"
   >("idle");
 
-  // ======= React Query =======
   const { data: accountData, isLoading: accountLoading } = useQuery({
     queryKey: ["accountInfo"],
     queryFn: getAccountInformation,
   });
-
   const { data: centerData } = useQuery({
     queryKey: ["centerInfo"],
     queryFn: getCenterInformation,
   });
-
   const { data: blockedDatesData } = useQuery({
     queryKey: ["blockedDates"],
     queryFn: getBlockedDate,
   });
-
   const { data: userDateOffData } = useQuery({
     queryKey: ["userDateOffs"],
     queryFn: getDateOff,
   });
 
-  // ======= Mutation =======
   const mutation = useMutation({
     mutationFn: (request: ApplicationRequestDTO) => sendApplication(request),
     onMutate: () => setLocalStatus("pending"),
@@ -68,7 +67,7 @@ export default function ApplicationForm({
       if (res.statusCode === 200 && res.data) {
         setLocalStatus("success");
         onSuccess?.(res.data);
-
+        queryClient.invalidateQueries({ queryKey: ["myApplications"] }); // auto refresh
         setTimeout(() => resetForm(), 1500);
       } else {
         setLocalStatus("error");
@@ -91,12 +90,10 @@ export default function ApplicationForm({
   const userDateOffs: string[] = userDateOffData?.data ?? [];
   const center = centerData?.data;
 
-  // ======= Validation =======
   const validateDate = (selected: string): string | null => {
     const selectedDate = new Date(selected);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
     const diffDays = Math.floor(
       (selectedDate.getTime() - today.getTime()) / (1000 * 3600 * 24)
     );
@@ -104,10 +101,8 @@ export default function ApplicationForm({
     if (selectedDate < today) return "Cannot select a past date.";
     if (diffDays < 2) return "You must apply at least 2 days in advance.";
     if (diffDays > 31) return "You cannot apply more than 1 month ahead.";
-
     if (blockedDates.includes(selected))
       return "This date is blocked (center closed).";
-
     if (userDateOffs.includes(selected))
       return "You have already requested leave on this date.";
 
@@ -127,7 +122,6 @@ export default function ApplicationForm({
       const startIndex = workDays.indexOf(center.workStartDay);
       const endIndex = workDays.indexOf(center.workEndDay);
       const allowedDays = workDays.slice(startIndex, endIndex + 1);
-
       if (!allowedDays.includes(dayOfWeek))
         return "This date is outside of working days.";
     }
@@ -137,11 +131,9 @@ export default function ApplicationForm({
 
   const handleDateChange = (value: string) => {
     setDateOff(value);
-    const msg = validateDate(value);
-    setDateMessage(msg);
+    setDateMessage(validateDate(value));
   };
 
-  // ======= Submit =======
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!account || !dateOff) return;
@@ -154,16 +146,9 @@ export default function ApplicationForm({
       return;
     }
 
-    const request: ApplicationRequestDTO = {
-      employeeID: account.id,
-      dateOff,
-      reason,
-    };
-
-    mutation.mutate(request);
+    mutation.mutate({ employeeID: account.id, dateOff, reason });
   };
 
-  // ======= Reset =======
   const resetForm = () => {
     setDateOff("");
     setReason("");
@@ -174,11 +159,9 @@ export default function ApplicationForm({
 
   if (accountLoading) return <p>Loading account info...</p>;
 
-  // ======= UI =======
   return (
     <FormContainer onSubmit={handleSubmit}>
       <Title>Application</Title>
-
       {account && (
         <>
           <Grid>
@@ -191,7 +174,6 @@ export default function ApplicationForm({
               <Input readOnly value={account.last_Name} />
             </Field>
           </Grid>
-
           <Grid>
             <Field>
               <Label>ID</Label>
@@ -202,7 +184,6 @@ export default function ApplicationForm({
               <Input readOnly value={account.email} />
             </Field>
           </Grid>
-
           <Field>
             <Label>Phone Number</Label>
             <Input readOnly value={account.phone || ""} />
@@ -233,7 +214,13 @@ export default function ApplicationForm({
         />
       </Field>
 
-      <div style={{ textAlign: "center" }}>
+      <div
+        style={{
+          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         <ButtonAction
           text={
             localStatus === "pending"
@@ -245,13 +232,7 @@ export default function ApplicationForm({
               : "Send"
           }
           color="white"
-          backgroundColor={
-            localStatus === "error"
-              ? "#dc2626"
-              : localStatus === "success"
-              ? "#16a34a"
-              : "#16a34a"
-          }
+          backgroundColor={localStatus === "error" ? "#dc2626" : "#16a34a"}
           type="submit"
           action={() => {}}
           disabled={localStatus === "pending"}
