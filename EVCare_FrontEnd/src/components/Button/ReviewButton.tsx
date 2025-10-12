@@ -2,71 +2,38 @@ import styled, { css } from "styled-components";
 
 type ActionButtonProps = {
   text: string;
-  color?: string;
-  backgroundColor?: string;
-  action?: () => void;
-  type?: "button" | "submit";
-  disabled?: boolean;
+  color: string;
+  backgroundColor: string;
+  action: () => void;
+  icon?: React.ReactNode;
 };
 
-const ActionButton = styled.button<{
-  color?: string;
-  $bg?: string;
-  disabled?: boolean;
-}>`
-  font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  padding: 10px 18px;
+const ActionButton = styled.button<{ $color: string; $bg: string }>`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  max-height: fit-content;
+  padding: 6px 12px;
   border: none;
-  border-radius: 8px;
-  color: ${({ color }) => color || "white"};
-  background-color: ${({ $bg }) => $bg || "#16a34a"};
+  border-radius: 6px;
+  font-family: "Outfit", sans-serif;
+  color: ${({ $color }) => $color || "white"};
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.25s ease;
-  margin-right: 10px;
-  &:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  ${({ disabled }) =>
-    disabled &&
-    css`
-      background-color: #d1d5db;
-      color: #9ca3af;
-      cursor: not-allowed;
-      opacity: 0.8;
-      transform: none;
-    `}
-
-  @media (max-width: 576px) {
-    width: 100%;
-    font-size: 15px;
-    padding: 12px 16px;
-  }
-   
+  background-color: ${({ $bg }) => $bg || "green"};
 `;
 
 export default function ButtonAction({
+  icon,
   text,
   color,
   backgroundColor,
   action,
-  type = "button",
-  disabled = false,
 }: ActionButtonProps) {
   return (
-    <ActionButton
-      color={color}
-      $bg={backgroundColor}
-      onClick={action}
-      type={type}
-      disabled={disabled}
-    >
+    <ActionButton $color={color} $bg={backgroundColor} onClick={action}>
+      {icon}
       {text}
     </ActionButton>
   );

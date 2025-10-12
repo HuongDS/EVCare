@@ -1,45 +1,35 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Calendar, CreditCard, DollarSign } from "lucide-react";
+import {
+  BanknoteArrowUp,
+  Calendar,
+  CreditCard,
+  ScanQrCode,
+} from "lucide-react";
+import { useGetOrderDetail } from "../../../services/orderServiceApi";
+import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import { formatDate } from "../../../utils/formatDate";
 
 // Types
-interface Part {
-  technicianId: number;
-  id: number;
-  name: string;
-  quantity: number;
-  price: number;
-  imageUrl: string;
-}
-
-interface OrderData {
-  id: number;
-  parts: Part[];
-  price: number;
-}
-
-interface PaymentData {
-  appointmentId: string;
-  customerName: string;
-  licensePlate: string;
-  vehicleModel: string;
-  phoneNumber: string;
-  location: string;
-  date: string;
-  report: string;
-  order: OrderData;
-}
 
 interface PaymentPageProps {
-  data: PaymentData;
-  onPayment: (method: "online" | "cash") => void;
+  data: StaffAppointmentsDto;
+  currentStep: number;
 }
 
-const PaymentPage: React.FC<PaymentPageProps> = ({ data, onPayment }) => {
-  const [report, setReport] = useState(data.report);
+const PaymentPage: React.FC<PaymentPageProps> = ({ data, currentStep }) => {
+  const [note, setNote] = useState(data.note);
+
+  //Gọi api lấy order detail
+  const orderDetail = useGetOrderDetail(data.orderId);
 
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString("vi-VN");
+  };
+
+  const handlePayment = (method: "online" | "cash" | "PayOS") => {
+    alert(`Payment method selected: ${method}`);
+    // handleNext();
   };
 
   return (
@@ -54,7 +44,7 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ data, onPayment }) => {
           <Section>
             <SectionTitle>Information</SectionTitle>
 
-            <AppointmentId>Appointment ID: #{data.appointmentId}</AppointmentId>
+            <AppointmentId>Appointment ID: #{data.id}</AppointmentId>
 
             <InfoRow>
               <InfoItem>
@@ -81,15 +71,15 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ data, onPayment }) => {
             <LocationDate>
               <IconText>
                 <Calendar size={18} />
-                {data.date}
+                {formatDate(data.appointmentDate)}
               </IconText>
             </LocationDate>
 
             <ReportBox>
-              <ReportLabel>Report From Technical:</ReportLabel>
+              <ReportLabel>Note From Customer:</ReportLabel>
               <ReportTextarea
-                value={report}
-                onChange={(e) => setReport(e.target.value)}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
                 placeholder="Enter technical report..."
               />
             </ReportBox>
@@ -98,9 +88,8 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ data, onPayment }) => {
           {/* Right Section - Total Product */}
           <Section>
             <SectionTitle>Total Parts</SectionTitle>
-
             <ProductTable>
-              {data.order.parts.map((part) => (
+              {orderDetail.data?.data?.parts.map((part) => (
                 <ProductRow key={part.id}>
                   <ProductName>{part.name}</ProductName>
                   <ProductQuantity>x{part.quantity}</ProductQuantity>
@@ -113,19 +102,34 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ data, onPayment }) => {
               <TotalRow>
                 <TotalLabel>Total</TotalLabel>
                 <div></div>
-                <TotalPrice>{formatCurrency(data.order.price)}</TotalPrice>
+                <TotalPrice>
+                  {formatCurrency(orderDetail.data?.data?.price || 0)}
+                </TotalPrice>
               </TotalRow>
             </ProductTable>
           </Section>
         </Content>
 
         <ButtonGroup>
-          <PaymentButton $variant="online" onClick={() => onPayment("online")}>
+          <PaymentButton
+            $variant="online"
+            onClick={() => handlePayment("online")}
+          >
             <CreditCard size={22} />
             Online Payment
           </PaymentButton>
-          <PaymentButton $variant="cash" onClick={() => onPayment("cash")}>
-            <DollarSign size={22} />
+          <PaymentButton
+            $variant="online"
+            onClick={() => handlePayment("PayOS")}
+          >
+            <ScanQrCode size={22} />
+            PayOS
+          </PaymentButton>
+          <PaymentButton
+            $variant="online"
+            onClick={() => handlePayment("cash")}
+          >
+            <BanknoteArrowUp size={22} />
             Cash
           </PaymentButton>
         </ButtonGroup>
@@ -134,53 +138,7 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ data, onPayment }) => {
   );
 };
 
-// Demo Component
-interface props {
-  handleNext: () => void;
-}
-const PaymentDemo = ({ handleNext }: props) => {
-  const mockData: PaymentData = {
-    appointmentId: "12345",
-    customerName: "Picasso",
-    licensePlate: "51G-99999",
-    vehicleModel: "Vinfast VF5",
-    phoneNumber: "0123456789",
-    location: "HCM City",
-    date: "13/06/2025",
-    report: "************\n**",
-    order: {
-      id: 1,
-      parts: [
-        {
-          technicianId: 2,
-          id: 1,
-          name: "Piston",
-          quantity: 12,
-          price: 1200000,
-          imageUrl: "images/parts/piston.jpg",
-        },
-        {
-          technicianId: 2,
-          id: 2,
-          name: "Spark Plug",
-          quantity: 12,
-          price: 150000,
-          imageUrl: "images/parts/sparkplug.jpg",
-        },
-      ],
-      price: 16200000,
-    },
-  };
-
-  const handlePayment = (method: "online" | "cash") => {
-    alert(`Payment method selected: ${method}`);
-    handleNext();
-  };
-
-  return <PaymentPage data={mockData} onPayment={handlePayment} />;
-};
-
-export default PaymentDemo;
+export default PaymentPage;
 
 // Styled Components
 const PageContainer = styled.div`
@@ -430,7 +388,7 @@ const TotalPrice = styled.div`
 
 const ButtonGroup = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
   padding: 32px 40px;
   border-top: 1px solid #e0e0e0;
