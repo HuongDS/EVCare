@@ -1,47 +1,44 @@
-import { useState } from "react";
+import { Modal } from "antd";
+
 import styled from "styled-components";
-import { Search, User, Phone, CheckCircle, CircleX } from "lucide-react";
-import type { TechnicianModel } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import type { TechnicianSkills } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
-import {
-  changeAppointmentStatus,
-  useGetTechniciansToday,
-} from "../../../services/appointmentServiceApi";
-import { useAppDispatch } from "../../../states/store";
-import { setStep } from "../../../states/appointmentSlice";
-
-interface AssignedTechnician {
-  technicianID: number;
-  technician: TechnicianModel<TechnicianSkills>;
-  startedTime: string;
-}
-
-// const getFlatSkills = (
-//   skills?: TechnicianSkills[] | TechnicianSkills[][]
-// ): TechnicianSkills[] => {
-//   if (!skills) return [];
-//   return Array.isArray(skills[0])
-//     ? (skills as TechnicianSkills[][]).flat()
-//     : (skills as TechnicianSkills[]);
-// }
+import type {
+  TechnicianModel,
+  TechnicianSkills,
+} from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import { useGetTechniciansToday } from "../../../services/appointmentServiceApi";
+import { useState } from "react";
+import { CheckCircle, CircleX, Phone, Search, User } from "lucide-react";
 
 interface props {
+  show: boolean;
+  close: () => void;
   data: StaffAppointmentsDto;
-  currentStep: number;
 }
-const AssignTechnicianPage = ({ data, currentStep }: props) => {
-  const dispatch = useAppDispatch();
+
+export default function Appointment_Reassign({ show, close, data }: props) {
+  interface AssignedTechnician {
+    technicianID: number;
+    technician: TechnicianModel<TechnicianSkills>;
+    startedTime: string;
+  }
+
+  // const getFlatSkills = (
+  //   skills?: TechnicianSkills[] | TechnicianSkills[][]
+  // ): TechnicianSkills[] => {
+  //   if (!skills) return [];
+  //   return Array.isArray(skills[0])
+  //     ? (skills as TechnicianSkills[][]).flat()
+  //     : (skills as TechnicianSkills[]);
+  // }
+  //   const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTechnicians, setSelectedTechnicians] = useState<
     AssignedTechnician[]
   >([]);
 
-  const allSkills = data.services.map((service) => service.id).flat();
-
   const { data: technicians } = useGetTechniciansToday({
-    Skills: allSkills,
-    // Status: "Available",
+    Status: "Available",
   });
 
   const filteredTechnicians =
@@ -71,106 +68,95 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
     );
   };
 
-  const handleChangeStep = async () => {
-    const changeStatus = {
-      appointmentId: data.id,
-      status: "InProgress",
-    };
-    try {
-      await changeAppointmentStatus(changeStatus);
-      dispatch(setStep({ id: data.id, step: currentStep + 1 }));
-    } catch (error) {
-      console.error("Error changing appointment status:", error);
-    }
-  };
-
   return (
-    <PageContainer>
-      <ContentWrapper>
-        {/* Header */}
-        <Card>
-          <Header>
-            <h1>Assign Technicians</h1>
-            <p>Select technicians to assign to this appointment</p>
-          </Header>
-        </Card>
+    <ModalStyled open={show} onCancel={close} footer={null}>
+      <PageContainer>
+        <ContentWrapper>
+          {/* Header */}
+          <Card>
+            <Header>
+              <h1>Re-Assign Technicians</h1>
+              <p>Select technicians to re-assign to this appointment</p>
+            </Header>
+          </Card>
 
-        {/* Selected Technicians */}
-        <Card>
-          <SectionHeader>
-            <h2>Assigned Technicians ({selectedTechnicians.length})</h2>
-            {selectedTechnicians.length > 0 && (
-              <ButtonGroup>
-                <ClearButton onClick={() => setSelectedTechnicians([])}>
-                  Clear All
-                </ClearButton>
-                <SubmitButton onClick={handleChangeStep}>
-                  <CheckCircle size={20} />
-                  Assign Technicians
-                </SubmitButton>
-              </ButtonGroup>
-            )}
-          </SectionHeader>
+          {/* Selected Technicians */}
+          <Card>
+            <SectionHeader>
+              <h2>Assigned Technicians ({selectedTechnicians.length})</h2>
+              {selectedTechnicians.length > 0 && (
+                <ButtonGroup>
+                  <ClearButton onClick={() => setSelectedTechnicians([])}>
+                    Clear All
+                  </ClearButton>
+                  <SubmitButton>
+                    <CheckCircle size={20} />
+                    Assign Technicians
+                  </SubmitButton>
+                </ButtonGroup>
+              )}
+            </SectionHeader>
 
-          {selectedTechnicians.length === 0 ? (
-            <EmptyState>
-              <User size={48} />
-              <p>No technicians assigned yet</p>
-              <p>Scroll down to "Add Technician"</p>
-            </EmptyState>
-          ) : (
-            <TechnicianGrid>
-              {selectedTechnicians.map((assignment) => (
-                <TechnicianCard
-                  key={assignment.technicianID}
-                  technician={assignment.technician}
-                  onRemove={() =>
-                    handleRemoveTechnician(assignment.technicianID)
-                  }
-                  isSelected
-                />
-              ))}
-            </TechnicianGrid>
-          )}
-        </Card>
-
-        {/* Search Section */}
-        <Card>
-          <SearchWrapper>
-            <SearchInput>
-              <Search size={20} />
-              <input
-                type="text"
-                placeholder="Search technician by name..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </SearchInput>
-          </SearchWrapper>
-
-          <SearchResultsContainer>
-            <TechnicianGrid>
-              {filteredTechnicians.map((technician) => (
-                <TechnicianCard
-                  key={technician.id}
-                  technician={technician}
-                  onAdd={() => handleAddTechnician(technician)}
-                />
-              ))}
-            </TechnicianGrid>
-
-            {filteredTechnicians.length === 0 && (
+            {selectedTechnicians.length === 0 ? (
               <EmptyState>
                 <User size={48} />
-                <p>No technicians found</p>
+                <p>No technicians assigned yet</p>
+                <p>Scroll down to "Add Technician"</p>
               </EmptyState>
+            ) : (
+              <TechnicianGrid>
+                {selectedTechnicians.map((assignment) => (
+                  <TechnicianCard
+                    key={assignment.technicianID}
+                    technician={assignment.technician}
+                    onRemove={() =>
+                      handleRemoveTechnician(assignment.technicianID)
+                    }
+                    isSelected
+                  />
+                ))}
+              </TechnicianGrid>
             )}
-          </SearchResultsContainer>
-        </Card>
-      </ContentWrapper>
-    </PageContainer>
+          </Card>
+
+          {/* Search Section */}
+          <Card>
+            <SearchWrapper>
+              <SearchInput>
+                <Search size={20} />
+                <input
+                  type="text"
+                  placeholder="Search technician by name..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </SearchInput>
+            </SearchWrapper>
+
+            <SearchResultsContainer>
+              <TechnicianGrid>
+                {filteredTechnicians.map((technician) => (
+                  <TechnicianCard
+                    key={technician.id}
+                    technician={technician}
+                    onAdd={() => handleAddTechnician(technician)}
+                  />
+                ))}
+              </TechnicianGrid>
+
+              {filteredTechnicians.length === 0 && (
+                <EmptyState>
+                  <User size={48} />
+                  <p>No technicians found</p>
+                </EmptyState>
+              )}
+            </SearchResultsContainer>
+          </Card>
+        </ContentWrapper>
+      </PageContainer>
+    </ModalStyled>
   );
-};
+}
 
 interface TechnicianCardProps {
   technician: TechnicianModel<TechnicianSkills>;
@@ -178,7 +164,6 @@ interface TechnicianCardProps {
   onRemove?: () => void;
   isSelected?: boolean;
 }
-
 const TechnicianCard = ({
   technician,
   onAdd,
@@ -242,13 +227,25 @@ const TechnicianCard = ({
   );
 };
 
-export default AssignTechnicianPage;
+const ModalStyled = styled(Modal)`
+  display: flex;
+  justify-content: center;
+  top: 2%;
+  .ant-modal-content {
+    width: 1000px !important;
+    height: 90vh !important;
+    overflow: hidden;
+  }
+`;
 
 const PageContainer = styled.div`
-  min-height: 100vh;
+  margin-top: 3%;
+  height: 100%;
+  max-height: 85vh;
   background: linear-gradient(135deg, #93c6a2 0%, #e8eaf6 100%);
   border-radius: 20px;
   padding: 24px;
+  overflow-y: auto;
   font-family: "Outfit", sans-serif;
 
   @media (max-width: 768px) {
@@ -506,7 +503,7 @@ const StatusBadge = styled.span<{ $status: string }>`
           color: #e65100;
           border-color: #ffcc80;
         `;
-      case "Offline":
+      case "OnLeave":
         return `
           background: #f5f5f5;
           color: #616161;

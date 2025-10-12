@@ -2,6 +2,160 @@ import React from "react";
 import styled from "styled-components";
 import { Calendar, Phone, User, Car, FileText, CreditCard } from "lucide-react";
 
+const InvoicePage: React.FC<InvoicePageProps> = ({ data }) => {
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString("vi-VN") + " VND";
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return new Date().toLocaleDateString("vi-VN");
+    return dateString;
+  };
+
+  return (
+    <PageContainer>
+      <InvoiceWrapper>
+        <InvoiceContainer>
+          {/* Header */}
+          <InvoiceHeader>
+            <HeaderTop>
+              <CompanyInfo>
+                <h1>EVCare Service</h1>
+                <p>123 Main Street, District 1</p>
+                <p>Ho Chi Minh City, Vietnam</p>
+                <p>Phone: (+84) 9123456789</p>
+                <p>Email: info@evcare.vn</p>
+              </CompanyInfo>
+
+              <InvoiceInfo>
+                <h2>INVOICE</h2>
+                <InvoiceId>
+                  #{data.invoiceNumber || `INV-${data.orderId}`}
+                </InvoiceId>
+                <p style={{ marginTop: "12px" }}>
+                  Date: {formatDate(data.date)}
+                </p>
+                <p>Order ID: #{data.orderId}</p>
+              </InvoiceInfo>
+            </HeaderTop>
+          </InvoiceHeader>
+
+          {/* Body */}
+          <InvoiceBody>
+            {/* Customer Information */}
+            <CustomerSection>
+              <InfoCard>
+                <CardTitle>Bill To</CardTitle>
+                <InfoList>
+                  <InfoItem>
+                    <User size={16} />
+                    <span>
+                      <strong>{data.customerName || "Customer Name"}</strong>
+                    </span>
+                  </InfoItem>
+                  <InfoItem>
+                    <Phone size={16} />
+                    <span>{data.phoneNumber || "N/A"}</span>
+                  </InfoItem>
+                </InfoList>
+              </InfoCard>
+
+              <InfoCard>
+                <CardTitle>Vehicle Details</CardTitle>
+                <InfoList>
+                  <InfoItem>
+                    <Car size={16} />
+                    <span>
+                      <strong>{data.vehicleModel || "Vehicle Model"}</strong>
+                    </span>
+                  </InfoItem>
+                  <InfoItem>
+                    <FileText size={16} />
+                    <span>
+                      License Plate:{" "}
+                      <strong>{data.licensePlate || "N/A"}</strong>
+                    </span>
+                  </InfoItem>
+                  <InfoItem>
+                    <Calendar size={16} />
+                    <span>Service Date: {formatDate(data.date)}</span>
+                  </InfoItem>
+                </InfoList>
+              </InfoCard>
+            </CustomerSection>
+
+            {/* Parts Table */}
+            <TableSection>
+              <SectionTitle>Parts & Services</SectionTitle>
+              <Table>
+                <TableHeader>
+                  <tr>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Service Price</th>
+                    <th>Amount</th>
+                  </tr>
+                </TableHeader>
+                <TableBody>
+                  {data.order.parts.map((part) => (
+                    <tr key={part.id}>
+                      <td>{part.name}</td>
+                      <td>{part.quantity}</td>
+                      <td>{formatCurrency(part.price)}</td>
+                      <td>200.000</td>
+                      <td>{formatCurrency(part.price * part.quantity)}</td>
+                    </tr>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableSection>
+
+            {/* Summary */}
+            <SummarySection>
+              <SummaryCard>
+                <SummaryRow>
+                  <span>Subtotal:</span>
+                  <span>{formatCurrency(data.order.price)}</span>
+                </SummaryRow>
+                <SummaryRow>
+                  <span>Tax (10%):</span>
+                  <span>{formatCurrency(data.order.price * 0.1)}</span>
+                </SummaryRow>
+                <SummaryRow $isTotal>
+                  <span>Total:</span>
+                  <span>{formatCurrency(data.total_Price)}</span>
+                </SummaryRow>
+                <div style={{ textAlign: "right" }}>
+                  <PaymentBadge $method={data.payment_Method}>
+                    <CreditCard size={14} />
+                    Paid via {data.payment_Method}
+                  </PaymentBadge>
+                </div>
+              </SummaryCard>
+            </SummarySection>
+          </InvoiceBody>
+
+          {/* Footer */}
+          <InvoiceFooter>
+            <p>
+              <strong>Thank you for your business!</strong>
+            </p>
+            <p>
+              For any questions regarding this invoice, please contact us at
+              info@autocare.vn
+            </p>
+            <p style={{ marginTop: "12px", fontSize: "12px" }}>
+              This is a computer-generated invoice and does not require a
+              signature.
+            </p>
+          </InvoiceFooter>
+        </InvoiceContainer>
+      </InvoiceWrapper>
+    </PageContainer>
+  );
+};
+
 // Styled Components
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -190,7 +344,8 @@ const TableHeader = styled.thead`
     }
 
     &:nth-child(3),
-    &:nth-child(4) {
+    &:nth-child(4),
+    &:nth-child(5) {
       text-align: right;
     }
   }
@@ -223,7 +378,8 @@ const TableBody = styled.tbody`
     }
 
     &:nth-child(3),
-    &:nth-child(4) {
+    &:nth-child(4),
+    &:nth-child(5) {
       text-align: right;
       font-weight: 600;
     }
@@ -352,158 +508,6 @@ interface InvoiceData {
 interface InvoicePageProps {
   data: InvoiceData;
 }
-
-const InvoicePage: React.FC<InvoicePageProps> = ({ data }) => {
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("vi-VN") + " VND";
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return new Date().toLocaleDateString("vi-VN");
-    return dateString;
-  };
-
-  return (
-    <PageContainer>
-      <InvoiceWrapper>
-        <InvoiceContainer>
-          {/* Header */}
-          <InvoiceHeader>
-            <HeaderTop>
-              <CompanyInfo>
-                <h1>AutoCare Service</h1>
-                <p>123 Main Street, District 1</p>
-                <p>Ho Chi Minh City, Vietnam</p>
-                <p>Phone: (028) 1234 5678</p>
-                <p>Email: info@autocare.vn</p>
-              </CompanyInfo>
-
-              <InvoiceInfo>
-                <h2>INVOICE</h2>
-                <InvoiceId>
-                  #{data.invoiceNumber || `INV-${data.orderId}`}
-                </InvoiceId>
-                <p style={{ marginTop: "12px" }}>
-                  Date: {formatDate(data.date)}
-                </p>
-                <p>Order ID: #{data.orderId}</p>
-              </InvoiceInfo>
-            </HeaderTop>
-          </InvoiceHeader>
-
-          {/* Body */}
-          <InvoiceBody>
-            {/* Customer Information */}
-            <CustomerSection>
-              <InfoCard>
-                <CardTitle>Bill To</CardTitle>
-                <InfoList>
-                  <InfoItem>
-                    <User size={16} />
-                    <span>
-                      <strong>{data.customerName || "Customer Name"}</strong>
-                    </span>
-                  </InfoItem>
-                  <InfoItem>
-                    <Phone size={16} />
-                    <span>{data.phoneNumber || "N/A"}</span>
-                  </InfoItem>
-                </InfoList>
-              </InfoCard>
-
-              <InfoCard>
-                <CardTitle>Vehicle Details</CardTitle>
-                <InfoList>
-                  <InfoItem>
-                    <Car size={16} />
-                    <span>
-                      <strong>{data.vehicleModel || "Vehicle Model"}</strong>
-                    </span>
-                  </InfoItem>
-                  <InfoItem>
-                    <FileText size={16} />
-                    <span>
-                      License Plate:{" "}
-                      <strong>{data.licensePlate || "N/A"}</strong>
-                    </span>
-                  </InfoItem>
-                  <InfoItem>
-                    <Calendar size={16} />
-                    <span>Service Date: {formatDate(data.date)}</span>
-                  </InfoItem>
-                </InfoList>
-              </InfoCard>
-            </CustomerSection>
-
-            {/* Parts Table */}
-            <TableSection>
-              <SectionTitle>Parts & Services</SectionTitle>
-              <Table>
-                <TableHeader>
-                  <tr>
-                    <th>Description</th>
-                    <th>Qty</th>
-                    <th>Unit Price</th>
-                    <th>Amount</th>
-                  </tr>
-                </TableHeader>
-                <TableBody>
-                  {data.order.parts.map((part) => (
-                    <tr key={part.id}>
-                      <td>{part.name}</td>
-                      <td>{part.quantity}</td>
-                      <td>{formatCurrency(part.price)}</td>
-                      <td>{formatCurrency(part.price * part.quantity)}</td>
-                    </tr>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableSection>
-
-            {/* Summary */}
-            <SummarySection>
-              <SummaryCard>
-                <SummaryRow>
-                  <span>Subtotal:</span>
-                  <span>{formatCurrency(data.order.price)}</span>
-                </SummaryRow>
-                <SummaryRow>
-                  <span>Tax (0%):</span>
-                  <span>{formatCurrency(0)}</span>
-                </SummaryRow>
-                <SummaryRow $isTotal>
-                  <span>Total:</span>
-                  <span>{formatCurrency(data.total_Price)}</span>
-                </SummaryRow>
-                <div style={{ textAlign: "right" }}>
-                  <PaymentBadge $method={data.payment_Method}>
-                    <CreditCard size={14} />
-                    Paid via {data.payment_Method}
-                  </PaymentBadge>
-                </div>
-              </SummaryCard>
-            </SummarySection>
-          </InvoiceBody>
-
-          {/* Footer */}
-          <InvoiceFooter>
-            <p>
-              <strong>Thank you for your business!</strong>
-            </p>
-            <p>
-              For any questions regarding this invoice, please contact us at
-              info@autocare.vn
-            </p>
-            <p style={{ marginTop: "12px", fontSize: "12px" }}>
-              This is a computer-generated invoice and does not require a
-              signature.
-            </p>
-          </InvoiceFooter>
-        </InvoiceContainer>
-      </InvoiceWrapper>
-    </PageContainer>
-  );
-};
 
 // Demo Component
 const InvoiceDemo = () => {

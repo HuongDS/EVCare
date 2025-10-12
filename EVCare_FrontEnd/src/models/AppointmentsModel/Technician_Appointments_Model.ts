@@ -36,20 +36,25 @@ export type TechnicianAppointmentsDto = {
 
 export type TechnicianModel<T> = {
   id: number;
-  fullName: "string string";
-  phone: "0907829278";
+  fullName: string;
+  phone: string;
   expYears: 8;
   rating: null;
-  status: "Available";
+  status: string;
   skills: T[];
   avatar?: string;
 };
 
 export type GetTechnicianParams = {
   Status?: string;
-  Skills?: number;
+  Skills?: number[];
   PageSize?: number;
   PageIndex?: number;
   SortField?: string;
   SortOrder?: string;
+};
+
+export type TechnicianSkills = {
+  id: number;
+  name: string;
 };
