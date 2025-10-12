@@ -43,7 +43,7 @@ namespace API.Controllers
         {
             try
             {
-                if (model.Payment_Method == DataAccess.Enums.PaymentMethodEnum.CreditCard)
+                if (model.Payment_Method == DataAccess.Enums.PaymentMethodEnum.Vnpay)
                 {
                     var paymentUrl = await _invoiceService.CreatePaymentUrl(HttpContext, model);
                     await _invoiceService.SendMailToPayAsync(paymentUrl, model);
