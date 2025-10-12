@@ -10,8 +10,9 @@ export const SidebarContainer = styled.div`
   flex-direction: column;
   padding: 16px 0;
   font-family: "Outfit", sans-serif;
-  overflow-y: auto;
   overflow-x: hidden;
+  overflow-y: hidden;
+  border-right: 1px solid #ccc;
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -47,7 +48,6 @@ export const Logo = styled.div`
 
 export const MenuStyled = styled(Menu)`
   font-family: "Outfit", sans-serif;
-  border-right: none;
   background: transparent;
 
   .ant-menu-item,
@@ -117,7 +117,6 @@ export const LinkStyled = styled(Link)`
   font-size: 16px;
   font-weight: 500;
   transition: all 0.3s ease;
-
   &:hover,
   &:focus {
     color: #00ad4e;

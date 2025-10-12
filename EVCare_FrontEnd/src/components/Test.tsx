@@ -3,6 +3,9 @@
 // import OrderHistorySort from "../pages/Customer/CustomerComponent/OrderHistorySort";
 // import OrderHistoryCard from "../pages/Customer/OrderHistory/Orders/OrderHistoryCard";
 
+// import Error from "./StatusModal/FailModal";
+// import SuccessPopUp from "./StatusModal/SuccessModal";
+
 // import DropdownMenu from "./Header/DropdownMenu";
 
 export default function Test() {
@@ -16,6 +19,8 @@ export default function Test() {
       {/* <OrderHistorySort sortName={sortBy} />
       <OrderHistoryCard /> */}
       {/* <DropdownMenu /> */}
+      {/* <SuccessPopUp message="Login Fail" header="Login" action={() => 1} /> */}
+      {/* <Error header="Login" message="Login Success" action={() => 1} /> */}
     </>
   );
 }

@@ -1,3 +1,5 @@
+import type { ServiceViewFormModel } from "../ServicesModel/ServiceViewFormModel";
+
 export type ResponseDto<T> = {
   statusCode: number;
   message?: string;
@@ -20,9 +22,10 @@ export type StaffAppointmentsDto = {
   customerName: string;
   phoneNumber: string;
   licensePlate: string;
-  services: [];
-  vehicleImageUrl: string[];
+  services: ServiceViewFormModel[];
+  appointmentImages: string[];
   status: string;
+  orderId: number;
   note: string;
 };
 
@@ -42,5 +45,3 @@ export type ChangeAppointmentStatusParams = {
   appointmentId: number;
   status: string;
 };
-
-export type ListTechnicianToday = {};
