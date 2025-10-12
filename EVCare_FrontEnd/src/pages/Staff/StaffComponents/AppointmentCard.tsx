@@ -4,6 +4,115 @@ import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Sta
 
 import { formatDate } from "../../../utils/formatDate";
 import ButtonAction from "../../../components/Button/ReviewButton";
+import { TriangleAlert } from "lucide-react";
+
+type AppointmentCardProps = {
+  data: StaffAppointmentsDto;
+  onOpenProgress: () => void;
+  hasTechnicianOnleave: boolean;
+  onOpenReassign: () => void;
+};
+export default function AppointmentCard({
+  data,
+  onOpenProgress,
+  hasTechnicianOnleave,
+  onOpenReassign,
+}: AppointmentCardProps) {
+  return (
+    <>
+      <ContainerStyled>
+        <HeaderStyled>
+          <AppointmentId>
+            <div>
+              AppointmentID: <span>#{data.id}</span>
+            </div>
+            <div>
+              <StatusTag status={data.status} />
+            </div>
+          </AppointmentId>
+
+          <CalendarStyled>
+            <div>
+              <i className="bi bi-calendar2-event"></i>
+            </div>
+            <div>{formatDate(data.appointmentDate)}</div>
+          </CalendarStyled>
+        </HeaderStyled>
+        <hr />
+        <InformationStyled>
+          <ImageStyled>
+            {data.appointmentImages && data.appointmentImages.length > 0 ? (
+              data.appointmentImages
+                .slice(0, 1)
+                .map((img, i) => <img src={img} key={i} />)
+            ) : (
+              <img
+                src="https://i.pinimg.com/736x/79/74/12/797412081b120609d902b4966fa435b7.jpg"
+                alt="no image"
+                style={{ width: "150px", height: "150px", objectFit: "cover" }}
+              />
+            )}
+          </ImageStyled>
+          <div>
+            <GroupFiled>
+              <div>Customer name</div>
+              <p>{data.customerName}</p>
+            </GroupFiled>
+            <GroupFiled>
+              <div>Phone number</div>
+              <p>{data.phoneNumber}</p>
+            </GroupFiled>
+          </div>
+          <div>
+            <GroupFiled>
+              <div>Vehicle name</div>
+              <p>{data.vehicleModel}</p>
+            </GroupFiled>
+            <GroupFiled>
+              <div>License Plate</div>
+              <p>{data.licensePlate}</p>
+            </GroupFiled>
+          </div>
+          <GroupFiled>
+            <div>Services</div>
+            {data.services.slice(0, 3).map((service, i) => (
+              <p style={{ fontSize: "1rem" }} key={i}>
+                {service.name}
+              </p>
+            ))}
+          </GroupFiled>
+          <GroupButtonStyled>
+            {data.status === "Done" ? (
+              <ButtonAction
+                text="View Details"
+                color="white"
+                backgroundColor="#1da1f2"
+                action={onOpenProgress}
+              />
+            ) : data.status !== "Pending" && data.status !== "Canceled" ? (
+              <ButtonAction
+                text="Progress"
+                color="white"
+                backgroundColor="#00AD4E"
+                action={onOpenProgress}
+              />
+            ) : undefined}
+            {(data.status === "AddingPart" || data.status === "InProgress") && (
+              <ButtonAction
+                text="Re-Assign"
+                icon={hasTechnicianOnleave ? <TriangleAlert size={16} /> : null}
+                color="white"
+                backgroundColor={hasTechnicianOnleave ? "#FFC72C" : "#1da1f2"}
+                action={onOpenReassign}
+              />
+            )}
+          </GroupButtonStyled>
+        </InformationStyled>
+      </ContainerStyled>
+    </>
+  );
+}
+
 const ContainerStyled = styled.div`
   border: 1px solid #ccc;
   border-radius: 12px;
@@ -43,6 +152,7 @@ const InformationStyled = styled.div`
   grid-template-columns: repeat(5, 1fr);
 `;
 const ImageStyled = styled.div`
+  width: 200px;
   img {
     width: 100%;
     height: 150px;
@@ -64,87 +174,3 @@ const GroupButtonStyled = styled.div`
   row-gap: 10px;
   align-items: end;
 `;
-type AppointmentCardProps = {
-  data: StaffAppointmentsDto;
-  onOpenProgress: () => void;
-};
-export default function AppointmentCard({
-  data,
-  onOpenProgress,
-}: AppointmentCardProps) {
-  return (
-    <>
-      <ContainerStyled>
-        <HeaderStyled>
-          <AppointmentId>
-            <div>
-              AppointmentID: <span>#{data.id}</span>
-            </div>
-            <div>
-              <StatusTag status={data.status} />
-            </div>
-          </AppointmentId>
-
-          <CalendarStyled>
-            <div>
-              <i className="bi bi-calendar2-event"></i>
-            </div>
-            <div>{formatDate(data.appointmentDate)}</div>
-          </CalendarStyled>
-        </HeaderStyled>
-        <hr />
-        <InformationStyled>
-          <ImageStyled>
-            <img
-              src="https://th.bing.com/th/id/OSK.HERO8JB9i-Vk9dE32vQgHmNtC51-a4Zd2M1_ENbXWgtZvbk?w=472&h=280&c=1&rs=2&o=6&dpr=1.3&pid=SANGAM"
-              alt=""
-            />
-          </ImageStyled>
-          <div>
-            <GroupFiled>
-              <div>Customer name</div>
-              <p>{data.customerName}</p>
-            </GroupFiled>
-            <GroupFiled>
-              <div>Phone number</div>
-              <p>{data.phoneNumber}</p>
-            </GroupFiled>
-          </div>
-          <div>
-            <GroupFiled>
-              <div>Vehicle name</div>
-              <p>{data.vehicleModel}</p>
-            </GroupFiled>
-            <GroupFiled>
-              <div>License Plate</div>
-              <p>{data.licensePlate}</p>
-            </GroupFiled>
-          </div>
-          <GroupFiled>
-            <div>Services</div>
-            {data.services.slice(0, 3).map((service) => (
-              <p style={{ fontSize: "1rem" }}>{service}</p>
-            ))}
-          </GroupFiled>
-          <GroupButtonStyled>
-            {data.status === "Done" ? (
-              <ButtonAction
-                text="View Details"
-                color="white"
-                backgroundColor="#1da1f2"
-                action={onOpenProgress}
-              />
-            ) : data.status !== "Pending" ? (
-              <ButtonAction
-                text="Progress"
-                color="white"
-                backgroundColor="#00AD4E"
-                action={onOpenProgress}
-              />
-            ) : undefined}
-          </GroupButtonStyled>
-        </InformationStyled>
-      </ContainerStyled>
-    </>
-  );
-}
