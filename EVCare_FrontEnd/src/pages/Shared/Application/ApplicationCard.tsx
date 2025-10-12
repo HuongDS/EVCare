@@ -11,6 +11,7 @@ import {
   InfoBox,
   CreatedAt,
 } from "./ApplicationCard.styled";
+import { ApplicationStatusEnum } from "../../../models/enums/ApplicationStatusEnum";
 
 interface ApplicationCardProps {
   application: ApplicationResponseDTO;
@@ -19,16 +20,18 @@ interface ApplicationCardProps {
 const ApplicationCard: React.FC<ApplicationCardProps> = ({ application }) => {
   // ✅ Xác định trạng thái
   const getStatus = () => {
-    if (application.isApproved === true) return "Approved";
-    if (application.isApproved === false) return "Rejected";
-    return "Pending";
+    if (application.isApproved === true) return ApplicationStatusEnum.APPROVED;
+    if (application.isApproved === false) return ApplicationStatusEnum.REJECTED;
+    return ApplicationStatusEnum.PENDING;
   };
 
-  const getStatusColor = () => {
-    if (application.isApproved === true) return "#16a34a"; // xanh lá
-    if (application.isApproved === false) return "#dc2626"; // đỏ
-    return "#f59e0b"; // vàng cho pending
+  const statusColors: Record<ApplicationStatusEnum, string> = {
+    [ApplicationStatusEnum.PENDING]: "#f59e0b",
+    [ApplicationStatusEnum.APPROVED]: "#16a34a",
+    [ApplicationStatusEnum.REJECTED]: "#dc2626",
   };
+
+  const getStatusColor = () => statusColors[getStatus()];
 
   return (
     <CardContainer>
