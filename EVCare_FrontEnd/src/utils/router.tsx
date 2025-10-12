@@ -24,6 +24,7 @@ import { RoleEnum } from "../models/enums";
 import TechnicianOrderLayout from "../pages/Technician/Technician_Component/Technician_OrderLayout";
 import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
 import UserProfilePage from "../pages/Users/Profile/UserProfilePage";
+import Technician_Application from "../pages/Technician/TechnicianApplication/Technician_Application";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -102,7 +103,10 @@ const router = createBrowserRouter([
         <TechnicianDefaultLayout />
       </ProtectedRoute>
     ),
-    children: [{ path: "", element: <Technician_General /> }],
+    children: [
+      { path: "", element: <Technician_General /> },
+      { path: "application", element: <Technician_Application /> },
+    ],
   },
   {
     path: "/technician/order",
