@@ -6,11 +6,151 @@ import { useGetAllAppointments } from "../../../services/appointmentServiceApi";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import SearchBar from "../../../components/SearchBar/Search";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Appoinment_Progress_Modal from "./Appoinment_Progress_Modal";
 import { useQueryClient } from "@tanstack/react-query";
+import { Pagination } from "../../../components/Paginations/Pagination";
+import { LIST_APPOINTMENTS_MESSAGE } from "./../../../constants/messages/Message";
+import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
+import Appointment_Reassign from "./Appointment_Reassign";
+
+export default function Staff_Appoinments() {
+  const queryClient = useQueryClient();
+  const name = AppointmentStatusEnum;
+  const [sortBy, setSortBy] = useState("Pending");
+  const [currenPage, setCurrentPage] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<StaffAppointmentsDto | null>(null);
+
+  const [showProgressModal, setShowProgressModal] = useState(false);
+  const [showReassignModal, setShowReassignModal] = useState(false);
+
+  const handleOpenProgress = (appointment: StaffAppointmentsDto) => {
+    setSelectedAppointment(appointment);
+    setShowProgressModal(true);
+  };
+
+  const handleOpenReassign = (appointment: StaffAppointmentsDto) => {
+    setSelectedAppointment(appointment);
+    setShowReassignModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedAppointment(null);
+    setShowProgressModal(false);
+    setShowReassignModal(false);
+    queryClient.invalidateQueries({
+      queryKey: ["Staff Appointments"],
+    });
+  };
+
+  // const handleOpenModal = (appointment: StaffAppointmentsDto) => {
+  //   setSelectedAppointment(appointment);
+  // };
+
+  const handleSortBy = (status: string) => {
+    setSortBy(status);
+  };
+
+  //Gọi api lấy list cuộc hẹn
+  const { data: appointments, isLoading } = useGetAllAppointments({
+    ...((searchValue && { customerName: searchValue }) || {}), //chỉ gửi customer name nếu nó k rỗng
+    status: sortBy,
+    pageIndex: currenPage,
+    pageSize: 5,
+  });
+
+  //phân trang
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  //search
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+  };
+
+  //trở về trang đầu khi search
+  useEffect(() => setCurrentPage(1), [searchValue]);
+
+  //Sort By
+  const sortName = [
+    name.PENDING,
+    name.CONFIRMED,
+    name.CHECKED_IN,
+    name.ADDING_PART,
+    name.IN_PROGRESS,
+    name.DONE,
+    name.CANCELED,
+  ];
+
+  return (
+    <>
+      <AppoitmentWrapper>
+        <TitleWrapper>
+          <h2>Appoinments</h2>
+          <SearchBar
+            placeholder="Search appointments..."
+            handleSearchValue={handleSearch}
+          />
+        </TitleWrapper>
+        <SortTable sortName={sortName} handleSortBy={handleSortBy} />
+        <SpinnerStyled>{isLoading && <SpinnerComponent />}</SpinnerStyled>
+        <ListAppointmentStyled>
+          {appointments?.data?.items?.length !== 0 ? (
+            appointments?.data?.items?.map((item: StaffAppointmentsDto) => (
+              <AppointmentCard
+                key={item.id}
+                data={item}
+                onOpenProgress={() => handleOpenProgress(item)}
+                hasTechnicianOnleave={false}
+                onOpenReassign={() => handleOpenReassign(item)}
+              />
+            ))
+          ) : (
+            <NOT_FOUND_ITEMS
+              icon="bi bi-exclamation-circle"
+              message={LIST_APPOINTMENTS_MESSAGE.EMPTY_PENDING(sortBy)}
+            />
+          )}
+
+          {!isLoading && (
+            <Pagination
+              pageIndex={currenPage}
+              pageSize={5}
+              totalItems={appointments?.data?.totalItems || 1}
+              totalPage={appointments?.data?.totalPages || 1}
+              onPageChange={onPageChange}
+            />
+          )}
+        </ListAppointmentStyled>
+      </AppoitmentWrapper>
+      {showProgressModal && selectedAppointment && (
+        <Appoinment_Progress_Modal
+          show={showProgressModal}
+          close={handleCloseModal}
+          data={selectedAppointment}
+        />
+      )}
+
+      {showReassignModal && selectedAppointment && (
+        <Appointment_Reassign
+          show={showReassignModal}
+          close={handleCloseModal}
+          data={selectedAppointment}
+        />
+      )}
+    </>
+  );
+}
 
 const AppoitmentWrapper = styled.div``;
+
+const ListAppointmentStyled = styled.div`
+  max-height: 70vh;
+  overflow-y: auto;
+`;
 
 const TitleWrapper = styled.div`
   padding: 10px 20px;
@@ -25,65 +165,13 @@ const TitleWrapper = styled.div`
   }
 `;
 
-export default function Staff_Appoinments() {
-  const queryClient = useQueryClient();
-  const name = AppointmentStatusEnum;
-  const [selectedAppointment, setSelectedAppointment] =
-    useState<StaffAppointmentsDto | null>(null);
-
-  const handleOpenModal = (appointment: StaffAppointmentsDto) => {
-    setSelectedAppointment(appointment);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedAppointment(null);
-    queryClient.invalidateQueries({
-      queryKey: ["Staff Appointments"],
-    });
-  };
-
-  const { data: appointments, isLoading } = useGetAllAppointments({
-    status: " Confirmed",
-  });
-
-  if (isLoading) return <SpinnerComponent />;
-  const sortName = [
-    "All",
-    name.PENDING,
-    name.CHECKED_IN,
-    name.CONFIRMED,
-    name.IN_PROGRESS,
-    name.DONE,
-    name.CANCELLED,
-  ];
-  return (
-    <>
-      <AppoitmentWrapper>
-        <TitleWrapper>
-          <h2>Appoinments</h2>
-          <SearchBar
-            placeholder="Search appointments..."
-            handleSearchValue={() => 1}
-          />
-        </TitleWrapper>
-        <SortTable sortName={sortName} />
-        <div>
-          {appointments?.data?.items?.map((item: StaffAppointmentsDto) => (
-            <AppointmentCard
-              key={item.id}
-              data={item}
-              onOpenProgress={() => handleOpenModal(item)}
-            />
-          ))}
-        </div>
-      </AppoitmentWrapper>
-      {selectedAppointment && (
-        <Appoinment_Progress_Modal
-          show={!!selectedAppointment}
-          close={handleCloseModal}
-          data={selectedAppointment}
-        />
-      )}
-    </>
-  );
-}
+const SpinnerStyled = styled.div`
+  position: fixed;
+  top: 55%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
