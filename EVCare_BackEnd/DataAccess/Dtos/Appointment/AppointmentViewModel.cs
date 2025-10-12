@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Service;
+using DataAccess.Dtos.Technician;
 using DataAccess.Enums;
 using Microsoft.Identity.Client;
 
@@ -22,6 +23,7 @@ namespace DataAccess.Dtos.Appointment
         public List<string>? AppointmentImages { get; set; }
         public AppointmentStatusEnum Status { get; set; }
 
+        public IEnumerable<TechnicianViewModel>? Technicians{ get; set; }
         public int? OrderId { get; set; }
 
         public string? Note { get; set; }

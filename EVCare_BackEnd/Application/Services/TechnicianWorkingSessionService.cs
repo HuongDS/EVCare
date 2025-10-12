@@ -34,6 +34,20 @@ namespace Application.Services
         public async Task AddTechnicianToOrder(AssignTechniciansModel model)
         {
 
+            foreach(var technicianId in model.TechnicianIds)
+            {
+                var employee = await _employeeRepository.GetEmployeeByTechnicianId(technicianId);
+                if(employee.Status == DataAccess.Enums.EmployeeStatusEnum.Busy)
+                {
+                    throw new Exception($"Technician with id {technicianId} is currently busy.");
+                }
+                if(employee.Status == DataAccess.Enums.EmployeeStatusEnum.OnLeave)
+                {
+                    throw new Exception($"Technician with id {technicianId} is currently on leave.");
+                }
+            }
+
+
             var lists = model.TechnicianIds.Select(x => new TechnicianWorkingSession
             {
                 OrderId = model.OrderId,
