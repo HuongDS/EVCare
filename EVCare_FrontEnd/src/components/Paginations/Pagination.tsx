@@ -4,16 +4,19 @@ import styled from "styled-components";
 interface PaginationProps {
   pageIndex: number;
   totalPage: number;
+  totalItems: number;
+  pageSize: number;
   onPageChange: (page: number) => void;
 }
 
-const PaginationContainer = styled.div`
+const PaginationContainer = styled.div<{ $hidden: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
   justify-content: center;
-  padding: 20px;
+  padding: 5px;
   flex-wrap: wrap;
+  display: ${({ $hidden }) => ($hidden ? "none" : null)};
 `;
 
 const Button = styled.button<{ $active?: boolean; $disabled?: boolean }>`
@@ -104,6 +107,8 @@ const Ellipsis = styled.span`
 
 export const Pagination: React.FC<PaginationProps> = ({
   pageIndex,
+  pageSize,
+  totalItems,
   totalPage,
   onPageChange,
 }) => {
@@ -159,7 +164,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <PaginationContainer>
+    <PaginationContainer $hidden={totalItems <= pageSize}>
       <NavButton
         onClick={handlePrevious}
         $disabled={pageIndex === 1}
