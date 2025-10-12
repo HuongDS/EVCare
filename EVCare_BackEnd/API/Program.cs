@@ -314,7 +314,27 @@ builder.Services.AddHangfire(cfg => cfg
 builder.Services.AddHangfireServer();
 
 var app = builder.Build();
-app.UseHangfireDashboard("/hangfire");
+
+
+// Configure the HTTP request pipeline.
+var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");
+
+if (swaggerEnabled)
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+//app.UseSwagger();
+//app.UseSwaggerUI();
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("AllowAll");
+
+app.UseAuthentication();
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAllowAllDashboardAuthorizationFilter() }
+});
 var tzVn = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
 RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
        "cancel-expired-appointments-daily-7am",
@@ -334,21 +354,6 @@ RecurringJob.AddOrUpdate<IAttendanceService>(
     Cron.Daily(5),
     tzVn
     );
-// Configure the HTTP request pipeline.
-var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");
-
-if (swaggerEnabled)
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-//app.UseSwagger();
-//app.UseSwaggerUI();
-app.UseHttpsRedirection();
-app.UseRouting();
-app.UseCors("AllowAll");
-
-app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<RateLimitMiddleware>();
 app.UseMiddleware<BannedMiddleware>();
@@ -356,12 +361,12 @@ app.UseMiddleware<BannedMiddleware>();
 
 app.MapControllers();
 //app.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
-//app.UseAzureSignalR(routes =>
-//{
-//    routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
-//});
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
-//});
+app.UseAzureSignalR(routes =>
+{
+    routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+});
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+});
 app.Run();
