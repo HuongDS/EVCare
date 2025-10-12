@@ -87,6 +87,10 @@ namespace DataAccess.Repositories
                 })
                 .Where(x=>x.Status == model.Status);
             if (model.Skills != null) query = query.Where(x => x.Skills.Any(s => model.Skills.Contains(s.Id)));
+            if(!string.IsNullOrEmpty(model.FullName))
+            {
+                query = query.Where(x => (x.FullName).ToLower().Contains(model.FullName.ToLower()));
+            }
             query = query.ApplySorting(model.SortField,model.SortOrder);
             
             return await PaginationHelper.PaginationAsync(query,model.PageSize.Value,model.PageIndex.Value);
