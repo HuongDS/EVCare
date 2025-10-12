@@ -31,13 +31,13 @@ namespace DataAccess.Repositories
                 {
                     createdAt = a.Create_At,
                     dateOff = a.DateOff,   
-                    isApproved = a.IsApproved,
+                    Status = a.Status,
                     note = a.Note,
                     reason = a.Reason,
                 });
-            if(model.isApproved.HasValue)
+            if(model.Status.HasValue)
             {
-                query = query.Where(a => a.isApproved == model.isApproved.Value);
+                query = query.Where(a => a.Status == model.Status);
             }
             query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
@@ -47,7 +47,7 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<DataAccess.Entities.Application>> GetApplicationsToday()
         {
             return await _dbSet
-                .Where(x => DateOnly.FromDateTime(x.DateOff) == DateOnly.FromDateTime(DateTime.Now) && x.IsApproved == true)
+                .Where(x => DateOnly.FromDateTime(x.DateOff) == DateOnly.FromDateTime(DateTime.Now) && x.Status == Enums.ApplicationStatusEnum.Approved)
                 .ToListAsync();
         }
 
