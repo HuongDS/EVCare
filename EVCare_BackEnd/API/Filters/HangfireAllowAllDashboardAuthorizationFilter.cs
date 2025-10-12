@@ -9,31 +9,11 @@ namespace API.Filters
         public bool Authorize([NotNull] DashboardContext context)
         {
             var httpContext = context.GetHttpContext();
-
-            if (httpContext.Request.Host.Host.Contains("localhost"))
+            if (httpContext.Request.Host.Host.Contains("azurewebsites.net") ||
+                httpContext.Request.Host.Host.Contains("localhost"))
                 return true;
 
-  
-            var authHeader = httpContext.Request.Headers["Authorization"].FirstOrDefault();
-            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
-                return false;
-
-            var token = authHeader.Substring("Bearer ".Length).Trim();
-
-            try
-            {
-                var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
-
-  
-                var roleClaim = jwt.Claims.FirstOrDefault(c =>
-                    c.Type == "role" || c.Type == "roles" || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
-
-                return roleClaim != null && roleClaim.Value.Equals("Admin", StringComparison.OrdinalIgnoreCase);
-            }
-            catch
-            {
-                return false;
-            }
+            return false;
         }
     }
 }
