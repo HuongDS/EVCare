@@ -18,8 +18,9 @@ import type { AppointmentViewModel } from "../models/AppointmentsModel/Appointme
 import type {
   GetTechnicianParams,
   TechnicianModel,
+  TechnicianSkills,
 } from "../models/AppointmentsModel/Technician_Appointments_Model";
-import type { ServicesResponseDto } from "../models/ServicesModel/Customer_Services_Model";
+import QueryString from "qs";
 
 //[STAFF]: Get All appointments
 
@@ -93,8 +94,12 @@ export const useGetTechniciansToday = (params: GetTechnicianParams) => {
     queryKey: ["TechniciansToday", params],
     queryFn: async () => {
       const response = await api.get<
-        ResponseDto<PageModel<TechnicianModel<ServicesResponseDto[]>>>
-      >("/api/Technician/get-technician-today", { params });
+        ResponseDto<PageModel<TechnicianModel<TechnicianSkills>>>
+      >("/api/Technician/get-technician-today", {
+        params,
+        paramsSerializer: (p) =>
+          QueryString.stringify(p, { arrayFormat: "repeat" }),
+      });
       return response.data;
     },
   });
