@@ -31,5 +31,10 @@ namespace Application.Interfaces
         Task<AppointmentInforToSentDto> GetAppointmentInforToAsync(int appointmentId);
         Task<CenterDailyCapacityModel> GetAppointmentWithCountDaily();
         Task <PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model);
+        Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model);
+        Task<int> CountAppointmentsInMonths(int year, int month);
+        Task<int> CountCustomersInMonths(int year, int month);
+        Task<int> CountAppointmentsInMonthsWithStatus(int year, int month, AppointmentStatusEnum status);
+
     }
 }

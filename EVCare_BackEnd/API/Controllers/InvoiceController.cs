@@ -1,7 +1,9 @@
-﻿using Application.Interfaces;
-using Application.Services;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Application.Dtos;
+using Application.Infrastructures;
+using Application.Interfaces;
+using Application.Services;
 using DataAccess.Dtos.Invoice;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using API.Filters;
 using Application.Infrastructures;
+using DataAccess.Dtos.Pagination;
 
 namespace API.Controllers
 {
@@ -34,6 +37,8 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Staff")]
         [HttpPost]
+        [ServiceFilter(typeof(ValidateInvoiceTotalFilter))]
+        //update to merger
         public async Task<IActionResult> CreateInvoice(InvoiceCreateModel model)
         {
             try
@@ -44,23 +49,33 @@ namespace API.Controllers
                     await _invoiceService.SendMailToPayAsync(paymentUrl, model);
                     return Ok(new ResponseDto<string>
                     {
-                        statusCode = 201,
+                        statusCode = HttpStatus.CREATED,
                         message = "Payment URL created successfully",
                         data = paymentUrl
                     });
 
                 }
-                else
+                else if (model.Payment_Method == DataAccess.Enums.PaymentMethodEnum.Cash)
                 {
                     var invoiceId = await _invoiceService.CreateInvoice(model);
                     return Ok(new ResponseDto<int>
                     {
-                        statusCode = 201,
+                        statusCode = HttpStatus.CREATED,
                         message = "Create successfully",
                         data = invoiceId
-
                     });
                 }
+                else
+                {
+                    var paymentUrl = await _invoiceService.CreatePayOSUrl(model);
+                    return Ok(new ResponseDto<string>
+                    {
+                        statusCode = HttpStatus.CREATED,
+                        message = "Payment URL created successfully",
+                        data = paymentUrl
+                    });
+                }
+
 
             }
             catch (Exception ex)
@@ -97,6 +112,33 @@ namespace API.Controllers
 
             }
         }
+
+
+        [HttpPost("webhook")]
+        public async Task<IActionResult> Webhook()
+        {
+            try
+            {
+                using var sr = new StreamReader(Request.Body, Encoding.UTF8);
+                var raw = await sr.ReadToEndAsync();
+
+                string? sig = Request.Headers["x-payos-signature"].FirstOrDefault()
+                           ?? Request.Headers["x-signature"].FirstOrDefault()
+                           ?? Request.Headers["x-checksum"].FirstOrDefault();
+
+                await _invoiceService.HandleWebhookAsync(raw, sig);
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Error");
+
+            }
+
+        }
+
         [HttpGet("invoices")]
         [Authorize(Roles = "Customer")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
@@ -144,6 +186,61 @@ namespace API.Controllers
                     message = ex.Message
                 });
             }
+
         }
+
+        //[HttpDelete("order/{orderId}")]
+        //[Authorize(Roles = "Staff")]
+        //public async Task<IActionResult> CancelPayOSOrder(int orderId)
+
+        [HttpGet("get-recently-invoices")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetRecentInVoices([FromQuery] InvoiceQueryDto model)
+        {
+            try
+            {
+                //await _invoiceService.CancelPayOSOrder(orderId);
+                //return Ok(new ResponseDto<string>
+                var invoices = await _invoiceService.GetRecentInVoices(model);
+                return Ok(new ResponseDto<PageResultDto<InvoiceViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.INVOICE_GET_SUCCESS,
+                    data = invoices
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpGet("get-revenue/{year}/{month}")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetRevenue(int year, int month)
+        {
+            try
+            {
+                var revenue = await _invoiceService.GetRevenue(year, month);
+                return Ok(new ResponseDto<decimal>
+                {
+                    statusCode = 200,
+                    message = Message.GET_REVENUE_SUCCESS,
+                    data = revenue
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+        }
+
     }
 }

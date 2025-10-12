@@ -226,6 +226,9 @@ namespace DataAccess.Migrations
                     b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ReviewId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -354,9 +357,6 @@ namespace DataAccess.Migrations
                     b.Property<string>("Avatar")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("BaseSalary")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("CCCD")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -367,11 +367,11 @@ namespace DataAccess.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TechnicianId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("rate")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -385,29 +385,24 @@ namespace DataAccess.Migrations
                         {
                             Id = 1,
                             AccountId = 1,
-                            BaseSalary = 12000000m,
                             CCCD = "079123456789",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 0,
-                            Updated_At = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            rate = 5
+                            Updated_At = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
                             AccountId = 2,
-                            BaseSalary = 10000000m,
                             CCCD = "079987654321",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 0,
-                            Updated_At = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            rate = 4
+                            Updated_At = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
                             AccountId = 4,
-                            BaseSalary = 15000000m,
                             CCCD = "079555666777",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 0,
@@ -429,6 +424,9 @@ namespace DataAccess.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<long?>("OrderCode")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
@@ -447,6 +445,10 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("OrderCode")
+                        .IsUnique()
+                        .HasFilter("[OrderCode] IS NOT NULL");
 
                     b.HasIndex("OrderId")
                         .IsUnique();
@@ -900,72 +902,15 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<DateTime>("Updated_At")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppointmentId");
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
 
                     b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.ReviewEmployee", b =>
-                {
-                    b.Property<int>("ReviewId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Create_At")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int>("Rates")
-                        .HasColumnType("int");
-
-                    b.HasKey("ReviewId", "EmployeeId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("ReviewEmployees");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Salary", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Bonus")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("Create_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DayWork")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("Salaries");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Service", b =>
@@ -1568,42 +1513,12 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.Review", b =>
                 {
                     b.HasOne("DataAccess.Entities.Appointment", "Appointment")
-                        .WithMany("Reviews")
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithOne("Review")
+                        .HasForeignKey("DataAccess.Entities.Review", "AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Appointment");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.ReviewEmployee", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Employee", "Employee")
-                        .WithMany("ReviewEmployees")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Entities.Review", "Review")
-                        .WithMany("ReviewEmployees")
-                        .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Review");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Salary", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Employee", "Employee")
-                        .WithMany("Salaries")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
@@ -1701,7 +1616,7 @@ namespace DataAccess.Migrations
 
                     b.Navigation("Order");
 
-                    b.Navigation("Reviews");
+                    b.Navigation("Review");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
@@ -1718,10 +1633,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Applications");
 
                     b.Navigation("Appointments");
-
-                    b.Navigation("ReviewEmployees");
-
-                    b.Navigation("Salaries");
 
                     b.Navigation("Technician");
                 });
@@ -1743,11 +1654,6 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.PartCategory", b =>
                 {
                     b.Navigation("Parts");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Review", b =>
-                {
-                    b.Navigation("ReviewEmployees");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Service", b =>

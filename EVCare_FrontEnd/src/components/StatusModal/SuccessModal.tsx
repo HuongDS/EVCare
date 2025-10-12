@@ -1,104 +1,103 @@
-import React, { useEffect } from "react";
-import styled, { keyframes } from "styled-components";
+import {useEffect} from "react";
+import styled, {keyframes} from "styled-components";
 import SuccessIcon from "../IconsAnimation/successIcon";
 
 const initBox = keyframes`
-  from {
-    transform: scale(110%);
-  }
+    from {
+        transform: scale(110%);
+    }
 
-  to {
-    transform: scale(100%);
-  }
+    to {
+        transform: scale(100%);
+    }
 `;
 
 const initLayout = keyframes`
-  from {
-    background-color: rgba(0, 0, 0, 0.0);
-  }
+    from {
+        background-color: rgba(0, 0, 0, 0.0);
+    }
 
-  to {
-    background-color: rgba(0, 0, 0, 0.3);
-  }
+    to {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
 `;
 
 const Layout = styled.div`
-  position: fixed;
-  top: 0%;
-  left: 0%;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: ${initLayout} 0.15s linear;
-  z-index: 99999;
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: ${initLayout} 0.15s linear;
+    z-index: 99999;
 `;
 
 interface PopUpProps {
-  header: string;
-  message: string;
-  action: () => void;
+    header: string;
+    message: string;
+    action: () => void;
 }
 
-export default function SuccessPopUp({ header, message, action }: PopUpProps) {
-  return (
-    <Layout>
-      <PopUp header={header} message={message} action={action} />
-    </Layout>
-  );
+export default function SuccessPopUp({header, message, action}: PopUpProps) {
+    return (
+        <Layout>
+            <PopUp header={header} message={message} action={action}/>
+        </Layout>
+    );
 }
 
 const Container = styled.div`
-  position: relative;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  gap: 1.3rem;
-  border-radius: 20px;
-  padding: 2rem 2rem;
-  min-width: 30rem;
-  animation: ${initBox} 0.15s linear;
+    position: relative;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+    border-radius: 20px;
+    padding: 2rem 2rem;
+    min-width: 30rem;
+    animation: ${initBox} 0.15s linear;
 `;
 
 const IconContainer = styled.div``;
 
 const BodyContainer = styled.div`
-  text-align: center;
+    text-align: center;
 `;
 
 const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
+    display: flex;
+    justify-content: flex-end;
 `;
 
-const PopUp = ({ header, message, action }: PopUpProps) => {
-  const onCLickOk = (ev: React.ChangeEvent) => {
-    ev.preventDefault();
-    action();
-  };
-
-  useEffect(() => {
-    document.body.classList.add("no-scroll");
-
-    return () => {
-      document.body.classList.remove("no-scroll");
+const PopUp = ({header, message, action}: PopUpProps) => {
+    const onCLickOk = () => {
+        action();
     };
-  });
 
-  return (
-    <Container>
-      <IconContainer>
-        <SuccessIcon />
-      </IconContainer>
-      <BodyContainer>
-        <h4>{header}</h4>
-        <p>{message}</p>
-      </BodyContainer>
-      <ButtonContainer>
-        <button>OK</button>
-      </ButtonContainer>
-    </Container>
-  );
+    useEffect(() => {
+        document.body.classList.add("no-scroll");
+
+        return () => {
+            document.body.classList.remove("no-scroll");
+        };
+    });
+
+    return (
+        <Container>
+            <IconContainer>
+                <SuccessIcon/>
+            </IconContainer>
+            <BodyContainer>
+                <h4>{header}</h4>
+                <p>{message}</p>
+            </BodyContainer>
+            <ButtonContainer>
+                <button onClick={onCLickOk}>OK</button>
+            </ButtonContainer>
+        </Container>
+    );
 };

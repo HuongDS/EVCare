@@ -25,7 +25,8 @@ namespace DataAccess.Entities
         public AppointmentStatusEnum Status { get; set; }
         public DateTime Create_At { get; set; }
         public DateTime Deleted_At { get; set; }
-        public ICollection<Review> Reviews { get; set; }
+        public Review? Review { get; set; }
+        public int? ReviewId { get; set; }
         public ICollection<AppointmentService> AppointmentServices { get; set; }
         public ICollection<Alert> Alerts { get; set; }
         public ICollection<Appointmentimage> AppointmentImages { get; set; }
