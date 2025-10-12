@@ -64,12 +64,13 @@ namespace DataAccess.Repositories
 
         public async Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(TechnicianQueryDto model)
         {
-          
+
             var query = _dbContext.Technicians
                 .Include(x => x.Employee).ThenInclude(x => x.Account)
                 .Include(x => x.TechnicianSkills).ThenInclude(x => x.Service)
                 .Include(x => x.TechnicianWorkingSessions)
                 .AsNoTracking()
+                .Where(x => x.Employee.Account.Deleted_At == DateTime.MinValue)
                 .Select(x => new TechnicianViewModel
                 {
                     Id = x.Id,
@@ -81,8 +82,8 @@ namespace DataAccess.Repositories
                         Id = x.ServiceId,
                         Name = x.Service.Name,
                     }),
-                    Status = (x.TechnicianWorkingSessions.Any(y => y.TechnicianId == x.Id && y.EndTime == null)) ? Enums.EmployeeStatusEnum.Busy
-                    : x.Employee.Status,
+                    Status = x.Employee.Status
+
                 })
                 .Where(x=>x.Status == model.Status);
             if (model.Skills != null) query = query.Where(x => x.Skills.Any(s => model.Skills.Contains(s.Id)));
