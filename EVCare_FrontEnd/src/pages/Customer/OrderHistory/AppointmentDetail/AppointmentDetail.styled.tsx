@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { AppointmentStatusEnum } from "../../../../models/enums";
 
 export const DetailWrapper = styled.div`
   font-family: "Outfit", sans-serif;
@@ -54,17 +55,17 @@ export const Button = styled.button`
   }
 `;
 
-export const Backdrop = styled.div<{ isOpen: boolean }>`
+export const Backdrop = styled.div<{ $isOpen: boolean }>`
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
-  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   transition: opacity 0.3s ease;
-  pointer-events: ${({ isOpen }) => (isOpen ? "auto" : "none")};
+  pointer-events: ${({ $isOpen }) => ($isOpen ? "auto" : "none")};
 `;
 
-export const Wrapper = styled.div<{ isOpen: boolean }>`
+export const Wrapper = styled.div<{ $isOpen: boolean }>`
   position: fixed;
   inset: 0;
   display: flex;
@@ -74,7 +75,7 @@ export const Wrapper = styled.div<{ isOpen: boolean }>`
   z-index: 1001;
 `;
 
-export const OrderModal = styled.div<{ isOpen: boolean }>`
+export const OrderModal = styled.div<{ $isOpen: boolean }>`
   background: #fff;
   padding: 20px 40px;
   padding-right: 0;
@@ -86,13 +87,13 @@ export const OrderModal = styled.div<{ isOpen: boolean }>`
   display: flex;
   flex-direction: column;
 
-  transform: ${({ isOpen }) => (isOpen ? "scale(1)" : "scale(0.8)")};
-  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+  transform: ${({ $isOpen }) => ($isOpen ? "scale(1)" : "scale(0.8)")};
+  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   transition: all 0.3s ease;
 
   z-index: 1002;
 
-  max-height: 100%;
+  max-height: none;
   overflow-y: auto;
 
   position: relative;
@@ -116,7 +117,7 @@ export const Legend = styled.p`
 export const Row = styled.div`
   display: flex;
   gap: 20px;
-  margin-top: 10px;
+  // margin-top: 10px;
   align-items: center;
 
   @media (max-width: 480px) {
@@ -163,6 +164,7 @@ export const NoteBox = styled.textarea`
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  margin-top: 10px;
 
   @media (max-width: 480px) {
     font-size: 13px;
@@ -177,7 +179,7 @@ export const Icon = styled.i`
 
 export const ServiceList = styled.div`
   max-height: 11vh;
-  overflow-y: auto;
+  overflow-y: visible;
   margin-top: 8px;
   @media (max-width: 480px) {
     max-height: 120px;
@@ -220,7 +222,7 @@ export const Status = styled.div`
 `;
 
 interface StatusBadgeProps {
-  status: "done" | "in progress" | "cancel";
+  status: AppointmentStatusEnum | string;
 }
 
 export const StatusBadge = styled.span<StatusBadgeProps>`
@@ -229,12 +231,24 @@ export const StatusBadge = styled.span<StatusBadgeProps>`
   font-weight: 600;
   text-transform: capitalize;
   color: white;
-  background: ${({ status }) =>
-    status === "done"
-      ? "#4caf50"
-      : status === "in progress"
-      ? "#ff9800"
-      : "#f44336"};
+  background: ${({ status }) => {
+    switch (status) {
+      case AppointmentStatusEnum.PENDING:
+        return "#fbc02d";
+      case AppointmentStatusEnum.CONFIRMED:
+        return "#2196f3";
+      case AppointmentStatusEnum.CHECKED_IN:
+        return "#9c27b0";
+      case AppointmentStatusEnum.IN_PROGRESS:
+        return "#ff9800";
+      case AppointmentStatusEnum.DONE:
+        return "#4caf50";
+      case AppointmentStatusEnum.CANCELED:
+        return "#f44336";
+      default:
+        return "#9e9e9e";
+    }
+  }};
 
   @media (max-width: 480px) {
     font-size: 12px;

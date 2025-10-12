@@ -15,5 +15,6 @@ namespace DataAccess.Interfaces
         Task UpdateStockPartAsync(int partID, int quantity);
         Task<bool> CheckExist(int partId);
         void Update(Part part);
+        Task<Dictionary<int, Part>> GetPartWithIDs(List<int> partIds);
     }
 }

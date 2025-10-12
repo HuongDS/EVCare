@@ -11,6 +11,8 @@ import { getMe } from "./services/authService";
 import HTTP_STATUS from "./constants/Code/HttpStatusCode";
 import { useEffect } from "react";
 import { handleError } from "./utils/errorHandler";
+import { NotificationProvider } from "./context/NotificationProvider";
+import { AlertProvider } from "./context/AlertProvider";
 
 const queryClient = new QueryClient();
 function App() {
@@ -41,9 +43,13 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={true} />
-      <RouterProvider router={router} />
-      <GloabalErrorToast />
+      <NotificationProvider>
+        <AlertProvider>
+          <ReactQueryDevtools initialIsOpen={true} />
+          <RouterProvider router={router} />
+          <GloabalErrorToast />
+        </AlertProvider>
+      </NotificationProvider>
     </QueryClientProvider>
   );
 }

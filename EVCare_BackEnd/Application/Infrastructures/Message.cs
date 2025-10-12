@@ -34,11 +34,15 @@ namespace Application.Infrastructures
         public const string PASSWORD_MISMATCH = "Password and Confirm Password do not match.";
         public const string PASSWORD_RESET_SUCCESS = "Password reset successfully.";
         public const string GET_ACCOUNT_SUCCESS = "Get Acccount successfully";
+        public const string UPDATE_ACCOUNT_SUCCESS = "Update Account successfully";
+        public const string PHONE_EXISTS = "Phone number already exists.";
+        public const string EMAIL_EXISTS = "Email already exists.";
 
         // Parttern
         public const string WEAK_PASSWORD = "Password is too weak. It must be at least 8 characters, at least 1 letter, 1 number and 1 special character.";
         public const string INVALID_EMAIL = "Email is not valid.";
         public const string INVALID_PHONE = "Phone number is not valid.";
+        public const string THIS_FIELD_IS_REQUIRED = "This field is required.";
 
         // Appointment
         public const string APPOINTMENT_NOT_FOUND = "Appointment not found.";
@@ -96,6 +100,9 @@ namespace Application.Infrastructures
 
         //Vehicle
         public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
+        public const string VEHICLE_EXISTS = "Vehicle already exists.";
+        public const string VEHICLE_NOT_FOUND = "Vehicle not found.";
+        public const string VEHICLE_DELETE_SUCCESSFULLY = "Delete vehicle successfully";
 
         //Part
         public const string PART_GET_SUCCESSFULLY = "Get parts successfully";
@@ -111,6 +118,15 @@ namespace Application.Infrastructures
 
         //AI
         public const string GET_AI_SUCCESSFULLY = "Get AI successfully";
+        public static string ADD_TECHNICIAN_SUCCESSFULLY = "Add technician successfully";
 
+        // Invoice
+        public const string INVOICE_CREATED_SUCCESS = "Invoice created successfully.";
+        public const string INVOICE_GET_SUCCESS = "Invoice get successfully.";
+        public const string INVOICE_PAYMENT_SUCCESS = "Invoice payment processed successfully.";
+        public const string GET_REVENUE_SUCCESS = "Get revenue successfully.";
+        public const string GET_RECENT_INVOICES_SUCCESS = "Get recent invoices successfully.";
+
+        public static string APPLICATION_GET_SUCCESS = "Application get successfully";
     }
 }

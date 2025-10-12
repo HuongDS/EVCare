@@ -30,6 +30,7 @@ namespace Application.Services
         private readonly IOrderPartRepository _orderPartRepository;
         private readonly IPartRepository _partRepository;
         private readonly ITechnicianWorkingSessionRepository _technicianWorkingSessionRepository;
+        
         private readonly IUnitOfWork _unitOfWork;
 
         public OrderService(IOrderRepository orderRepository, IAppointmentRepository appointmentRepository,
@@ -102,6 +103,14 @@ namespace Application.Services
                 throw new Exception(Message.ORDER_NOT_FOUND);
             }
             order.Status = data.status;
+            if(order.Status == OrderStatusEnum.Canceled)
+            {
+                await _technicianWorkingSessionRepository.MakeCancel(order.Id);
+            }
+            if(order.Status == OrderStatusEnum.Processing)
+            {
+                await _technicianWorkingSessionRepository.MakeProcessing(order.Id);
+            }
             await _orderRepository.UpdateAsync(order);
             return new ResponseDto<OrderResponseDto>
             {
@@ -156,7 +165,6 @@ namespace Application.Services
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var data = await _orderRepository.GetOrderPartsByOrderId(model.Id);
-                //trả lại
                 foreach (var op in data.OrderParts)
                 {
                     var part = await _partRepository.GetByIdAsync(op.PartId);
@@ -164,12 +172,7 @@ namespace Application.Services
                     part.Stock += op.Quantity;
                     _partRepository.Update(part);
                 }
-
-                //Xóa hết cái cũ
                 await _orderRepository.RemoveOrderPartsAsync(model.Id);
-
-
-                //thêm mới
                 foreach (var part in model.OrderParts)
                 {
                     var originalPart = await _partRepository.GetByIdAsync(part.PartId);
@@ -192,21 +195,84 @@ namespace Application.Services
             
         }
 
-        public async Task UpdatePartToOrder(TechnicianOrderPartUpdateModel model)
+
+        public async Task UpdatePartToOrder(OrderPartAddModel model,int technicianId)
         {
 
-            var order = await _technicianWorkingSessionRepository.GetTechnicianWorkingSession(model.OrderId, model.TechnicianId);
-            if(order.Status != TechnicianWorkingSessionEnum.AddingPart)
+            var order = await _technicianWorkingSessionRepository.GetTechnicianWorkingSession(model.OrderId, technicianId);
+            if (order == null)
+            {
+                throw new Exception("Source not found");
+            }
+            if (order.Status != TechnicianWorkingSessionEnum.AddingPart)
             {
                 throw new Exception("You are only updated when in adding part status");
             }
-            
-            //await _unitOfWork.ExecuteInTransactionAsync(async () =>
-            //{
 
-            //});
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+             
+                var orderParts = await _orderPartRepository.GetOrderPart(model.OrderId, technicianId);
+                var partIds = orderParts.Select(x => x.PartId).ToList();
+                var partDics = await _partRepository.GetPartWithIDs(partIds);
 
-            
+                foreach (var part in orderParts) {
+
+                   if(partDics.ContainsKey(part.PartId)) partDics[part.PartId].Stock += part.Quantity;
+                
+                }
+
+                  await  _orderPartRepository.RemoveRange(model.OrderId, technicianId);
+
+                 await AddOrder(model, technicianId);
+
+                
+            });
+
+
+        }
+        public async Task AddOrder(OrderPartAddModel model,int technicianId)
+        {
+            var partIds = model.Parts.Select(p => p.Id).Distinct().ToList();
+            var partsDict = await _partRepository.GetPartWithIDs(partIds);
+
+            foreach (var req in model.Parts)
+            {
+                if (!partsDict.TryGetValue(req.Id, out var part))
+                    throw new Exception($"Part {req.Id} not found");
+
+                if (req.Quantity > part.Stock)
+                    throw new Exception($"The part '{part.Name}' doesn't have enough stock");
+
+
+            }
+            var orderParts = model.Parts.Select(req => new OrderPart
+            {
+                OrderId = model.OrderId,
+                TechnicianId = technicianId,
+                PartId = req.Id,
+                Quantity = req.Quantity,
+                Price = partsDict[req.Id].Price,
+                ReplacementPrice = partsDict[req.Id].ReplacementPrice
+            }).ToList();
+            await _orderPartRepository.AddRangeAsync(orderParts);
+            foreach (var req in model.Parts)
+                partsDict[req.Id].Stock -= req.Quantity;
+
+        }
+        public async Task AddPartsToAnOrder(OrderPartAddModel model, int technicianId)
+        {
+            var order = await _technicianWorkingSessionRepository.GetTechnicianWorkingSession(model.OrderId,technicianId);
+            if (order == null)
+            {
+                throw new Exception("Source not found");
+            }
+            if (order.Status != TechnicianWorkingSessionEnum.AddingPart)
+            {
+                throw new Exception("You are only updated when in adding part status");
+            }
+
+            await _unitOfWork.ExecuteInTransactionAsync( async()=> await AddOrder(model, technicianId));
         }
     }
 }

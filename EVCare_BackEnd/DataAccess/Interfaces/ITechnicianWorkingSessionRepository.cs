@@ -14,5 +14,9 @@ namespace DataAccess.Interfaces
         Task UpdateStatusWorkingSession(int technician, TechnicianWorkingSessionUpdateModel model);
         Task<bool> CheckOrderDone(int orderId);
         Task<TechnicianWorkingSessionViewModel> GetTechnicianWorkingSession(int orderId, int technicianId);
+        Task AddRange(IEnumerable<TechnicianWorkingSession> lists);
+        Task MakeProcessing(int id);
+        Task<bool> CheckOrderConfirm(int orderId);
+        Task MakeCancel(int id);
     }
 }

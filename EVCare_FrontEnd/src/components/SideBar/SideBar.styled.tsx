@@ -1,5 +1,6 @@
+//OrderMenu.styled.tsx
 import { Menu } from "antd";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const SidebarContainer = styled.div`
@@ -36,7 +37,6 @@ export const SidebarContainer = styled.div`
 `;
 
 export const Logo = styled.div`
-  padding: 16px 24px;
   margin-bottom: 20px;
   border-bottom: 1px solid #e8e8e8;
 

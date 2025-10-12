@@ -34,11 +34,17 @@ namespace DataAccess.Repositories
                      Price = x.Price,
                      Quantity = x.Stock,
                      ImageUrl = x.Image,
-                 });
+                     ReplacementPrice = x.ReplacementPrice
+                });
             if (model.CategoryId.HasValue) query = query.Where(x => x.CategoryId == model.CategoryId.Value);
 
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+        }
+
+        public async Task<Dictionary<int,Part>> GetPartWithIDs(List<int> partIds)
+        {
+            return await _dbContext.Parts.Where(x=>partIds.Contains(x.Id)).ToDictionaryAsync(p=>p.Id);
         }
 
         public void Update(Part part)

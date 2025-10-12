@@ -6,7 +6,6 @@ import type {
 import { handleError } from "../utils/errorHandler";
 
 /**
- * Cập nhật trạng thái làm việc của kỹ thuật viên
  * @param payload { orderId, status }
  */
 export async function updateTechnicianWorkingSession(payload: {

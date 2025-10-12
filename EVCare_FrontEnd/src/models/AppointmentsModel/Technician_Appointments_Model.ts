@@ -20,7 +20,14 @@ export type TechnicianAppointmentsDto = {
   phoneNumber: string;
   licensePlate: string;
   services: string[];
-  parts: string[];
+  parts: {
+    technicianId: number;
+    id: number;
+    name: string;
+    quantity: number;
+    price: number;
+    imageUrl: string;
+  }[];
   status: string;
   orderId: number;
 };

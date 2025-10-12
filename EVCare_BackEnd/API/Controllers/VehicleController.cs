@@ -22,7 +22,7 @@ namespace API.Controllers
         [HttpPost]
         [Authorize(Roles = "Customer")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
-        
+
         public async Task<IActionResult> CreateVehicle(VehicleCreateModel model)
         {
             try
@@ -145,6 +145,30 @@ namespace API.Controllers
                     statusCode = HttpStatus.NOT_FOUND,
                     message = Message.NOT_FOUND
 
+                });
+            }
+        }
+        [HttpPut("delete-vehicle/{vehicleId}")]
+        [Authorize]
+        [ServiceFilter(typeof(AuthorizeVehicleOwnerFilter))]
+        public async Task<IActionResult> SoftDeleteVehicle(int vehicleId)
+        {
+            try
+            {
+                await _vehicleService.SoftDeleteVehicle(vehicleId);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.VEHICLE_DELETE_SUCCESSFULLY,
+                    data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.NOT_FOUND,
+                    message = ex.Message
                 });
             }
         }

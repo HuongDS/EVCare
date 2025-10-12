@@ -226,6 +226,9 @@ namespace DataAccess.Migrations
                     b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ReviewId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -354,9 +357,6 @@ namespace DataAccess.Migrations
                     b.Property<string>("Avatar")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("BaseSalary")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("CCCD")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -367,11 +367,11 @@ namespace DataAccess.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TechnicianId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("rate")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -385,29 +385,24 @@ namespace DataAccess.Migrations
                         {
                             Id = 1,
                             AccountId = 1,
-                            BaseSalary = 12000000m,
                             CCCD = "079123456789",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 0,
-                            Updated_At = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            rate = 5
+                            Updated_At = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
                             AccountId = 2,
-                            BaseSalary = 10000000m,
                             CCCD = "079987654321",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 0,
-                            Updated_At = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            rate = 4
+                            Updated_At = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
                             AccountId = 4,
-                            BaseSalary = 15000000m,
                             CCCD = "079555666777",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 0,
@@ -429,6 +424,9 @@ namespace DataAccess.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<long?>("OrderCode")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
@@ -447,6 +445,10 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("OrderCode")
+                        .IsUnique()
+                        .HasFilter("[OrderCode] IS NOT NULL");
 
                     b.HasIndex("OrderId")
                         .IsUnique();
@@ -499,6 +501,9 @@ namespace DataAccess.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("ReplacementPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("OrderId", "PartId", "TechnicianId");
 
                     b.HasIndex("PartId");
@@ -540,6 +545,9 @@ namespace DataAccess.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("ReplacementPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
@@ -563,6 +571,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/piston.jpg",
                             Name = "Piston",
                             Price = 1200000m,
+                            ReplacementPrice = 0m,
                             Stock = 50,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -576,6 +585,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/sparkplug.jpg",
                             Name = "Spark Plug",
                             Price = 150000m,
+                            ReplacementPrice = 0m,
                             Stock = 200,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -589,6 +599,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/brakepad.jpg",
                             Name = "Brake Pad",
                             Price = 800000m,
+                            ReplacementPrice = 0m,
                             Stock = 120,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -602,6 +613,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/brakerotor.jpg",
                             Name = "Brake Rotor",
                             Price = 2500000m,
+                            ReplacementPrice = 0m,
                             Stock = 60,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -615,6 +627,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/battery.jpg",
                             Name = "Car Battery",
                             Price = 3500000m,
+                            ReplacementPrice = 0m,
                             Stock = 40,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -628,6 +641,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/alternator.jpg",
                             Name = "Alternator",
                             Price = 4200000m,
+                            ReplacementPrice = 0m,
                             Stock = 30,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -641,6 +655,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/shockabsorber.jpg",
                             Name = "Shock Absorber",
                             Price = 1800000m,
+                            ReplacementPrice = 0m,
                             Stock = 70,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -654,6 +669,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/tierod.jpg",
                             Name = "Tie Rod",
                             Price = 950000m,
+                            ReplacementPrice = 0m,
                             Stock = 90,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -667,6 +683,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/tire.jpg",
                             Name = "All-Season Tire",
                             Price = 2200000m,
+                            ReplacementPrice = 0m,
                             Stock = 100,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -680,6 +697,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/alloywheel.jpg",
                             Name = "Alloy Wheel",
                             Price = 2800000m,
+                            ReplacementPrice = 0m,
                             Stock = 50,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -693,6 +711,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/radiator.jpg",
                             Name = "Radiator",
                             Price = 3100000m,
+                            ReplacementPrice = 0m,
                             Stock = 35,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -706,6 +725,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/waterpump.jpg",
                             Name = "Water Pump",
                             Price = 1450000m,
+                            ReplacementPrice = 0m,
                             Stock = 80,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -719,6 +739,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/muffler.jpg",
                             Name = "Muffler",
                             Price = 2100000m,
+                            ReplacementPrice = 0m,
                             Stock = 45,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -732,6 +753,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/catalyticconverter.jpg",
                             Name = "Catalytic Converter",
                             Price = 5200000m,
+                            ReplacementPrice = 0m,
                             Stock = 25,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
@@ -880,72 +902,15 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<DateTime>("Updated_At")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppointmentId");
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
 
                     b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.ReviewEmployee", b =>
-                {
-                    b.Property<int>("ReviewId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Create_At")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int>("Rates")
-                        .HasColumnType("int");
-
-                    b.HasKey("ReviewId", "EmployeeId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("ReviewEmployees");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Salary", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Bonus")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("Create_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DayWork")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("Salaries");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Service", b =>
@@ -959,7 +924,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Create_At")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Deleted_At")
+                    b.Property<DateTime?>("Deleted_At")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -972,10 +937,6 @@ namespace DataAccess.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
@@ -993,7 +954,6 @@ namespace DataAccess.Migrations
                             Description = "Installation of new water and drainage pipes in residential and commercial buildings.",
                             Duration = 2.5m,
                             Name = "Pipe Installation",
-                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1004,7 +964,6 @@ namespace DataAccess.Migrations
                             Description = "Detection and repair of pipe leaks to prevent water damage and reduce waste.",
                             Duration = 1.5m,
                             Name = "Leak Repair",
-                            Price = 400m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1015,7 +974,6 @@ namespace DataAccess.Migrations
                             Description = "Installation of electrical wiring for new constructions or renovations.",
                             Duration = 3.0m,
                             Name = "Wiring Installation",
-                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1026,7 +984,6 @@ namespace DataAccess.Migrations
                             Description = "Repair and replacement of broken or faulty light fixtures and switches.",
                             Duration = 1.0m,
                             Name = "Light Fixture Repair",
-                            Price = 200m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1037,7 +994,6 @@ namespace DataAccess.Migrations
                             Description = "Installation of new air conditioning units for residential and office spaces.",
                             Duration = 4.0m,
                             Name = "Air Conditioner Installation",
-                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1048,7 +1004,6 @@ namespace DataAccess.Migrations
                             Description = "Regular inspection and maintenance of heating systems to ensure efficiency.",
                             Duration = 2.0m,
                             Name = "Heater Maintenance",
-                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1059,7 +1014,6 @@ namespace DataAccess.Migrations
                             Description = "Repair and restoration of wooden furniture such as chairs, tables, and cabinets.",
                             Duration = 2.0m,
                             Name = "Furniture Repair",
-                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1070,7 +1024,6 @@ namespace DataAccess.Migrations
                             Description = "Custom installation of wooden doors and windows with fittings.",
                             Duration = 3.5m,
                             Name = "Door and Window Installation",
-                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1081,7 +1034,6 @@ namespace DataAccess.Migrations
                             Description = "Painting of walls, ceilings, and trim inside residential and office buildings.",
                             Duration = 5.0m,
                             Name = "Interior Painting",
-                            Price = 300m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1092,7 +1044,6 @@ namespace DataAccess.Migrations
                             Description = "Weather-resistant painting of exterior walls and structures.",
                             Duration = 6.0m,
                             Name = "Exterior Painting",
-                            Price = 100m,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -1128,6 +1079,9 @@ namespace DataAccess.Migrations
 
                     b.Property<TimeSpan>("OpenTime")
                         .HasColumnType("time");
+
+                    b.Property<decimal>("Vat")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("WorkEndDay")
                         .HasColumnType("int");
@@ -1559,42 +1513,12 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.Review", b =>
                 {
                     b.HasOne("DataAccess.Entities.Appointment", "Appointment")
-                        .WithMany("Reviews")
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithOne("Review")
+                        .HasForeignKey("DataAccess.Entities.Review", "AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Appointment");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.ReviewEmployee", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Employee", "Employee")
-                        .WithMany("ReviewEmployees")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Entities.Review", "Review")
-                        .WithMany("ReviewEmployees")
-                        .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Review");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Salary", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Employee", "Employee")
-                        .WithMany("Salaries")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
@@ -1692,7 +1616,7 @@ namespace DataAccess.Migrations
 
                     b.Navigation("Order");
 
-                    b.Navigation("Reviews");
+                    b.Navigation("Review");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
@@ -1709,10 +1633,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Applications");
 
                     b.Navigation("Appointments");
-
-                    b.Navigation("ReviewEmployees");
-
-                    b.Navigation("Salaries");
 
                     b.Navigation("Technician");
                 });
@@ -1734,11 +1654,6 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.PartCategory", b =>
                 {
                     b.Navigation("Parts");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Review", b =>
-                {
-                    b.Navigation("ReviewEmployees");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Service", b =>

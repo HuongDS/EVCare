@@ -12,6 +12,7 @@ namespace DataAccess.Dtos.Orders
         public int Id { get; set; }
         public IEnumerable<PartTechnicianViewModel> Parts { get; set; }   
 
+        public decimal Vat { get; set; }    
         public decimal Price { get; set; }
     }
 }

@@ -1,12 +1,6 @@
+// ProductModal.tsx
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Modal,
-  Button as MuiButton,
-  Fade,
-  Backdrop,
-  IconButton,
-} from "@mui/material";
+import { Box, Modal, Fade, Backdrop, IconButton } from "@mui/material";
 import ImageSkeleton from "./ImageSkeleton";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 
@@ -19,6 +13,8 @@ import {
   QuantityControl,
   QuantityNumber,
 } from "./Style/ProductModal.styled";
+
+import ButtonAction from "../../../components/Button/ReviewButton";
 
 interface ProductModalProps {
   open: boolean;
@@ -60,8 +56,11 @@ export default function ProductModal({
     if (quantity > 1) setQuantity((prev) => prev - 1);
   };
 
-  const handleAddToCart = () => {
-    if (part) onAddToCart?.(part, quantity);
+  const handleAdd = () => {
+    if (part) {
+      console.log("Adding to cart from modal:", part, quantity);
+      onAddToCart?.(part, quantity);
+    }
     onClose();
   };
 
@@ -84,27 +83,23 @@ export default function ProductModal({
               alt={part?.name || "Product"}
               height={180}
             />
-
             <ProductName variant="h6">
               {part?.name || "Product Name"}
             </ProductName>
-
             <Info>
               <TopRow>
                 <PriceQuantity>
-                  <span>{(part?.price ?? 0).toLocaleString("vi-VN")}VNĐ</span>
-                  <span>Quantity: {part?.quantity ?? 0}</span>
+                  <span>{(part?.price ?? 0).toLocaleString("vi-VN")} VNĐ</span>
+                  <span>Stock: {part?.quantity ?? 0}</span>
                 </PriceQuantity>
 
-                <MuiButton
-                  variant="contained"
-                  color="success"
-                  onClick={handleAddToCart}
-                  disabled={!part}
-                  sx={{ minWidth: "120px" }}
-                >
-                  Add To Cart
-                </MuiButton>
+                {/* 👉 dùng ButtonAction thay cho MuiButton */}
+                <ButtonAction
+                  text="Add To Cart"
+                  color="white"
+                  backgroundColor={part ? "#00AD4E" : "#ccc"}
+                  action={handleAdd}
+                />
               </TopRow>
 
               <QuantityControl>
@@ -121,9 +116,7 @@ export default function ProductModal({
                 >
                   –
                 </IconButton>
-
                 <QuantityNumber>{quantity}</QuantityNumber>
-
                 <IconButton
                   size="small"
                   onClick={handleIncrease}

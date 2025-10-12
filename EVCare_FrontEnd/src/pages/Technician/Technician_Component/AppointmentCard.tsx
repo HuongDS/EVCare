@@ -1,4 +1,3 @@
-// AppointmentCard.tsx
 import { useState } from "react";
 import NameBox from "./NameBox";
 import ReviewButton from "./Button";
@@ -20,6 +19,7 @@ import {
   ButtonStyled,
   Info,
   AppointmentStatus,
+  ListPart,
 } from "./Style/AppointmentCard.styled";
 
 type AppointmentCardProps = {
@@ -28,11 +28,13 @@ type AppointmentCardProps = {
     orderId: number,
     newStatus: TechnicianWorkingSessionEnum
   ) => void;
+  onPartsUpdated?: (orderId: number) => void;
 };
 
 export default function AppointmentCard({
   data,
   onStatusChange,
+  onPartsUpdated,
 }: AppointmentCardProps) {
   const [currentStatus, setCurrentStatus] =
     useState<TechnicianWorkingSessionEnum>(
@@ -41,18 +43,19 @@ export default function AppointmentCard({
 
   const handleAction = async (nextStatus: TechnicianWorkingSessionEnum) => {
     const prevStatus = currentStatus;
-    setCurrentStatus(nextStatus); // Update UI ngay
-    onStatusChange?.(data.orderId!, nextStatus); // Update parent & tab
+    setCurrentStatus(nextStatus);
+    onStatusChange?.(data.orderId, nextStatus);
 
     try {
       await updateTechnicianWorkingSession({
-        orderId: data.orderId!,
+        orderId: data.orderId,
         status: nextStatus,
       });
+      onPartsUpdated?.(data.orderId);
     } catch (err) {
       console.error(err);
       setCurrentStatus(prevStatus);
-      onStatusChange?.(data.orderId!, prevStatus); // rollback
+      onStatusChange?.(data.orderId, prevStatus);
       alert(ERROR_MESSAGE.CAN_NOT_UPDATE_STATUS);
     }
   };
@@ -101,10 +104,28 @@ export default function AppointmentCard({
           </ListService>
         </div>
 
-        <ButtonStyled>
-          <ReviewButton status={currentStatus} onAction={handleAction} />
-        </ButtonStyled>
+        {data.parts && data.parts.length > 0 && (
+          <div>
+            <Title>Parts Added</Title>
+            <ListPart>
+              {data.parts.map((part, idx) => (
+                <Info key={idx}>
+                  {part.name} x {part.quantity}
+                </Info>
+              ))}
+            </ListPart>
+          </div>
+        )}
       </CardBody>
+
+      <ButtonStyled>
+        <ReviewButton
+          status={currentStatus}
+          onAction={handleAction}
+          appointment={data}
+          orderId={data.orderId}
+        />
+      </ButtonStyled>
     </Card>
   );
 }

@@ -40,7 +40,6 @@ namespace DataAccess.Repositories
                     ExpYears = x.ExpYear,
                     FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
                     Phone = x.Employee.Account.Phone,
-                    Rating = x.Employee.rate,
                     Skills = x.TechnicianSkills.Select(x => new ServiceViewFormModel
                     {
                         Id = x.ServiceId,
@@ -77,7 +76,6 @@ namespace DataAccess.Repositories
                     FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
                     ExpYears = x.ExpYear,
                     Phone = x.Employee.Account.Phone,
-                    Rating = x.Employee.rate,
                     Skills = x.TechnicianSkills.Select(x => new Dtos.Service.ServiceViewFormModel
                     {
                         Id = x.ServiceId,
