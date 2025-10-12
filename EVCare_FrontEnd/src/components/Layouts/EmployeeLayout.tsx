@@ -13,13 +13,12 @@ const EmployeeLayout: React.FC<{
   children?: React.ReactNode;
 }> = ({ role, menuOverride, children }) => {
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer },
   } = theme.useToken();
 
   const location = useLocation();
   const isOrderPage = location.pathname.includes("/technician/order");
 
-  // 🟩 State cho collapsed
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -51,12 +50,13 @@ const EmployeeLayout: React.FC<{
           {menuOverride ?? <Sidebar role={role} collapsed={collapsed} />}
         </Sider>
 
-        <Layout style={{ padding: "0 24px 24px" }}>
+        <Layout style={{ padding: "0" }}>
           <Content
             style={{
               padding: 5,
               margin: 0,
               background: colorBgContainer,
+              overflow: "hidden",
             }}
           >
             {isOrderPage ? children : <Outlet />}

@@ -20,6 +20,14 @@ export const ERROR_MESSAGE = {
   CAN_NOT_UPDATE_STATUS: "Can't update status. Please try again!",
 };
 
+export const MSG_TITLE = {
+  UPDATE_PROFILE: "Update Profile",
+  LOGIN: "Login",
+  ADD_VEHICLE: "Add Vehicle",
+  DELETE_VEHICLE: "Delete Vehicle",
+  ADMIN: "Admin",
+};
+
 export const SUCCESS_MESSAGE = {
   REGISTER_SUCCESS: "OTP verified! Account created.",
   LOGIN_SUCCESS: "Login Successfully!",
@@ -43,4 +51,8 @@ export const LIST_APPOINTMENTS_MESSAGE = {
   EMPTY_PENDING: (status: string) =>
     `There are currently no ${status} appointments`,
   NO_APPOINTMENT_FOUND: "No appointments found for: ",
+};
+
+export const APPOINTMENT_MESSAGE = {
+  APPOINTMENT_DOES_NOT_EXIST: "Appointment does not exist!",
 };
