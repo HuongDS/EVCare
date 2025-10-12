@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Card = styled.div`
-font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   margin: 15px;
