@@ -2,7 +2,9 @@
 using System.Security.Authentication;
 using System.Text;
 using API.Filters;
+using API.Hubs;
 using API.Middlewares;
+using Application.DomainEvents;
 using Application.Interfaces;
 using Application.IService;
 using Application.Mapping;
@@ -31,6 +33,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
+using Microsoft.Azure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,8 +43,15 @@ builder.Services.AddControllers()
     .AddFluentValidation()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()); 
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+
+// SignalR
+//builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -89,6 +99,7 @@ builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
 builder.Services.AddScoped<ITechnicianWorkingSessionRepository, TechnicianWorkingSessionRepository>();
 builder.Services.AddScoped<IPartCategoryRepository, PartCategoryRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
@@ -120,6 +131,21 @@ builder.Services.AddScoped<IPartService, PartService>();
 builder.Services.AddScoped<ITechnicianWorkingSessionService, TechnicianWorkingSessionService>();
 builder.Services.AddScoped<IPartCategoryService, PartCategoryService>();
 builder.Services.AddScoped<IReplenishmentPlanner, GeminiReplenishmentPlanner>();
+builder.Services.AddHttpClient<IPayOSGateWay, PayOSGateWay>();
+builder.Services.AddScoped<IPayOSService, PayOSService>();
+builder.Services.AddScoped<IRedisService, RedisService>();
+builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
+//builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
+//{
+//    c.BaseAddress = new Uri(builder.Configuration["AiService:BaseUrl"]!);
+//});
+builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
+{
+    c.BaseAddress = new Uri("https://generativelanguage.googleapis.com/v1beta/");
+});
+//builder.Services.AddScoped<IAiInsightServices, MockAiInsightServices>();
+builder.Services.AddScoped<OnInvoiceCompleteHandler>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 
 // AutoMapper
@@ -142,6 +168,8 @@ builder.Services.AddScoped<AppointmentAuthorizationFilter>();
 builder.Services.AddScoped<SetAccountIdFilter>();
 builder.Services.AddScoped<SetTechnicianIdFilter>();
 builder.Services.AddScoped<AuthorizeTechnicianDetail>();
+builder.Services.AddScoped<ValidateInvoiceTotalFilter>();
+builder.Services.AddScoped<CheckAuthorizationOfCustomerFilter>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
@@ -160,15 +188,24 @@ builder.Services.AddValidatorsFromAssemblyContaining<BlockedDatePostModelValidat
 
 
 // Add Cors
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll", builder =>
+//    {
+//        builder.WithOrigins("https://localhost:7228", "http://localhost:5173")
+//                .AllowAnyMethod()
+//               .AllowAnyHeader()
+//               .AllowCredentials();
+//    });
+//});
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
-    {
-        builder.WithOrigins("https://localhost:7228", "http://localhost:5173")
-                .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
-    });
+    options.AddPolicy("AllowAll", p => p
+        .WithOrigins("http://localhost:5173", "https://ev-care.netlify.app", "https://localhost:7228", "https://evcare.service.signalr.net")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials());
 });
 
 // Authentication
@@ -190,7 +227,22 @@ builder.Services.AddAuthentication(opt =>
         IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key),
         ClockSkew = TimeSpan.Zero
     };
+    opt.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                (path.StartsWithSegments("/hubs/adminDashboard")))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 })
+
     .AddGoogle(opt =>
     {
         opt.ClientId = builder.Configuration["Authentication:Google:ClientId"];
@@ -250,6 +302,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 
     return ConnectionMultiplexer.Connect(options);
 });
+//builder.Services.AddStackExchangeRedisCache(o => { o.Configuration = builder.Configuration["Redis:ConnectionString"]; });
 
 //hangfire
 builder.Services.AddHangfire(cfg => cfg
@@ -271,13 +324,13 @@ RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
     );
 RecurringJob.AddOrUpdate<IReminderService>(
     "reminder-service",
-     job=>job.SendEmailRemindersAsync(),
+     job => job.SendEmailRemindersAsync(),
      Cron.Daily(10),
      tzVn
     );
 RecurringJob.AddOrUpdate<IAttendanceService>(
     "attendacne-service",
-    job=>job.MarkAttendanceAsync(),
+    job => job.MarkAttendanceAsync(),
     Cron.Daily(5),
     tzVn
     );
@@ -292,15 +345,23 @@ if (swaggerEnabled)
 //app.UseSwagger();
 //app.UseSwaggerUI();
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseCors("AllowAll");
 
-app.UseMiddleware<RateLimitMiddleware>();
 app.UseAuthentication();
+app.UseAuthorization();
+app.UseMiddleware<RateLimitMiddleware>();
 app.UseMiddleware<BannedMiddleware>();
 
-app.UseAuthorization();
 
 app.MapControllers();
-
+//app.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+//app.UseAzureSignalR(routes =>
+//{
+//    routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+//});
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+//});
 app.Run();

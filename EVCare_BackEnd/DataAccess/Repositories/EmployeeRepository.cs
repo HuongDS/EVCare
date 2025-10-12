@@ -22,7 +22,28 @@ namespace DataAccess.Repositories
 
         public async Task MarkAvaliableAllEmployees()
         {
-            await _dbContext.Employees.ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Available));
+            await _dbContext.Employees
+                .ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Available));
+        }
+
+        public async Task MarkBusyForTechnician()
+        {
+            var activeTechnicianIds = await _dbContext.TechnicianWorkingSessions
+                                       .Where(tws => tws.EndTime == null)
+                                       .Select(tws => tws.TechnicianId)
+                                       .Distinct()
+                                       .ToListAsync();
+            await _dbContext.Employees
+                   .Where(e => e.Status == EmployeeStatusEnum.Available && activeTechnicianIds.Contains(e.TechnicianId.Value))
+                   .ExecuteUpdateAsync(e => e.SetProperty(e => e.Status, _ => EmployeeStatusEnum.Busy));
+
+
+        }
+
+        public async Task MarkBusyForTechnician(IEnumerable<int> technicianIds)
+        {
+            await _dbContext.Employees.Where(x=>technicianIds.Contains(x.TechnicianId.Value))
+                .ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Busy));
         }
     }
 }

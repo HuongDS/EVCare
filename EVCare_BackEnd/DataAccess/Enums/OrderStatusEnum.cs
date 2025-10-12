@@ -9,6 +9,7 @@ namespace DataAccess.Enums
     public enum OrderStatusEnum
     {
         Pending,
+        WaitingConfirm,
         Processing,
         Completed,
         Canceled

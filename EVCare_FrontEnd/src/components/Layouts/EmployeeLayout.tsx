@@ -1,15 +1,26 @@
 import { Layout, theme } from "antd";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../SideBar/SideBar";
 import HeaderStaff from "../Header/HeaderStaff";
 import { RoleEnum } from "../../models/enums/RoleEnum";
+import { useState } from "react";
 
 const { Content, Sider } = Layout;
 
-const EmployeeLayout: React.FC<{ role: RoleEnum }> = ({ role }) => {
+const EmployeeLayout: React.FC<{
+  role: RoleEnum;
+  menuOverride?: React.ReactNode;
+  children?: React.ReactNode;
+}> = ({ role, menuOverride, children }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const location = useLocation();
+  const isOrderPage = location.pathname.includes("/technician/order");
+
+  // 🟩 State cho collapsed
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <Layout
@@ -22,12 +33,25 @@ const EmployeeLayout: React.FC<{ role: RoleEnum }> = ({ role }) => {
       <Layout style={{ flexDirection: "row" }}>
         <Sider
           width={200}
-          trigger={null}
-          style={{ background: colorBgContainer }}
+          collapsible
+          collapsed={collapsed}
+          breakpoint="lg"
+          collapsedWidth={60}
+          onCollapse={(val) => setCollapsed(val)}
+          style={{
+            background: colorBgContainer,
+            transition: "all 0.3s ease",
+            position: "sticky",
+            top: 56,
+            left: 0,
+            height: "calc(100vh - 56px)",
+            zIndex: 1000,
+          }}
         >
-          <Sidebar role={role} />
+          {menuOverride ?? <Sidebar role={role} collapsed={collapsed} />}
         </Sider>
-        <Layout style={{ padding: "0" }}>
+
+        <Layout style={{ padding: "0 24px 24px" }}>
           <Content
             style={{
               padding: 5,
@@ -35,7 +59,7 @@ const EmployeeLayout: React.FC<{ role: RoleEnum }> = ({ role }) => {
               background: colorBgContainer,
             }}
           >
-            <Outlet />
+            {isOrderPage ? children : <Outlet />}
           </Content>
         </Layout>
       </Layout>

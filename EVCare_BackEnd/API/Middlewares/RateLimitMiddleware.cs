@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 
 namespace API.Middlewares
 {
@@ -20,6 +21,13 @@ namespace API.Middlewares
         }
         public async Task InvokeAsync(HttpContext context)
         {
+            var path = context.Request.Path.Value?.ToLower() ?? "";
+            if (path.Contains("/negotiate") || path.Contains("/signalr") || path.Contains("/client") || path.Contains("/aspnet"))
+            {
+                await _next(context);
+                return;
+            }
+
             bool reject;
             double retryAfterSec;
 

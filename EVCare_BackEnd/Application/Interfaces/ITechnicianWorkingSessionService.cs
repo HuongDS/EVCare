@@ -11,5 +11,6 @@ namespace Application.Interfaces
     {
         Task UpdateWorkingSession(int technicianId,TechnicianWorkingSessionUpdateModel model);
         Task<TechnicianWorkingSessionViewModel> GetTechnicianWorkingSession(int orderId, int technicianId);
+        Task AddTechnicianToOrder(AssignTechniciansModel model);
     }
 }

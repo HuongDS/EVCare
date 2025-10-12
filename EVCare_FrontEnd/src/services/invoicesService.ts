@@ -1,0 +1,54 @@
+import axios from "axios";
+import { handleError } from "../utils/errorHandler";
+import { ERROR_MESSAGE } from "../constants/messages/Message";
+import type { InvoiceViewModel } from "../models/Invoice/InvoiceViewModel";
+import { api } from "../api/api";
+import type { ResponseDto } from "../models/AuthModel/authModel";
+import type { PageResultDto } from "../models/PageResult/PageResultDto";
+
+export async function getInvoices() {
+  try {
+    const response = await api.get<ResponseDto<InvoiceViewModel[]>>("/api/Invoice/invoices");
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
+
+export async function getRevenue(year: number, month: number) {
+  try {
+    const response = await api.get<ResponseDto<number>>(`/api/Invoice/get-revenue/${year}/${month}`);
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
+
+export async function getInvoicesWithPagination(pageSize: number, pageIndex: number) {
+  try {
+    const response = await api.get<ResponseDto<PageResultDto<InvoiceViewModel>>>("/api/Invoice/get-recently-invoices", {
+      params: {
+        pageSize: pageSize,
+        pageIndex: pageIndex,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}

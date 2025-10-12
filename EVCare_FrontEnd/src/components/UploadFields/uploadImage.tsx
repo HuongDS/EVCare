@@ -2,15 +2,16 @@ import React from "react";
 import { InboxOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { message, Upload } from "antd";
-import { LENGTH } from "../../constants/Code/Constants";
 
 const { Dragger } = Upload;
 
 interface Props {
   handleFileSubmit: (u: string) => void;
+  imgQuantity: number;
+  handleFileRemove?: (url: string) => void;
 }
 
-const UploadImage: React.FC<Props> = ({ handleFileSubmit }: Props) => {
+const UploadImage: React.FC<Props> = ({ handleFileSubmit, imgQuantity, handleFileRemove }: Props) => {
   const props: UploadProps = {
     name: "file",
     multiple: true,
@@ -19,7 +20,7 @@ const UploadImage: React.FC<Props> = ({ handleFileSubmit }: Props) => {
       FolderName: "AppointmentImages",
     },
     accept: "image/*",
-    maxCount: LENGTH.IMAGES,
+    maxCount: imgQuantity,
     showUploadList: true,
     onChange(info) {
       const { status } = info.file;
@@ -30,6 +31,12 @@ const UploadImage: React.FC<Props> = ({ handleFileSubmit }: Props) => {
         handleFileSubmit(url);
       } else if (status === "error") {
         message.error(`${info.file.name} upload failed.`);
+      }
+    },
+    onRemove(file) {
+      const url = file.response.data || file.url;
+      if (url && handleFileRemove) {
+        handleFileRemove(url);
       }
     },
   };

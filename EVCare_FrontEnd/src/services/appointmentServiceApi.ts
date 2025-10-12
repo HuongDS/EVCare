@@ -104,3 +104,67 @@ export const useGetTechniciansToday = (params: GetTechnicianParams) => {
     },
   });
 };
+
+export async function countAppointmentsInMonth(year: number, month: number) {
+  try {
+    const response = await api.get<ResponseDto<number>>(
+      `/api/Appointment/count-appointments-in-month/${year}/${month}`
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg =
+        error.response?.data.message ||
+        error.message ||
+        ERROR_MESSAGE.FETCH_DATA_FAILED;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
+
+export async function countCustomersInMonth(year: number, month: number) {
+  try {
+    const response = await api.get<ResponseDto<number>>(
+      `/api/Appointment/count-customers-in-month/${year}/${month}`
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg =
+        error.response?.data.message ||
+        error.message ||
+        ERROR_MESSAGE.FETCH_DATA_FAILED;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
+
+export async function countAppointmentsWithStatusInMonth(
+  year: number,
+  month: number,
+  status: AppointmentStatusEnum
+) {
+  try {
+    const response = await api.get<ResponseDto<number>>(
+      `/api/Appointment/count-appointments-with-status-in-month/${year}/${month}`,
+      {
+        params: { status },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg =
+        error.response?.data.message ||
+        error.message ||
+        ERROR_MESSAGE.FETCH_DATA_FAILED;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}

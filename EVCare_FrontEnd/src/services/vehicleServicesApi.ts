@@ -41,3 +41,18 @@ export async function createVehicle(data: VehicleCreateDto) {
     throw new Error(ERROR_MESSAGE.CREATE_VEHICLE_FAILED);
   }
 }
+
+export async function deleteVehicle(vehicleId: number) {
+  try {
+    const response = await api.put<ResponseDto<number>>(`/api/Vehicle/delete-vehicle/${vehicleId}`);
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data?.message || error.message || ERROR_MESSAGE.FAILED_TO_ADD_VEHICLE;
+      store.dispatch(setGlobalError(errMsg));
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.FAILED_TO_ADD_VEHICLE);
+  }
+}

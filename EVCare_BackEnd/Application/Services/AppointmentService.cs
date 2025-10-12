@@ -28,11 +28,11 @@ namespace Application.Services
 
             var currentDay = model.Appointment_Date.DayOfWeek;
             var serviceCenter = await _serviceCenterRepository.GetCenterInforAsync();
-            if(currentDay<serviceCenter.WorkStartDay || currentDay>serviceCenter.WorkEndDay)
+            if (currentDay < serviceCenter.WorkStartDay || currentDay > serviceCenter.WorkEndDay)
             {
                 throw new Exception($"You must book the appointment from {serviceCenter.WorkStartDay} to {serviceCenter.WorkEndDay} ");
             }
-            
+
 
             if ((await CheckCustomerCreate(model.CustomerId)) == false)
             {
@@ -152,14 +152,14 @@ namespace Application.Services
             }
 
         }
-        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex,string? customerName)
+        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex, string? customerName)
         {
             try
             {
                 int pageSize = payload ?? 10;
                 int pageIndex = pageindex ?? 1;
                 string customername = customerName ?? "";
-                return await _appointmentRepository.GetAppointmentsWithPagination(pageSize, pageIndex,customername);
+                return await _appointmentRepository.GetAppointmentsWithPagination(pageSize, pageIndex, customername);
 
             }
             catch (Exception e)
@@ -175,7 +175,7 @@ namespace Application.Services
                 throw new Exception("Appointment not found");
             }
             _mapper.Map(model, appointment);
-            appointment.EmployeeId = employeeId;
+            if(appointment.Employee == null) appointment.EmployeeId = employeeId;
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
 
@@ -191,7 +191,7 @@ namespace Application.Services
                 PageIndex = data.PageIndex,
                 PageSize = data.PageSize,
                 TotalItems = data.TotalItems,
-                TotalPages = data.TotalPages    
+                TotalPages = data.TotalPages
             };
             return new ResponseDto<PageResultDto<AppointmentViewDto>>
             {
@@ -259,7 +259,24 @@ namespace Application.Services
 
         public async Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model)
         {
-            return await _appointmentRepository.GetAppointmentTechnicianViewModelByTechnicianId(technicianId,model);
+            return await _appointmentRepository.GetAppointmentTechnicianViewModelByTechnicianId(technicianId, model);
+        }
+        public async Task<int> CountAppointmentsInMonths(int year, int month)
+        {
+            return await _appointmentRepository.CountAppointmentsInMonth(year, month);
+        }
+        public async Task<int> CountCustomersInMonths(int year, int month)
+        {
+            return await _appointmentRepository.CountCustomersInMonth(year, month);
+        }
+        public async Task<int> CountAppointmentsInMonthsWithStatus(int year, int month, AppointmentStatusEnum status)
+        {
+            return await _appointmentRepository.CountAppointmentsInMonthWithStatus(year, month, status);
+        }
+
+        public async Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model)
+        {
+           return await _appointmentRepository.GetUnderstaffedInProgressAsync(model);
         }
     }
 }
