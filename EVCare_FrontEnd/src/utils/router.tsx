@@ -24,6 +24,7 @@ import {RoleEnum} from "../models/enums";
 import TechnicianOrderLayout from "../pages/Technician/Technician_Component/Technician_OrderLayout";
 import {AppointmentList} from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
 import UserProfilePage from "../pages/Users/Profile/UserProfilePage";
+import Technician_Application from "../pages/Technician/TechnicianApplication/Technician_Application";
 import Admin_General from "../pages/Admin/AdminGeneral/Admin_General.tsx";
 
 const router = createBrowserRouter([
@@ -93,26 +94,28 @@ const router = createBrowserRouter([
             {path: "appointments", element: <Staff_Appoinments/>},
         ],
     },
-    // TECHINICIAN ROUTES
-    {
-        path: "/technician",
-        element: (
-            <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
-                <TechnicianDefaultLayout/>
-            </ProtectedRoute>
-        ),
-        children: [{path: "", element: <Technician_General/>}],
-    },
-    {
-        path: "/technician/order",
-        element: (
-            <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
-                <TechnicianOrderLayout/>
-            </ProtectedRoute>
-        ),
-        children: [{path: "", element: <TechnicianOrder/>}],
-    },
-
+     // TECHINICIAN ROUTES
+  {
+    path: "/technician",
+    element: (
+      <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
+        <TechnicianDefaultLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { path: "", element: <Technician_General /> },
+      { path: "application", element: <Technician_Application /> },
+    ],
+  },
+  {
+    path: "/technician/order",
+    element: (
+      <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
+        <TechnicianOrderLayout />
+      </ProtectedRoute>
+    ),
+    children: [{ path: "", element: <TechnicianOrder /> }],
+  },
     // Test route
     {path: "/test", element: <Test/>},
     {path: "/*", element: <PageNotFound/>},

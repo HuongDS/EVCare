@@ -1,9 +1,11 @@
 import styled from "styled-components";
 
 export const HeaderContainer = styled.div`
+  font-family: "Outfit", sans-serif;
   position: sticky;
   top: 0;
   left: 0;
+  z-index: 1000;
   height: 56px;
   background: #f5fffa;
   border-bottom: 1px solid #eef3ef;
