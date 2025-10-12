@@ -33,6 +33,7 @@ import SearchBar from "../../../components/SearchBar/Search";
 import { LIST_SERVICES_MESSAGE } from "../../../constants/messages/Message";
 import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
 
 type SortBy = "Name" | "Duration";
 type SortOrder = "asc" | "desc";
@@ -168,7 +169,12 @@ const ServiceList = () => {
                 justifyContent: "center",
               }}
             >
-              {LIST_SERVICES_MESSAGE.EMPTY + `${searchValue}`}
+              {
+                <NOT_FOUND_ITEMS
+                  icon="bi bi-sticky"
+                  message={LIST_SERVICES_MESSAGE.EMPTY + `${searchValue}`}
+                />
+              }
             </h3>
           )}
           {isSuccess &&

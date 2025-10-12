@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const HeaderContainer = styled.div`
   height: 56px;
-  background: #f5fffa; /* Màu nền xanh nhạt */
+  background: #f5fffa;
   border-bottom: 1px solid #eef3ef;
   display: flex;
   justify-content: space-between;

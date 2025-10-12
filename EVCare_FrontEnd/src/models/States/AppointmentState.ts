@@ -1,3 +1,3 @@
-export interface AppointmentProgressState {
+export type AppointmentProgressState = {
   [appointmentID: number]: number;
-}
+};

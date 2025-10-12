@@ -43,7 +43,7 @@ export const stepsAppointment = [
     title: "Orders",
   },
   {
-    title: "Payment",
+    title: "Processing",
   },
   {
     title: "Completed",
@@ -54,12 +54,13 @@ export const stepsAppointment = [
 export const getAppointmentStepFromStatus = (status: string) => {
   switch (status) {
     case "Confirmed":
-      return 1;
+      return 0;
     case "CheckedIn":
-      return 2;
+      return 1;
     case "AddingPart":
-      return 3;
+      return 2;
     case "InProgress":
+      return 3;
     case "ReadyForPickup":
       return 4;
     case "Done":
