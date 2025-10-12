@@ -10,6 +10,7 @@ namespace DataAccess.Dtos.Pagination
 {
     public class TechnicianQueryDto : BaseQueryDto
     {
+        public string? FullName { get; set; }
         public EmployeeStatusEnum? Status { get; set; } = EmployeeStatusEnum.Available;
         public IEnumerable<int>? Skills { get; set; }
     }
