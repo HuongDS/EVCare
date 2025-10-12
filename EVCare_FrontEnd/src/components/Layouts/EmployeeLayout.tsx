@@ -12,24 +12,27 @@ const EmployeeLayout: React.FC<{ role: RoleEnum }> = ({ role }) => {
   } = theme.useToken();
 
   return (
-    <Layout style={{ minHeight: "100vh", fontFamily: "'Outfit', sans-serif" }}>
+    <Layout
+      style={{
+        minHeight: "100vh",
+        fontFamily: "'Outfit', sans-serif",
+      }}
+    >
       <HeaderStaff />
       <Layout style={{ flexDirection: "row" }}>
         <Sider
-          width={250}
+          width={200}
           trigger={null}
           style={{ background: colorBgContainer }}
         >
           <Sidebar role={role} />
         </Sider>
-        <Layout style={{ padding: "0 24px 24px" }}>
+        <Layout style={{ padding: "0" }}>
           <Content
             style={{
-              padding: 24,
+              padding: 5,
               margin: 0,
-              minHeight: 280,
               background: colorBgContainer,
-              borderRadius: borderRadiusLG,
             }}
           >
             <Outlet />

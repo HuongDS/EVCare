@@ -5,9 +5,13 @@ type ActionButtonProps = {
   color: string;
   backgroundColor: string;
   action: () => void;
+  icon?: React.ReactNode;
 };
 
 const ActionButton = styled.button<{ $color: string; $bg: string }>`
+  display: flex;
+  align-items: center;
+  gap: 5px;
   width: fit-content;
   max-height: fit-content;
   padding: 6px 12px;
@@ -21,6 +25,7 @@ const ActionButton = styled.button<{ $color: string; $bg: string }>`
 `;
 
 export default function ButtonAction({
+  icon,
   text,
   color,
   backgroundColor,
@@ -28,6 +33,7 @@ export default function ButtonAction({
 }: ActionButtonProps) {
   return (
     <ActionButton $color={color} $bg={backgroundColor} onClick={action}>
+      {icon}
       {text}
     </ActionButton>
   );

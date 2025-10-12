@@ -85,13 +85,15 @@ const Category = styled(Link)<CategoryProps>`
 
 interface MyComponentProps {
   sortName: string[];
+  handleSortBy: (v: string) => void;
 }
 
-const SortTable: React.FC<MyComponentProps> = ({ sortName }) => {
+const SortTable: React.FC<MyComponentProps> = ({ sortName, handleSortBy }) => {
   const [activeCategory, setActiveCategory] = useState<string>(sortName[0]);
 
   const selectCategory = (category: string) => {
     setActiveCategory(category);
+    handleSortBy(category.trim().replace(/\s+/g, ""));
   };
 
   return (
