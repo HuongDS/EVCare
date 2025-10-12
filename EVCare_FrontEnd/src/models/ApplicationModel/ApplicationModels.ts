@@ -1,5 +1,7 @@
 //ApplicationModels.ts
 
+import type { ApplicationStatusEnum } from "../enums/ApplicationStatusEnum";
+
 export type ResponseDto<T> = {
   statusCode: number;
   message?: string;
@@ -15,6 +17,7 @@ export type ApplicationRequestDTO = {
 export type ApplicationResponseDTO = {
   dateOff: string;
   reason: string;
+  status: ApplicationStatusEnum;
   isApproved: boolean;
   note: string;
   createdAt: string;
