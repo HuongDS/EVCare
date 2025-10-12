@@ -23,7 +23,7 @@ const ActionButton = styled.button<{
   background-color: ${({ $bg }) => $bg || "#16a34a"};
   cursor: pointer;
   transition: all 0.25s ease;
-
+  margin-right: 10px;
   &:hover {
     opacity: 0.9;
     transform: translateY(-1px);
@@ -48,6 +48,7 @@ const ActionButton = styled.button<{
     font-size: 15px;
     padding: 12px 16px;
   }
+   
 `;
 
 export default function ButtonAction({
