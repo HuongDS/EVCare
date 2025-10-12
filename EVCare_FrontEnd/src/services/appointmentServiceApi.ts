@@ -11,16 +11,20 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import type { AppointmentCreateModel } from "../models/AppointmentsModel/AppointmentCreateModel";
 import { handleError } from "../utils/errorHandler";
-import { ERROR_MESSAGE } from "../constants/messages/Message";
+import {
+  APPOINTMENT_MESSAGE,
+  ERROR_MESSAGE,
+} from "../constants/messages/Message";
 import { store } from "../states/store";
 import { setGlobalError } from "../states/errorSlice";
-import type { AppointmentViewModel } from "../models/AppointmentsModel/AppointmentViewModel";
 import type {
   GetTechnicianParams,
   TechnicianModel,
   TechnicianSkills,
 } from "../models/AppointmentsModel/Technician_Appointments_Model";
 import QueryString from "qs";
+import type { AppointmentStatusEnum } from "../models/enums";
+import type { AppointmentViewDetailModel } from "../models/AppointmentsModel/AppointmentViewDetailModel";
 
 //[STAFF]: Get All appointments
 
@@ -59,7 +63,7 @@ export async function createAppointment(data: AppointmentCreateModel) {
 
 export async function getCustomerAppointment() {
   try {
-    const response = await api.get<ResponseDto<AppointmentViewModel[]>>(
+    const response = await api.get<ResponseDto<AppointmentViewDetailModel[]>>(
       "/api/Appointment/history"
     );
     return response.data;
@@ -71,6 +75,25 @@ export async function getCustomerAppointment() {
         error.message ||
         ERROR_MESSAGE.FETCH_DATA_FAILED;
       store.dispatch(setGlobalError(errMsg));
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
+
+export async function getAppointmentById(appointmentId: number) {
+  try {
+    const response = await api.get<ResponseDto<AppointmentViewDetailModel>>(
+      `/api/Appointment/${appointmentId}`
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg =
+        error.response?.data.message ||
+        error.message ||
+        APPOINTMENT_MESSAGE.APPOINTMENT_DOES_NOT_EXIST;
       throw new Error(errMsg);
     }
     throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
