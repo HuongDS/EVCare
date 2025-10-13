@@ -28,6 +28,8 @@ const StatsGrid: React.FC = () => {
   useDashboardHub((data: SummaryRes) => {
     // when realtime event comes, refresh quick summary
     // refresh();
+    console.log("test data from back: ", data);
+
     setData(data);
   });
 
