@@ -1,4 +1,5 @@
-﻿using Application.Dtos;
+﻿using API.Filters;
+using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Appointment;
@@ -13,7 +14,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Staff")]
+   // [Authorize(Roles = "Staff")]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeServices _employeeServices;
@@ -30,6 +31,7 @@ namespace API.Controllers
             _technicianWorkingSessionService = technicianWorkingSessionService;
         }
         [HttpGet("check-slots")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> CheckSlotsAsync()
         {
             var (resultUsedSlots, resultTotalSlots) = await _employeeServices.CheckSlotsAsync();
@@ -45,6 +47,7 @@ namespace API.Controllers
             });
         }
         [HttpPost("assign-technician")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> AssignTechnicianToOrder(AssignTechnicianDto data)
         {
             var (usedSlots, totalSlots) = await _employeeServices.CheckSlotsAsync();
@@ -65,8 +68,9 @@ namespace API.Controllers
                 data = null
             });
         }
-
+        
         [HttpPost("assign-technicians")]
+        [Authorize(Roles ="Staff")]
 
         public async Task<IActionResult> AssignTechniciansToOrder(AssignTechniciansModel model)
         {
@@ -105,6 +109,7 @@ namespace API.Controllers
             }
         }
         [HttpPost("update-appointment-date")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> UpdateAppointmentDate(AppointmentUpdateDateDto data)
         {
             try
@@ -127,5 +132,35 @@ namespace API.Controllers
                 });
             }
         }
+
+        [HttpGet("get-employee-id")]
+        [Authorize(Roles ="Staff,Technician")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+         public async Task<IActionResult> GetEmployeeId()
+        {
+            try
+            {
+                int accountId = (int)HttpContext.Items["AccountId"];
+                var employeeId = await _employeeServices.GetEmployeeIdByAccountId(accountId);
+                return Ok(new ResponseDto<int>
+                {
+                    data = employeeId,
+                    message = "Get employee id sucessfully",
+                    statusCode = HttpStatus.OK
+                });
+                
+                 
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST
+                });
+
+            }
+        }
+        
     }
 }
