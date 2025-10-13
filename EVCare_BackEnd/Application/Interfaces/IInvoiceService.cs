@@ -21,5 +21,6 @@ namespace Application.Interfaces
         Task<decimal> GetRevenue(int year, int month);
         Task<PageResultDto<InvoiceViewModel>> GetRecentInVoices(InvoiceQueryDto model);
         Task CancelPayOSOrder(int orderId);
+        Task<InvoiceViewModel> GetInvoiceByOrderId(int orderId);
     }
 }

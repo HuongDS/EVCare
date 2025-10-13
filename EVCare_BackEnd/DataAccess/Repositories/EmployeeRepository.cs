@@ -20,6 +20,11 @@ namespace DataAccess.Repositories
             return await _dbContext.Employees.Include(e => e.Account).FirstOrDefaultAsync(e => e.AccountId == userId);
         }
 
+        public async Task<Employee> GetEmployeeByTechnicianId(int technicianId)
+        {
+            return await _dbContext.Employees.FirstOrDefaultAsync(e => e.TechnicianId == technicianId);
+        }
+
         public async Task MarkAvaliableAllEmployees()
         {
             await _dbContext.Employees

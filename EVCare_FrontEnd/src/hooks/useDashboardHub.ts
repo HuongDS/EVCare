@@ -16,6 +16,7 @@ export function useDashboardHub(onUpdate: (data: DashboardUpdateDto) => void) {
         .catch((err) => console.error("[Hub] Start failed", err));
     }
     return () => {
+      console.log("[Hub] Cleaning up connection...");
       conn.off("AdminDashboardUpdate", handler);
     };
   }, [onUpdate]);

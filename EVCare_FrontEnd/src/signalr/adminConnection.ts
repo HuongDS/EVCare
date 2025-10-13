@@ -14,3 +14,10 @@ export function getAdminDashboardConnection(baseUrl: string) {
   }
   return connection;
 }
+
+export async function stopAdminDashboardConnection() {
+  if (connection && connection.state === signalR.HubConnectionState.Connected) {
+    await connection.stop();
+    console.log("[Hub] Singleton connection stopped");
+  }
+}

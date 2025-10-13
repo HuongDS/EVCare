@@ -121,7 +121,8 @@ namespace DataAccess.Repositories
                     LicensePlate = a.Vehicle.LicensePlate,
                     AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
-                    PhoneNumber = a.Customer.Account.Phone
+                    PhoneNumber = a.Customer.Account.Phone,
+                    
                 }).Where(x => x.CustomerName.Contains(customername));
 
             return await PaginationHelper.PaginationAsync(query, payload, pageindex);
@@ -269,7 +270,23 @@ namespace DataAccess.Repositories
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone,
                     Note = a.Note,
-                    OrderId = a.OrderId
+                    OrderId = a.OrderId,
+                    Technicians = a.Order!=null? a.Order.TechnicianWorkingSessions
+                                    .Select(t => new TechnicianViewModel
+                                    {
+                                        Id = t.TechnicianId,
+                                        ExpYears = t.Technician.ExpYear,
+                                        FullName = t.Technician.Employee.Account.First_Name + " " + t.Technician.Employee.Account.Last_Name,
+                                        Phone = t.Technician.Employee.Account.Phone,
+                                        Skills = t.Technician.TechnicianSkills
+                                                    .Select(ts => new ServiceViewFormModel
+                                                    {
+                                                        Id = ts.ServiceId,
+                                                        Name = ts.Service.Name
+                                                    })
+                                                    .ToList(),
+                                        Status = t.Technician.Employee.Status
+                                    }).ToList() : new List<TechnicianViewModel>()
 
                 }).Where(x => x.CustomerName.Contains(model.CustomerName));
 
@@ -309,7 +326,10 @@ namespace DataAccess.Repositories
                                     ImageUrl = op.Part.Image,
                                     Price = op.Price,
                                     TechnicianId = op.TechnicianId
-                                }).ToList()
+                                }).ToList(),
+                       AppointmentImages = s.Order.Appointment.AppointmentImages
+                                                    .Select(ai => ai.Image)
+                                                    .ToList()
                    });
 
             query = query.ApplySorting(model.SortField, model.SortOrder);
