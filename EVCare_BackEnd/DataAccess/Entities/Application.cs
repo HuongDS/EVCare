@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Enums;
 using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
@@ -14,7 +15,7 @@ namespace DataAccess.Entities
 
         public DateTime DateOff { get; set; }
         public string? Reason { get; set; }
-        public bool IsApproved { get; set; }
+        public ApplicationStatusEnum Status { get; set; }
         public string? Note { get; set; }
         public DateTime Create_At { get; set; }
         public int EmployeeId { get; set; }

@@ -10,6 +10,7 @@ namespace DataAccess.Interfaces
     public interface IEmployeeRepository : IGenericRepository<Employee>
     {
         Task<Employee> GetEmployeeByAccountId(int userId);
+        Task<Employee> GetEmployeeByTechnicianId(int technicianId);
         Task MarkAvaliableAllEmployees();
         Task MarkBusyForTechnician(IEnumerable<int> technicianIds);
         Task MarkBusyForTechnician();

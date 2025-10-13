@@ -30,6 +30,15 @@ const fetchServiceData = async (
   return response.data;
 };
 
+/**
+ * Hàm lấy tất cả các service dùng cho Service Home
+ * @param keyword
+ * @param pageSize
+ * @param pageIndex
+ * @param sortField
+ * @param sortOrder
+ * @returns
+ */
 export const getAllActiveService = (
   keyword?: string,
   pageSize?: number,

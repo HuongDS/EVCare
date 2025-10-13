@@ -39,7 +39,10 @@ namespace Application.Services
             req.Headers.Add("x-api-key", Cfg("ApiKey"));
             req.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
 
-            var resp = await _http.SendAsync(req);
+           using var resp = await _http.SendAsync(req);
+
+
+
             var txt = await resp.Content.ReadAsStringAsync();
             if (!resp.IsSuccessStatusCode) return (false, null, txt);
 

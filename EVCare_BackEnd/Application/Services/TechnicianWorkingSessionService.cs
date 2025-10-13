@@ -28,10 +28,25 @@ namespace Application.Services
             _appointmentRepository = appointmentRepository;
             _technicianWorkingSessionRepository = technicianWorkingSessionRepository;
             _notificationServices = notificationServices;
+            _employeeRepository = employeeRepository;
         }
 
         public async Task AddTechnicianToOrder(AssignTechniciansModel model)
         {
+
+            foreach(var technicianId in model.TechnicianIds)
+            {
+                var employee = await _employeeRepository.GetEmployeeByTechnicianId(technicianId);
+                if(employee.Status == DataAccess.Enums.EmployeeStatusEnum.Busy)
+                {
+                    throw new Exception($"Technician with id {technicianId} is currently busy.");
+                }
+                if(employee.Status == DataAccess.Enums.EmployeeStatusEnum.OnLeave)
+                {
+                    throw new Exception($"Technician with id {technicianId} is currently on leave.");
+                }
+            }
+
 
             var lists = model.TechnicianIds.Select(x => new TechnicianWorkingSession
             {
@@ -40,6 +55,9 @@ namespace Application.Services
                 StartTime = DateTime.Now,
                 Status = model.Status
             });
+            var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(model.OrderId); 
+            appointment.Status = DataAccess.Enums.AppointmentStatusEnum.AddingPart;
+            await _appointmentRepository.UpdateAsync(appointment);
             await _employeeRepository.MarkBusyForTechnician(model.TechnicianIds);
             await _technicianWorkingSessionRepository.AddRange(lists);
         }
@@ -69,6 +87,7 @@ namespace Application.Services
             }
             if(model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Completed)
             {
+                //await _employeeRepository.MarkAvaliableTechnician(technician);
                 if (await _technicianWorkingSessionRepository.CheckOrderDone(model.OrderId))
                 {
                     var order = await _orderRepository.GetByIdAsync(model.OrderId);
