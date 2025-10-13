@@ -25,9 +25,10 @@ const StatsGrid: React.FC = () => {
     getInsights(from, to).then((r) => setInsight(r.message));
   }, []);
 
-  useDashboardHub(() => {
+  useDashboardHub((data: SummaryRes) => {
     // when realtime event comes, refresh quick summary
-    refresh();
+    // refresh();
+    setData(data);
   });
 
   useEffect(() => {

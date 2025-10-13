@@ -31,7 +31,7 @@ const EmployeeLayout: React.FC<{
       <HeaderStaff />
       <Layout style={{ flexDirection: "row" }}>
         <Sider
-          width={200}
+          width={300}
           collapsible
           collapsed={collapsed}
           breakpoint="lg"
