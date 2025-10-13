@@ -23,9 +23,10 @@ import {
   Grid,
   ErrorText,
   SuccessText,
-} from "./Application.styled";
+} from "./ApplicationForm.styled";
 import dayjs from "dayjs";
 import ButtonAction from "../Button/ReviewButton";
+import DatePicker from "./DatePicker";
 
 export default function ApplicationForm({
   onSuccess,
@@ -67,7 +68,7 @@ export default function ApplicationForm({
       if (res.statusCode === 200 && res.data) {
         setLocalStatus("success");
         onSuccess?.(res.data);
-        queryClient.invalidateQueries({ queryKey: ["myApplications"] }); // auto refresh
+        queryClient.invalidateQueries({ queryKey: ["myApplications"] });
         setTimeout(() => resetForm(), 1500);
       } else {
         setLocalStatus("error");
@@ -127,11 +128,6 @@ export default function ApplicationForm({
     }
 
     return null;
-  };
-
-  const handleDateChange = (value: string) => {
-    setDateOff(value);
-    setDateMessage(validateDate(value));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -195,11 +191,17 @@ export default function ApplicationForm({
         <Label>
           Date Off <span style={{ color: "red" }}>*</span>
         </Label>
-        <Input
-          type="date"
+        <DatePicker
           value={dateOff}
-          onChange={(e) => handleDateChange(e.target.value)}
-          required
+          onChange={(val) => {
+            setDateOff(val);
+            setDateMessage(validateDate(val));
+          }}
+          validateDate={validateDate}
+          blockedDates={blockedDates}
+          userDateOffs={userDateOffs}
+          center={center}
+          error={dateMessage} // truyền lỗi vào DatePicker
         />
         {dateMessage && <ErrorText>{dateMessage}</ErrorText>}
       </Field>
