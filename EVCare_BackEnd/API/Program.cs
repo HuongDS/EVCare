@@ -148,6 +148,7 @@ builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
 });
 //builder.Services.AddScoped<IAiInsightServices, MockAiInsightServices>();
 builder.Services.AddScoped<OnInvoiceCompleteHandler>();
+builder.Services.AddScoped<OnAppointmentConfirmHandler>();
 
 
 // AutoMapper
