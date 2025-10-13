@@ -16,12 +16,21 @@ namespace Application.Services
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IMapper _mapper;
-        public AccountService(IAccountRepository accountRepository, IMapper mapper)
+        public AccountService(IAccountRepository accountRepository, IMapper mapper,IRefreshTokenRepository refreshTokenRepository)
         {
             _accountRepository = accountRepository;
             _mapper = mapper;
+            _refreshTokenRepository = refreshTokenRepository;
         }
+
+        public async Task DeleteAccount(int accountId)
+        {
+            await _refreshTokenRepository.RevokeAllAsyncByAccountId(accountId);
+            await _accountRepository.DeleteAccount(accountId);
+        }
+
         public async Task<AccountViewModel> GetAccountById(int accountId)
         {
             var account = await _accountRepository.GetByIdAsync(accountId);
