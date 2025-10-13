@@ -1,13 +1,10 @@
-// Technician_Schedule.tsx
-import React, { useEffect, useState } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import type { EventInput, EventContentArg } from "@fullcalendar/core";
+import React, { useEffect, useState, type JSX } from "react";
 import dayjs from "dayjs";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
+
+import type { EventInput, EventContentArg } from "@fullcalendar/core";
+import LazyPerformanceSchedule from "./LazyPerformanceSchedule";
 
 import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
 import { getDateOff } from "../../../services/getApplicationApi";
@@ -64,12 +61,31 @@ const TechnicianSchedule: React.FC = () => {
     }
   };
 
+  const getStatusClass = (status?: string) => {
+    switch (status?.toLowerCase()) {
+      case "completed":
+        return "appointment-completed";
+      case "in-progress":
+        return "appointment-progress";
+      case "pending":
+        return "appointment-pending";
+      case "canceled":
+        return "appointment-canceled";
+      default:
+        return "appointment";
+    }
+  };
+
   const events: EventInput[] = [
     ...appointments.map((a) => ({
       title: `Appointment\nOrder: ${a.orderId}\nCustomer: ${a.customerName}`,
       start: a.appointmentDate,
-      className: "appointment",
-      extendedProps: { orderId: a.orderId, customerName: a.customerName },
+      className: getStatusClass(a.status),
+      extendedProps: {
+        orderId: a.orderId,
+        customerName: a.customerName,
+        status: a.status,
+      },
     })),
     ...applications.map((d) => ({
       title: "Day Off",
@@ -85,20 +101,20 @@ const TechnicianSchedule: React.FC = () => {
     })),
   ];
 
-  const renderEventContent = (eventInfo: EventContentArg) => {
-    const isDayOff = eventInfo.event.classNames.includes("dayOff");
-    const isBlocked = eventInfo.event.classNames.includes("blocked");
+  const renderEventContent = (eventInfo: EventContentArg): JSX.Element => {
+    const { event } = eventInfo;
+    const isDayOff = event.classNames.includes("dayOff");
+    const isBlocked = event.classNames.includes("blocked");
 
-    let popoverContent = "";
-    if (isDayOff)
-      popoverContent = eventInfo.event.extendedProps.reason || "Ngày nghỉ";
-    if (isBlocked)
-      popoverContent = eventInfo.event.extendedProps.reason || "Blocked";
+    const tooltipText =
+      isDayOff || isBlocked
+        ? event.extendedProps.reason || "Không có thông tin"
+        : `Status: ${event.extendedProps.status || "N/A"}`;
 
     return (
-      <Tippy content={popoverContent} placement="top" arrow={true}>
+      <Tippy content={tooltipText} placement="top" arrow={true}>
         <div>
-          {eventInfo.event.title?.split("\n").map((line, idx) => (
+          {event.title?.split("\n").map((line: string, idx: number) => (
             <div key={idx}>{line}</div>
           ))}
         </div>
@@ -113,18 +129,9 @@ const TechnicianSchedule: React.FC = () => {
     <ScheduleWrapper>
       <ScheduleTitle>Technician Schedule</ScheduleTitle>
       <CalendarContainer>
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          headerToolbar={{
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay",
-          }}
+        <LazyPerformanceSchedule
           events={events}
-          eventContent={renderEventContent}
-          height="auto"
-          dayMaxEvents={false}
+          renderEventContent={renderEventContent}
         />
       </CalendarContainer>
     </ScheduleWrapper>
