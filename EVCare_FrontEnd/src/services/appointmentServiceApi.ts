@@ -2,11 +2,12 @@ import { api } from "../api/api";
 import type {
   ChangeAppointmentStatusParams,
   GetAppointmentsParams,
+  GetAppointmentWithTechnician,
   PageModel,
   ResponseDto,
   StaffAppointmentsDto,
 } from "../models/AppointmentsModel/Staff_Appointments_Model";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import axios from "axios";
 import type { AppointmentCreateModel } from "../models/AppointmentsModel/AppointmentCreateModel";
@@ -18,6 +19,7 @@ import {
 import { store } from "../states/store";
 import { setGlobalError } from "../states/errorSlice";
 import type {
+  AssignTechnicianParams,
   GetTechnicianParams,
   TechnicianModel,
   TechnicianSkills,
@@ -27,13 +29,14 @@ import type { AppointmentStatusEnum } from "../models/enums";
 import type { AppointmentViewDetailModel } from "../models/AppointmentsModel/AppointmentViewDetailModel";
 
 //[STAFF]: Get All appointments
-
 export const useGetAllAppointments = (params: GetAppointmentsParams = {}) => {
   return useQuery({
     queryKey: ["Staff Appointments", params],
     queryFn: async () => {
       const response = await api.get<
-        ResponseDto<PageModel<StaffAppointmentsDto>>
+        ResponseDto<
+          PageModel<StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>>
+        >
       >("api/Appointment/appointments/paged", { params });
       return response.data;
     },
@@ -191,3 +194,57 @@ export async function countAppointmentsWithStatusInMonth(
     throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }
+
+//[STAFF] - Assign technicians into appointment
+export const useAssignTechnician = () => {
+  return useMutation({
+    mutationFn: async (params: AssignTechnicianParams) => {
+      try {
+        const response = await api.post<ResponseDto<string | null>>(
+          "/api/Employee/assign-technicians",
+          params
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+//[STAFF] - Lấy các appointment có kỹ thuật viên
+export const useGetAppointmentHaveTech = (params: GetAppointmentsParams) => {
+  return useQuery({
+    queryKey: ["AppointmentHaveTech", params],
+    queryFn: async () => {
+      try {
+        const response = await api.get<
+          ResponseDto<
+            PageModel<
+              GetAppointmentWithTechnician<TechnicianModel<TechnicianSkills>>
+            >
+          >
+        >("/api/Appointment/in-progress-understaffed", { params });
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};

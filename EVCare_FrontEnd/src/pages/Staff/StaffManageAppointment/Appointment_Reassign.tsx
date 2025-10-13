@@ -13,7 +13,7 @@ import { CheckCircle, CircleX, Phone, Search, User } from "lucide-react";
 interface props {
   show: boolean;
   close: () => void;
-  data: StaffAppointmentsDto;
+  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
 }
 
 export default function Appointment_Reassign({ show, close, data }: props) {
@@ -23,23 +23,21 @@ export default function Appointment_Reassign({ show, close, data }: props) {
     startedTime: string;
   }
 
-  // const getFlatSkills = (
-  //   skills?: TechnicianSkills[] | TechnicianSkills[][]
-  // ): TechnicianSkills[] => {
-  //   if (!skills) return [];
-  //   return Array.isArray(skills[0])
-  //     ? (skills as TechnicianSkills[][]).flat()
-  //     : (skills as TechnicianSkills[]);
-  // }
-  //   const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTechnicians, setSelectedTechnicians] = useState<
     AssignedTechnician[]
   >([]);
 
+  //lấy tất cả technicians trừ các technicians đã gán
   const { data: technicians } = useGetTechniciansToday({
     Status: "Available",
   });
+
+  // Lấy danh sách ID của technician đã được gán (cả trước đó và mới chọn)
+  const assignedTechnicianIDs = [
+    ...data.technicians.map((t) => t.id),
+    ...selectedTechnicians.map((st) => st.technicianID),
+  ];
 
   const filteredTechnicians =
     technicians?.data?.items
@@ -47,7 +45,7 @@ export default function Appointment_Reassign({ show, close, data }: props) {
       .filter(
         (tech) =>
           tech.fullName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          !selectedTechnicians.some((st) => st.technicianID === tech.id)
+          !assignedTechnicianIDs.includes(tech.id)
       ) || [];
 
   const handleAddTechnician = async (
@@ -76,14 +74,36 @@ export default function Appointment_Reassign({ show, close, data }: props) {
           <Card>
             <Header>
               <h1>Re-Assign Technicians</h1>
-              <p>Select technicians to re-assign to this appointment</p>
+              <p>Manage technicians for appointment #{data.id}</p>
             </Header>
           </Card>
 
-          {/* Selected Technicians */}
+          {/* Previously Assigned Technicians */}
+          {data.technicians.length > 0 && (
+            <Card>
+              <SectionHeader>
+                <h2>Currently Assigned ({data.technicians.length})</h2>
+              </SectionHeader>
+
+              <TechnicianGrid>
+                {data.technicians.map((assignment) => (
+                  <TechnicianCard
+                    key={assignment.id}
+                    technician={assignment}
+                    assignmentInfo={{
+                      technicianID: assignment.id,
+                    }}
+                    isPreviouslyAssigned
+                  />
+                ))}
+              </TechnicianGrid>
+            </Card>
+          )}
+
+          {/* New Selected Technicians */}
           <Card>
             <SectionHeader>
-              <h2>Assigned Technicians ({selectedTechnicians.length})</h2>
+              <h2>New Assignments ({selectedTechnicians.length})</h2>
               {selectedTechnicians.length > 0 && (
                 <ButtonGroup>
                   <ClearButton onClick={() => setSelectedTechnicians([])}>
@@ -91,7 +111,7 @@ export default function Appointment_Reassign({ show, close, data }: props) {
                   </ClearButton>
                   <SubmitButton>
                     <CheckCircle size={20} />
-                    Assign Technicians
+                    Confirm Re-Assignment
                   </SubmitButton>
                 </ButtonGroup>
               )}
@@ -100,8 +120,8 @@ export default function Appointment_Reassign({ show, close, data }: props) {
             {selectedTechnicians.length === 0 ? (
               <EmptyState>
                 <User size={48} />
-                <p>No technicians assigned yet</p>
-                <p>Scroll down to "Add Technician"</p>
+                <p>No new technicians selected</p>
+                <p>Search below to add technicians</p>
               </EmptyState>
             ) : (
               <TechnicianGrid>
@@ -121,12 +141,16 @@ export default function Appointment_Reassign({ show, close, data }: props) {
 
           {/* Search Section */}
           <Card>
+            <SectionHeader>
+              <h2>Add Technician</h2>
+            </SectionHeader>
+
             <SearchWrapper>
               <SearchInput>
                 <Search size={20} />
                 <input
                   type="text"
-                  placeholder="Search technician by name..."
+                  placeholder="Search available technicians..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -144,10 +168,10 @@ export default function Appointment_Reassign({ show, close, data }: props) {
                 ))}
               </TechnicianGrid>
 
-              {filteredTechnicians.length === 0 && (
+              {filteredTechnicians.length === 0 && searchQuery && (
                 <EmptyState>
                   <User size={48} />
-                  <p>No technicians found</p>
+                  <p>No available technicians found</p>
                 </EmptyState>
               )}
             </SearchResultsContainer>
@@ -163,19 +187,32 @@ interface TechnicianCardProps {
   onAdd?: () => void;
   onRemove?: () => void;
   isSelected?: boolean;
+  isPreviouslyAssigned?: boolean;
+  assignmentInfo?: {
+    technicianID: number;
+  };
 }
 const TechnicianCard = ({
   technician,
   onAdd,
   onRemove,
   isSelected = false,
+  isPreviouslyAssigned = false,
+  assignmentInfo,
 }: TechnicianCardProps) => {
   return (
-    <TechnicianCardWrapper $isSelected={isSelected}>
+    <TechnicianCardWrapper
+      $isSelected={isSelected}
+      $isPrevious={isPreviouslyAssigned}
+    >
       {isSelected && onRemove && (
         <RemoveButton onClick={onRemove}>
           <CircleX />
         </RemoveButton>
+      )}
+
+      {isPreviouslyAssigned && (
+        <PreviousBadge>Currently Assigned</PreviousBadge>
       )}
 
       <TechnicianHeader>
@@ -188,6 +225,9 @@ const TechnicianCard = ({
         />
         <TechnicianInfo>
           <h3>{technician.fullName}</h3>
+          <TechnicianId>
+            ID: {assignmentInfo?.technicianID || technician.id}
+          </TechnicianId>
           <StatusBadge $status={technician.status}>
             {technician.status}
           </StatusBadge>
@@ -220,7 +260,7 @@ const TechnicianCard = ({
           $disabled={technician.status !== "Available"}
           disabled={technician.status !== "Available"}
         >
-          Add
+          Add Technician
         </ActionButton>
       )}
     </TechnicianCardWrapper>
@@ -401,16 +441,27 @@ const SearchResultsContainer = styled.div`
   }
 `;
 
-const TechnicianCardWrapper = styled.div<{ $isSelected?: boolean }>`
+const TechnicianCardWrapper = styled.div<{
+  $isSelected?: boolean;
+  $isPrevious?: boolean;
+}>`
   position: relative;
-  border: 2px solid ${(props) => (props.$isSelected ? "#2196f3" : "#e0e0e0")};
-  background: ${(props) => (props.$isSelected ? "#e3f2fd" : "white")};
+  border: 2px solid
+    ${(props) =>
+      props.$isPrevious
+        ? "#00ad4e"
+        : props.$isSelected
+        ? "#2196f3"
+        : "#e0e0e0"};
+  background: ${(props) =>
+    props.$isPrevious ? "#e8f5e9" : props.$isSelected ? "#e3f2fd" : "white"};
   border-radius: 10px;
   padding: 16px;
   transition: all 0.3s ease;
 
   ${(props) =>
     !props.$isSelected &&
+    !props.$isPrevious &&
     `
     &:hover {
       border-color: #2196f3;
@@ -422,6 +473,19 @@ const TechnicianCardWrapper = styled.div<{ $isSelected?: boolean }>`
   @media (max-width: 768px) {
     padding: 14px;
   }
+`;
+
+const PreviousBadge = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  background: #00ad4e;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 173, 78, 0.3);
 `;
 
 const RemoveButton = styled.button`
@@ -473,12 +537,19 @@ const TechnicianInfo = styled.div`
     font-size: 16px;
     font-weight: 600;
     color: #333;
-    margin: 0 0 6px 0;
+    margin: 0 0 4px 0;
 
     @media (max-width: 768px) {
       font-size: 15px;
     }
   }
+`;
+
+const TechnicianId = styled.div`
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 4px;
+  font-weight: 500;
 `;
 
 const StatusBadge = styled.span<{ $status: string }>`
@@ -661,8 +732,3 @@ const SubmitButton = styled.button`
     font-size: 13px;
   }
 `;
-
-// const StarIcon = styled(Star)`
-//   fill: #ffc107;
-//   color: #ffc107;
-// `;

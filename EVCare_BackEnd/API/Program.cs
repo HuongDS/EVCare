@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Security.Authentication;
 using System.Text;
 using API.Filters;
@@ -37,8 +37,12 @@ using Microsoft.Azure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
+// Add services to the container.
 builder.Services.AddControllers()
     .AddFluentValidation()
     .AddJsonOptions(options =>
@@ -99,7 +103,6 @@ builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
 builder.Services.AddScoped<ITechnicianWorkingSessionRepository, TechnicianWorkingSessionRepository>();
 builder.Services.AddScoped<IPartCategoryRepository, PartCategoryRepository>();
-builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
@@ -145,7 +148,7 @@ builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
 });
 //builder.Services.AddScoped<IAiInsightServices, MockAiInsightServices>();
 builder.Services.AddScoped<OnInvoiceCompleteHandler>();
-builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<OnAppointmentConfirmHandler>();
 
 
 // AutoMapper
@@ -169,7 +172,6 @@ builder.Services.AddScoped<SetAccountIdFilter>();
 builder.Services.AddScoped<SetTechnicianIdFilter>();
 builder.Services.AddScoped<AuthorizeTechnicianDetail>();
 builder.Services.AddScoped<ValidateInvoiceTotalFilter>();
-builder.Services.AddScoped<CheckAuthorizationOfCustomerFilter>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
@@ -202,7 +204,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<BlockedDatePostModelValidat
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", p => p
-        .WithOrigins("http://localhost:5173", "https://ev-care.netlify.app", "https://localhost:7228", "https://evcare.service.signalr.net")
+        .WithOrigins("https://localhost:5173", "http://localhost:5173", "https://ev-care.netlify.app", "https://localhost:7228", "https://evcare.service.signalr.net")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials());
@@ -311,14 +313,29 @@ builder.Services.AddHangfire(cfg => cfg
     .UseSqlServerStorage(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new Hangfire.SqlServer.SqlServerStorageOptions { PrepareSchemaIfNecessary = true }));
-builder.Services.AddHangfireServer(options =>
-{
-    options.ServerName = Environment.MachineName;
-});
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
-
-
+app.UseHangfireDashboard("/hangfire");
+var tzVn = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
+       "cancel-expired-appointments-daily-7am",
+       job => job.CancelAppointment(),
+        Cron.Daily(7),
+       tzVn
+    );
+RecurringJob.AddOrUpdate<IReminderService>(
+    "reminder-service",
+     job => job.SendEmailRemindersAsync(),
+     Cron.Daily(10),
+     tzVn
+    );
+RecurringJob.AddOrUpdate<IAttendanceService>(
+    "attendacne-service",
+    job => job.MarkAttendanceAsync(),
+    Cron.Daily(5),
+    tzVn
+    );
 // Configure the HTTP request pipeline.
 var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");
 
@@ -334,55 +351,8 @@ app.UseRouting();
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
-app.UseHangfireDashboard("/hangfire", new DashboardOptions
-{
-    Authorization = new[] { new HangfireAllowAllDashboardAuthorizationFilter() }
-});
-var tzVn = TimeZoneInfo.FindSystemTimeZoneById(
-    OperatingSystem.IsWindows() ? "SE Asia Standard Time" : "Asia/Ho_Chi_Minh"
-);
-app.Lifetime.ApplicationStarted.Register(() =>
-{
-    var tzVn = TimeZoneInfo.FindSystemTimeZoneById(
-        OperatingSystem.IsWindows() ? "SE Asia Standard Time" : "Asia/Ho_Chi_Minh"
-    );
-
-    RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
-        "cancel-expired-appointments-daily-7am",
-        job => job.CancelAppointment(),
-        Cron.Daily(7),
-        tzVn
-    );
-
-    RecurringJob.AddOrUpdate<IReminderService>(
-        "reminder-service",
-        job => job.SendEmailRemindersAsync(),
-        Cron.Daily(10),
-        tzVn
-    );
-
-    RecurringJob.AddOrUpdate<IAttendanceService>(
-        "attendance-service",                  
-        job => job.MarkAttendanceAsync(),
-        Cron.Daily(5),
-        tzVn
-    );
-
-    RecurringJob.AddOrUpdate(
-        "keep-alive",
-        () => Console.WriteLine($"[KeepAlive] {DateTime.Now}"),
-        "*/10 * * * *",
-        tzVn
-    );
-    var nowVn = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tzVn);
-    if (nowVn.Hour >= 5 && nowVn.Hour < 6) 
-    {
-        BackgroundJob.Enqueue<IAttendanceService>(s => s.MarkAttendanceAsync());
-    }
-});
-
 app.UseAuthorization();
-app.UseMiddleware<RateLimitMiddleware>();
+//app.UseMiddleware<RateLimitMiddleware>();
 app.UseMiddleware<BannedMiddleware>();
 
 
@@ -392,8 +362,8 @@ app.UseAzureSignalR(routes =>
 {
     routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
 });
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
-});
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+//});
 app.Run();

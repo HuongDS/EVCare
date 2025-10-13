@@ -9,6 +9,10 @@ import { changeAppointmentStatus } from "../../../services/appointmentServiceApi
 // import { useState } from "react";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
+import type {
+  TechnicianModel,
+  TechnicianSkills,
+} from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 
 const CheckInWrapper = styled.div`
   display: grid;
@@ -102,7 +106,7 @@ const ButtonWapper = styled.div`
 `;
 
 interface Props {
-  data: StaffAppointmentsDto;
+  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
   currentStep: number;
 }
 

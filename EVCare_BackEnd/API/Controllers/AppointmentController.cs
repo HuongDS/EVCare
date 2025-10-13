@@ -14,6 +14,7 @@ using Application.Services;
 using Newtonsoft.Json.Linq;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
+using Application.DomainEvents;
 
 
 namespace API.Controllers
@@ -27,14 +28,17 @@ namespace API.Controllers
         private readonly INotificationServices _notificationServices;
         private readonly ITokenServices _tokenServices;
         private readonly IAlertServices _alertServices;
+        private readonly OnAppointmentConfirmHandler _onAppointmentConfirmHandler;
 
         public AppointmentController(IAppointmentService appointmentService, INotificationServices notificationServices,
-            ITokenServices tokenServices, IAlertServices alertServices)
+            ITokenServices tokenServices, IAlertServices alertServices,
+            OnAppointmentConfirmHandler onAppointmentConfirmHandler)
         {
             _appointmentService = appointmentService;
             _notificationServices = notificationServices;
             _tokenServices = tokenServices;
             _alertServices = alertServices;
+            _onAppointmentConfirmHandler = onAppointmentConfirmHandler;
         }
         [Authorize(Roles = "Staff")]
         [HttpPost("staff")]
@@ -389,6 +393,7 @@ namespace API.Controllers
                 appointmentID = appointmentId,
                 status = AppointmentStatusEnum.Confirmed
             });
+            await _onAppointmentConfirmHandler.HandleAsync();
             await _alertServices.AddConfirmAlertAsync(new DataAccess.Dtos.Alerts.AlertCreateDto
             {
                 appointmentId = appointmentId,
