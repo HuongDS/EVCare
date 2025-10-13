@@ -9,11 +9,7 @@ import type {
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { useQueryClient } from "@tanstack/react-query";
-import type {
-  PartsDetailDto,
-  ViewOrderDataDto,
-  ViewOrderResponeDto,
-} from "../../../models/OrderModel/ViewOrderModel";
+import type { PartsDetailDto, ViewOrderDataDto, ViewOrderResponeDto } from "../../../models/OrderModel/ViewOrderModel";
 
 type InvoicePageProps = {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -21,9 +17,10 @@ type InvoicePageProps = {
 
 export const InvoicePage = ({ data }: InvoicePageProps) => {
   const queryClient = useQueryClient();
-  const orderDetail = queryClient.getQueryData<
-    ViewOrderResponeDto<ViewOrderDataDto<PartsDetailDto>>
-  >(["OrderDetail", data.orderId]);
+  const orderDetail = queryClient.getQueryData<ViewOrderResponeDto<ViewOrderDataDto<PartsDetailDto>>>([
+    "OrderDetail",
+    data.orderId,
+  ]);
   const { data: invoice } = useGetInvoice(data.orderId);
 
   return (
@@ -44,9 +41,7 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
               <InvoiceInfo>
                 <h2>INVOICE</h2>
                 <InvoiceId>#{invoice?.data?.id}</InvoiceId>
-                <p style={{ marginTop: "12px" }}>
-                  Date: {formatDate(invoice?.data?.paymentDate || "")}
-                </p>
+                <p style={{ marginTop: "12px" }}>Date: {formatDate(invoice?.data?.paymentDate || "")}</p>
                 <p>Order ID: #{data.orderId}</p>
               </InvoiceInfo>
             </HeaderTop>
@@ -84,15 +79,12 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
                   <InfoItem>
                     <FileText size={16} />
                     <span>
-                      License Plate:{" "}
-                      <strong>{data.licensePlate || "N/A"}</strong>
+                      License Plate: <strong>{data.licensePlate || "N/A"}</strong>
                     </span>
                   </InfoItem>
                   <InfoItem>
                     <Calendar size={16} />
-                    <span>
-                      Service Date: {formatDateNoTime(data.appointmentDate)}
-                    </span>
+                    <span>Service Date: {formatDateNoTime(data.appointmentDate)}</span>
                   </InfoItem>
                 </InfoList>
               </InfoCard>
@@ -134,12 +126,7 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
                 </SummaryRow>
                 <SummaryRow>
                   <span>Tax (10%):</span>
-                  <span>
-                    {formatCurrency(
-                      orderDetail?.data?.price ||
-                        0 * (orderDetail?.data?.vat || 0 / 100)
-                    )}
-                  </span>
+                  <span>{formatCurrency(orderDetail?.data?.price || 0 * (orderDetail?.data?.vat || 0 / 100))}</span>
                 </SummaryRow>
                 <SummaryRow $isTotal>
                   <span>Total:</span>
@@ -160,13 +147,9 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
             <p>
               <strong>Thank you for your business!</strong>
             </p>
-            <p>
-              For any questions regarding this invoice, please contact us at
-              info@autocare.vn
-            </p>
+            <p>For any questions regarding this invoice, please contact us at info@autocare.vn</p>
             <p style={{ marginTop: "12px", fontSize: "12px" }}>
-              This is a computer-generated invoice and does not require a
-              signature.
+              This is a computer-generated invoice and does not require a signature.
             </p>
           </InvoiceFooter>
         </InvoiceContainer>
@@ -495,31 +478,17 @@ const InvoiceFooter = styled.div`
 `;
 
 // Types
-interface Part {
-  technicianId: number;
-  id: number;
-  name: string;
-  quantity: number;
-  price: number;
-  imageUrl: string;
-}
+// interface Part {
+//   technicianId: number;
+//   id: number;
+//   name: string;
+//   quantity: number;
+//   price: number;
+//   imageUrl: string;
+// }
 
-interface OrderData {
-  id: number;
-  parts: Part[];
-  price: number;
-}
-
-interface InvoiceData {
-  orderId: number;
-  total_Price: number;
-  payment_Method: "Cash" | "Online";
-  order: OrderData;
-  customerName?: string;
-  licensePlate?: string;
-  vehicleModel?: string;
-  phoneNumber?: string;
-  location?: string;
-  date?: string;
-  invoiceNumber?: string;
-}
+// interface OrderData {
+//   id: number;
+//   parts: Part[];
+//   price: number;
+// }
