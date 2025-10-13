@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
-import { InputNumber, message } from "antd";
+import { InputNumber } from "antd";
 import styled from "styled-components";
 import { Package, CheckCircle, Edit3, X, Users } from "lucide-react";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
-import { useGetOrderDetail } from "../../../services/orderServiceApi";
+import {
+  useGetOrderDetail,
+  useStaffUpdateOrder,
+  useUpdateOrderStatus,
+} from "../../../services/orderServiceApi";
 import type { PartsDetailDto } from "../../../models/OrderModel/ViewOrderModel";
 import type {
   TechnicianModel,
@@ -11,8 +15,15 @@ import type {
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { formatCurrency } from "./../../../utils/formatCurrency";
 import { useAppDispatch } from "../../../states/store";
-import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
 import { setStep } from "../../../states/appointmentSlice";
+import type {
+  OrderPartDto,
+  UpdateOrderRequest,
+} from "../../../models/OrderModel/UpdateOrderModel";
+import { useQueryClient } from "@tanstack/react-query";
+import ReFreshButton from "../../../components/Button/ReFreshButton";
+import SuccessModal from "../../../components/StatusModal/SuccessModal";
+import FailedModal from "../../../components/StatusModal/FailModal";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -26,52 +37,99 @@ export default function Appointment_Part_Tracking({
   const dispatch = useAppDispatch();
   const [parts, setParts] = useState<PartsDetailDto[]>([]);
   const [editingPartId, setEditingPartId] = useState<number | null>(null);
+  const [tempValue, setTempValue] = useState(1);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
+  //gọi hàm để lấy order detail
   const { data: order, isSuccess } = useGetOrderDetail(data.orderId);
 
+  //nếu lấy thành công thì set mảng parts vào trong state
   useEffect(() => {
     if (isSuccess && order?.data?.parts) {
       setParts(order.data.parts);
     }
   }, [isSuccess, order]);
 
-  const calculateTotal = () => {
-    const subtotal = parts.reduce(
-      (sum, part) => sum + part.price * part.quantity,
-      0
-    );
-    const vatAmount = (subtotal * (order?.data?.vat ?? 0)) / 100;
-    return subtotal + vatAmount;
-  };
-
+  //hàm này thay đổi quantity được nhập từ staff
   const handleQuantityChange = (partId: number, newQuantity: number | null) => {
-    if (newQuantity && newQuantity > 0) {
+    if (newQuantity !== null) {
       setParts(
         parts.map((part) =>
           part.id === partId ? { ...part, quantity: newQuantity } : part
         )
       );
       setEditingPartId(null);
-      message.success("Quantity updated");
+    } else {
+      alert("Change quantity error");
     }
   };
 
-  const handleConfirmOrder = async () => {
-    await changeAppointmentStatus({
-      appointmentId: data.id,
-      status: "InProgress",
-    });
-    dispatch(setStep({ id: data.id, step: currentStep + 1 }));
+  //staff cập nhật order vừa update lên api
+  const { mutateAsync: updateOrder } = useStaffUpdateOrder();
+  const queryClient = useQueryClient();
+  const handleQuantityChangeApi = async () => {
+    const newOrderUpdate: UpdateOrderRequest<OrderPartDto> = {
+      id: data.orderId,
+      orderParts: parts.map((part) => ({
+        partId: part.id,
+        technicianId: part.technicianId,
+        quantity: part.quantity,
+      })),
+    };
+    try {
+      await updateOrder(newOrderUpdate);
+      queryClient.invalidateQueries({
+        queryKey: ["OrderDetail", data.orderId],
+      });
+      setModalMessage("Order confirmed successfully");
+      setIsSuccessModalOpen(true);
+    } catch (error) {
+      setModalMessage(String(error));
+      setIsErrorModalOpen(true);
+    }
   };
 
-  const subtotal = parts.reduce(
-    (sum, part) => sum + part.price * part.quantity,
-    0
-  );
+  //Khi nhấn confirm thì gọi hàm này
+  const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
+  const handleConfirmOrder = async () => {
+    try {
+      await handleQuantityChangeApi();
+      await updateOrderStatus({ orderID: data.orderId, status: "Processing" });
+      dispatch(setStep({ id: data.id, step: currentStep + 1 }));
+    } catch (error) {
+      alert("Lỗi khi confirm order");
+    }
+  };
+
+  //refresh order detail
+  const RefreshOrderDetail = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["OrderDetail", data.orderId],
+    });
+  };
+
+  const subtotal =
+    order?.data?.parts.reduce(
+      (sum, part) => sum + part.price * part.quantity + part.replacementPrice,
+      0
+    ) ?? 0;
+
   const vatAmount = (subtotal * (order?.data?.vat ?? 0)) / 100;
+
+  const calculateTotal = () => {
+    return subtotal + vatAmount;
+  };
 
   // Get working technicians from appointment data
   const workingTechnicians = data.technicians || [];
+
+  //đóng success, fail modal
+  const handleCloseModal = () => {
+    setIsErrorModalOpen(false);
+    setIsSuccessModalOpen(false);
+  };
 
   return (
     <PageContainer>
@@ -87,7 +145,10 @@ export default function Appointment_Part_Tracking({
         </Header>
 
         <Card>
-          <SectionTitle>Order Parts ({parts.length})</SectionTitle>
+          <SectionTitle>
+            Order Parts ({parts.length})
+            <ReFreshButton action={RefreshOrderDetail} />
+          </SectionTitle>
 
           {parts.map((part) => (
             <PartCard key={part.id}>
@@ -114,11 +175,9 @@ export default function Appointment_Part_Tracking({
                     <InputNumber
                       min={1}
                       defaultValue={part.quantity}
-                      onPressEnter={(e) =>
-                        handleQuantityChange(
-                          part.id,
-                          (e.target as HTMLInputElement).valueAsNumber
-                        )
+                      onChange={(value) => setTempValue(value || 0)}
+                      onPressEnter={() =>
+                        handleQuantityChange(part.id, tempValue)
                       }
                       autoFocus
                     />
@@ -163,8 +222,10 @@ export default function Appointment_Part_Tracking({
             <span>Total Amount</span>
             <span>{calculateTotal().toLocaleString()}₫</span>
           </TotalRow>
-
-          <ConfirmButton onClick={handleConfirmOrder}>
+          <ConfirmButton
+            onClick={handleConfirmOrder}
+            // disabled={data.status === "InProgress"}
+          >
             <CheckCircle size={20} />
             Confirm Order
           </ConfirmButton>
@@ -205,6 +266,20 @@ export default function Appointment_Part_Tracking({
           )}
         </Card>
       </ContentWrapper>
+      {isSuccessModalOpen && (
+        <SuccessModal
+          header="Assign Technician"
+          message={modalMessage}
+          action={handleCloseModal}
+        />
+      )}
+      {isErrorModalOpen && (
+        <FailedModal
+          header="Assign Technician"
+          message={modalMessage}
+          action={handleCloseModal}
+        />
+      )}
     </PageContainer>
   );
 }
@@ -264,6 +339,9 @@ const Card = styled.div`
 `;
 
 const SectionTitle = styled.h2`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 20px;
   font-weight: 700;
   color: #333;
