@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -9,6 +11,7 @@ using System.Web;
 using Application.DomainEvents;
 using Application.Interfaces;
 using AutoMapper;
+using CloudinaryDotNet.Core;
 using DataAccess.Dtos.Invoice;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
@@ -18,6 +21,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using StackExchange.Redis;
 
 namespace Application.Services
@@ -37,6 +42,7 @@ namespace Application.Services
         private readonly IPayOSService _payOSService;
         private readonly IRedisService _redisService;
         private readonly IPayOSGateWay _gw;
+        private readonly IServiceCenterRepository _serviceCenterRepository;
 
         public InvoiceService(IVnPayService vnPayService, IMapper mapper,
             IInvoiceRepository invoiceRepository
@@ -50,6 +56,7 @@ namespace Application.Services
             IPayOSGateWay gw,
             IAppointmentRepository appointmentRepository,
             OnInvoiceCompleteHandler onInvoiceCompleteHandler
+            , IServiceCenterRepository serviceCenterRepository
 
             )
         {
@@ -66,6 +73,7 @@ namespace Application.Services
             _redisService = redisService;
             _appointmentRepository = appointmentRepository;
             _onInvoiceCompleteHandler = onInvoiceCompleteHandler;
+            _serviceCenterRepository = serviceCenterRepository;
         }
 
         public async Task<int> CreateInvoice(InvoiceCreateModel model)
@@ -236,6 +244,129 @@ namespace Application.Services
             var invoice = await _invoiceRepository.GetInvoiceByOrderId(orderId);
             if (invoice == null) throw new Exception("Invoice not found");
             await _invoiceRepository.DeleteAsync(invoice.Id);
+        }
+
+        public async Task<InvoiceViewModel> GetInvoiceByOrderId(int orderId)
+        {
+            return await _invoiceRepository.GetInvoiceViewModelByOrderId(orderId);
+        }
+
+        public async Task<byte[]> PrintInvoice(int orderId)
+        {
+           var order = await _orderRepository.GetByIdAsync(orderId);
+            if(order == null) throw new Exception("Order not found");   
+            var invoice = await _invoiceRepository.GetInvoiceByOrderId(orderId);
+            if (invoice == null) throw new Exception("Invoice not found");
+
+            var invoiceData = await _invoiceRepository.GetInvoicePrintData(orderId);
+            var serviceCenter = await _serviceCenterRepository.GetCenterInforAsync();
+
+            var pdf = QuestPDF.Fluent.Document.Create(container => {
+
+                container.Page(page =>
+                {
+                    page.Margin(40);
+                    page.Size(PageSizes.A4);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(12));
+
+                    page.Header().Column(col =>
+                    {
+                        col.Spacing(5);
+
+
+                        col.Item().Text(serviceCenter.Name)
+                            .Bold().FontSize(18).FontColor(Colors.Blue.Medium);
+                        col.Item().Text($"Phone: {serviceCenter.Hotline}");
+                        col.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten1);
+                    });
+                    page.Content().Column(col =>
+                    {
+                        col.Spacing(15);
+
+                        col.Item().Text($"Invoice ID: {invoice.Id}");
+                        col.Item().Text($"Customer: {invoiceData.CustomerName}");
+                        col.Item().Text($"Vehicle: {invoiceData.VehicleLicensePlate}");
+                        col.Item().Text($"Appointment Date: {invoiceData.AppointmentDate:dd/MM/yyyy}");
+                        col.Item().Text($"Payment Date: {invoiceData.PaymentDate:dd/MM/yyyy}");
+                        col.Item().Text($"Payment Method: {invoiceData.PaymentMethod}");
+                        col.Item().LineHorizontal(1);
+                        col.Item().Text("Service Items").Bold().FontSize(14);
+                        col.Item().Table(table =>
+                        {
+                            table.ColumnsDefinition(cols =>
+                            {
+                                cols.RelativeColumn(3);
+                                cols.RelativeColumn(1);
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Text("Service Name").Bold();
+                            });
+
+                            foreach (var s in invoiceData.ServiceItems)
+                            {
+                                table.Cell().Text(s.Name);
+
+                            }
+                        });
+
+
+                        col.Item().Text("Part Items").Bold().FontSize(14);
+                        col.Item().Table(table =>
+                        {
+                            table.ColumnsDefinition(cols =>
+                            {
+                                cols.RelativeColumn(3);
+                                cols.RelativeColumn(1);
+                                cols.RelativeColumn(1);
+                                cols.RelativeColumn(2);
+                                cols.RelativeColumn(2);
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Text("Part Name").Bold();
+                                header.Cell().Text("Quantity").Bold();
+                                header.Cell().Text("Price").Bold();
+                                header.Cell().Text("Replacement Price").Bold();
+                                header.Cell().Text("Total Price").Bold();
+                            });
+
+                            foreach (var p in invoiceData.PartItems)
+                            {
+                                table.Cell().Text(p.PartName);
+                                table.Cell().Text(p.Quantity.ToString());
+                                table.Cell().Text($"{p.UnitPrice}");
+                                table.Cell().Text($"{p.ReplacePrice}");
+                                table.Cell().Text($"{(p.ReplacePrice+p.UnitPrice)*p.Quantity}");
+                            }
+                            table.Cell().Text("");
+                            table.Cell().Text("");
+                            table.Cell().Text("");
+                            table.Cell().Text("");
+                            table.Cell().Element(e => e
+                                .BorderTop(1)
+                                .BorderColor(Colors.Grey.Lighten2)
+                                .PaddingTop(4)
+                                .Text($"Tax: {serviceCenter.Vat:0.##}%")
+                                .Bold());
+                        });
+                        col.Item().LineHorizontal(1);
+                        col.Item().AlignRight()
+                           .Text($"Total: {invoiceData.TotalPrice}")
+                           .Bold().FontSize(14);
+                    });
+                    page.Footer().AlignCenter().Text("Thank you for trusting our service!");
+                });
+            
+            });
+
+            using var stream = new MemoryStream();
+            pdf.GeneratePdf(stream);
+            return stream.ToArray();
+
         }
     }
 }

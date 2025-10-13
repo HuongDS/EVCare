@@ -113,7 +113,9 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
     (date: Dayjs | undefined) => {
       setDateSelected(date);
       if (date && timeSelected) {
-        setAppointmentDate(date.hour(timeSelected.hour()).minute(timeSelected.minute()).second(0).toISOString());
+        setAppointmentDate(
+          date.hour(timeSelected.hour()).minute(timeSelected.minute()).second(0).format("YYYY-MM-DDTHH:mm:ss")
+        );
       }
     },
     [timeSelected]
@@ -123,7 +125,9 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
     (time: Dayjs | undefined) => {
       setTimeSelected(time);
       if (dateSelected && time) {
-        setAppointmentDate(dateSelected.hour(time.hour()).minute(time.minute()).second(0).toISOString());
+        setAppointmentDate(
+          dateSelected.hour(time.hour()).minute(time.minute()).second(0).format("YYYY-MM-DDTHH:mm:ss")
+        );
       }
     },
     [dateSelected]

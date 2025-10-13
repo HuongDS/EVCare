@@ -1,16 +1,27 @@
-import React from "react";
 import styled from "styled-components";
 import { Calendar, Phone, User, Car, FileText, CreditCard } from "lucide-react";
+import { formatCurrency } from "../../../utils/formatCurrency";
+import { formatDate, formatDateNoTime } from "../../../utils/formatDate";
+import { useGetInvoice } from "../../../services/invoicesService";
+import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import type {
+  TechnicianModel,
+  TechnicianSkills,
+} from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import { useQueryClient } from "@tanstack/react-query";
+import type { PartsDetailDto, ViewOrderDataDto, ViewOrderResponeDto } from "../../../models/OrderModel/ViewOrderModel";
 
-const InvoicePage: React.FC<InvoicePageProps> = ({ data }) => {
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("vi-VN") + " VND";
-  };
+type InvoicePageProps = {
+  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
+};
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return new Date().toLocaleDateString("vi-VN");
-    return dateString;
-  };
+export const InvoicePage = ({ data }: InvoicePageProps) => {
+  const queryClient = useQueryClient();
+  const orderDetail = queryClient.getQueryData<ViewOrderResponeDto<ViewOrderDataDto<PartsDetailDto>>>([
+    "OrderDetail",
+    data.orderId,
+  ]);
+  const { data: invoice } = useGetInvoice(data.orderId);
 
   return (
     <PageContainer>
@@ -29,12 +40,8 @@ const InvoicePage: React.FC<InvoicePageProps> = ({ data }) => {
 
               <InvoiceInfo>
                 <h2>INVOICE</h2>
-                <InvoiceId>
-                  #{data.invoiceNumber || `INV-${data.orderId}`}
-                </InvoiceId>
-                <p style={{ marginTop: "12px" }}>
-                  Date: {formatDate(data.date)}
-                </p>
+                <InvoiceId>#{invoice?.data?.id}</InvoiceId>
+                <p style={{ marginTop: "12px" }}>Date: {formatDate(invoice?.data?.paymentDate || "")}</p>
                 <p>Order ID: #{data.orderId}</p>
               </InvoiceInfo>
             </HeaderTop>
@@ -72,13 +79,12 @@ const InvoicePage: React.FC<InvoicePageProps> = ({ data }) => {
                   <InfoItem>
                     <FileText size={16} />
                     <span>
-                      License Plate:{" "}
-                      <strong>{data.licensePlate || "N/A"}</strong>
+                      License Plate: <strong>{data.licensePlate || "N/A"}</strong>
                     </span>
                   </InfoItem>
                   <InfoItem>
                     <Calendar size={16} />
-                    <span>Service Date: {formatDate(data.date)}</span>
+                    <span>Service Date: {formatDateNoTime(data.appointmentDate)}</span>
                   </InfoItem>
                 </InfoList>
               </InfoCard>
@@ -98,12 +104,12 @@ const InvoicePage: React.FC<InvoicePageProps> = ({ data }) => {
                   </tr>
                 </TableHeader>
                 <TableBody>
-                  {data.order.parts.map((part) => (
+                  {orderDetail?.data?.parts.map((part) => (
                     <tr key={part.id}>
                       <td>{part.name}</td>
                       <td>{part.quantity}</td>
                       <td>{formatCurrency(part.price)}</td>
-                      <td>200.000</td>
+                      <td>{part.replacementPrice}</td>
                       <td>{formatCurrency(part.price * part.quantity)}</td>
                     </tr>
                   ))}
@@ -116,20 +122,20 @@ const InvoicePage: React.FC<InvoicePageProps> = ({ data }) => {
               <SummaryCard>
                 <SummaryRow>
                   <span>Subtotal:</span>
-                  <span>{formatCurrency(data.order.price)}</span>
+                  <span>{formatCurrency(orderDetail?.data?.price || 0)}</span>
                 </SummaryRow>
                 <SummaryRow>
                   <span>Tax (10%):</span>
-                  <span>{formatCurrency(data.order.price * 0.1)}</span>
+                  <span>{formatCurrency(orderDetail?.data?.price || 0 * (orderDetail?.data?.vat || 0 / 100))}</span>
                 </SummaryRow>
                 <SummaryRow $isTotal>
                   <span>Total:</span>
-                  <span>{formatCurrency(data.total_Price)}</span>
+                  <span>{formatCurrency(orderDetail?.data?.price || 0)}</span>
                 </SummaryRow>
                 <div style={{ textAlign: "right" }}>
-                  <PaymentBadge $method={data.payment_Method}>
+                  <PaymentBadge $method={invoice?.data?.paymentMethod || "N/A"}>
                     <CreditCard size={14} />
-                    Paid via {data.payment_Method}
+                    Paid via {invoice?.data?.paymentMethod || "N/A"}
                   </PaymentBadge>
                 </div>
               </SummaryCard>
@@ -141,13 +147,9 @@ const InvoicePage: React.FC<InvoicePageProps> = ({ data }) => {
             <p>
               <strong>Thank you for your business!</strong>
             </p>
-            <p>
-              For any questions regarding this invoice, please contact us at
-              info@autocare.vn
-            </p>
+            <p>For any questions regarding this invoice, please contact us at info@autocare.vn</p>
             <p style={{ marginTop: "12px", fontSize: "12px" }}>
-              This is a computer-generated invoice and does not require a
-              signature.
+              This is a computer-generated invoice and does not require a signature.
             </p>
           </InvoiceFooter>
         </InvoiceContainer>
@@ -476,77 +478,17 @@ const InvoiceFooter = styled.div`
 `;
 
 // Types
-interface Part {
-  technicianId: number;
-  id: number;
-  name: string;
-  quantity: number;
-  price: number;
-  imageUrl: string;
-}
+// interface Part {
+//   technicianId: number;
+//   id: number;
+//   name: string;
+//   quantity: number;
+//   price: number;
+//   imageUrl: string;
+// }
 
-interface OrderData {
-  id: number;
-  parts: Part[];
-  price: number;
-}
-
-interface InvoiceData {
-  orderId: number;
-  total_Price: number;
-  payment_Method: "Cash" | "Online";
-  order: OrderData;
-  customerName?: string;
-  licensePlate?: string;
-  vehicleModel?: string;
-  phoneNumber?: string;
-  location?: string;
-  date?: string;
-  invoiceNumber?: string;
-}
-
-interface InvoicePageProps {
-  data: InvoiceData;
-}
-
-// Demo Component
-const InvoiceDemo = () => {
-  const mockInvoiceData: InvoiceData = {
-    orderId: 1,
-    total_Price: 16200000,
-    payment_Method: "Cash",
-    order: {
-      id: 1,
-      parts: [
-        {
-          technicianId: 2,
-          id: 1,
-          name: "Piston",
-          quantity: 12,
-          price: 1200000,
-          imageUrl: "images/parts/piston.jpg",
-        },
-        {
-          technicianId: 2,
-          id: 2,
-          name: "Spark Plug",
-          quantity: 12,
-          price: 150000,
-          imageUrl: "images/parts/sparkplug.jpg",
-        },
-      ],
-      price: 16200000,
-    },
-    customerName: "Picasso",
-    licensePlate: "51G-99999",
-    vehicleModel: "Vinfast VF5",
-    phoneNumber: "0123456789",
-    location: "HCM City",
-    date: "13/06/2025",
-    invoiceNumber: "INV-2025-001",
-  };
-
-  return <InvoicePage data={mockInvoiceData} />;
-};
-
-export default InvoiceDemo;
+// interface OrderData {
+//   id: number;
+//   parts: Part[];
+//   price: number;
+// }

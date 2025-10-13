@@ -9,3 +9,8 @@ export const formatDate = (isoDate: string): string => {
     minute: "2-digit",
   });
 };
+
+export const formatDateNoTime = (dateString?: string) => {
+  if (!dateString) return new Date().toLocaleDateString("vi-VN");
+  return dateString;
+};
