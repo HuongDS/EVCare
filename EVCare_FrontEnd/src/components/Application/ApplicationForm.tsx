@@ -19,14 +19,14 @@ import {
   Field,
   Label,
   Input,
-  TextArea,
   Grid,
   ErrorText,
   SuccessText,
 } from "./ApplicationForm.styled";
 import dayjs from "dayjs";
 import ButtonAction from "../Button/ReviewButton";
-import DatePicker from "./DatePicker";
+import DatePicker from "./DatePickerLazyPerformance";
+import { Editor } from "@tinymce/tinymce-react";
 
 export default function ApplicationForm({
   onSuccess,
@@ -208,11 +208,35 @@ export default function ApplicationForm({
 
       <Field>
         <Label>Reason</Label>
-        <TextArea
+        <Editor
+          apiKey={import.meta.env.VITE_TINY_KEY}
           value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          placeholder="Enter your reason..."
-          required
+          init={{
+            height: 300,
+            menubar: false,
+            plugins: [
+              "advlist",
+              "autolink",
+              "lists",
+              "link",
+              "charmap",
+              "preview",
+              "anchor",
+              "searchreplace",
+              "visualblocks",
+              "code",
+              "fullscreen",
+              "insertdatetime",
+              "table",
+            ],
+            toolbar:
+              "undo redo | formatselect | " +
+              "bold italic underline | bullist numlist outdent indent | " +
+              "removeformat | help",
+            content_style:
+              "body { font-family:Outfit,sans-serif; font-size:15px; line-height:1.6; }",
+          }}
+          onEditorChange={(newValue) => setReason(newValue)}
         />
       </Field>
 

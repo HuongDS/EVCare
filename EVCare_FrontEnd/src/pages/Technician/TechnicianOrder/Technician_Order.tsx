@@ -133,7 +133,7 @@ export default function TechnicianOrder({
             price: p.price,
             imageUrl: p.imageUrl,
             quantity: p.quantity,
-            categoryId: 0, // gán tạm nếu API không trả
+            categoryId: 0,
             isDeleted: false,
           } as OrderPartsResponseDto,
           quantity: p.quantity,
@@ -195,9 +195,9 @@ export default function TechnicianOrder({
   const [isSending, setIsSending] = useState(false);
   /** Gửi giỏ lên server */
   const handleSendCart = async () => {
-    if (!currentOrderId || isSending) return; // ⬅️ chặn spam
+    if (!currentOrderId || isSending) return;
 
-    setIsSending(true); // ⬅️ bật loading
+    setIsSending(true);
     const payload: UpdateOrderPartDto = {
       orderId: currentOrderId,
       parts: cart.map((c) => ({ id: c.part.id, quantity: c.quantity })),
@@ -206,13 +206,17 @@ export default function TechnicianOrder({
     try {
       await updateOrderParts(payload);
       onPartsUpdated?.(currentOrderId);
-      setCartOpen(false);
       alert("✅ Order parts updated successfully!");
+
+      // 🔹 Đóng modal
+      setCartOpen(false);
+
+      navigate("/technician", { state: { tab: "ADDING_PART" } });
     } catch (err) {
       console.error(err);
       alert("❌ Failed to update order parts");
     } finally {
-      setIsSending(false); // ⬅️ tắt loading
+      setIsSending(false);
     }
   };
 
