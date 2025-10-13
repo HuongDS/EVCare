@@ -110,7 +110,25 @@ namespace DataAccess.Repositories
 
         public async Task<Invoice> GetInvoiceByOrderId(int orderId)
         {
-            return await _dbContext.Invoices.FirstOrDefaultAsync(i => i.OrderId == orderId);
+            return await _dbContext.Invoices
+                .Include(x => x.Order).ThenInclude(Order => Order.Appointment)
+                .FirstOrDefaultAsync(i => i.OrderId == orderId);
+                
+        }
+
+        public async Task<InvoiceViewModel> GetInvoiceViewModelByOrderId(int orderId)
+        {
+            return await _dbContext.Invoices.AsNoTracking()
+                .Where(x=>x.OrderId == orderId)
+                 .Select(x => new InvoiceViewModel
+                 {
+                     appointmentDate = x.Order.Appointment.Appointment_Date,
+                     id = x.Id,
+                     paymentDate = x.Create_At,
+                     paymentMethod = x.Payment_Method,
+                     status = x.Status,
+                     totalPrice = x.Total_Price
+                 }).FirstOrDefaultAsync();
         }
     }
 }
