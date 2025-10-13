@@ -6,7 +6,6 @@ import {
   ApartmentOutlined,
   CalendarOutlined,
   ClockCircleOutlined,
-  FileDoneOutlined,
   HomeOutlined,
   InboxOutlined,
   LineChartOutlined,
@@ -128,7 +127,7 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       key: "1",
       icon: <HomeOutlined />,
       label: "General",
-      route: "/technician/general",
+      route: "/technician",
     },
     {
       key: "2",
@@ -156,12 +155,6 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "6",
-      icon: <QuestionCircleOutlined />,
-      label: "Help & Information",
-      route: "/technician/help",
-    },
-    {
-      key: "7",
       icon: <LogoutOutlined />,
       label: "Logout",
       action: () => logout,

@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Enums
 {
-    public enum PaymentMethodEnum
+    public enum ApplicationStatusEnum
     {
-        Cash,
-        Vnpay,
-        PayOs,
-
+        Pending,
+        Approved,
+        Rejected
     }
 }

@@ -311,29 +311,14 @@ builder.Services.AddHangfire(cfg => cfg
     .UseSqlServerStorage(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new Hangfire.SqlServer.SqlServerStorageOptions { PrepareSchemaIfNecessary = true }));
-builder.Services.AddHangfireServer();
+builder.Services.AddHangfireServer(options =>
+{
+    options.ServerName = Environment.MachineName;
+});
 
 var app = builder.Build();
-app.UseHangfireDashboard("/hangfire");
-var tzVn = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
-       "cancel-expired-appointments-daily-7am",
-       job => job.CancelAppointment(),
-        Cron.Daily(7),
-       tzVn
-    );
-RecurringJob.AddOrUpdate<IReminderService>(
-    "reminder-service",
-     job => job.SendEmailRemindersAsync(),
-     Cron.Daily(10),
-     tzVn
-    );
-RecurringJob.AddOrUpdate<IAttendanceService>(
-    "attendacne-service",
-    job => job.MarkAttendanceAsync(),
-    Cron.Daily(5),
-    tzVn
-    );
+
+
 // Configure the HTTP request pipeline.
 var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");
 
@@ -349,6 +334,53 @@ app.UseRouting();
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAllowAllDashboardAuthorizationFilter() }
+});
+var tzVn = TimeZoneInfo.FindSystemTimeZoneById(
+    OperatingSystem.IsWindows() ? "SE Asia Standard Time" : "Asia/Ho_Chi_Minh"
+);
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    var tzVn = TimeZoneInfo.FindSystemTimeZoneById(
+        OperatingSystem.IsWindows() ? "SE Asia Standard Time" : "Asia/Ho_Chi_Minh"
+    );
+
+    RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
+        "cancel-expired-appointments-daily-7am",
+        job => job.CancelAppointment(),
+        Cron.Daily(7),
+        tzVn
+    );
+
+    RecurringJob.AddOrUpdate<IReminderService>(
+        "reminder-service",
+        job => job.SendEmailRemindersAsync(),
+        Cron.Daily(10),
+        tzVn
+    );
+
+    RecurringJob.AddOrUpdate<IAttendanceService>(
+        "attendance-service",                  
+        job => job.MarkAttendanceAsync(),
+        Cron.Daily(5),
+        tzVn
+    );
+
+    RecurringJob.AddOrUpdate(
+        "keep-alive",
+        () => Console.WriteLine($"[KeepAlive] {DateTime.Now}"),
+        "*/10 * * * *",
+        tzVn
+    );
+    var nowVn = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tzVn);
+    if (nowVn.Hour >= 5 && nowVn.Hour < 6) 
+    {
+        BackgroundJob.Enqueue<IAttendanceService>(s => s.MarkAttendanceAsync());
+    }
+});
+
 app.UseAuthorization();
 app.UseMiddleware<RateLimitMiddleware>();
 app.UseMiddleware<BannedMiddleware>();
@@ -356,12 +388,12 @@ app.UseMiddleware<BannedMiddleware>();
 
 app.MapControllers();
 //app.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
-//app.UseAzureSignalR(routes =>
-//{
-//    routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
-//});
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
-//});
+app.UseAzureSignalR(routes =>
+{
+    routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+});
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+});
 app.Run();

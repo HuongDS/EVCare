@@ -46,5 +46,11 @@ namespace Application.Services
             appointment.Status = AppointmentStatusEnum.InProgress;
             await _appointmentRepository.UpdateAsync(appointment);
         }
+
+        public async Task<int> GetEmployeeIdByAccountId(int accountId)
+        {
+            var employee = await _employeeRepository.GetEmployeeByAccountId(accountId);
+            return employee.Id;
+        }
     }
 }
