@@ -59,3 +59,9 @@ export type TechnicianSkills = {
   id: number;
   name: string;
 };
+
+export type AssignTechnicianParams = {
+  orderId: number;
+  technicianIds: number[];
+  status: string;
+};

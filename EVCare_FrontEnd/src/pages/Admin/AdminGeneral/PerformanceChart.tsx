@@ -8,8 +8,8 @@ import type { PerfRes } from "../../../models/Dashboard/perfRes";
 const PerformanceChart: React.FC = () => {
   const [perfData, setPerfData] = useState<PerfRes | null>(null);
 
-  const from = useMemo(() => new Date(Date.now() - 6 * 24 * 3600 * 1000).toISOString(), []);
-  const to = useMemo(() => new Date().toISOString(), []);
+  const from = useMemo(() => new Date(Date.now() - 6 * 24 * 3600 * 1000).toLocaleString("sv-SE"), []);
+  const to = useMemo(() => new Date().toLocaleString("sv-SE"), []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,9 +18,13 @@ const PerformanceChart: React.FC = () => {
     fetchData();
   }, [from, to]);
 
-  useDashboardHub(() => {
+  useDashboardHub<PerfRes>((type, payload) => {
     // on any realtime update, refetch
-    getPerformance(from, to).then((r) => setPerfData(r));
+    // getPerformance(from, to).then((r) => setPerfData(r));
+    if (type === "InvoiceComplete") {
+      console.log("check chart: ", payload);
+      setPerfData(payload);
+    }
   });
 
   const merger =
@@ -43,8 +47,8 @@ const PerformanceChart: React.FC = () => {
       </div>
 
       {/* <canvas ref={canvasRef} height={80}></canvas> */}
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={merger} margin={{ top: 10, right: 16, left: -10, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={350}>
+        <LineChart data={merger} margin={{ top: 10, right: 16, left: 10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis tickFormatter={(v) => `${v}₫`} />

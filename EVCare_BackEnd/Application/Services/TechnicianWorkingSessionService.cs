@@ -55,9 +55,13 @@ namespace Application.Services
                 StartTime = DateTime.Now,
                 Status = model.Status
             });
-            var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(model.OrderId); 
-            appointment.Status = DataAccess.Enums.AppointmentStatusEnum.AddingPart;
-            await _appointmentRepository.UpdateAsync(appointment);
+            if(model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Pending)
+            {
+                var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(model.OrderId);
+                appointment.Status = DataAccess.Enums.AppointmentStatusEnum.AddingPart;
+                await _appointmentRepository.UpdateAsync(appointment);
+
+            }
             await _employeeRepository.MarkBusyForTechnician(model.TechnicianIds);
             await _technicianWorkingSessionRepository.AddRange(lists);
         }

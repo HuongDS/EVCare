@@ -18,6 +18,12 @@ export const ERROR_MESSAGE = {
   SERVICES_MUST_NOT_BE_EMPTY: "Please choose at least 1 service!",
   DATE_AND_TIME_CAN_NOT_BE_EMPTY: "Please select a suitable day and time!",
   CAN_NOT_UPDATE_STATUS: "Can't update status. Please try again!",
+  CAN_NOT_ASSIGN_TECHNICIANS: "Can't assign the technician. Please try again!",
+  THIS_FIELD_NOT_VALID: "This field can not contains all space.",
+  FAILED_TO_DELETE_VEHICLE: "Failed to delete vehicle",
+  FAILED_TO_ADD_VEHICLE: "Failed to add vehicle",
+  FAILED_TO_UPDATE_ACCOUNT: "Failed to Update Account",
+  COULD_NOT_FIND_SERVICE_INFORMATION: "Could not find service information",
 };
 
 export const MSG_TITLE = {
@@ -31,6 +37,9 @@ export const MSG_TITLE = {
 export const SUCCESS_MESSAGE = {
   REGISTER_SUCCESS: "OTP verified! Account created.",
   LOGIN_SUCCESS: "Login Successfully!",
+  DELETE_VEHICLE_SUCCESS: "Delete Vehicle success",
+  UPDATE_ACCOUNT_SUCCESSFULLY: "Update account success",
+  ADD_VEHICLE_SUCCESSFULLY: "Add vehivle success",
 };
 
 export const AUTH_FORM_MESSAGE = {
@@ -48,8 +57,7 @@ export const LIST_SERVICES_MESSAGE = {
 
 //List of appointment
 export const LIST_APPOINTMENTS_MESSAGE = {
-  EMPTY_PENDING: (status: string) =>
-    `There are currently no ${status} appointments`,
+  EMPTY_PENDING: (status: string) => `There are currently no ${status} appointments`,
   NO_APPOINTMENT_FOUND: "No appointments found for: ",
 };
 

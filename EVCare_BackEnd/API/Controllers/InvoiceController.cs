@@ -241,6 +241,51 @@ namespace API.Controllers
                 });
             }
         }
+        [HttpGet("by-order/{orderId}")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetInvoiceByOrderId(int orderId)
+        {
+            try
+            {
+                var invoice = await _invoiceService.GetInvoiceByOrderId(orderId);
+                return Ok(new ResponseDto<InvoiceViewModel>
+                {
+                    statusCode = 200,
+                    message = Message.INVOICE_GET_SUCCESS,
+                    data = invoice
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+        }
+
+
+        [HttpGet("{orderId}/print")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> PrintInvoiceByOrderId(int orderId)
+        {
+            try
+            {
+                var pdfBytes = await _invoiceService.PrintInvoice(orderId);
+
+                return File(pdfBytes, "application/pdf", $"Order_{orderId}.pdf");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
 
     }
 }
