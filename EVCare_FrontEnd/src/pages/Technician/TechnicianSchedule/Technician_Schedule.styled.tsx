@@ -1,102 +1,131 @@
-// Technician_Schedule.styled.ts
 import styled from "styled-components";
 
 const COLORS = {
   primary: "#4caf50",
-  grayDark: "#222",
-  grayMedium: "#666",
   grayLight: "#f5f5f5",
-  error: "#e53935",
   appointment: "#52c41a",
   dayOff: "#fa8c16",
   blocked: "#ff4d4f",
+  error: "#e53935",
 };
 
-const BREAKPOINTS = {
-  desktop: "1024px",
-  tablet: "768px",
-  mobile: "480px",
-};
-
-/* 📦 Wrapper tổng thể */
 export const ScheduleWrapper = styled.div`
   padding: 24px;
   background: ${COLORS.grayLight};
   min-height: 100vh;
   font-family: "Outfit", sans-serif;
-
-  @media (max-width: ${BREAKPOINTS.tablet}) {
-    padding: 16px;
-  }
 `;
 
-/* 🏷️ Tiêu đề */
 export const ScheduleTitle = styled.h2`
   font-size: 2.2rem;
   font-weight: 700;
   color: ${COLORS.primary};
   text-align: center;
   margin-bottom: 24px;
-
-  @media (max-width: ${BREAKPOINTS.mobile}) {
-    font-size: 1.8rem;
-  }
 `;
 
-/* 📅 Calendar container */
 export const CalendarContainer = styled.div`
   background: #fff;
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);a
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   font-family: "Outfit", sans-serif;
+  overflow: visible;
+  position: relative;
 
-  /* Header (Mon, Tue...) */
-  .fc-col-header-cell,
-  .fc-col-header-cell-cushion {
-    font-family: "Outfit", sans-serif;
+  /* FullCalendar toolbar buttons */
+  .fc-button {
+    background-color: ${COLORS.primary};
+    border: none;
+    color: #fff;
     font-weight: 600;
-    color: #222;
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
-  /* Numbers of days */
+  .fc-button:hover {
+    background-color: #45a049;
+  }
+
+  .fc-button:focus {
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+  }
+
+  .fc-button:active,
+  .fc-button.fc-button-active {
+    background-color: #388e3c !important;
+    color: #fff !important;
+    box-shadow: none !important;
+  }
+
+  /* Tháng/năm */
+  .fc-toolbar-title {
+    color: ${COLORS.primary};
+    font-weight: 700;
+  }
+
+  /* Tên thứ trong lịch */
+  .fc-col-header-cell-cushion {
+    color: #222;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  /* Số ngày trong tháng */
   .fc-daygrid-day-number {
-    font-family: "Outfit", sans-serif;
-    font-weight: 500;
     color: #222;
+    font-weight: 500;
+    text-decoration: none;
   }
 
-  /* Events */
-  .fc-daygrid-event {
+  /* Timeline week/day: giờ màu đen */
+  .fc-timegrid-axis-cushion {
+    color: #222;
+    font-weight: 500;
+  }
+
+  /* Grid background cho week/day */
+  .fc-timegrid-col-frame {
+    border-left: 1px solid #e0e0e0;
+  }
+
+  /* Event styling */
+  .fc-daygrid-event,
+  .fc-timegrid-event {
     border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 500;
     padding: 4px 6px;
     color: #fff;
     text-align: left;
-    font-family: "Outfit", sans-serif;
     white-space: normal;
     overflow: visible;
     word-break: break-word;
+    position: relative;
+    z-index: 1;
+  }
+  .fc-day-today {
+    background-color: #e8f5e9 !important;
   }
 
   .appointment {
-    background-color: #52c41a !important;
-    border-color: #52c41a !important;
+    background-color: ${COLORS.appointment} !important;
+    border-color: ${COLORS.appointment} !important;
   }
 
   .dayOff {
-    background-color: #fa8c16 !important;
-    border-color: #fa8c16 !important;
+    background-color: ${COLORS.dayOff} !important;
+    border-color: ${COLORS.dayOff} !important;
   }
 
   .blocked {
-    background-color: #ff4d4f !important;
-    border-color: #ff4d4f !important;
+    background-color: ${COLORS.blocked} !important;
+    border-color: ${COLORS.blocked} !important;
   }
 `;
 
-/* ⚠️ Thông báo lỗi */
 export const ErrorMessage = styled.div`
   color: ${COLORS.error};
   font-size: 1.1rem;

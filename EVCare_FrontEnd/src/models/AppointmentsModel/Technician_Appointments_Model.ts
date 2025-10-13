@@ -29,6 +29,7 @@ export type TechnicianAppointmentsDto = {
     imageUrl: string;
   }[];
   status: string;
+  appointmentImages: string[];
   orderId: number;
 };
 
