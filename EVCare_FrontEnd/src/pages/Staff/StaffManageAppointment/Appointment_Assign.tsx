@@ -1,13 +1,9 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { Search, Plus, X, User, Phone, CheckCircle } from "lucide-react";
+import { Search, User, Phone, CheckCircle, CircleX } from "lucide-react";
 import type { TechnicianModel } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
-import type { ResponseDto } from "../../../models/AuthModel/authModel";
-import type {
-  PageModel,
-  StaffAppointmentsDto,
-} from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import type { TechnicianSkills } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import {
   changeAppointmentStatus,
   useGetTechniciansToday,
@@ -17,18 +13,18 @@ import { setStep } from "../../../states/appointmentSlice";
 
 interface AssignedTechnician {
   technicianID: number;
-  technician: TechnicianModel<ServicesResponseDto[]>;
+  technician: TechnicianModel<TechnicianSkills>;
   startedTime: string;
 }
 
-const getFlatSkills = (
-  skills?: ServicesResponseDto[] | ServicesResponseDto[][]
-): ServicesResponseDto[] => {
-  if (!skills) return [];
-  return Array.isArray(skills[0])
-    ? (skills as ServicesResponseDto[][]).flat()
-    : (skills as ServicesResponseDto[]);
-};
+// const getFlatSkills = (
+//   skills?: TechnicianSkills[] | TechnicianSkills[][]
+// ): TechnicianSkills[] => {
+//   if (!skills) return [];
+//   return Array.isArray(skills[0])
+//     ? (skills as TechnicianSkills[][]).flat()
+//     : (skills as TechnicianSkills[]);
+// }
 
 interface props {
   data: StaffAppointmentsDto;
@@ -40,16 +36,16 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
   const [selectedTechnicians, setSelectedTechnicians] = useState<
     AssignedTechnician[]
   >([]);
-  const [showSearch, setShowSearch] = useState(false);
 
-  const { data: technicians } = useGetTechniciansToday({});
+  const allSkills = data.services.map((service) => service.id).flat();
 
-  const techniciansData = technicians as ResponseDto<
-    PageModel<TechnicianModel<ServicesResponseDto[]>[]>
-  >;
+  const { data: technicians } = useGetTechniciansToday({
+    Skills: allSkills,
+    // Status: "Available",
+  });
 
   const filteredTechnicians =
-    techniciansData?.data?.items
+    technicians?.data?.items
       ?.flat()
       .filter(
         (tech) =>
@@ -58,7 +54,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
       ) || [];
 
   const handleAddTechnician = async (
-    technician: TechnicianModel<ServicesResponseDto[]>
+    technician: TechnicianModel<TechnicianSkills>
   ) => {
     const newAssignment: AssignedTechnician = {
       technicianID: technician.id,
@@ -66,7 +62,6 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
       startedTime: new Date().toISOString(),
     };
     setSelectedTechnicians([...selectedTechnicians, newAssignment]);
-    setShowSearch(false);
     setSearchQuery("");
   };
 
@@ -104,17 +99,24 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
         <Card>
           <SectionHeader>
             <h2>Assigned Technicians ({selectedTechnicians.length})</h2>
-            <AddButton onClick={() => setShowSearch(!showSearch)}>
-              <Plus size={20} />
-              Add Technician
-            </AddButton>
+            {selectedTechnicians.length > 0 && (
+              <ButtonGroup>
+                <ClearButton onClick={() => setSelectedTechnicians([])}>
+                  Clear All
+                </ClearButton>
+                <SubmitButton onClick={handleChangeStep}>
+                  <CheckCircle size={20} />
+                  Assign Technicians
+                </SubmitButton>
+              </ButtonGroup>
+            )}
           </SectionHeader>
 
           {selectedTechnicians.length === 0 ? (
             <EmptyState>
               <User size={48} />
               <p>No technicians assigned yet</p>
-              <p>Click "Add Technician" to get started</p>
+              <p>Scroll down to "Add Technician"</p>
             </EmptyState>
           ) : (
             <TechnicianGrid>
@@ -133,60 +135,45 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
         </Card>
 
         {/* Search Section */}
-        {showSearch && (
-          <Card>
-            <SearchWrapper>
-              <SearchInput>
-                <Search size={20} />
-                <input
-                  type="text"
-                  placeholder="Search technician by name..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+        <Card>
+          <SearchWrapper>
+            <SearchInput>
+              <Search size={20} />
+              <input
+                type="text"
+                placeholder="Search technician by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </SearchInput>
+          </SearchWrapper>
+
+          <SearchResultsContainer>
+            <TechnicianGrid>
+              {filteredTechnicians.map((technician) => (
+                <TechnicianCard
+                  key={technician.id}
+                  technician={technician}
+                  onAdd={() => handleAddTechnician(technician)}
                 />
-              </SearchInput>
-            </SearchWrapper>
+              ))}
+            </TechnicianGrid>
 
-            <SearchResultsContainer>
-              <TechnicianGrid>
-                {filteredTechnicians.map((technician) => (
-                  <TechnicianCard
-                    key={technician.id}
-                    technician={technician}
-                    onAdd={() => handleAddTechnician(technician)}
-                  />
-                ))}
-              </TechnicianGrid>
-
-              {filteredTechnicians.length === 0 && (
-                <EmptyState>
-                  <User size={48} />
-                  <p>No technicians found</p>
-                </EmptyState>
-              )}
-            </SearchResultsContainer>
-          </Card>
-        )}
-
-        {/* Submit Buttons */}
-        {selectedTechnicians.length > 0 && (
-          <ButtonGroup>
-            <ClearButton onClick={() => setSelectedTechnicians([])}>
-              Clear All
-            </ClearButton>
-            <SubmitButton onClick={handleChangeStep}>
-              <CheckCircle size={20} />
-              Assign Technicians
-            </SubmitButton>
-          </ButtonGroup>
-        )}
+            {filteredTechnicians.length === 0 && (
+              <EmptyState>
+                <User size={48} />
+                <p>No technicians found</p>
+              </EmptyState>
+            )}
+          </SearchResultsContainer>
+        </Card>
       </ContentWrapper>
     </PageContainer>
   );
 };
 
 interface TechnicianCardProps {
-  technician: TechnicianModel<ServicesResponseDto[]>;
+  technician: TechnicianModel<TechnicianSkills>;
   onAdd?: () => void;
   onRemove?: () => void;
   isSelected?: boolean;
@@ -198,13 +185,11 @@ const TechnicianCard = ({
   onRemove,
   isSelected = false,
 }: TechnicianCardProps) => {
-  const flatSkills = getFlatSkills(technician.skills);
-
   return (
     <TechnicianCardWrapper $isSelected={isSelected}>
       {isSelected && onRemove && (
         <RemoveButton onClick={onRemove}>
-          <X size={16} />
+          <CircleX />
         </RemoveButton>
       )}
 
@@ -235,16 +220,24 @@ const TechnicianCard = ({
       <SkillsSection>
         <p>SKILLS</p>
         <SkillTags>
-          {flatSkills.slice(0, 3).map((skill) => (
+          {technician.skills.slice(0, 3).map((skill) => (
             <SkillTag key={skill.id}>{skill.name}</SkillTag>
           ))}
-          {flatSkills.length > 3 && (
-            <SkillTag $isMore>+{flatSkills.length - 3} more</SkillTag>
+          {technician.skills.length > 3 && (
+            <SkillTag $isMore>+{technician.skills.length - 3} more</SkillTag>
           )}
         </SkillTags>
       </SkillsSection>
 
-      {onAdd && <ActionButton onClick={onAdd}>Add</ActionButton>}
+      {onAdd && (
+        <ActionButton
+          onClick={onAdd}
+          $disabled={technician.status !== "Available"}
+          disabled={technician.status !== "Available"}
+        >
+          Add
+        </ActionButton>
+      )}
     </TechnicianCardWrapper>
   );
 };
@@ -321,36 +314,6 @@ const SectionHeader = styled.div`
     @media (max-width: 768px) {
       font-size: 16px;
     }
-  }
-`;
-
-const AddButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #099435 0%, #06e960 100%);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  @media (max-width: 768px) {
-    padding: 8px 16px;
-    font-size: 13px;
   }
 `;
 

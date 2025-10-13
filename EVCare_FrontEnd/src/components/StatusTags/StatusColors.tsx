@@ -20,4 +20,5 @@ export const StatusColors: Record<string, string> = {
   LowStock: "#f59e0b",
   OutOfStock: "#ef4444",
   ReadyForPickup: "#14b8a6",
+  AddingPart: "#0ea5e9",
 };
