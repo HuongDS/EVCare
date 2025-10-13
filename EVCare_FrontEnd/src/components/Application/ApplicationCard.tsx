@@ -1,6 +1,6 @@
 import React from "react";
 import dayjs from "dayjs";
-import type { ApplicationResponseDTO } from "../../../models/ApplicationModel/ApplicationModels";
+import type { ApplicationResponseDTO } from "../../models/ApplicationModel/ApplicationModels";
 import {
   CardContainer,
   HeaderSection,
@@ -11,7 +11,7 @@ import {
   InfoBox,
   CreatedAt,
 } from "./ApplicationCard.styled";
-import { ApplicationStatusEnum } from "../../../models/enums/ApplicationStatusEnum";
+import { ApplicationStatusEnum } from "../../models/enums/ApplicationStatusEnum";
 
 interface ApplicationCardProps {
   application: ApplicationResponseDTO;
