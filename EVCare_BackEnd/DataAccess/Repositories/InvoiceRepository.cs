@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Invoice;
+using DataAccess.Dtos.OrderPart;
 using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Service;
 using DataAccess.Entities;
 using DataAccess.Helpers;
 using DataAccess.Interfaces;
@@ -129,6 +131,37 @@ namespace DataAccess.Repositories
                      status = x.Status,
                      totalPrice = x.Total_Price
                  }).FirstOrDefaultAsync();
+        }
+
+        public Task<InvoicePrintDataModel> GetInvoicePrintData(int orderId)
+        {
+            return _dbContext.Invoices
+                .AsNoTracking()
+                .Where(i => i.OrderId == orderId)
+                .Select(i => new InvoicePrintDataModel
+                {
+                    Id = i.Id,
+                    CustomerName = i.Customer.Account.First_Name + " " + i.Customer.Account.Last_Name,
+                    VehicleLicensePlate = i.Order.Appointment.Vehicle.LicensePlate,
+                    AppointmentDate = i.Order.Appointment.Appointment_Date,
+                    TotalPrice = i.Total_Price,
+                    PaymentMethod = i.Payment_Method.ToString(),
+                    PaymentDate = i.Updated_At,
+                    ServiceItems = i.Order.Appointment.AppointmentServices
+                        .Select(os => new ServiceViewFormModel
+                        {
+                            Id = os.Service.Id,
+                            Name = os.Service.Name
+                        }).ToList(),
+                    PartItems = i.Order.OrderParts
+                        .Select(op => new OrderPartViewInvoiceModel
+                        {
+                            PartName = op.Part.Name,
+                            Quantity = op.Quantity,
+                            ReplacePrice = op.ReplacementPrice,
+                            UnitPrice = op.Price,
+                        }).ToList()
+                }).FirstOrDefaultAsync();
         }
     }
 }

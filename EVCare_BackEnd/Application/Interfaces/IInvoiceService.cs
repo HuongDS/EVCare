@@ -22,5 +22,6 @@ namespace Application.Interfaces
         Task<PageResultDto<InvoiceViewModel>> GetRecentInVoices(InvoiceQueryDto model);
         Task CancelPayOSOrder(int orderId);
         Task<InvoiceViewModel> GetInvoiceByOrderId(int orderId);
+        Task<byte[]> PrintInvoice(int orderId);
     }
 }
