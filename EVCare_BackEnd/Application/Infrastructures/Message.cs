@@ -128,5 +128,11 @@ namespace Application.Infrastructures
         public const string GET_RECENT_INVOICES_SUCCESS = "Get recent invoices successfully.";
 
         public static string APPLICATION_GET_SUCCESS = "Application get successfully";
+
+        public static string CUSTOMERS_GET_SUCCESSFULLY = "Get customers successfully";
+
+        public static string DELETE_ACCOUNT_SUCCESS = "Delete Account successfully";
+
+        public static string? ACCOUNT_HAS_BEEN_DISABLED ="Account has been disabled.";
     }
 }
