@@ -1,5 +1,5 @@
 export interface SummaryRes {
-  customers: number;
+  customer: number;
   appointments: number;
   cancelAppointments: number;
   totalRevenue: number;
