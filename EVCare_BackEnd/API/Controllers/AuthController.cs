@@ -87,9 +87,27 @@ namespace API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RegisterForEmployee(EmployeeRegisterDto data)
         {
-            var account = await _authServices.RegisterAccountAsync(data.accountInfo);
-            await _authServices.RegisterEmployeeOrTechnicianAsync(account, data);
-            return Ok(account);
+
+            try
+            {
+                var account = await _authServices.RegisterAccountAsync(data.accountInfo);
+                await _authServices.RegisterEmployeeOrTechnicianAsync(account, data);
+                return Ok(new ResponseDto<AccountResponseDto>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.REGISTER_SUCCESS,
+                    data = account
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequestDto data)
