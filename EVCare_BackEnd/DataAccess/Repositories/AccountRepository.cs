@@ -21,6 +21,14 @@ namespace DataAccess.Repositories
             return (account.Deleted_At != DateTime.MinValue);
         }
 
+        public async Task DeleteAccount(int accountId)
+        {
+            //var vnTime = DateTime.UtcNow.AddHours(7);
+
+            await _dbContext.Accounts.Where(x=>x.Id == accountId)
+                .ExecuteUpdateAsync(x=>x.SetProperty(p=>p.Deleted_At, p=>DateTime.UtcNow));
+        }
+
         public async Task<Account?> GetAccountByEmail(string email)
         {
             var entity = await _dbSet.FirstOrDefaultAsync(e => e.Email.Equals(email));

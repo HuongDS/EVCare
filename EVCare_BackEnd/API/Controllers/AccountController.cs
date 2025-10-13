@@ -75,5 +75,31 @@ namespace API.Controllers
                 });
             }
         }
+
+        [HttpDelete("{accountId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteAccount(int accountId)
+        {
+            try
+            {
+                await _accountService.DeleteAccount(accountId);
+                
+                return Ok(new ResponseDto<object>
+                {
+                    data = null,
+                    statusCode = HttpStatus.OK,
+                    message = Message.DELETE_ACCOUNT_SUCCESS
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
     }
 }

@@ -1,4 +1,3 @@
-using System.Net;
 using System.Security.Authentication;
 using System.Text;
 using API.Filters;
@@ -19,21 +18,18 @@ using Application.Validators.Part;
 using Application.Validators.Service;
 using Application.Validators.Vehicle;
 using DataAccess;
-using DataAccess.Dtos.Appointment;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Hangfire;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using StackExchange.Redis;
 using Microsoft.Azure.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +37,7 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
-
+QuestPDF.Settings.License = LicenseType.Community;
 // Add services to the container.
 builder.Services.AddControllers()
     .AddFluentValidation()
@@ -313,29 +309,25 @@ builder.Services.AddHangfire(cfg => cfg
     .UseSqlServerStorage(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new Hangfire.SqlServer.SqlServerStorageOptions { PrepareSchemaIfNecessary = true }));
-builder.Services.AddHangfireServer();
+
 
 var app = builder.Build();
-app.UseHangfireDashboard("/hangfire");
-var tzVn = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-RecurringJob.AddOrUpdate<IAppointmentExpiryJob>(
-       "cancel-expired-appointments-daily-7am",
-       job => job.CancelAppointment(),
-        Cron.Daily(7),
-       tzVn
-    );
-RecurringJob.AddOrUpdate<IReminderService>(
-    "reminder-service",
-     job => job.SendEmailRemindersAsync(),
-     Cron.Daily(10),
-     tzVn
-    );
-RecurringJob.AddOrUpdate<IAttendanceService>(
-    "attendacne-service",
-    job => job.MarkAttendanceAsync(),
-    Cron.Daily(5),
-    tzVn
-    );
+
+var tzVn = TimeZoneInfo.FindSystemTimeZoneById(OperatingSystem.IsWindows() ? "SE Asia Standard Time" : "Asia/Ho_Chi_Minh");
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAllowAllDashboardAuthorizationFilter() },
+
+});
+app.UseHangfireServer();
+RecurringJob.AddOrUpdate<IAppointmentExpiryJob>("cancel-expired-appointments-daily-7am", job => job.CancelAppointment(), Cron.Daily(7), tzVn);
+RecurringJob.AddOrUpdate<IReminderService>("reminder-service", job => job.SendEmailRemindersAsync(), Cron.Daily(10), tzVn);
+RecurringJob.AddOrUpdate<IAttendanceService>("attendance-service", job => job.MarkAttendanceAsync(), Cron.Daily(5), tzVn);
+RecurringJob.AddOrUpdate("keep-alive", 
+    () => new HttpClient().GetAsync("https://evcare-begpg9dchmcsddej.southeastasia-01.azurewebsites.net/api/Health")
+    , "*/10 * * * *", tzVn);
+
 // Configure the HTTP request pipeline.
 var swaggerEnabled = builder.Configuration.GetValue<bool>("SwaggerEnabled");
 
@@ -350,10 +342,14 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("AllowAll");
 
+
+
 app.UseAuthentication();
 app.UseAuthorization();
-//app.UseMiddleware<RateLimitMiddleware>();
+
+app.UseMiddleware<RateLimitMiddleware>();
 app.UseMiddleware<BannedMiddleware>();
+
 
 
 app.MapControllers();

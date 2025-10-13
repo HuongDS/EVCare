@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.Services
 {
@@ -187,6 +188,10 @@ namespace Application.Services
             {
                 throw new Exception(Message.LOGIN_FAILED);
             }
+            if(account.Deleted_At!=DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
+            }
 
             return await GenerateTokenAsync(account, new ResponseDto<LoginResponseDto>(), context);
         }
@@ -206,14 +211,21 @@ namespace Application.Services
             if (account is null)
             {
                 var defaultPassword = _configuration["DefaultPassword:Google"] ?? "12345678@sa";
-                var RegisterData = new RegisterRequestDto
+                var hashPassword = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
+                var newAccount = new Account
                 {
-                    email = email,
-                    phone = "0944444444",
-                    password = defaultPassword,
+                    Email = email,
+                    Phone = "0944444444",
+                    Hash_Password = hashPassword,
+                    Create_At = DateTime.UtcNow,
+                    Updated_At = DateTime.UtcNow,
+                    Deleted_At = DateTime.MinValue,
+                    Role = RoleEnum.Customer,
+                    First_Name = first_name,
+                    Last_Name = last_name,
                 };
-                await RegisterAsync(RegisterData);
-                account = await _accountRepository.GetAccountByEmail(email);
+                await _accountRepository.AddAsync(newAccount);
+                account = await _accountRepository.GetAccountByEmail(newAccount.Email);
             }
             return await GenerateTokenAsync(account, new ResponseDto<LoginResponseDto>(), context);
         }
