@@ -4,7 +4,12 @@ import { getAdminDashboardConnection } from "../signalr/adminConnection";
 // import { getAccessToken } from "../token/tokenStore";
 import * as signalR from "@microsoft/signalr";
 
-export function useDashboardHub<T>(onUpdate: (data: T) => void) {
+type DashboardPayload<T> = {
+  type: string;
+  data: T;
+};
+
+export function useDashboardHub<T>(onUpdate: (type: string, data: T) => void) {
   const onUpdateRef = useRef(onUpdate);
 
   useEffect(() => {
@@ -13,7 +18,9 @@ export function useDashboardHub<T>(onUpdate: (data: T) => void) {
 
   useEffect(() => {
     const conn = getAdminDashboardConnection(import.meta.env.VITE_API_BASE);
-    const handler = (payload: T) => onUpdate(payload);
+    const handler = (payload: DashboardPayload<T>) => {
+      onUpdateRef.current(payload.type, payload.data);
+    };
     conn.on("AdminDashboardUpdate", handler);
     if (conn.state === signalR.HubConnectionState.Disconnected) {
       conn

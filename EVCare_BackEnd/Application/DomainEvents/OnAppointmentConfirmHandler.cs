@@ -32,7 +32,11 @@ namespace Application.DomainEvents
             var today = DateTime.Today;
             await _redis.KeyDeleteAsync("dashboard:summary");
             var performance = await _adminDashboardServices.GetSummaryCachedAsync(today, today);
-            await _hub.Clients.All.SendAsync("AdminDashboardUpdate", performance);
+            await _hub.Clients.All.SendAsync("AdminDashboardUpdate", new
+            {
+                Type = "AppointmentConfirm",
+                Data = performance
+            });
         }
     }
 }

@@ -8,12 +8,12 @@ import { getBlockedDate, getCenterInformation } from "../../../services/serviceC
 import type { BlockedDateViewModel } from "../../../models/BlockedDate/BlockedDateViewModel";
 
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+// import utc from "dayjs/plugin/utc";
+// import timezone from "dayjs/plugin/timezone";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault("Asia/Ho_Chi_Minh");
+// dayjs.extend(utc);
+// dayjs.extend(timezone);
+// dayjs.tz.setDefault("Asia/Ho_Chi_Minh");
 
 interface Props {
   date: Dayjs | undefined;
@@ -139,7 +139,7 @@ function TimeComponent({ date, time, handleSelectDate, handleSelectTime }: Props
             showNow={false}
             getPopupContainer={(triggerNode) => triggerNode.parentElement as HTMLElement}
             type="time"
-            onChange={(value) => handleSelectTime(value?.local() ?? undefined)}
+            onChange={(value) => handleSelectTime(value ?? undefined)}
             placeholder="Time"
             format="HH:mm"
             showSecond={false}
