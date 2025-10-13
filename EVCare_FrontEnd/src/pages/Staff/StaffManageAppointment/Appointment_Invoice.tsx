@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import { Calendar, Phone, User, Car, FileText, CreditCard } from "lucide-react";
 import { formatCurrency } from "../../../utils/formatCurrency";
