@@ -5,7 +5,7 @@ import ButtonAction from "../../../components/Button/ReviewButton";
 import { useAppDispatch } from "../../../states/store";
 import { setStep } from "../../../states/appointmentSlice";
 import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
-// import { CreateNewOrder } from "../../../services/orderServiceApi";
+import { CreateNewOrder } from "../../../services/orderServiceApi";
 // import { useState } from "react";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
@@ -13,6 +13,106 @@ import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+
+interface Props {
+  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
+  currentStep: number;
+}
+
+export default function Appointment_CheckIn({ data, currentStep }: Props) {
+  const dispatch = useAppDispatch();
+  const order = CreateNewOrder();
+
+  const handleCheckIn = async (status: "CheckedIn" | "Canceled") => {
+    try {
+      const changeStatus = {
+        appointmentId: data.id,
+        status: status,
+      };
+
+      const createNewOrderParams = {
+        appointmentID: data.id,
+        created_At: new Date().toISOString(),
+      };
+
+      const response = await order.mutateAsync(createNewOrderParams);
+      if (response.data) {
+        await changeAppointmentStatus(changeStatus);
+        dispatch(setStep({ id: data.id, step: currentStep + 1 }));
+      } else {
+        alert("Khong tao duoc order");
+      }
+    } catch (error) {
+      console.error("Error changing appointment status:", error);
+    }
+  };
+  return (
+    <>
+      <CheckInWrapper>
+        <CustomerInformation>
+          <h5>
+            Appointment ID: <span>#{data.id}</span>
+          </h5>
+          <GroupField>
+            <div>Customer Name</div>
+            <p>{data.customerName}</p>
+          </GroupField>
+          <GroupField>
+            <div>Vehicle Model</div>
+            <p>{data.vehicleModel}</p>
+          </GroupField>
+          <GroupField>
+            <div>License Plate</div>
+            <p>{data.licensePlate}</p>
+          </GroupField>
+          <GroupField>
+            <div>Phone Number</div>
+            <p>{data.phoneNumber}</p>
+          </GroupField>
+        </CustomerInformation>
+
+        <ServiceGroup>
+          <h5>Services</h5>
+          <Services>
+            {data.services.map((service, index) => (
+              <p key={index}>
+                {index + 1}. {service.name}
+              </p>
+            ))}
+          </Services>
+        </ServiceGroup>
+
+        <ImageGroup>
+          {/* Uncomment to display vehicle images */}
+
+          {data?.appointmentImages?.map((img, i) => (
+            <Zoom key={i}>
+              <img src={img} alt={`image ${i + 1}`} key={i} />
+            </Zoom>
+          ))}
+        </ImageGroup>
+
+        <TextAreaContainer>
+          <TextAreaDisabled value={data.note} />
+        </TextAreaContainer>
+      </CheckInWrapper>
+      <ButtonWapper>
+        <ButtonAction
+          text="Cancel"
+          color="red"
+          backgroundColor="#f1f1f1"
+          action={() => handleCheckIn("Canceled")}
+        />
+        <ButtonAction
+          text="Check In"
+          color="white"
+          backgroundColor="#00AD4E"
+          action={() => handleCheckIn("CheckedIn")}
+        />
+      </ButtonWapper>
+    </>
+  );
+}
 
 const CheckInWrapper = styled.div`
   display: grid;
@@ -104,98 +204,3 @@ const ButtonWapper = styled.div`
   justify-content: center;
   gap: 15px;
 `;
-
-interface Props {
-  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
-  currentStep: number;
-}
-
-export default function Appointment_CheckIn({ data, currentStep }: Props) {
-  const dispatch = useAppDispatch();
-
-  const handleCheckIn = async (status: "CheckedIn" | "Canceled") => {
-    const changeStatus = {
-      appointmentId: data.id,
-      status: status,
-    };
-    try {
-      await changeAppointmentStatus(changeStatus);
-      dispatch(setStep({ id: data.id, step: currentStep + 1 }));
-
-      // const createNewOrderParams = {
-      //   appointmentID: data.id,
-      //   created_At: new Date().toISOString(),
-      // };
-
-      // await CreateNewOrder(createNewOrderParams);
-    } catch (error) {
-      console.error("Error changing appointment status:", error);
-    }
-  };
-  return (
-    <>
-      <CheckInWrapper>
-        <CustomerInformation>
-          <h5>
-            Appointment ID: <span>#{data.id}</span>
-          </h5>
-          <GroupField>
-            <div>Customer Name</div>
-            <p>{data.customerName}</p>
-          </GroupField>
-          <GroupField>
-            <div>Vehicle Model</div>
-            <p>{data.vehicleModel}</p>
-          </GroupField>
-          <GroupField>
-            <div>License Plate</div>
-            <p>{data.licensePlate}</p>
-          </GroupField>
-          <GroupField>
-            <div>Phone Number</div>
-            <p>{data.phoneNumber}</p>
-          </GroupField>
-        </CustomerInformation>
-
-        <ServiceGroup>
-          <h5>Services</h5>
-          <Services>
-            {data.services.map((service, index) => (
-              <p key={index}>
-                {index + 1}. {service.name}
-              </p>
-            ))}
-          </Services>
-        </ServiceGroup>
-
-        <ImageGroup>
-          {/* Uncomment to display vehicle images */}
-
-          {data?.appointmentImages?.map((img, i) => (
-            <Zoom key={i}>
-              <img src={img} alt={`image ${i + 1}`} key={i} />
-            </Zoom>
-          ))}
-        </ImageGroup>
-
-        <TextAreaContainer>
-          <TextAreaDisabled value={data.note} />
-        </TextAreaContainer>
-      </CheckInWrapper>
-      <ButtonWapper>
-        <ButtonAction
-          text="Cancel"
-          color="red"
-          backgroundColor="#f1f1f1"
-          action={() => handleCheckIn("Canceled")}
-        />
-        <ButtonAction
-          text="Check In"
-          color="white"
-          backgroundColor="#00AD4E"
-          action={() => handleCheckIn("CheckedIn")}
-        />
-      </ButtonWapper>
-    </>
-  );
-}
