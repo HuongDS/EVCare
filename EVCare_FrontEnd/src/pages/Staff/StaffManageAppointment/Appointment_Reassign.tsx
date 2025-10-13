@@ -6,9 +6,15 @@ import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import { useGetTechniciansToday } from "../../../services/appointmentServiceApi";
+import {
+  useAssignTechnician,
+  useGetTechniciansToday,
+} from "../../../services/appointmentServiceApi";
 import { useState } from "react";
 import { CheckCircle, CircleX, Phone, Search, User } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import SuccessModal from "../../../components/StatusModal/SuccessModal";
+import FailedModal from "../../../components/StatusModal/FailModal";
 
 interface props {
   show: boolean;
@@ -27,6 +33,9 @@ export default function Appointment_Reassign({ show, close, data }: props) {
   const [selectedTechnicians, setSelectedTechnicians] = useState<
     AssignedTechnician[]
   >([]);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   //lấy tất cả technicians trừ các technicians đã gán
   const { data: technicians } = useGetTechniciansToday({
@@ -35,7 +44,6 @@ export default function Appointment_Reassign({ show, close, data }: props) {
 
   // Lấy danh sách ID của technician đã được gán (cả trước đó và mới chọn)
   const assignedTechnicianIDs = [
-    ...data.technicians.map((t) => t.id),
     ...selectedTechnicians.map((st) => st.technicianID),
   ];
 
@@ -66,119 +74,162 @@ export default function Appointment_Reassign({ show, close, data }: props) {
     );
   };
 
-  return (
-    <ModalStyled open={show} onCancel={close} footer={null}>
-      <PageContainer>
-        <ContentWrapper>
-          {/* Header */}
-          <Card>
-            <Header>
-              <h1>Re-Assign Technicians</h1>
-              <p>Manage technicians for appointment #{data.id}</p>
-            </Header>
-          </Card>
+  const { mutateAsync: reAssign } = useAssignTechnician();
+  const queryClient = useQueryClient();
+  const handleReAssign = async () => {
+    console.log("dang cho");
+    try {
+      await reAssign({
+        orderId: data.orderId,
+        technicianIds: assignedTechnicianIDs,
+        status: "Pending",
+      });
+      queryClient.invalidateQueries({ queryKey: ["Staff Appointments"] });
+      setSelectedTechnicians([]);
+      close();
+      setIsSuccessModalOpen(true);
+      setModalMessage("ReAssign Technicians successfully");
+    } catch (error) {
+      setIsErrorModalOpen(true);
+      setModalMessage("ReAssign Technicians failed! Try again");
+    }
+  };
 
-          {/* Previously Assigned Technicians */}
-          {data.technicians.length > 0 && (
+  //đóng success, fail modal
+  const handleCloseModal = () => {
+    setIsErrorModalOpen(false);
+    setIsSuccessModalOpen(false);
+  };
+
+  return (
+    <>
+      <ModalStyled open={show} onCancel={close} footer={null}>
+        <PageContainer>
+          <ContentWrapper>
+            {/* Header */}
+            <Card>
+              <Header>
+                <h1>Re-Assign Technicians</h1>
+                <p>Manage technicians for appointment #{data.id}</p>
+              </Header>
+            </Card>
+
+            {/* Previously Assigned Technicians */}
+            {data.technicians.length > 0 && (
+              <Card>
+                <SectionHeader>
+                  <h2>Currently Assigned ({data.technicians.length})</h2>
+                </SectionHeader>
+
+                <TechnicianGrid>
+                  {data.technicians.map((assignment) => (
+                    <TechnicianCard
+                      key={assignment.id}
+                      technician={assignment}
+                      assignmentInfo={{
+                        technicianID: assignment.id,
+                      }}
+                      isPreviouslyAssigned
+                    />
+                  ))}
+                </TechnicianGrid>
+              </Card>
+            )}
+
+            {/* New Selected Technicians */}
             <Card>
               <SectionHeader>
-                <h2>Currently Assigned ({data.technicians.length})</h2>
+                <h2>New Assignments ({selectedTechnicians.length})</h2>
+                {selectedTechnicians.length > 0 && (
+                  <ButtonGroup>
+                    <ClearButton onClick={() => setSelectedTechnicians([])}>
+                      Clear All
+                    </ClearButton>
+                    <SubmitButton onClick={handleReAssign}>
+                      <CheckCircle size={20} />
+                      Confirm Re-Assignment
+                    </SubmitButton>
+                  </ButtonGroup>
+                )}
               </SectionHeader>
 
-              <TechnicianGrid>
-                {data.technicians.map((assignment) => (
-                  <TechnicianCard
-                    key={assignment.id}
-                    technician={assignment}
-                    assignmentInfo={{
-                      technicianID: assignment.id,
-                    }}
-                    isPreviouslyAssigned
-                  />
-                ))}
-              </TechnicianGrid>
-            </Card>
-          )}
-
-          {/* New Selected Technicians */}
-          <Card>
-            <SectionHeader>
-              <h2>New Assignments ({selectedTechnicians.length})</h2>
-              {selectedTechnicians.length > 0 && (
-                <ButtonGroup>
-                  <ClearButton onClick={() => setSelectedTechnicians([])}>
-                    Clear All
-                  </ClearButton>
-                  <SubmitButton>
-                    <CheckCircle size={20} />
-                    Confirm Re-Assignment
-                  </SubmitButton>
-                </ButtonGroup>
-              )}
-            </SectionHeader>
-
-            {selectedTechnicians.length === 0 ? (
-              <EmptyState>
-                <User size={48} />
-                <p>No new technicians selected</p>
-                <p>Search below to add technicians</p>
-              </EmptyState>
-            ) : (
-              <TechnicianGrid>
-                {selectedTechnicians.map((assignment) => (
-                  <TechnicianCard
-                    key={assignment.technicianID}
-                    technician={assignment.technician}
-                    onRemove={() =>
-                      handleRemoveTechnician(assignment.technicianID)
-                    }
-                    isSelected
-                  />
-                ))}
-              </TechnicianGrid>
-            )}
-          </Card>
-
-          {/* Search Section */}
-          <Card>
-            <SectionHeader>
-              <h2>Add Technician</h2>
-            </SectionHeader>
-
-            <SearchWrapper>
-              <SearchInput>
-                <Search size={20} />
-                <input
-                  type="text"
-                  placeholder="Search available technicians..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </SearchInput>
-            </SearchWrapper>
-
-            <SearchResultsContainer>
-              <TechnicianGrid>
-                {filteredTechnicians.map((technician) => (
-                  <TechnicianCard
-                    key={technician.id}
-                    technician={technician}
-                    onAdd={() => handleAddTechnician(technician)}
-                  />
-                ))}
-              </TechnicianGrid>
-
-              {filteredTechnicians.length === 0 && searchQuery && (
+              {selectedTechnicians.length === 0 ? (
                 <EmptyState>
                   <User size={48} />
-                  <p>No available technicians found</p>
+                  <p>No new technicians selected</p>
+                  <p>Search below to add technicians</p>
                 </EmptyState>
+              ) : (
+                <TechnicianGrid>
+                  {selectedTechnicians.map((assignment) => (
+                    <TechnicianCard
+                      key={assignment.technicianID}
+                      technician={assignment.technician}
+                      onRemove={() =>
+                        handleRemoveTechnician(assignment.technicianID)
+                      }
+                      isSelected
+                    />
+                  ))}
+                </TechnicianGrid>
               )}
-            </SearchResultsContainer>
-          </Card>
-        </ContentWrapper>
-      </PageContainer>
-    </ModalStyled>
+            </Card>
+
+            {/* Search Section */}
+            <Card>
+              <SectionHeader>
+                <h2>Add Technician</h2>
+              </SectionHeader>
+
+              <SearchWrapper>
+                <SearchInput>
+                  <Search size={20} />
+                  <input
+                    type="text"
+                    placeholder="Search available technicians..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </SearchInput>
+              </SearchWrapper>
+
+              <SearchResultsContainer>
+                <TechnicianGrid>
+                  {filteredTechnicians.map((technician) => (
+                    <TechnicianCard
+                      key={technician.id}
+                      technician={technician}
+                      onAdd={() => handleAddTechnician(technician)}
+                    />
+                  ))}
+                </TechnicianGrid>
+
+                {filteredTechnicians.length === 0 && searchQuery && (
+                  <EmptyState>
+                    <User size={48} />
+                    <p>No available technicians found</p>
+                  </EmptyState>
+                )}
+              </SearchResultsContainer>
+            </Card>
+          </ContentWrapper>
+        </PageContainer>
+      </ModalStyled>
+      {isSuccessModalOpen && (
+        <SuccessModal
+          header="Assign Technician"
+          message={modalMessage}
+          action={handleCloseModal}
+        />
+      )}
+      {isErrorModalOpen && (
+        <FailedModal
+          header="Assign Technician"
+          message={modalMessage}
+          action={handleCloseModal}
+        />
+      )}
+    </>
   );
 }
 
