@@ -209,7 +209,7 @@ namespace Application.Services
                 var RegisterData = new RegisterRequestDto
                 {
                     email = email,
-                    phone = "default phone number",
+                    phone = "0944444444",
                     password = defaultPassword,
                 };
                 await RegisterAsync(RegisterData);

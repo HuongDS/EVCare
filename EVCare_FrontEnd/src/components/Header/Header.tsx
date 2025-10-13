@@ -13,6 +13,7 @@ import { logoutRedux } from "../../states/authSlice";
 import { openLogin } from "../../states/uiSlice";
 import { handleError } from "../../utils/errorHandler";
 import DropdownMenu from "./DropdownMenu";
+import { stopAdminDashboardConnection } from "../../signalr/adminConnection";
 
 export default function Header() {
   // const [showAuth, setShowAuth] = useState(false);
@@ -49,6 +50,7 @@ export default function Header() {
     }
     deleteToken();
     dispatch(logoutRedux());
+    stopAdminDashboardConnection();
     navigate("/");
   };
   return (

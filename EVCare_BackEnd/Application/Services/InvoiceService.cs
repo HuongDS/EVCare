@@ -237,5 +237,10 @@ namespace Application.Services
             if (invoice == null) throw new Exception("Invoice not found");
             await _invoiceRepository.DeleteAsync(invoice.Id);
         }
+
+        public async Task<InvoiceViewModel> GetInvoiceByOrderId(int orderId)
+        {
+            return await _invoiceRepository.GetInvoiceViewModelByOrderId(orderId);
+        }
     }
 }
