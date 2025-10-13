@@ -5,24 +5,45 @@ type ActionButtonProps = {
   color: string;
   backgroundColor: string;
   action: () => void;
+  icon?: React.ReactNode;
+  type?: "button" | "submit";
+  disabled?: boolean;
 };
 
-const ActionButton = styled.button<{ color: string; $bg: string }>`
+const ActionButton = styled.button<{ $color: string; $bg: string }>`
+  display: flex;
+  align-items: center;
+  gap: 5px;
   width: fit-content;
   max-height: fit-content;
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
-  color: ${({ color }) => color || "black"};
+  font-family: "Outfit", sans-serif;
+  color: ${({ $color }) => $color || "white"};
   font-weight: bold;
   cursor: pointer;
   background-color: ${({ $bg }) => $bg || "green"};
-    margin-right: 10px;
 `;
 
-export default function ButtonAction({ text, color, backgroundColor, action }: ActionButtonProps) {
+export default function ButtonAction({
+  icon,
+  text,
+  color,
+  backgroundColor,
+  action,
+  type = "button",
+  disabled = false,
+}: ActionButtonProps) {
   return (
-    <ActionButton color={color} $bg={backgroundColor} onClick={action}>
+    <ActionButton
+      $color={color}
+      $bg={backgroundColor}
+      onClick={action}
+      type={type}
+      disabled={disabled}
+    >
+      {icon}
       {text}
     </ActionButton>
   );

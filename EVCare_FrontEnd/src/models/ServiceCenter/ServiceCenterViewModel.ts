@@ -6,4 +6,6 @@ export type ServiceCenterViewModel = {
   openTime: Dayjs;
   closeTime: Dayjs;
   hotline: string;
+  workStartDay: string;
+  workEndDay: string;
 };
