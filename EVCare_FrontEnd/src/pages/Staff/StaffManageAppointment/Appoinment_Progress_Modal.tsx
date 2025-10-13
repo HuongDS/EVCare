@@ -9,24 +9,28 @@ import styled from "styled-components";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import { useAppSelector } from "../../../states/store";
 import AssignTechnicianPage from "./Appointment_Assign";
-import PaymentDemo from "./Appointment_Order";
-import InvoiceDemo from "./Appointment_Invoice";
 import Appointment_Part_Tracking from "./Appointment_Part_Tracking";
+import type {
+  TechnicianModel,
+  TechnicianSkills,
+} from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import PaymentPage from "./Appointment_Order";
+import { InvoicePage } from "./Appointment_Invoice";
 
 const ModalStyled = styled(Modal)`
   display: flex;
   justify-content: center;
   top: 2%;
   .ant-modal-content {
-    width: 1000px !important;
-    height: 90vh !important;
+    width: 1200px !important;
+    height: 95vh !important;
   }
 `;
 
 interface props {
   show: boolean;
   close: () => void;
-  data: StaffAppointmentsDto;
+  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
 }
 
 export default function Appoinment_Progress_Modal({
@@ -49,18 +53,20 @@ export default function Appoinment_Progress_Modal({
       case 1:
         return <AssignTechnicianPage data={data} currentStep={currentStep} />;
       case 2:
-        return <Appointment_Part_Tracking />;
+        return (
+          <Appointment_Part_Tracking data={data} currentStep={currentStep} />
+        );
       case 3:
-        return <PaymentDemo data={data} currentStep={currentStep} />;
+        return <PaymentPage data={data} currentStep={currentStep} />;
       case 5:
-        return <InvoiceDemo />;
+        return <InvoicePage data={data} />;
     }
   };
 
   return (
     <ModalStyled open={show} onCancel={close} footer={null}>
       <ProgressSteps steps={stepNames} currentStep={currentStep}>
-        <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
+        <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
           {renderContent()}
         </div>
       </ProgressSteps>

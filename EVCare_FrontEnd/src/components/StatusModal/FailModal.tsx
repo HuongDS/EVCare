@@ -42,7 +42,7 @@ interface PopUpProps {
   action: () => void;
 }
 
-export default function Error({ header, message, action }: PopUpProps) {
+export default function FailedModal({ header, message, action }: PopUpProps) {
   return (
     <Layout>
       <PopUp header={header} message={message} action={action} />
@@ -73,7 +73,7 @@ const ButtonContainer = styled.div`
   justify-content: flex-end;
 `;
 
-const PopUp = ({ header, message }: PopUpProps) => {
+const PopUp = ({ header, message, action }: PopUpProps) => {
   useEffect(() => {
     document.body.classList.add("no-scroll");
 
@@ -92,7 +92,7 @@ const PopUp = ({ header, message }: PopUpProps) => {
         <p>{message}</p>
       </BodyContainer>
       <ButtonContainer>
-        <button>OK</button>
+        <button onClick={action}>Close</button>
       </ButtonContainer>
     </Container>
   );
