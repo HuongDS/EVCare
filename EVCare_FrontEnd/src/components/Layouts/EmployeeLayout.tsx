@@ -53,7 +53,6 @@ const EmployeeLayout: React.FC<{
         <Layout style={{ padding: "0" }}>
           <Content
             style={{
-              padding: 5,
               margin: 0,
               background: colorBgContainer,
               overflow: "hidden",
