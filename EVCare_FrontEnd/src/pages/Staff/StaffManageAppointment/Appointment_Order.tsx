@@ -1,494 +1,450 @@
-import React, { useState } from "react";
+import { useCallback, useState } from "react";
 import styled from "styled-components";
-import { Calendar, CreditCard, DollarSign } from "lucide-react";
-
-// Types
-interface Part {
-  technicianId: number;
-  id: number;
-  name: string;
-  quantity: number;
-  price: number;
-  imageUrl: string;
-}
-
-interface OrderData {
-  id: number;
-  parts: Part[];
-  price: number;
-}
-
-interface PaymentData {
-  appointmentId: string;
-  customerName: string;
-  licensePlate: string;
-  vehicleModel: string;
-  phoneNumber: string;
-  location: string;
-  date: string;
-  report: string;
-  order: OrderData;
-}
+import { Card, Divider, Button, Tag } from "antd";
+import {
+  CreditCardOutlined,
+  DollarOutlined,
+  QrcodeOutlined,
+  CalendarOutlined,
+  PhoneOutlined,
+  CarOutlined,
+} from "@ant-design/icons";
+import { useGetOrderDetail } from "../../../services/orderServiceApi";
+import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import { formatDate } from "../../../utils/formatDate";
+import type {
+  TechnicianModel,
+  TechnicianSkills,
+} from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import { usePayByPayOS } from "../../../services/PaymentServiceApi";
+import { handleError } from "../../../utils/errorHandler";
+import { formatCurrency } from "../../../utils/formatCurrency";
+import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
+import { useAppDispatch } from "../../../states/store";
+import { setStep } from "../../../states/appointmentSlice";
 
 interface PaymentPageProps {
-  data: PaymentData;
-  onPayment: (method: "online" | "cash") => void;
+  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
+  currentStep: number;
 }
 
-const PaymentPage: React.FC<PaymentPageProps> = ({ data, onPayment }) => {
-  const [report, setReport] = useState(data.report);
+const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
+  const [paymentMethod, setPaymentMethod] = useState<
+    "VnPay" | "PayOs" | "Cash"
+  >();
+  const [qrcode, setQrCode] = useState("");
+  const { data: orderDetail } = useGetOrderDetail(data.orderId);
+  const dispatch = useAppDispatch();
 
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("vi-VN");
+  const handlePayment = async () => {
+    await changeAppointmentStatus({
+      appointmentId: data.id,
+      status: "Done",
+    });
+    dispatch(setStep({ id: data.id, step: currentStep + 2 }));
   };
+
+  const totalAmount = orderDetail?.data?.price || 0;
+  const mutation = usePayByPayOS();
+
+  //lấy qr code
+  const handleGetQRCode = useCallback(async () => {
+    try {
+      const response = await mutation.mutateAsync({
+        orderId: data.orderId,
+        total_Price: totalAmount,
+        payment_Method: "payOs",
+      });
+      if (response.data) {
+        setQrCode(response.data);
+        console.log(response.data);
+        setPaymentMethod("PayOs");
+      }
+    } catch (error) {
+      handleError(error);
+      alert(error);
+    }
+  }, [[data.orderId, totalAmount]]);
 
   return (
     <PageContainer>
-      <Container>
+      <ContentWrapper>
         <Header>
-          <h1>Oder Details</h1>
+          <h1>Payment & Checkout</h1>
+          <AppointmentTag>Appointment #{data.id}</AppointmentTag>
         </Header>
 
-        <Content>
-          {/* Left Section - Information */}
-          <Section>
-            <SectionTitle>Information</SectionTitle>
-
-            <AppointmentId>Appointment ID: #{data.appointmentId}</AppointmentId>
-
-            <InfoRow>
+        <MainContent>
+          {/* Customer Info */}
+          <StyledCard title="Customer Information" size="small">
+            <InfoGrid>
               <InfoItem>
-                <Label>Customer's Name</Label>
-                <Value>{data.customerName}</Value>
+                <InfoLabel>Name</InfoLabel>
+                <InfoValue>{data.customerName}</InfoValue>
               </InfoItem>
               <InfoItem>
-                <Label>License Plate</Label>
-                <Value>{data.licensePlate}</Value>
-              </InfoItem>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoItem>
-                <Label>Vehicle Model</Label>
-                <Value>{data.vehicleModel}</Value>
+                <InfoLabel>
+                  <PhoneOutlined /> Phone
+                </InfoLabel>
+                <InfoValue>{data.phoneNumber}</InfoValue>
               </InfoItem>
               <InfoItem>
-                <Label>Phone Number</Label>
-                <Value>{data.phoneNumber}</Value>
+                <InfoLabel>
+                  <CarOutlined /> License Plate
+                </InfoLabel>
+                <InfoValue>{data.licensePlate}</InfoValue>
               </InfoItem>
-            </InfoRow>
+              <InfoItem>
+                <InfoLabel>Vehicle Model</InfoLabel>
+                <InfoValue>{data.vehicleModel}</InfoValue>
+              </InfoItem>
+              <InfoItem style={{ gridColumn: "1 / -1" }}>
+                <InfoLabel>
+                  <CalendarOutlined /> Appointment Date
+                </InfoLabel>
+                <InfoValue>{formatDate(data.appointmentDate)}</InfoValue>
+              </InfoItem>
+            </InfoGrid>
+          </StyledCard>
 
-            <LocationDate>
-              <IconText>
-                <Calendar size={18} />
-                {data.date}
-              </IconText>
-            </LocationDate>
-
-            <ReportBox>
-              <ReportLabel>Report From Technical:</ReportLabel>
-              <ReportTextarea
-                value={report}
-                onChange={(e) => setReport(e.target.value)}
-                placeholder="Enter technical report..."
-              />
-            </ReportBox>
-          </Section>
-
-          {/* Right Section - Total Product */}
-          <Section>
-            <SectionTitle>Total Parts</SectionTitle>
-
-            <ProductTable>
-              {data.order.parts.map((part) => (
-                <ProductRow key={part.id}>
-                  <ProductName>{part.name}</ProductName>
-                  <ProductQuantity>x{part.quantity}</ProductQuantity>
-                  <ProductPrice>
+          {/* Parts & Total */}
+          <StyledCard title="Order Summary" size="small">
+            <PartsTable>
+              {orderDetail?.data?.parts.map((part) => (
+                <PartRow key={part.id}>
+                  <PartName>{part.name}</PartName>
+                  <PartQty>×{part.quantity}</PartQty>
+                  <PartPrice>
                     {formatCurrency(part.price * part.quantity)}
-                  </ProductPrice>
-                </ProductRow>
+                  </PartPrice>
+                </PartRow>
               ))}
+            </PartsTable>
 
-              <TotalRow>
-                <TotalLabel>Total</TotalLabel>
-                <div></div>
-                <TotalPrice>{formatCurrency(data.order.price)}</TotalPrice>
-              </TotalRow>
-            </ProductTable>
-          </Section>
-        </Content>
+            <Divider style={{ margin: "16px 0" }} />
 
-        <ButtonGroup>
-          <PaymentButton $variant="online" onClick={() => onPayment("online")}>
-            <CreditCard size={22} />
-            Online Payment
-          </PaymentButton>
-          <PaymentButton $variant="cash" onClick={() => onPayment("cash")}>
-            <DollarSign size={22} />
-            Cash
-          </PaymentButton>
-        </ButtonGroup>
-      </Container>
+            <TotalRow>
+              <TotalLabel>Total Amount</TotalLabel>
+              <TotalAmount>{formatCurrency(totalAmount)}</TotalAmount>
+            </TotalRow>
+          </StyledCard>
+
+          {/* Payment Methods */}
+          <StyledCard title="Select Payment Method" size="small">
+            <PaymentButtons>
+              <PaymentBtn
+                size="large"
+                icon={<CreditCardOutlined />}
+                $selected={paymentMethod === "VnPay"}
+                onClick={() => setPaymentMethod("VnPay")}
+              >
+                VNPay
+              </PaymentBtn>
+              <PaymentBtn
+                size="large"
+                icon={<QrcodeOutlined />}
+                $selected={paymentMethod === "PayOs"}
+                onClick={handleGetQRCode}
+              >
+                PayOS
+              </PaymentBtn>
+              <PaymentBtn
+                size="large"
+                icon={<DollarOutlined />}
+                $selected={paymentMethod === "Cash"}
+                onClick={() => setPaymentMethod("Cash")}
+              >
+                Cash
+              </PaymentBtn>
+            </PaymentButtons>
+
+            {/* QR Code Display */}
+            {paymentMethod === "PayOs" && (
+              <QRSection>
+                <iframe src={qrcode} />
+                {/* <CountdownTimer onTimeUp={handleGetQRCode} /> */}
+                <QRInfo>
+                  <p>Scan QR code to complete payment</p>
+                  <AmountTag>Amount: {formatCurrency(totalAmount)}</AmountTag>
+                </QRInfo>
+              </QRSection>
+            )}
+          </StyledCard>
+        </MainContent>
+
+        <Footer>
+          <ConfirmButton
+            type="primary"
+            size="large"
+            onClick={handlePayment}
+            disabled={!paymentMethod}
+          >
+            Confirm Payment
+          </ConfirmButton>
+        </Footer>
+      </ContentWrapper>
     </PageContainer>
   );
 };
 
-// Demo Component
-interface props {
-  handleNext: () => void;
-}
-const PaymentDemo = ({ handleNext }: props) => {
-  const mockData: PaymentData = {
-    appointmentId: "12345",
-    customerName: "Picasso",
-    licensePlate: "51G-99999",
-    vehicleModel: "Vinfast VF5",
-    phoneNumber: "0123456789",
-    location: "HCM City",
-    date: "13/06/2025",
-    report: "************\n**",
-    order: {
-      id: 1,
-      parts: [
-        {
-          technicianId: 2,
-          id: 1,
-          name: "Piston",
-          quantity: 12,
-          price: 1200000,
-          imageUrl: "images/parts/piston.jpg",
-        },
-        {
-          technicianId: 2,
-          id: 2,
-          name: "Spark Plug",
-          quantity: 12,
-          price: 150000,
-          imageUrl: "images/parts/sparkplug.jpg",
-        },
-      ],
-      price: 16200000,
-    },
-  };
+export default PaymentPage;
 
-  const handlePayment = (method: "online" | "cash") => {
-    alert(`Payment method selected: ${method}`);
-    handleNext();
-  };
-
-  return <PaymentPage data={mockData} onPayment={handlePayment} />;
-};
-
-export default PaymentDemo;
-
-// Styled Components
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #e3f2fd 0%, #e8eaf6 100%);
-  padding: 24px;
+  background: linear-gradient(135deg, #3bf695 0%, #00ab66 100%);
+  padding: 32px 20px;
   border-radius: 20px;
-  font-family: "Outfit", sans-serif;
-
-  @media (max-width: 768px) {
-    padding: 16px;
+  * {
+    font-family: "Outfit", sans-serif !important;
   }
 `;
 
-const Container = styled.div`
-  max-width: 1000px;
+const ContentWrapper = styled.div`
+  max-width: 90%;
   margin: 0 auto;
   background: white;
   border-radius: 20px;
-  box-shadow: 0 50px 50px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-
-  @media (max-width: 768px) {
-    border-radius: 16px;
-  }
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 `;
 
 const Header = styled.div`
-  text-align: center;
-  padding: 15px 15px;
-  border-bottom: 1px solid #e0e0e0;
-  background: linear-gradient(135deg, #00c853 0%, #00a043 100%);
+  padding: 24px 32px;
+  background: linear-gradient(135deg, #1da1f2 0%, #1877f2 100%);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   h1 {
-    font-size: 32px;
-    font-weight: 700;
-    color: white;
     margin: 0;
+    font-size: 28px;
+    font-weight: 700;
   }
 
   @media (max-width: 768px) {
-    padding: 24px 20px 20px;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
 
     h1 {
-      font-size: 26px;
+      font-size: 24px;
     }
   }
 `;
 
-const Content = styled.div`
-  padding: 32px 40px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    padding: 24px 20px;
-    gap: 28px;
-  }
-`;
-
-const Section = styled.div``;
-
-const SectionTitle = styled.h2`
-  font-size: 22px;
-  font-weight: 700;
-  color: #000;
-  margin: 0 0 20px 0;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #e0e0e0;
-
-  @media (max-width: 768px) {
-    font-size: 20px;
-    margin-bottom: 16px;
-  }
-`;
-
-const AppointmentId = styled.div`
-  font-size: 18px;
-  font-weight: 700;
-  color: #1a237e;
-  margin-bottom: 20px;
-  padding: 12px;
-  background: #e8eaf6;
-  border-radius: 8px;
-
-  @media (max-width: 768px) {
-    font-size: 16px;
-    margin-bottom: 16px;
-  }
-`;
-
-const InfoRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 16px;
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-`;
-
-const InfoItem = styled.div``;
-
-const Label = styled.div`
-  font-size: 13px;
-  color: #666;
-  margin-bottom: 4px;
-  font-weight: 500;
-`;
-
-const Value = styled.div`
-  font-size: 16px;
-  color: #000;
+const AppointmentTag = styled.div`
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
   font-weight: 600;
+`;
+
+const MainContent = styled.div`
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 
   @media (max-width: 768px) {
-    font-size: 15px;
+    padding: 20px;
   }
 `;
 
-const LocationDate = styled.div`
-  display: flex;
-  gap: 24px;
-  margin-top: 20px;
+const StyledCard = styled(Card)`
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
-  @media (max-width: 480px) {
-    flex-direction: column;
+  .ant-card-head {
+    background: #f8f9fa;
+    font-weight: 700;
+    font-size: 16px;
+  }
+`;
+
+const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 `;
 
-const IconText = styled.div`
+const InfoItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const InfoLabel = styled.div`
+  font-size: 12px;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
   display: flex;
   align-items: center;
+  gap: 6px;
+`;
+
+const InfoValue = styled.div`
+  font-size: 15px;
+  color: #333;
+  font-weight: 600;
+`;
+
+const PartsTable = styled.div`
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #000;
-
-  svg {
-    color: #666;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 14px;
-  }
 `;
 
-const ReportBox = styled.div`
-  margin-top: 20px;
-`;
-
-const ReportLabel = styled.div`
-  font-size: 14px;
-  color: #000;
-  font-weight: 600;
-  margin-bottom: 8px;
-`;
-
-const ReportTextarea = styled.textarea`
-  width: 100%;
-  min-height: 120px;
-  padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: "Outfit", sans-serif;
-  resize: vertical;
-
-  &:focus {
-    outline: none;
-    border-color: #2196f3;
-  }
-
-  @media (max-width: 768px) {
-    min-height: 100px;
-  }
-`;
-
-const ProductTable = styled.div`
-  margin-top: 16px;
-`;
-
-const ProductRow = styled.div`
+const PartRow = styled.div`
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1.5fr;
   gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 15px;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 14px;
-    gap: 8px;
-  }
+  padding: 8px 0;
+  font-size: 14px;
 `;
 
-const ProductName = styled.div`
-  color: #000;
+const PartName = styled.div`
+  color: #333;
   font-weight: 500;
 `;
 
-const ProductQuantity = styled.div`
+const PartQty = styled.div`
   color: #666;
   text-align: center;
 `;
 
-const ProductPrice = styled.div`
-  color: #000;
+const PartPrice = styled.div`
+  color: #333;
   font-weight: 600;
   text-align: right;
 `;
 
 const TotalRow = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 12px;
-  padding: 16px 0 0;
-  margin-top: 12px;
-  border-top: 2px solid #000;
-  font-size: 18px;
-  font-weight: 700;
-
-  @media (max-width: 768px) {
-    font-size: 16px;
-    gap: 8px;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const TotalLabel = styled.div`
-  color: #000;
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
 `;
 
-const TotalPrice = styled.div`
-  color: #000;
-  text-align: right;
+const TotalAmount = styled.div`
+  font-size: 24px;
+  font-weight: 700;
+  color: #667eea;
 `;
 
-const ButtonGroup = styled.div`
+const PaymentButtons = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  padding: 32px 40px;
-  border-top: 1px solid #e0e0e0;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 
   @media (max-width: 768px) {
-    padding: 24px 20px;
-    gap: 12px;
-  }
-
-  @media (max-width: 480px) {
     grid-template-columns: 1fr;
   }
 `;
 
-const PaymentButton = styled.button<{ $variant?: "online" | "cash" }>`
-  padding: 16px 24px;
-  border: none;
-  border-radius: 12px;
-  font-size: 17px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: "Outfit", sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+const PaymentBtn = styled(Button)<{ $selected: boolean }>`
+  height: 64px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  transition: all 0.3s ease !important;
 
   ${(props) =>
-    props.$variant === "online"
+    props.$selected
       ? `
-    background: white;
-    color: #00c853;
-    border: 3px solid #00c853;
-
-    &:hover {
-      background: #f1f8f4;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 200, 83, 0.2);
-    }
+    background: #667eea !important;
+    color: white !important;
+    border-color: #667eea !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+    transform: translateY(-2px);
   `
       : `
-    background: #00c853;
-    color: white;
-
+    background: white !important;
+    color: #667eea !important;
+    border: 2px solid #667eea !important;
+    
     &:hover {
-      background: #00a043;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
     }
   `}
+`;
 
-  &:active {
-    transform: translateY(0);
+const QRSection = styled.div`
+  margin-top: 24px;
+  padding: 24px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  iframe {
+    width: 100%;
+    height: 60vh;
   }
+`;
+
+const QRInfo = styled.div`
+  text-align: center;
+
+  p {
+    margin: 0 0 8px 0;
+    color: #666;
+    font-size: 14px;
+  }
+`;
+
+const AmountTag = styled(Tag)`
+  font-size: 16px !important;
+  padding: 8px 16px !important;
+  font-weight: 700 !important;
+  background: #667eea !important;
+  color: white !important;
+  border: none !important;
+`;
+
+const Footer = styled.div`
+  padding: 24px 32px;
+  background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
 
   @media (max-width: 768px) {
-    padding: 14px 20px;
-    font-size: 16px;
+    padding: 20px;
+  }
+`;
+
+const ConfirmButton = styled(Button)`
+  width: 100%;
+  height: 56px !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+
+  &:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5) !important;
+  }
+
+  &:disabled {
+    background: #e0e0e0 !important;
+    box-shadow: none !important;
+    transform: none !important;
   }
 `;

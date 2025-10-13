@@ -20,6 +20,11 @@ namespace DataAccess.Repositories
             return await _dbContext.Employees.Include(e => e.Account).FirstOrDefaultAsync(e => e.AccountId == userId);
         }
 
+        public async Task<Employee> GetEmployeeByTechnicianId(int technicianId)
+        {
+            return await _dbContext.Employees.FirstOrDefaultAsync(e => e.TechnicianId == technicianId);
+        }
+
         public async Task MarkAvaliableAllEmployees()
         {
             await _dbContext.Employees
@@ -28,17 +33,21 @@ namespace DataAccess.Repositories
 
         public async Task MarkBusyForTechnician()
         {
+            var activeTechnicianIds = await _dbContext.TechnicianWorkingSessions
+                                       .Where(tws => tws.EndTime == null)
+                                       .Select(tws => tws.TechnicianId)
+                                       .Distinct()
+                                       .ToListAsync();
             await _dbContext.Employees
-                .Where(x=> x.Status !=EmployeeStatusEnum.OnLeave && 
-                x.Technician!=null && x.Technician.TechnicianWorkingSessions.Any(x=>x.EndTime!=null))
-                .ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Busy));
+                   .Where(e => e.Status == EmployeeStatusEnum.Available && activeTechnicianIds.Contains(e.TechnicianId.Value))
+                   .ExecuteUpdateAsync(e => e.SetProperty(e => e.Status, _ => EmployeeStatusEnum.Busy));
 
 
         }
 
         public async Task MarkBusyForTechnician(IEnumerable<int> technicianIds)
         {
-            await _dbContext.Employees.Where(x=>technicianIds.Contains(x.Id))
+            await _dbContext.Employees.Where(x=>technicianIds.Contains(x.TechnicianId.Value))
                 .ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Busy));
         }
     }

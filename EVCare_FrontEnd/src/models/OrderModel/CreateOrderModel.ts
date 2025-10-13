@@ -5,10 +5,10 @@ export type ResponseDto<T> = {
 };
 
 export type OrderModel = {
-  orderID: string;
+  orderID: number;
 };
 
-export type OrderParams = {
+export type CreateOrderParams = {
   appointmentID: number;
   created_At: string;
 };

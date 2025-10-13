@@ -5,7 +5,14 @@ import ButtonAction from "../../../components/Button/ReviewButton";
 import { useAppDispatch } from "../../../states/store";
 import { setStep } from "../../../states/appointmentSlice";
 import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
-import { CreateNewOrder } from "../../../services/orderServiceApi";
+// import { CreateNewOrder } from "../../../services/orderServiceApi";
+// import { useState } from "react";
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
+import type {
+  TechnicianModel,
+  TechnicianSkills,
+} from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 
 const CheckInWrapper = styled.div`
   display: grid;
@@ -78,7 +85,8 @@ const ImageGroup = styled(Section)`
   grid-column: 1 / 2;
   grid-row: 2;
   display: flex;
-  gap: 20%;
+  justify-content: center;
+  gap: 5%;
   img {
     width: 100px;
     height: 100px;
@@ -94,31 +102,32 @@ const TextAreaContainer = styled(Section)`
 const ButtonWapper = styled.div`
   display: flex;
   justify-content: center;
+  gap: 15px;
 `;
 
 interface Props {
-  data: StaffAppointmentsDto;
+  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
   currentStep: number;
 }
 
 export default function Appointment_CheckIn({ data, currentStep }: Props) {
   const dispatch = useAppDispatch();
 
-  const handleCheckIn = async () => {
+  const handleCheckIn = async (status: "CheckedIn" | "Canceled") => {
     const changeStatus = {
       appointmentId: data.id,
-      status: "CheckedIn",
+      status: status,
     };
     try {
       await changeAppointmentStatus(changeStatus);
       dispatch(setStep({ id: data.id, step: currentStep + 1 }));
 
-      const createNewOrderParams = {
-        appointmentID: data.id,
-        created_At: new Date().toISOString(),
-      };
+      // const createNewOrderParams = {
+      //   appointmentID: data.id,
+      //   created_At: new Date().toISOString(),
+      // };
 
-      await CreateNewOrder(createNewOrderParams);
+      // await CreateNewOrder(createNewOrderParams);
     } catch (error) {
       console.error("Error changing appointment status:", error);
     }
@@ -153,7 +162,7 @@ export default function Appointment_CheckIn({ data, currentStep }: Props) {
           <Services>
             {data.services.map((service, index) => (
               <p key={index}>
-                {index + 1}. {service}
+                {index + 1}. {service.name}
               </p>
             ))}
           </Services>
@@ -161,9 +170,12 @@ export default function Appointment_CheckIn({ data, currentStep }: Props) {
 
         <ImageGroup>
           {/* Uncomment to display vehicle images */}
-          {/* {data?.vehicleImageUrl?.map((img, i) => (
-          <img src={img} alt={`image ${i + 1}`} key={i} />
-        ))} */}
+
+          {data?.appointmentImages?.map((img, i) => (
+            <Zoom key={i}>
+              <img src={img} alt={`image ${i + 1}`} key={i} />
+            </Zoom>
+          ))}
         </ImageGroup>
 
         <TextAreaContainer>
@@ -172,10 +184,16 @@ export default function Appointment_CheckIn({ data, currentStep }: Props) {
       </CheckInWrapper>
       <ButtonWapper>
         <ButtonAction
+          text="Cancel"
+          color="red"
+          backgroundColor="#f1f1f1"
+          action={() => handleCheckIn("Canceled")}
+        />
+        <ButtonAction
           text="Check In"
           color="white"
           backgroundColor="#00AD4E"
-          action={handleCheckIn}
+          action={() => handleCheckIn("CheckedIn")}
         />
       </ButtonWapper>
     </>

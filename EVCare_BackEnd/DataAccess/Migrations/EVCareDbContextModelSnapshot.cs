@@ -179,14 +179,14 @@ namespace DataAccess.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Reason")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -224,6 +224,9 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReviewId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -362,6 +365,9 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TechnicianId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Updated_At")
@@ -1507,7 +1513,7 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.Review", b =>
                 {
                     b.HasOne("DataAccess.Entities.Appointment", "Appointment")
-                        .WithOne("Reviews")
+                        .WithOne("Review")
                         .HasForeignKey("DataAccess.Entities.Review", "AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1610,8 +1616,7 @@ namespace DataAccess.Migrations
 
                     b.Navigation("Order");
 
-                    b.Navigation("Reviews")
-                        .IsRequired();
+                    b.Navigation("Review");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>

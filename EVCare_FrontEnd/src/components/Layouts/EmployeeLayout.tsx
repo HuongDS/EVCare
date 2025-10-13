@@ -13,21 +13,25 @@ const EmployeeLayout: React.FC<{
   children?: React.ReactNode;
 }> = ({ role, menuOverride, children }) => {
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer },
   } = theme.useToken();
 
   const location = useLocation();
   const isOrderPage = location.pathname.includes("/technician/order");
 
-  // 🟩 State cho collapsed
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <Layout style={{ minHeight: "100vh", fontFamily: "'Outfit', sans-serif" }}>
+    <Layout
+      style={{
+        minHeight: "100vh",
+        fontFamily: "'Outfit', sans-serif",
+      }}
+    >
       <HeaderStaff />
       <Layout style={{ flexDirection: "row" }}>
         <Sider
-          width={250}
+          width={200}
           collapsible
           collapsed={collapsed}
           breakpoint="lg"
@@ -46,14 +50,13 @@ const EmployeeLayout: React.FC<{
           {menuOverride ?? <Sidebar role={role} collapsed={collapsed} />}
         </Sider>
 
-        <Layout style={{ padding: "0 24px 24px" }}>
+        <Layout style={{ padding: "0" }}>
           <Content
             style={{
-              padding: 24,
+              padding: 5,
               margin: 0,
-              minHeight: 280,
               background: colorBgContainer,
-              borderRadius: borderRadiusLG,
+              overflow: "hidden",
             }}
           >
             {isOrderPage ? children : <Outlet />}

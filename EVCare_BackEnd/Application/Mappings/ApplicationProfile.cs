@@ -27,8 +27,8 @@ namespace Application.Mappings
                 opt.MapFrom(src => src.DateOff))
                 .ForMember(dest => dest.reason, opt =>
                 opt.MapFrom(src => src.Reason))
-                .ForMember(dest => dest.isApproved, opt =>
-                opt.MapFrom(src => src.IsApproved))
+                .ForMember(dest => dest.Status, opt =>
+                opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.note, opt =>
                 opt.MapFrom(src => src.Note))
                 .ForMember(dest => dest.createdAt, opt =>
