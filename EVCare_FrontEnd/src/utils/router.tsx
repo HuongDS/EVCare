@@ -61,7 +61,11 @@ const router = createBrowserRouter([
       },
       {
         path: "account-information",
-        element: <UserProfilePage />,
+        element: (
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER, RoleEnum.ADMIN, RoleEnum.TECHNICIAN, RoleEnum.STAFF]}>
+            <UserProfilePage />
+          </ProtectedRoute>
+        ),
       },
 
       { path: "test", element: <Test /> },
