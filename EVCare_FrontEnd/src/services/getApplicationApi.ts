@@ -9,7 +9,7 @@ import type {
 } from "../models/ApplicationModel/ApplicationModels";
 import { handleError } from "../utils/errorHandler";
 
-// ===== GET blocked dates =====
+// ===== GET date off =====
 export async function getDateOff(): Promise<ResponseDto<DateOffResponseDTO>> {
   try {
     const response = await api.get<ResponseDto<DateOffResponseDTO>>(
