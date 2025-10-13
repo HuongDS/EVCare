@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace API.Hubs
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public class AdminDashboardHub : Hub
     {
     }

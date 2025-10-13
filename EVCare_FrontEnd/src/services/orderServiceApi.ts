@@ -23,6 +23,12 @@ export const CreateNewOrder = async (params: CreateOrderParams) => {
   );
   return response.data;
 };
+
+/**
+ * Lấy order detail
+ * @param orderId
+ * @returns
+ */
 export const useGetOrderDetail = (orderId: number) => {
   return useQuery({
     queryKey: ["OrderDetail", orderId],
