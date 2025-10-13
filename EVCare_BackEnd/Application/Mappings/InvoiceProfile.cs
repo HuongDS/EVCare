@@ -19,6 +19,12 @@ namespace Application.Mappings
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => PaymentStatusEnum.Pending))
             .ForMember(dest => dest.Create_At, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForMember(dest => dest.Updated_At, opt => opt.MapFrom(src => DateTime.UtcNow));
+            CreateMap<Invoice, InvoiceViewModel>().ForMember(dest => dest.id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.appointmentDate, opt => opt.MapFrom(src => src.Order.Appointment.Appointment_Date))
+                .ForMember(dest => dest.totalPrice, opt => opt.MapFrom(src => src.Total_Price))
+                .ForMember(dest => dest.paymentMethod, opt => opt.MapFrom(src => src.Payment_Method))
+                .ForMember(dest => dest.status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.paymentDate, opt => opt.MapFrom(src => src.Create_At));
         }
     }
 }
