@@ -353,7 +353,12 @@ app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
-//app.UseMiddleware<RateLimitMiddleware>();
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAllowAllDashboardAuthorizationFilter() },
+
+});
+app.UseMiddleware<RateLimitMiddleware>();
 app.UseMiddleware<BannedMiddleware>();
 
 
