@@ -155,12 +155,6 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "6",
-      icon: <QuestionCircleOutlined />,
-      label: "Help & Information",
-      route: "/technician/help",
-    },
-    {
-      key: "7",
       icon: <LogoutOutlined />,
       label: "Logout",
       action: () => logout,

@@ -1,15 +1,15 @@
 // src/pages/Shared/Application/ApplicationPage.tsx
 import React, { useState } from "react";
-import ApplicationForm from "../../../components/Application/Application";
-import SortTable from "../../Technician/Technician_Component/SortTable";
+import ApplicationForm from "./ApplicationForm";
+import SortTable from "../../pages/Technician/Technician_Component/SortTable";
 import ApplicationCard from "./ApplicationCard";
 import { useQuery } from "@tanstack/react-query";
-import { getApplications } from "../../../services/getApplicationApi";
+import { getApplications } from "../../services/getApplicationApi";
 import type {
   ApplicationResponseDTO,
   ResponseDto,
   PageModel,
-} from "../../../models/ApplicationModel/ApplicationModels";
+} from "../../models/ApplicationModel/ApplicationModels";
 import {
   PageWrapper,
   SectionTitle,
@@ -19,7 +19,7 @@ import {
   EmptyText,
   PaginationWrapper,
 } from "./ApplicationPage.styled";
-import { Pagination } from "../../../components/Paginations/Pagination";
+import { Pagination } from "../Paginations/Pagination";
 
 interface ApplicationPageProps {
   tabs: string[];
@@ -52,7 +52,7 @@ const ApplicationPage: React.FC<ApplicationPageProps> = ({
         pageSize: PAGE_SIZE,
         pageIndex,
       }),
-    staleTime: 1000 * 60, // cache 1 phút
+    staleTime: 1000 * 60,
   });
 
   const applications = applicationsData?.data?.items ?? [];
@@ -71,7 +71,7 @@ const ApplicationPage: React.FC<ApplicationPageProps> = ({
         <ApplicationForm
           onSuccess={(data) => {
             onSuccess?.(data);
-            setPageIndex(1); // Reset về page 1 sau khi gửi đơn thành công
+            setPageIndex(1);
           }}
           onError={onError}
         />

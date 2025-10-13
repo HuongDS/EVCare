@@ -1,7 +1,7 @@
 // Technician_Application.tsx
 import { useState } from "react";
 import type { ApplicationResponseDTO } from "../../../models/ApplicationModel/ApplicationModels";
-import ApplicationPage from "../../Shared/Application/ApplicationPage";
+import ApplicationPage from "../../../components/Application/ApplicationPage";
 
 export default function Technician_Application() {
   const [activeTab, setActiveTab] = useState("Send Application");
