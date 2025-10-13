@@ -8,8 +8,8 @@ import type { PerfRes } from "../../../models/Dashboard/perfRes";
 const PerformanceChart: React.FC = () => {
   const [perfData, setPerfData] = useState<PerfRes | null>(null);
 
-  const from = useMemo(() => new Date(Date.now() - 6 * 24 * 3600 * 1000).toISOString(), []);
-  const to = useMemo(() => new Date().toISOString(), []);
+  const from = useMemo(() => new Date(Date.now() - 6 * 24 * 3600 * 1000).toLocaleString("sv-SE"), []);
+  const to = useMemo(() => new Date().toLocaleString("sv-SE"), []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,9 +18,13 @@ const PerformanceChart: React.FC = () => {
     fetchData();
   }, [from, to]);
 
-  useDashboardHub(() => {
+  useDashboardHub<PerfRes>((type, payload) => {
     // on any realtime update, refetch
-    getPerformance(from, to).then((r) => setPerfData(r));
+    // getPerformance(from, to).then((r) => setPerfData(r));
+    if (type === "InvoiceComplete") {
+      console.log("check chart: ", payload);
+      setPerfData(payload);
+    }
   });
 
   const merger =
