@@ -326,7 +326,10 @@ namespace DataAccess.Repositories
                                     ImageUrl = op.Part.Image,
                                     Price = op.Price,
                                     TechnicianId = op.TechnicianId
-                                }).ToList()
+                                }).ToList(),
+                       AppointmentImages = s.Order.Appointment.AppointmentImages
+                                                    .Select(ai => ai.Image)
+                                                    .ToList()
                    });
 
             query = query.ApplySorting(model.SortField, model.SortOrder);
