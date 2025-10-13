@@ -382,7 +382,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
 });
 
 app.UseAuthorization();
-app.UseMiddleware<RateLimitMiddleware>();
+//app.UseMiddleware<RateLimitMiddleware>();
 app.UseMiddleware<BannedMiddleware>();
 
 
