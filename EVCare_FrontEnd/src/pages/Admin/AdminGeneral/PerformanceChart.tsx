@@ -43,8 +43,8 @@ const PerformanceChart: React.FC = () => {
       </div>
 
       {/* <canvas ref={canvasRef} height={80}></canvas> */}
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={merger} margin={{ top: 10, right: 16, left: -10, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={350}>
+        <LineChart data={merger} margin={{ top: 10, right: 16, left: 10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis tickFormatter={(v) => `${v}₫`} />
