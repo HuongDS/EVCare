@@ -1,10 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 // import type { DashboardUpdateDto } from "../models/Dashboard/dashBoardUpdateDto";
 import { getAdminDashboardConnection } from "../signalr/adminConnection";
 // import { getAccessToken } from "../token/tokenStore";
 import * as signalR from "@microsoft/signalr";
 
 export function useDashboardHub<T>(onUpdate: (data: T) => void) {
+  const onUpdateRef = useRef(onUpdate);
+
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  }, [onUpdate]);
+
   useEffect(() => {
     const conn = getAdminDashboardConnection(import.meta.env.VITE_API_BASE);
     const handler = (payload: T) => onUpdate(payload);
@@ -19,5 +25,5 @@ export function useDashboardHub<T>(onUpdate: (data: T) => void) {
       console.log("[Hub] Cleaning up connection...");
       conn.off("AdminDashboardUpdate", handler);
     };
-  }, [onUpdate]);
+  }, []);
 }
