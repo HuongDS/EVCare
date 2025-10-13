@@ -241,6 +241,29 @@ namespace API.Controllers
                 });
             }
         }
+        [HttpGet("by-order/{orderId}")]
+        [Authorize(Roles = "Staff, Admin")]
+        public async Task<IActionResult> GetInvoiceByOrderId(int orderId)
+        {
+            try
+            {
+                var invoice = await _invoiceService.GetInvoiceByOrderId(orderId);
+                return Ok(new ResponseDto<InvoiceViewModel>
+                {
+                    statusCode = 200,
+                    message = Message.INVOICE_GET_SUCCESS,
+                    data = invoice
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message
+                });
+            }
+        }
 
     }
 }

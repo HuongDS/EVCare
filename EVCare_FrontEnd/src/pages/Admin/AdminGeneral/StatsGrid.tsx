@@ -25,17 +25,20 @@ const StatsGrid: React.FC = () => {
     getInsights(from, to).then((r) => setInsight(r.message));
   }, []);
 
-  useDashboardHub(() => {
+  useDashboardHub((data: SummaryRes) => {
     // when realtime event comes, refresh quick summary
-    refresh();
+    // refresh();
+    console.log("test data from back: ", data);
+
+    setData(data);
   });
 
   useEffect(() => {
-    stats[0].value = data?.customers?.toString() ?? "";
+    stats[0].value = data?.customer?.toString() ?? "";
     stats[1].value = data?.appointments?.toString() ?? "";
     stats[2].value = data?.cancelAppointments?.toString() ?? "";
     stats[3].value = data?.totalRevenue?.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) ?? "0";
-  }, [data?.customers, data?.appointments, data?.cancelAppointments, data?.totalRevenue]);
+  }, [data?.customer, data?.appointments, data?.cancelAppointments, data?.totalRevenue]);
 
   return (
     <>

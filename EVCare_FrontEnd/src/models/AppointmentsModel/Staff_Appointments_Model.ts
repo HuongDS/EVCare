@@ -15,7 +15,7 @@ export type PageModel<T> = {
   totalPages: number;
 };
 
-export type StaffAppointmentsDto = {
+export type StaffAppointmentsDto<T> = {
   id: number;
   appointmentDate: string;
   vehicleModel: string;
@@ -25,6 +25,7 @@ export type StaffAppointmentsDto = {
   services: ServiceViewFormModel[];
   appointmentImages: string[];
   status: string;
+  technicians: T[];
   orderId: number;
   note: string;
 };
@@ -44,4 +45,17 @@ export type GetAppointmentsParams = {
 export type ChangeAppointmentStatusParams = {
   appointmentId: number;
   status: string;
+};
+
+//Type lấy danh sách các cuộc hẹn có kỹ thuật viên rời việc
+export type GetAppointmentWithTechnician<T> = {
+  id: number;
+  appointmentDate: string;
+  vehicleName: string;
+  vehiclePlateNumber: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  services: [];
+  technicians: T[];
 };

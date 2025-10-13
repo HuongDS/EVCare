@@ -5,9 +5,13 @@ import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Sta
 import { formatDate } from "../../../utils/formatDate";
 import ButtonAction from "../../../components/Button/ReviewButton";
 import { TriangleAlert } from "lucide-react";
+import type {
+  TechnicianModel,
+  TechnicianSkills,
+} from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 
 type AppointmentCardProps = {
-  data: StaffAppointmentsDto;
+  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
   onOpenProgress: () => void;
   hasTechnicianOnleave: boolean;
   onOpenReassign: () => void;

@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAccountInformation } from "../../services/accountService";
-import {
-  getCenterInformation,
-  getBlockedDate,
-} from "../../services/serviceCenterService";
+import { getCenterInformation, getBlockedDate } from "../../services/serviceCenterService";
 import { sendApplication } from "../../services/sendApplicationApi";
 import { getDateOff } from "../../services/getApplicationApi";
 import type {
@@ -40,9 +37,7 @@ export default function ApplicationForm({
   const [dateOff, setDateOff] = useState("");
   const [reason, setReason] = useState("");
   const [dateMessage, setDateMessage] = useState<string | null>(null);
-  const [localStatus, setLocalStatus] = useState<
-    "idle" | "pending" | "success" | "error"
-  >("idle");
+  const [localStatus, setLocalStatus] = useState<"idle" | "pending" | "success" | "error">("idle");
 
   const { data: accountData, isLoading: accountLoading } = useQuery({
     queryKey: ["accountInfo"],
@@ -84,10 +79,7 @@ export default function ApplicationForm({
   });
 
   const account: AccountViewModel | null = accountData?.data ?? null;
-  const blockedDates: string[] =
-    blockedDatesData?.data?.map((b) =>
-      dayjs(b.dateTime).format("YYYY-MM-DD")
-    ) ?? [];
+  const blockedDates: string[] = blockedDatesData?.data?.map((b) => dayjs(b.dateTime).format("YYYY-MM-DD")) ?? [];
   const userDateOffs: string[] = userDateOffData?.data ?? [];
   const center = centerData?.data;
 
@@ -95,36 +87,23 @@ export default function ApplicationForm({
     const selectedDate = new Date(selected);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const diffDays = Math.floor(
-      (selectedDate.getTime() - today.getTime()) / (1000 * 3600 * 24)
-    );
+    const diffDays = Math.floor((selectedDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
 
     if (selectedDate < today) return "Cannot select a past date.";
     if (diffDays < 2) return "You must apply at least 2 days in advance.";
     if (diffDays > 31) return "You cannot apply more than 1 month ahead.";
-    if (blockedDates.includes(selected))
-      return "This date is blocked (center closed).";
-    if (userDateOffs.includes(selected))
-      return "You have already requested leave on this date.";
+    if (blockedDates.includes(selected)) return "This date is blocked (center closed).";
+    if (userDateOffs.includes(selected)) return "You have already requested leave on this date.";
 
     if (center) {
       const dayOfWeek = selectedDate.toLocaleDateString("en-US", {
         weekday: "long",
       });
-      const workDays = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ];
+      const workDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       const startIndex = workDays.indexOf(center.workStartDay);
       const endIndex = workDays.indexOf(center.workEndDay);
       const allowedDays = workDays.slice(startIndex, endIndex + 1);
-      if (!allowedDays.includes(dayOfWeek))
-        return "This date is outside of working days.";
+      if (!allowedDays.includes(dayOfWeek)) return "This date is outside of working days.";
     }
 
     return null;
@@ -265,12 +244,8 @@ export default function ApplicationForm({
         />
       </div>
 
-      {localStatus === "success" && (
-        <SuccessText>Leave application submitted successfully!</SuccessText>
-      )}
-      {localStatus === "error" && (
-        <ErrorText>Failed to send. Please try again.</ErrorText>
-      )}
+      {localStatus === "success" && <SuccessText>Leave application submitted successfully!</SuccessText>}
+      {localStatus === "error" && <ErrorText>Failed to send. Please try again.</ErrorText>}
     </FormContainer>
   );
 }

@@ -20,5 +20,6 @@ namespace DataAccess.Dtos.Appointment
         public int? OrderId { get; set; }
         public List<PartTechnicianViewModel>? Parts {  get; set; }
         public TechnicianWorkingSessionEnum Status { get; set; }
+        public IEnumerable<string> AppointmentImages { get; set; }
     }
 }

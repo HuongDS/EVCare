@@ -2,7 +2,10 @@ import SortTable from "../StaffComponents/SortTable";
 import { AppointmentStatusEnum } from "../../../models/enums";
 import styled from "styled-components";
 import AppointmentCard from "../StaffComponents/AppointmentCard";
-import { useGetAllAppointments } from "../../../services/appointmentServiceApi";
+import {
+  useGetAllAppointments,
+  useGetAppointmentHaveTech,
+} from "../../../services/appointmentServiceApi";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import SearchBar from "../../../components/SearchBar/Search";
 import SpinnerComponent from "../../../components/SpinnerComponent";
@@ -13,6 +16,10 @@ import { Pagination } from "../../../components/Paginations/Pagination";
 import { LIST_APPOINTMENTS_MESSAGE } from "./../../../constants/messages/Message";
 import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
 import Appointment_Reassign from "./Appointment_Reassign";
+import type {
+  TechnicianModel,
+  TechnicianSkills,
+} from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 
 export default function Staff_Appoinments() {
   const queryClient = useQueryClient();
@@ -21,17 +28,23 @@ export default function Staff_Appoinments() {
   const [currenPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [selectedAppointment, setSelectedAppointment] =
-    useState<StaffAppointmentsDto | null>(null);
+    useState<StaffAppointmentsDto<TechnicianModel<TechnicianSkills>> | null>(
+      null
+    );
 
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showReassignModal, setShowReassignModal] = useState(false);
 
-  const handleOpenProgress = (appointment: StaffAppointmentsDto) => {
+  const handleOpenProgress = (
+    appointment: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
+  ) => {
     setSelectedAppointment(appointment);
     setShowProgressModal(true);
   };
 
-  const handleOpenReassign = (appointment: StaffAppointmentsDto) => {
+  const handleOpenReassign = (
+    appointment: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
+  ) => {
     setSelectedAppointment(appointment);
     setShowReassignModal(true);
   };
@@ -45,10 +58,6 @@ export default function Staff_Appoinments() {
     });
   };
 
-  // const handleOpenModal = (appointment: StaffAppointmentsDto) => {
-  //   setSelectedAppointment(appointment);
-  // };
-
   const handleSortBy = (status: string) => {
     setSortBy(status);
   };
@@ -60,6 +69,19 @@ export default function Staff_Appoinments() {
     pageIndex: currenPage,
     pageSize: 5,
   });
+
+  //Lấy các cuộc hẹn có technician onleave
+
+  const { data: appointmentsHaveTech } = useGetAppointmentHaveTech({});
+
+  //hàm check appointment có technician rời việc hay không
+  const checkTechnicianOnleave = (id: number) => {
+    return (
+      appointmentsHaveTech?.data?.items?.some(
+        (appointment) => appointment.id === id
+      ) || false
+    );
+  };
 
   //phân trang
   const onPageChange = (page: number) => {
@@ -99,15 +121,19 @@ export default function Staff_Appoinments() {
         <SpinnerStyled>{isLoading && <SpinnerComponent />}</SpinnerStyled>
         <ListAppointmentStyled>
           {appointments?.data?.items?.length !== 0 ? (
-            appointments?.data?.items?.map((item: StaffAppointmentsDto) => (
-              <AppointmentCard
-                key={item.id}
-                data={item}
-                onOpenProgress={() => handleOpenProgress(item)}
-                hasTechnicianOnleave={false}
-                onOpenReassign={() => handleOpenReassign(item)}
-              />
-            ))
+            appointments?.data?.items?.map(
+              (
+                item: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
+              ) => (
+                <AppointmentCard
+                  key={item.id}
+                  data={item}
+                  onOpenProgress={() => handleOpenProgress(item)}
+                  hasTechnicianOnleave={checkTechnicianOnleave(item.id)}
+                  onOpenReassign={() => handleOpenReassign(item)}
+                />
+              )
+            )
           ) : (
             <NOT_FOUND_ITEMS
               icon="bi bi-exclamation-circle"

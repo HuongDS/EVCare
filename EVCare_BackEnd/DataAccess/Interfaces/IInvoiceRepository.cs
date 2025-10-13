@@ -20,5 +20,6 @@ namespace DataAccess.Interfaces
         Task<PageResultDto<InvoiceViewModel>> GetRecentInVoices(InvoiceQueryDto model);
         Task<Invoice> GetInvoiceByOrderCode(long orderCode);
         Task<Invoice> GetInvoiceByOrderId(int orderId);
+        Task<InvoiceViewModel> GetInvoiceViewModelByOrderId(int orderId);
     }
 }
