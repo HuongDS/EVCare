@@ -1,16 +1,12 @@
 import React, { Suspense, type JSX } from "react";
-
-// ✅ Lazy load FullCalendar
 const FullCalendar = React.lazy(() => import("@fullcalendar/react"));
 
-// ✅ Import plugin bình thường
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
 import type { EventInput, EventContentArg } from "@fullcalendar/core";
 
-// ✅ Nhận props từ parent
 interface LazyPerformanceScheduleProps {
   events: EventInput[];
   renderEventContent: (eventInfo: EventContentArg) => JSX.Element;
