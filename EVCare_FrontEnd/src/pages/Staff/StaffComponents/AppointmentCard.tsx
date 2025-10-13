@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import StatusTag from "../../../components/StatusTags/StatusTag";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 
@@ -94,12 +94,16 @@ export default function AppointmentCard({
                 action={onOpenProgress}
               />
             ) : data.status !== "Pending" && data.status !== "Canceled" ? (
-              <ButtonAction
-                text="Progress"
-                color="white"
-                backgroundColor="#00AD4E"
-                action={onOpenProgress}
-              />
+              data.status === "AddingPart" ? (
+                <WaitingText>Technicians are adding parts...</WaitingText>
+              ) : (
+                <ButtonAction
+                  text="Progress"
+                  color="white"
+                  backgroundColor="#00AD4E"
+                  action={onOpenProgress}
+                />
+              )
             ) : undefined}
             {(data.status === "AddingPart" || data.status === "InProgress") && (
               <ButtonAction
@@ -177,4 +181,17 @@ const GroupButtonStyled = styled.div`
   flex-direction: column;
   row-gap: 10px;
   align-items: end;
+`;
+
+const blink = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+`;
+
+const WaitingText = styled.p`
+  color: #fa8c16;
+  font-style: italic;
+  font-size: 15px;
+  font-weight: 500;
+  animation: ${blink} 2s infinite;
 `;
