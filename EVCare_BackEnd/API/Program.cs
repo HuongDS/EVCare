@@ -314,7 +314,7 @@ builder.Services.AddHangfire(cfg => cfg
     .UseSqlServerStorage(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new Hangfire.SqlServer.SqlServerStorageOptions { PrepareSchemaIfNecessary = true }));
-builder.Services.AddHangfireServer();
+
 
 var app = builder.Build();
 app.UseHangfireDashboard("/hangfire");
@@ -353,13 +353,14 @@ app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<RateLimitMiddleware>();
+app.UseMiddleware<BannedMiddleware>();
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
     Authorization = new[] { new HangfireAllowAllDashboardAuthorizationFilter() },
 
 });
-app.UseMiddleware<RateLimitMiddleware>();
-app.UseMiddleware<BannedMiddleware>();
 
 
 app.MapControllers();
