@@ -11,5 +11,6 @@ namespace Application.Interfaces
     {
         Task AssignOrderToTechnicianAsync(AssignTechnicianDto data);
         Task<(int, int)> CheckSlotsAsync();
+        Task<int> GetEmployeeIdByAccountId(int accountId);
     }
 }
