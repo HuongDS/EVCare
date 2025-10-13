@@ -26,6 +26,7 @@ import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technicia
 import UserProfilePage from "../pages/Users/Profile/UserProfilePage";
 import Technician_Application from "../pages/Technician/TechnicianApplication/Technician_Application";
 import Admin_General from "../pages/Admin/AdminGeneral/Admin_General.tsx";
+import TechnicianSchedule from "../pages/Technician/TechnicianSchedule/Technician_Schedule.tsx";
 
 const router = createBrowserRouter([
   {
@@ -103,6 +104,7 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <Technician_General /> },
       { path: "application", element: <Technician_Application /> },
+      { path: "schedule", element: <TechnicianSchedule /> },
     ],
   },
   {
