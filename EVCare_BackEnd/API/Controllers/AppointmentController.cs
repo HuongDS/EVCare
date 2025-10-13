@@ -442,6 +442,7 @@ namespace API.Controllers
                 appointmentID = appointmentId,
                 status = AppointmentStatusEnum.Canceled
             });
+            await _onAppointmentConfirmHandler.HandleAsync();
             await _alertServices.AddConfirmAlertAsync(new DataAccess.Dtos.Alerts.AlertCreateDto
             {
                 appointmentId = appointmentId,

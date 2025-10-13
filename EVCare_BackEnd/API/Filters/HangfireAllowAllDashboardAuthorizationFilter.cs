@@ -8,12 +8,7 @@ namespace API.Filters
     {
         public bool Authorize([NotNull] DashboardContext context)
         {
-            var httpContext = context.GetHttpContext();
-            if (httpContext.Request.Host.Host.Contains("azurewebsites.net") ||
-                httpContext.Request.Host.Host.Contains("localhost"))
-                return true;
-
-            return false;
+            return true;
         }
     }
 }

@@ -31,7 +31,7 @@ const EmployeeLayout: React.FC<{
       <HeaderStaff />
       <Layout style={{ flexDirection: "row" }}>
         <Sider
-          width={200}
+          width={300}
           collapsible
           collapsed={collapsed}
           breakpoint="lg"
@@ -53,7 +53,6 @@ const EmployeeLayout: React.FC<{
         <Layout style={{ padding: "0" }}>
           <Content
             style={{
-              padding: 5,
               margin: 0,
               background: colorBgContainer,
               overflow: "hidden",

@@ -9,6 +9,7 @@ namespace Application.Interfaces
 {
     public interface IAccountService
     {
+        Task DeleteAccount(int accountId);
         public Task<AccountViewModel> GetAccountById(int accountId);
         Task<AccountViewModel> UpdateAccountByAccountID(AccountUpdateDto data, int accountId);
     }

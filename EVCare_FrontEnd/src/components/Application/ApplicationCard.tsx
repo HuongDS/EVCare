@@ -49,11 +49,19 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({ application }) => {
       <InfoRow>
         <div>
           <Label>Reason:</Label>
-          <InfoBox>{application.reason || "—"}</InfoBox>
+          <InfoBox
+            dangerouslySetInnerHTML={{
+              __html: application.reason || "—",
+            }}
+          />
         </div>
         <div>
           <Label>Note:</Label>
-          <InfoBox>{application.note || "—"}</InfoBox>
+          <InfoBox
+            dangerouslySetInnerHTML={{
+              __html: application.note || "—",
+            }}
+          />
         </div>
       </InfoRow>
 

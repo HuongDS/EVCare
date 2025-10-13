@@ -265,5 +265,27 @@ namespace API.Controllers
             }
         }
 
+
+        [HttpGet("{orderId}/print")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> PrintInvoiceByOrderId(int orderId)
+        {
+            try
+            {
+                var pdfBytes = await _invoiceService.PrintInvoice(orderId);
+
+                return File(pdfBytes, "application/pdf", $"Order_{orderId}.pdf");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+
     }
 }
