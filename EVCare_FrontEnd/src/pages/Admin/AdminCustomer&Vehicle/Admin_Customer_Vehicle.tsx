@@ -47,13 +47,7 @@ export default function Admin_Customer_Vehicle() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getAllCustomerInformation(
-          search.trim(),
-          search.trim(),
-          search.trim(),
-          pageSize,
-          pageIndex
-        );
+        const response = await getAllCustomerInformation(search.trim(), pageSize, pageIndex);
         if (response == null) {
           throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         }

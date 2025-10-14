@@ -48,31 +48,25 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "3",
-      icon: <ShoppingOutlined />,
-      label: "Appointments",
-      route: "/admin/appointments",
-    },
-    {
-      key: "4",
       icon: <TeamOutlined />,
       label: "Manage Employees",
       route: "/admin/manage-employees",
     },
 
     {
-      key: "7",
+      key: "4",
       icon: <LineChartOutlined />,
       label: "Finance & Reports",
       route: "/admin/finance-reports",
     },
     {
-      key: "8",
+      key: "5",
       icon: <QuestionCircleOutlined />,
       label: "Help & Information",
       route: "/admin/help",
     },
     {
-      key: "9",
+      key: "6",
       icon: <LogoutOutlined />,
       label: "Logout",
       action: () => logout,
