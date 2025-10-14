@@ -256,7 +256,7 @@ namespace Application.Services
                 Price = partsDict[req.Id].Price,
                 ReplacementPrice = partsDict[req.Id].ReplacementPrice
             }).ToList();
-            await _orderPartRepository.AddRangeAsync(orderParts);
+            await _orderPartRepository.AddRange(orderParts);
             foreach (var req in model.Parts)
                 partsDict[req.Id].Stock -= req.Quantity;
 
