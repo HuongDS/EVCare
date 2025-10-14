@@ -37,9 +37,14 @@ namespace DataAccess.Repositories
                         Image = v.Image
                     })
                 });
-            if (!string.IsNullOrEmpty(model.CustomerName)) query = query.Where(x => x.CustomerName.Contains(model.CustomerName));
-            if (!string.IsNullOrEmpty(model.Email)) query = query.Where(x => x.Email.Contains(model.Email));
-            if (!string.IsNullOrEmpty(model.PhoneNumber)) query = query.Where(x => x.PhoneNumber.Contains(model.PhoneNumber));
+
+            if (!string.IsNullOrEmpty(model.Keyword))
+            {
+                var keyword = model.Keyword.Trim().ToLower();
+                query = query.Where(x => x.CustomerName.ToLower().Contains(keyword)
+                || x.Email.ToLower().Contains(keyword)
+                || x.PhoneNumber.ToLower().Contains(keyword));
+            }
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
         }
