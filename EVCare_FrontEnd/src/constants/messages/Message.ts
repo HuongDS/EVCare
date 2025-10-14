@@ -23,7 +23,7 @@ export const ERROR_MESSAGE = {
   FAILED_TO_DELETE_VEHICLE: "Failed to delete vehicle",
   FAILED_TO_ADD_VEHICLE: "Failed to add vehicle",
   FAILED_TO_UPDATE_ACCOUNT: "Failed to Update Account",
-  COULD_NOT_FIND_SERVICE_INFORMATION: "Could not find service information",
+  CHANGE_APPOINTMENT_STATUS_FAILED: "Failed to cancel appointment! Try again!",
 };
 
 export const MSG_TITLE = {
@@ -57,7 +57,8 @@ export const LIST_SERVICES_MESSAGE = {
 
 //List of appointment
 export const LIST_APPOINTMENTS_MESSAGE = {
-  EMPTY_PENDING: (status: string) => `There are currently no ${status} appointments`,
+  EMPTY_PENDING: (status: string) =>
+    `There are currently no ${status} appointments`,
   NO_APPOINTMENT_FOUND: "No appointments found for: ",
 };
 

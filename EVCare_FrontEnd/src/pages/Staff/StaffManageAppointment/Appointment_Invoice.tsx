@@ -8,28 +8,21 @@ import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import { useQueryClient } from "@tanstack/react-query";
-import type {
-  PartsDetailDto,
-  ViewOrderDataDto,
-  ViewOrderResponeDto,
-} from "../../../models/OrderModel/ViewOrderModel";
+import { useGetOrderDetail } from "../../../services/orderServiceApi";
+import { DownloadButton } from "../../../components/Button/PrintButton";
 
 type InvoicePageProps = {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
 };
 
 export const InvoicePage = ({ data }: InvoicePageProps) => {
-  const queryClient = useQueryClient();
-  const orderDetail = queryClient.getQueryData<
-    ViewOrderResponeDto<ViewOrderDataDto<PartsDetailDto>>
-  >(["OrderDetail", data.orderId]);
-  const { data: invoice } = useGetInvoice(data.orderId);
+  const { data: orderDetail } = useGetOrderDetail(data.orderId);
+  const { data: invoice } = useGetInvoice(orderDetail?.data?.id ?? 0);
 
   //tính các chi phí trong order
   const subtotal =
     orderDetail?.data?.parts.reduce(
-      (sum, part) => sum + part.price * part.quantity + part.replacementPrice,
+      (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
       0
     ) ?? 0;
 
@@ -38,9 +31,26 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
   const calculateTotal = () => {
     return subtotal + vatAmount;
   };
+
+  //hàm tải invoice
+  // const { refetch } = useDownloadInvoice(orderDetail?.data?.id ?? 0);
+
+  // const handleDownloadInvoice = async () => {
+  //   const { data: url } = await refetch();
+  // //   // if (url) {
+  // //   //   const a = document.createElement("a");
+  // //   //   a.href = url;
+  // //   //   a.download = "invoice.pdf";
+  // //   //   document.body.appendChild(a);
+  // //   //   a.click();
+  // //   //   a.remove();
+  // //   // }
+  // //   // console.log(url);
+  // // };
   return (
     <PageContainer>
       <InvoiceWrapper>
+        <DownloadButton action={() => 1} />
         <InvoiceContainer>
           {/* Header */}
           <InvoiceHeader>
@@ -131,7 +141,7 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
                       <td>{formatCurrency(part.replacementPrice)}</td>
                       <td>
                         {formatCurrency(
-                          part.price * part.quantity + part.replacementPrice
+                          (part.price + part.replacementPrice) * part.quantity
                         )}
                       </td>
                     </tr>
@@ -167,11 +177,11 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
 
           <InvoiceFooter>
             <p>
-              <strong>Thank you for your business!</strong>
+              <strong>Thank you for choosing us!</strong>
             </p>
             <p>
               For any questions regarding this invoice, please contact us at
-              info@autocare.vn
+              info@evcare.vn
             </p>
             <p style={{ marginTop: "12px", fontSize: "12px" }}>
               This is a computer-generated invoice and does not require a
