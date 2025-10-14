@@ -44,7 +44,7 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       key: "2",
       icon: <SolutionOutlined />,
       label: "Customer & Vehicle",
-      route: "/admin/customer-vehicle",
+      route: "/admin/manage-customers-and-vehicles",
     },
     {
       key: "3",
@@ -175,9 +175,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
   useEffect(() => {
     const currentPath = window.location.pathname;
-    const foundKey = menuByRole[role].find(
-      (item) => item.route === currentPath
-    )?.key;
+    const foundKey = menuByRole[role].find((item) => item.route === currentPath)?.key;
 
     if (foundKey) {
       setSelectedKey([foundKey]);
