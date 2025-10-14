@@ -14,6 +14,14 @@ export const ScheduleWrapper = styled.div`
   background: ${COLORS.grayLight};
   min-height: 100vh;
   font-family: "Outfit", sans-serif;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+  }
 `;
 
 export const ScheduleTitle = styled.h2`
@@ -22,6 +30,14 @@ export const ScheduleTitle = styled.h2`
   color: ${COLORS.primary};
   text-align: center;
   margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    font-size: 1.8rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+  }
 `;
 
 export const CalendarContainer = styled.div`
@@ -32,6 +48,7 @@ export const CalendarContainer = styled.div`
   font-family: "Outfit", sans-serif;
   overflow: visible;
   position: relative;
+  overflow-x: auto;
 
   /* FullCalendar toolbar buttons */
   .fc-button {
@@ -64,6 +81,15 @@ export const CalendarContainer = styled.div`
   .fc-toolbar-title {
     color: ${COLORS.primary};
     font-weight: 700;
+    font-size: 1.5rem;
+
+    @media (max-width: 768px) {
+      font-size: 1.3rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.1rem;
+    }
   }
 
   /* Tên thứ trong lịch */
@@ -71,6 +97,15 @@ export const CalendarContainer = styled.div`
     color: #222;
     font-weight: 600;
     text-decoration: none;
+    font-size: 0.95rem;
+
+    @media (max-width: 768px) {
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.75rem;
+    }
   }
 
   /* Số ngày trong tháng */
@@ -78,12 +113,30 @@ export const CalendarContainer = styled.div`
     color: #222;
     font-weight: 500;
     text-decoration: none;
+    font-size: 0.9rem;
+
+    @media (max-width: 768px) {
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.7rem;
+    }
   }
 
   /* Timeline week/day: giờ màu đen */
   .fc-timegrid-axis-cushion {
     color: #222;
     font-weight: 500;
+    font-size: 0.8rem;
+
+    @media (max-width: 768px) {
+      font-size: 0.7rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.65rem;
+    }
   }
 
   /* Grid background cho week/day */
@@ -105,7 +158,18 @@ export const CalendarContainer = styled.div`
     word-break: break-word;
     position: relative;
     z-index: 1;
+
+    @media (max-width: 768px) {
+      font-size: 0.8rem;
+      padding: 3px 5px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.7rem;
+      padding: 2px 4px;
+    }
   }
+
   .fc-day-today {
     background-color: #e8f5e9 !important;
   }
@@ -132,4 +196,12 @@ export const ErrorMessage = styled.div`
   font-weight: 500;
   text-align: center;
   margin-top: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+  }
 `;
