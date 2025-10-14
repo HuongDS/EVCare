@@ -25,21 +25,23 @@ namespace DataAccess.Repositories
                 {
                     AccountId = x.AccountId,
                     CustomerName = x.Account.First_Name + " " + x.Account.Last_Name,
+                    Banned = x.Account.Deleted_At != DateTime.MinValue,
                     Email = x.Account.Email,
                     PhoneNumber = x.Account.Phone,
                     Address = x.Address,
-                    Vehicles = x.Vehicles.Select(v=>new Dtos.Vehicle.VehicleViewModel
+                    Vehicles = x.Vehicles.Select(v => new Dtos.Vehicle.VehicleViewModel
                     {
                         CategoryName = v.Category.Name,
                         LicensePlate = v.LicensePlate,
                         cateId = v.CategoryId,
                         Id = v.Id,
-                        Image = v.Image
+                        Image = v.Image,
                     })
                 });
-            if (!string.IsNullOrEmpty(model.CustomerName)) query = query.Where(x => x.CustomerName.Contains(model.CustomerName));
-            if (!string.IsNullOrEmpty(model.Email)) query = query.Where(x => x.Email.Contains(model.Email));
-            if (!string.IsNullOrEmpty(model.PhoneNumber)) query = query.Where(x => x.PhoneNumber.Contains(model.PhoneNumber));
+            //if (!string.IsNullOrEmpty(model.CustomerName)) query = query.Where(x => x.CustomerName.Contains(model.CustomerName));
+            //if (!string.IsNullOrEmpty(model.Email)) query = query.Where(x => x.Email.Contains(model.Email));
+            //if (!string.IsNullOrEmpty(model.PhoneNumber)) query = query.Where(x => x.PhoneNumber.Contains(model.PhoneNumber));
+            if (!string.IsNullOrEmpty(model.CustomerName) && !string.IsNullOrEmpty(model.Email) && !string.IsNullOrEmpty(model.PhoneNumber)) query = query.Where(x => x.CustomerName.Contains(model.CustomerName) || x.Email.Contains(model.Email) || x.PhoneNumber.Contains(model.PhoneNumber));
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
         }
