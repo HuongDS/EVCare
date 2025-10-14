@@ -15,19 +15,23 @@ import Manage_Technicians from "../pages/Staff/StaffManageTechnicians/Manage_Tec
 import Manage_Customer from "../pages/Staff/StaffManageCustomer/Manage_Customer";
 import Staff_Appoinments from "../pages/Staff/StaffManageAppointment/Staff_Appoinments";
 import Layout from "../components/Layouts/CustomerLayout";
-import Technician_General from "../pages/Technician/TechnicianGeneral/Technician_General";
+
 import { TechnicianDefaultLayout } from "../pages/Technician/Technician_Component/TechnicianLayout";
-import TechnicianOrder from "../pages/Technician/TechnicianOrder/Technician_Order";
 import OrderList from "../pages/Customer/OrderHistory/Appointment/AppointmentList";
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
 import { RoleEnum } from "../models/enums";
 import TechnicianOrderLayout from "../pages/Technician/Technician_Component/Technician_OrderLayout";
 import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
 import UserProfilePage from "../pages/Users/Profile/UserProfilePage";
-import Technician_Application from "../pages/Technician/TechnicianApplication/Technician_Application";
+
 import Admin_General from "../pages/Admin/AdminGeneral/Admin_General.tsx";
-import TechnicianSchedule from "../pages/Technician/TechnicianSchedule/Technician_Schedule.tsx";
-import Technician_History from "../pages/Technician/TechnicianHistory/Technician_History.tsx";
+import {
+  LazyOrder,
+  LazyHistory,
+  LazySchedule,
+  LazyGeneral,
+  LazyApplication,
+} from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 
 const router = createBrowserRouter([
   {
@@ -114,10 +118,10 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: "", element: <Technician_General /> },
-      { path: "application", element: <Technician_Application /> },
-      { path: "history", element: <Technician_History /> },
-      { path: "schedule", element: <TechnicianSchedule /> },
+      { path: "", element: <LazyGeneral /> },
+      { path: "application", element: <LazyApplication /> },
+      { path: "history", element: <LazyHistory /> },
+      { path: "schedule", element: <LazySchedule /> },
     ],
   },
   {
@@ -127,7 +131,7 @@ const router = createBrowserRouter([
         <TechnicianOrderLayout />
       </ProtectedRoute>
     ),
-    children: [{ path: "", element: <TechnicianOrder /> }],
+    children: [{ path: "", element: <LazyOrder /> }],
   },
   // Test route
   { path: "/test", element: <Test /> },

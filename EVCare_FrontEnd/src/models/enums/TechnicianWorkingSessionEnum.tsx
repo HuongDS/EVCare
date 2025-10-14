@@ -5,5 +5,5 @@ export enum TechnicianWorkingSessionEnum {
   CONFIRM = "Confirm",
   ADDING_PART = "AddingPart",
   COMPLETED = "Completed",
-  CANCELLED = "Cancelled",
+  CANCELED = "Canceled",
 }
