@@ -127,7 +127,7 @@ export default function Authentication() {
     if (firstName == null || lastName == null || firstName.length == 0 || lastName.length == 0) {
       alert(ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
       return;
-    } else if (firstName.trim().length == 0 || lastName.trim().length) {
+    } else if (firstName.trim().length == 0 || lastName.trim().length == 0) {
       alert(ERROR_MESSAGE.THIS_FIELD_NOT_VALID);
       return;
     } else if (!EMAIL_REGEX.test(email)) {
