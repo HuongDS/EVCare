@@ -36,6 +36,7 @@ export const MSG_TITLE = {
   FETCH_DATA: "Fetch Data",
   BAN_ACCOUNT: "Ban Account",
   REVIEW: "Review",
+  CREATE_APPOINTMENT: "Create Appointment",
 };
 
 export const SUCCESS_MESSAGE = {
