@@ -103,6 +103,7 @@ export default function Staff_Appoinments() {
     name.CHECKED_IN,
     name.ADDING_PART,
     name.IN_PROGRESS,
+    "ReadyForPickup",
     name.DONE,
     name.CANCELED,
   ];

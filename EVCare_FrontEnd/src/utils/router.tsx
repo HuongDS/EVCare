@@ -28,6 +28,7 @@ import Technician_Application from "../pages/Technician/TechnicianApplication/Te
 import Admin_General from "../pages/Admin/AdminGeneral/Admin_General.tsx";
 import TechnicianSchedule from "../pages/Technician/TechnicianSchedule/Technician_Schedule.tsx";
 import Admin_Customer_Vehicle from "../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle.tsx";
+import Technician_History from "../pages/Technician/TechnicianHistory/Technician_History.tsx";
 
 const router = createBrowserRouter([
   {
@@ -63,7 +64,14 @@ const router = createBrowserRouter([
       {
         path: "account-information",
         element: (
-          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER, RoleEnum.ADMIN, RoleEnum.TECHNICIAN, RoleEnum.STAFF]}>
+          <ProtectedRoute
+            allowedRoles={[
+              RoleEnum.CUSTOMER,
+              RoleEnum.ADMIN,
+              RoleEnum.TECHNICIAN,
+              RoleEnum.STAFF,
+            ]}
+          >
             <UserProfilePage />
           </ProtectedRoute>
         ),
@@ -112,6 +120,7 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <Technician_General /> },
       { path: "application", element: <Technician_Application /> },
+      { path: "history", element: <Technician_History /> },
       { path: "schedule", element: <TechnicianSchedule /> },
     ],
   },

@@ -13,6 +13,7 @@ import { useAppDispatch } from "../../../states/store";
 import { setStep } from "../../../states/appointmentSlice";
 import { handleError } from "../../../utils/errorHandler";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
+import FailedModal from "../../../components/StatusModal/FailModal";
 
 interface AssignedTechnician {
   technicianID: number;
@@ -31,7 +32,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
     AssignedTechnician[]
   >([]);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  // const [isFailedModalOpen, setIsFailedModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
   const allSkills = data.services.map((service) => service.id).flat();
@@ -76,24 +77,21 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
     .map((tech) => tech.technicianID)
     .flat();
 
-  const assignTech = useAssignTechnician();
-
   //Thay đổi appointment status - gán technicians vào appointment
+  const { mutateAsync: assignTech } = useAssignTechnician();
   const handleAssignTechnician = async () => {
     try {
-      const response = await assignTech.mutateAsync({
+      await assignTech({
         orderId: data.orderId,
         technicianIds: techniciansList,
         status: "Pending",
       });
-
-      if (response?.statusCode === 201) {
-        setModalMessage(response?.message ?? "");
-        setIsSuccessModalOpen(true);
-      }
+      setIsSuccessModalOpen(true);
+      setModalMessage("Assign Technicians successfully!");
     } catch (error) {
       handleError(error);
-      alert("Khong gan duoc");
+      setIsErrorModalOpen(true);
+      setModalMessage("Assign Technicians Failed");
     }
   };
 
@@ -105,6 +103,11 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
       status: "AddingPart",
     });
     dispatch(setStep({ id: data.id, step: currentStep + 1 }));
+  };
+
+  //đóng error modal
+  const handleCloseModal = () => {
+    setIsErrorModalOpen(false);
   };
 
   return (
@@ -193,6 +196,13 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
           header="Assign Technician"
           message={modalMessage}
           action={handleChangeStep}
+        />
+      )}
+      {isErrorModalOpen && (
+        <FailedModal
+          header="Assign Technician"
+          message={modalMessage}
+          action={handleCloseModal}
         />
       )}
     </PageContainer>

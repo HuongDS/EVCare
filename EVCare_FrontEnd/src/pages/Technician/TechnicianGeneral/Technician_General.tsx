@@ -1,5 +1,5 @@
-//Technician_General.tsx
 import { useEffect, useState, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import AppointmentCard from "../Technician_Component/AppointmentCard";
 import LoadingOverlay from "../Technician_Component/LoadingOverlay";
 import SortTable from "../Technician_Component/SortTable";
@@ -18,6 +18,9 @@ import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsMode
 import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
 
 export default function Technician_General() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [activeStatus, setActiveStatus] =
     useState<TechnicianWorkingSessionEnum>(
       TechnicianWorkingSessionEnum.PENDING
@@ -29,25 +32,43 @@ export default function Technician_General() {
   const [isError, setIsError] = useState(false);
   const [fade, setFade] = useState(false);
 
-  const fetchAppointments = useCallback(async () => {
-    setIsLoading(true);
-    setIsError(false);
-    setFade(true);
-    try {
-      const data = await getTechnicianAppointments({
-        Status: activeStatus,
-        PageSize: 1000,
-        PageIndex: 1,
-      });
-      setAppointments(data.items ?? []);
-    } catch (e) {
-      console.error("Failed to fetch appointments", e);
-      setIsError(true);
-    } finally {
-      setTimeout(() => setFade(false), 80);
-      setIsLoading(false);
+  // --- fetchAppointments định nghĩa sớm, tránh lỗi "used before declared"
+  const fetchAppointments = useCallback(
+    async (statusOverride?: TechnicianWorkingSessionEnum) => {
+      const statusToFetch = statusOverride ?? activeStatus;
+      setIsLoading(true);
+      setIsError(false);
+      setFade(true);
+      try {
+        const data = await getTechnicianAppointments({
+          Status: statusToFetch,
+          PageSize: 1000,
+          PageIndex: 1,
+        });
+        setAppointments(data.items ?? []);
+      } catch (e) {
+        console.error("Failed to fetch appointments", e);
+        setIsError(true);
+      } finally {
+        setTimeout(() => setFade(false), 80);
+
+        setIsLoading(false);
+      }
+    },
+    [activeStatus]
+  );
+
+  // --- xử lý state từ navigate (chỉ 1 lần)
+  useEffect(() => {
+    const tab = location.state?.tab;
+    if (tab === "ADDING_PART") {
+      setActiveStatus(TechnicianWorkingSessionEnum.ADDING_PART);
+      fetchAppointments(TechnicianWorkingSessionEnum.ADDING_PART);
+      // clear location.state sau khi xử lý
+      navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [activeStatus]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.key]);
 
   useEffect(() => {
     fetchAppointments();
@@ -66,21 +87,18 @@ export default function Technician_General() {
     }, 500);
   };
 
-  /* Callback khi thêm part cho appointment cụ thể */
   const handlePartsUpdated = (orderId: number) => {
     setAppointments((prev) =>
-      prev.map(
-        (a) => (a.orderId === orderId ? { ...a } : a) // reload appointment nếu cần
-      )
+      prev.map((a) => (a.orderId === orderId ? { ...a } : a))
     );
-    fetchAppointments(); // tùy chọn: reload dữ liệu từ backend
+    fetchAppointments();
   };
 
   const sortName: TechnicianWorkingSessionEnum[] = [
     TechnicianWorkingSessionEnum.PENDING,
     TechnicianWorkingSessionEnum.ADDING_PART,
-    TechnicianWorkingSessionEnum.INPROGRESS,
     TechnicianWorkingSessionEnum.CONFIRM,
+    TechnicianWorkingSessionEnum.INPROGRESS,
     TechnicianWorkingSessionEnum.COMPLETED,
     TechnicianWorkingSessionEnum.CANCELLED,
   ];
@@ -96,7 +114,10 @@ export default function Technician_General() {
       <SortTable
         sortName={sortName}
         active={activeStatus}
-        onChange={setActiveStatus}
+        onChange={(val) => {
+          setActiveStatus(val);
+          fetchAppointments(val);
+        }}
       />
 
       {isError ? (
@@ -110,7 +131,7 @@ export default function Technician_General() {
               key={item.id}
               data={item}
               onStatusChange={handleUpdateStatus}
-              onPartsUpdated={handlePartsUpdated} // 🔹 chỉ cập nhật appointment hiện tại
+              onPartsUpdated={handlePartsUpdated}
             />
           ))}
         </AppointmentList>

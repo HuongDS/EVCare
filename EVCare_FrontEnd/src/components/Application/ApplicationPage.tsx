@@ -29,7 +29,7 @@ interface ApplicationPageProps {
   onError?: (message: string) => void;
 }
 
-const PAGE_SIZE = 3; // Số card hiển thị mỗi trang
+const PAGE_SIZE = 3;
 
 const ApplicationPage: React.FC<ApplicationPageProps> = ({
   tabs,

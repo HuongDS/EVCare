@@ -188,6 +188,10 @@ namespace Application.Services
             {
                 throw new Exception(Message.LOGIN_FAILED);
             }
+            if(account.Deleted_At!=DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
+            }
 
             return await GenerateTokenAsync(account, new ResponseDto<LoginResponseDto>(), context);
         }

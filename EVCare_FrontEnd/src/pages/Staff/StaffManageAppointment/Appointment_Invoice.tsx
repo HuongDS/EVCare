@@ -23,6 +23,18 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
   ]);
   const { data: invoice } = useGetInvoice(data.orderId);
 
+  //tính các chi phí trong order
+  const subtotal =
+    orderDetail?.data?.parts.reduce(
+      (sum, part) => sum + part.price * part.quantity + part.replacementPrice,
+      0
+    ) ?? 0;
+
+  const vatAmount = (subtotal * (orderDetail?.data?.vat ?? 0)) / 100;
+
+  const calculateTotal = () => {
+    return subtotal + vatAmount;
+  };
   return (
     <PageContainer>
       <InvoiceWrapper>
@@ -49,7 +61,6 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
 
           {/* Body */}
           <InvoiceBody>
-            {/* Customer Information */}
             <CustomerSection>
               <InfoCard>
                 <CardTitle>Bill To</CardTitle>
@@ -109,8 +120,12 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
                       <td>{part.name}</td>
                       <td>{part.quantity}</td>
                       <td>{formatCurrency(part.price)}</td>
-                      <td>{part.replacementPrice}</td>
-                      <td>{formatCurrency(part.price * part.quantity)}</td>
+                      <td>{formatCurrency(part.replacementPrice)}</td>
+                      <td>
+                        {formatCurrency(
+                          part.price * part.quantity + part.replacementPrice
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </TableBody>
@@ -122,15 +137,15 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
               <SummaryCard>
                 <SummaryRow>
                   <span>Subtotal:</span>
-                  <span>{formatCurrency(orderDetail?.data?.price || 0)}</span>
+                  <span>{formatCurrency(subtotal)}</span>
                 </SummaryRow>
                 <SummaryRow>
-                  <span>Tax (10%):</span>
-                  <span>{formatCurrency(orderDetail?.data?.price || 0 * (orderDetail?.data?.vat || 0 / 100))}</span>
+                  <span>VAT ({orderDetail?.data?.vat}%):</span>
+                  <span>{formatCurrency(vatAmount)}</span>
                 </SummaryRow>
                 <SummaryRow $isTotal>
                   <span>Total:</span>
-                  <span>{formatCurrency(orderDetail?.data?.price || 0)}</span>
+                  <span>{formatCurrency(calculateTotal())}</span>
                 </SummaryRow>
                 <div style={{ textAlign: "right" }}>
                   <PaymentBadge $method={invoice?.data?.paymentMethod || "N/A"}>
@@ -142,7 +157,6 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
             </SummarySection>
           </InvoiceBody>
 
-          {/* Footer */}
           <InvoiceFooter>
             <p>
               <strong>Thank you for your business!</strong>
@@ -476,19 +490,3 @@ const InvoiceFooter = styled.div`
     padding: 20px;
   }
 `;
-
-// Types
-// interface Part {
-//   technicianId: number;
-//   id: number;
-//   name: string;
-//   quantity: number;
-//   price: number;
-//   imageUrl: string;
-// }
-
-// interface OrderData {
-//   id: number;
-//   parts: Part[];
-//   price: number;
-// }
