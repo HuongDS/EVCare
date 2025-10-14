@@ -134,5 +134,7 @@ namespace Application.Infrastructures
         public static string DELETE_ACCOUNT_SUCCESS = "Delete Account successfully";
 
         public static string? ACCOUNT_HAS_BEEN_DISABLED ="Account has been disabled.";
+
+        public static string EMPLOYEE_GET_SUCCESSFULLY = "Get employee successfully";
     }
 }
