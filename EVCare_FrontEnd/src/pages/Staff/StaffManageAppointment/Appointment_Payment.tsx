@@ -44,7 +44,17 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
     dispatch(setStep({ id: data.id, step: currentStep + 2 }));
   };
 
-  const totalAmount = orderDetail?.data?.price || 0;
+  const subtotal =
+    orderDetail?.data?.parts.reduce(
+      (sum, part) => sum + part.price * part.quantity + part.replacementPrice,
+      0
+    ) ?? 0;
+
+  const vatAmount = (subtotal * (orderDetail?.data?.vat ?? 0)) / 100;
+
+  const calculateTotal = () => {
+    return subtotal + vatAmount;
+  };
   const mutation = usePayByPayOS();
 
   //lấy qr code
@@ -52,19 +62,19 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
     try {
       const response = await mutation.mutateAsync({
         orderId: data.orderId,
-        total_Price: totalAmount,
-        payment_Method: "payOs",
+        total_Price: calculateTotal(),
+        payment_Method: paymentMethod || "N/A",
       });
       if (response.data) {
         setQrCode(response.data);
         console.log(response.data);
-        setPaymentMethod("PayOs");
+        setPaymentMethod(paymentMethod);
       }
     } catch (error) {
       handleError(error);
       alert(error);
     }
-  }, [[data.orderId, totalAmount]]);
+  }, [[data.orderId, calculateTotal]]);
 
   return (
     <PageContainer>
@@ -109,23 +119,45 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
 
           {/* Parts & Total */}
           <StyledCard title="Order Summary" size="small">
-            <PartsTable>
-              {orderDetail?.data?.parts.map((part) => (
-                <PartRow key={part.id}>
-                  <PartName>{part.name}</PartName>
-                  <PartQty>×{part.quantity}</PartQty>
-                  <PartPrice>
-                    {formatCurrency(part.price * part.quantity)}
-                  </PartPrice>
-                </PartRow>
-              ))}
-            </PartsTable>
+            <TableSection>
+              <Table>
+                <TableHeader>
+                  <tr>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Service Price</th>
+                    <th>Amount</th>
+                  </tr>
+                </TableHeader>
+                <TableBody>
+                  {orderDetail?.data?.parts.map((part) => (
+                    <tr key={part.id}>
+                      <td>{part.name}</td>
+                      <td>{part.quantity}</td>
+                      <td>{formatCurrency(part.price)}</td>
+                      <td>{formatCurrency(part.replacementPrice)}</td>
+                      <td>
+                        {formatCurrency(
+                          part.price * part.quantity + part.replacementPrice
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableSection>
 
+            <Divider style={{ margin: "16px 0" }} />
+            <TotalRow>
+              <TotalLabel>VAT ({orderDetail?.data?.vat ?? 0}%)</TotalLabel>
+              <TotalAmount>{formatCurrency(vatAmount)}</TotalAmount>
+            </TotalRow>
             <Divider style={{ margin: "16px 0" }} />
 
             <TotalRow>
               <TotalLabel>Total Amount</TotalLabel>
-              <TotalAmount>{formatCurrency(totalAmount)}</TotalAmount>
+              <TotalAmount>{formatCurrency(calculateTotal())}</TotalAmount>
             </TotalRow>
           </StyledCard>
 
@@ -137,6 +169,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
                 icon={<CreditCardOutlined />}
                 $selected={paymentMethod === "VnPay"}
                 onClick={() => setPaymentMethod("VnPay")}
+                disabled={data.status === "InProgress"}
               >
                 VNPay
               </PaymentBtn>
@@ -145,6 +178,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
                 icon={<QrcodeOutlined />}
                 $selected={paymentMethod === "PayOs"}
                 onClick={handleGetQRCode}
+                disabled={data.status === "InProgress"}
               >
                 PayOS
               </PaymentBtn>
@@ -153,6 +187,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
                 icon={<DollarOutlined />}
                 $selected={paymentMethod === "Cash"}
                 onClick={() => setPaymentMethod("Cash")}
+                disabled={data.status === "InProgress"}
               >
                 Cash
               </PaymentBtn>
@@ -165,7 +200,9 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
                 {/* <CountdownTimer onTimeUp={handleGetQRCode} /> */}
                 <QRInfo>
                   <p>Scan QR code to complete payment</p>
-                  <AmountTag>Amount: {formatCurrency(totalAmount)}</AmountTag>
+                  <AmountTag>
+                    Amount: {formatCurrency(calculateTotal())}
+                  </AmountTag>
                 </QRInfo>
               </QRSection>
             )}
@@ -297,36 +334,6 @@ const InfoValue = styled.div`
   font-weight: 600;
 `;
 
-const PartsTable = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const PartRow = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr;
-  gap: 12px;
-  padding: 8px 0;
-  font-size: 14px;
-`;
-
-const PartName = styled.div`
-  color: #333;
-  font-weight: 500;
-`;
-
-const PartQty = styled.div`
-  color: #666;
-  text-align: center;
-`;
-
-const PartPrice = styled.div`
-  color: #333;
-  font-weight: 600;
-  text-align: right;
-`;
-
 const TotalRow = styled.div`
   display: flex;
   justify-content: space-between;
@@ -446,5 +453,80 @@ const ConfirmButton = styled(Button)`
     background: #e0e0e0 !important;
     box-shadow: none !important;
     transform: none !important;
+  }
+`;
+
+const TableSection = styled.div`
+  margin-bottom: 32px;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+const TableHeader = styled.thead`
+  background: #f5f5f5;
+
+  th {
+    padding: 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &:nth-child(2) {
+      text-align: center;
+    }
+
+    &:nth-child(3),
+    &:nth-child(4),
+    &:nth-child(5) {
+      text-align: right;
+    }
+  }
+
+  @media (max-width: 768px) {
+    th {
+      padding: 10px 8px;
+      font-size: 12px;
+    }
+  }
+`;
+
+const TableBody = styled.tbody`
+  tr {
+    border-bottom: 1px solid #e0e0e0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  td {
+    padding: 14px 12px;
+    font-size: 14px;
+    color: #333;
+
+    &:nth-child(2) {
+      text-align: center;
+      font-weight: 600;
+    }
+
+    &:nth-child(3),
+    &:nth-child(4),
+    &:nth-child(5) {
+      text-align: right;
+      font-weight: 600;
+    }
+  }
+
+  @media (max-width: 768px) {
+    td {
+      padding: 12px 8px;
+      font-size: 13px;
+    }
   }
 `;

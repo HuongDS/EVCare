@@ -58,11 +58,10 @@ export const getAppointmentStepFromStatus = (status: string) => {
     case "CheckedIn":
       return 1;
     case "AddingPart":
-      return 2;
     case "InProgress":
-      return 3;
+      return 2;
     case "ReadyForPickup":
-      return 4;
+      return 3;
     case "Done":
       return 5;
   }

@@ -25,18 +25,20 @@ namespace DataAccess.Repositories
                 {
                     AccountId = x.AccountId,
                     CustomerName = x.Account.First_Name + " " + x.Account.Last_Name,
+                    Banned = x.Account.Deleted_At != DateTime.MinValue,
                     Email = x.Account.Email,
                     PhoneNumber = x.Account.Phone,
                     Address = x.Address,
-                    Vehicles = x.Vehicles.Select(v=>new Dtos.Vehicle.VehicleViewModel
+                    Vehicles = x.Vehicles.Select(v => new Dtos.Vehicle.VehicleViewModel
                     {
                         CategoryName = v.Category.Name,
                         LicensePlate = v.LicensePlate,
                         cateId = v.CategoryId,
                         Id = v.Id,
-                        Image = v.Image
+                        Image = v.Image,
                     })
                 });
+
 
             if (!string.IsNullOrEmpty(model.Keyword))
             {

@@ -100,6 +100,7 @@ builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
 builder.Services.AddScoped<ITechnicianWorkingSessionRepository, TechnicianWorkingSessionRepository>();
 builder.Services.AddScoped<IPartCategoryRepository, PartCategoryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 
 
@@ -142,6 +143,8 @@ builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
 {
     c.BaseAddress = new Uri("https://generativelanguage.googleapis.com/v1beta/");
 });
+builder.Services.AddScoped<IReviewService, ReviewService>();
+
 //builder.Services.AddScoped<IAiInsightServices, MockAiInsightServices>();
 builder.Services.AddScoped<OnInvoiceCompleteHandler>();
 builder.Services.AddScoped<OnAppointmentConfirmHandler>();
@@ -168,6 +171,7 @@ builder.Services.AddScoped<SetAccountIdFilter>();
 builder.Services.AddScoped<SetTechnicianIdFilter>();
 builder.Services.AddScoped<AuthorizeTechnicianDetail>();
 builder.Services.AddScoped<ValidateInvoiceTotalFilter>();
+builder.Services.AddScoped<CheckAuthorizationOfCustomerFilter>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();
