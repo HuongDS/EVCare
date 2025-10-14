@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NameBox from "./NameBox";
 import ReviewButton from "./Button";
 import { formatDate } from "../../../utils/formatDate";
@@ -20,8 +20,11 @@ import {
   Info,
   AppointmentStatus,
   ListPart,
+  AppointmentImagesWrapper,
   AppointmentImages,
   ImageItem,
+  DotsContainer,
+  Dot,
 } from "./Style/AppointmentCard.styled";
 
 type AppointmentCardProps = {
@@ -42,6 +45,18 @@ export default function AppointmentCard({
     useState<TechnicianWorkingSessionEnum>(
       data.status as TechnicianWorkingSessionEnum
     );
+
+  const [currentImage, setCurrentImage] = useState(0);
+
+  useEffect(() => {
+    if (!data.appointmentImages || data.appointmentImages.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentImage((prev) =>
+        prev === data.appointmentImages!.length - 1 ? 0 : prev + 1
+      );
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [data.appointmentImages]);
 
   const handleAction = async (nextStatus: TechnicianWorkingSessionEnum) => {
     const prevStatus = currentStatus;
@@ -68,9 +83,11 @@ export default function AppointmentCard({
         <AppointmentID>
           AppointmentID: <span>#{data.id}</span>
         </AppointmentID>
-        <AppointmentStatus>
-          <i className="bi bi-check-circle"></i> {currentStatus}
+
+        <AppointmentStatus $status={currentStatus}>
+          {currentStatus.replace("_", " ")}
         </AppointmentStatus>
+
         <AppointmentDate>
           <i className="bi bi-calendar2-event"></i>{" "}
           {formatDate(data.appointmentDate)}
@@ -84,13 +101,26 @@ export default function AppointmentCard({
         {data.appointmentImages && data.appointmentImages.length > 0 && (
           <div>
             <Title>Appointment Images</Title>
-            <AppointmentImages>
-              {data.appointmentImages.map((img, idx) => (
-                <ImageItem key={idx}>
-                  <img src={img} alt={`Appointment ${idx}`} />
-                </ImageItem>
-              ))}
-            </AppointmentImages>
+
+            <AppointmentImagesWrapper>
+              <AppointmentImages $currentIndex={currentImage}>
+                {data.appointmentImages.map((img, idx) => (
+                  <ImageItem key={idx}>
+                    <img src={img} alt={`Appointment ${idx}`} />
+                  </ImageItem>
+                ))}
+              </AppointmentImages>
+
+              <DotsContainer>
+                {data.appointmentImages.map((_, idx) => (
+                  <Dot
+                    key={idx}
+                    $active={idx === currentImage}
+                    onClick={() => setCurrentImage(idx)}
+                  />
+                ))}
+              </DotsContainer>
+            </AppointmentImagesWrapper>
           </div>
         )}
 
