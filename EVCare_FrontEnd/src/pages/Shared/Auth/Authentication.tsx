@@ -128,9 +128,6 @@ export default function Authentication() {
       alert(ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
       return;
     } else if (firstName.trim().length == 0 || lastName.trim().length == 0) {
-      console.log(firstName);
-      console.log(lastName);
-
       alert(ERROR_MESSAGE.THIS_FIELD_NOT_VALID);
       return;
     } else if (!EMAIL_REGEX.test(email)) {
