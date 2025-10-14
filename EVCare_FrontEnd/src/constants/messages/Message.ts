@@ -35,6 +35,7 @@ export const MSG_TITLE = {
   ADMIN: "Admin",
   FETCH_DATA: "Fetch Data",
   BAN_ACCOUNT: "Ban Account",
+  REVIEW: "Review",
 };
 
 export const SUCCESS_MESSAGE = {
@@ -43,6 +44,7 @@ export const SUCCESS_MESSAGE = {
   DELETE_VEHICLE_SUCCESS: "Delete Vehicle success",
   UPDATE_ACCOUNT_SUCCESSFULLY: "Update account success",
   ADD_VEHICLE_SUCCESSFULLY: "Add vehivle success",
+  SEND_REVIEW_SUCCESS: "Send Review Success",
 };
 
 export const AUTH_FORM_MESSAGE = {

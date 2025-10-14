@@ -1,8 +1,5 @@
 export type ReviewCreateDto = {
   appointmentId: number;
-  review: string;
+  content: string;
   rating: number;
-  name: string;
-  phone: string;
-  timestamp: string;
 };
