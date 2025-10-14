@@ -81,6 +81,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
   const { mutateAsync: assignTech } = useAssignTechnician();
   const handleAssignTechnician = async () => {
     try {
+      console.log("Orderid: " + data.orderId);
       await assignTech({
         orderId: data.orderId,
         technicianIds: techniciansList,
@@ -96,9 +97,10 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
   };
 
   //đổi trang thái appointment
+  const { mutateAsync: appointmentStatus } = changeAppointmentStatus();
   const handleChangeStep = async () => {
     setIsSuccessModalOpen(false);
-    await changeAppointmentStatus({
+    await appointmentStatus({
       appointmentId: data.id,
       status: "AddingPart",
     });

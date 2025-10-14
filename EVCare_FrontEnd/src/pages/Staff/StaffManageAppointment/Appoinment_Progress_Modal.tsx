@@ -54,7 +54,11 @@ export default function Appoinment_Progress_Modal({
         return <AssignTechnicianPage data={data} currentStep={currentStep} />;
       case 2:
         return (
-          <Appointment_Part_Tracking data={data} currentStep={currentStep} />
+          <Appointment_Part_Tracking
+            data={data}
+            currentStep={currentStep}
+            closeModal={close}
+          />
         );
       case 3:
         return <PaymentPage data={data} currentStep={currentStep} />;
