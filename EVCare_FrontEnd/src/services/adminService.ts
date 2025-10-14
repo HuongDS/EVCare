@@ -6,19 +6,11 @@ import type { PageResultDto } from "../models/PageResult/PageResultDto";
 import { handleError } from "../utils/errorHandler";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 
-export async function getAllCustomerInformation(
-  customerName: string,
-  email: string,
-  phoneNumber: string,
-  pageSize: number,
-  pageIndex: number
-) {
+export async function getAllCustomerInformation(keyword: string, pageSize: number, pageIndex: number) {
   try {
     const response = await api.get<ResponseDto<PageResultDto<FullCustomerInfor>>>("/api/Customer", {
       params: {
-        customerName: customerName,
-        email: email,
-        phoneNumber: phoneNumber,
+        keyword: keyword,
         pageSize: pageSize,
         pageIndex: pageIndex,
       },
