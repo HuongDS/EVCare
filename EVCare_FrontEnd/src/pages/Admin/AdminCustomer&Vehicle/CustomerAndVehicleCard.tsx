@@ -19,10 +19,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onBan, setOpenBanModal }) => 
         {user.banned && <div className="banned-overlay">BANNED</div>}
         <div className="user-header">
           <div className="user-info">
-            <div className="user-name">
-              {user.customerName}
-              {user.banned && <span className="banned-badge">BANNED</span>}
-            </div>
+            <div className="user-name">{user.customerName}</div>
             <div className="user-contact">
               <div className="contact-item">
                 <span>{user.phoneNumber}</span>
@@ -33,12 +30,6 @@ const UserCard: React.FC<UserCardProps> = ({ user, onBan, setOpenBanModal }) => 
             </div>
           </div>
           <div className="user-actions">
-            {/* {!user.banned ? (
-            <button className="action-btn ban-btn" onClick={() => onBan(user.id)}>
-              Ban
-            </button>
-          ) : (
-          )} */}
             <button
               className="action-btn ban-btn"
               onClick={() => {
