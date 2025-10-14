@@ -25,6 +25,8 @@ export default function Staff_Appoinments() {
   const queryClient = useQueryClient();
   const name = AppointmentStatusEnum;
   const [sortBy, setSortBy] = useState("Pending");
+  // const [sortField, setSortField] = useState("id");
+  // const [sortOrder, setSortOrder] = useState("asc");
   const [currenPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [selectedAppointment, setSelectedAppointment] =
@@ -66,8 +68,10 @@ export default function Staff_Appoinments() {
   const { data: appointments, isLoading } = useGetAllAppointments({
     ...((searchValue && { customerName: searchValue }) || {}), //chỉ gửi customer name nếu nó k rỗng
     status: sortBy,
+    // sortField: sortField,
+    // sortOrder: sortOrder,
     pageIndex: currenPage,
-    pageSize: 5,
+    pageSize: 10,
   });
 
   //Lấy các cuộc hẹn có technician onleave

@@ -34,14 +34,20 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
   >();
   const [qrcode, setQrCode] = useState("");
   const { data: orderDetail } = useGetOrderDetail(data.orderId);
+  const { mutateAsync: appointmentStatus } = changeAppointmentStatus();
   const dispatch = useAppDispatch();
 
   const handlePayment = async () => {
-    await changeAppointmentStatus({
-      appointmentId: data.id,
-      status: "Done",
-    });
-    dispatch(setStep({ id: data.id, step: currentStep + 2 }));
+    try {
+      await handlePaymentMethod();
+      await appointmentStatus({
+        appointmentId: data.id,
+        status: "Done",
+      });
+      dispatch(setStep({ id: data.id, step: currentStep + 2 }));
+    } catch (error) {
+      alert("error payment");
+    }
   };
 
   const subtotal =
@@ -55,26 +61,24 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
   const calculateTotal = () => {
     return subtotal + vatAmount;
   };
-  const mutation = usePayByPayOS();
 
   //lấy qr code
-  const handleGetQRCode = useCallback(async () => {
+  const { mutateAsync: payment } = usePayByPayOS();
+  const handlePaymentMethod = useCallback(async () => {
     try {
-      const response = await mutation.mutateAsync({
-        orderId: data.orderId,
-        total_Price: calculateTotal(),
+      const response = await payment({
+        orderId: orderDetail?.data?.id || 0,
+        total_Price: orderDetail?.data?.price || 0,
         payment_Method: paymentMethod || "N/A",
       });
-      if (response.data) {
-        setQrCode(response.data);
-        console.log(response.data);
-        setPaymentMethod(paymentMethod);
+      if (paymentMethod === "PayOs" && response.data !== null) {
+        setQrCode(response?.data || "");
       }
     } catch (error) {
       handleError(error);
       alert(error);
     }
-  }, [[data.orderId, calculateTotal]]);
+  }, [data.orderId, paymentMethod, paymentMethod]);
 
   return (
     <PageContainer>
@@ -177,7 +181,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
                 size="large"
                 icon={<QrcodeOutlined />}
                 $selected={paymentMethod === "PayOs"}
-                onClick={handleGetQRCode}
+                onClick={() => setPaymentMethod("PayOs")}
                 disabled={data.status === "InProgress"}
               >
                 PayOS
