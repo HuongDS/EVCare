@@ -34,6 +34,7 @@ namespace DataAccess.Repositories
                     Role = x.Account.Role,
                     Status = x.Status,
                     Avatar = x.Avatar,
+                    IsBanned = x.Account.Deleted_At != DateTime.MinValue,
                     TechnicianId = x.TechnicianId,
                     ExpYear = x.Technician.ExpYear,
                     Skills = x.Technician != null ? x.Technician.TechnicianSkills
