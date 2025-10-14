@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Customers;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Interfaces;
 
 namespace Application.Services
@@ -16,6 +17,11 @@ namespace Application.Services
         public CustomerService(ICustomerRepository customerRepository)
         {
             _customerRepository = customerRepository;
+        }
+
+        public async Task<PageResultDto<CustomerViewModel>> GetAllCustomers(CustomerQueryDto model)
+        {
+            return await _customerRepository.GetAllCustomers(model);
         }
 
         public async Task<CustomerViewDto> GetCustomerByAccountId(int accountId)

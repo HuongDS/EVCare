@@ -1,7 +1,5 @@
-import React, { useEffect, useState, type JSX } from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import Tippy from "@tippyjs/react";
-import "tippy.js/dist/tippy.css";
 
 import type { EventInput, EventContentArg } from "@fullcalendar/core";
 import LazyPerformanceSchedule from "./LazyPerformanceSchedule";
@@ -10,9 +8,8 @@ import { getTechnicianAppointments } from "../../../services/appointmentTechnici
 import { getDateOff } from "../../../services/getApplicationApi";
 import { getBlockedDate } from "../../../services/serviceCenterService";
 
-import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import type { DateOffResponseDTO } from "../../../models/ApplicationModel/ApplicationModels";
 import type { BlockedDateViewModel } from "../../../models/BlockedDate/BlockedDateViewModel";
+import { TechnicianWorkingSessionEnum } from "../../../models/enums";
 
 import {
   ScheduleWrapper,
@@ -21,11 +18,17 @@ import {
   ErrorMessage,
 } from "./Technician_Schedule.styled";
 
+type SimpleAppointment = {
+  id: number;
+  appointmentDate: string;
+  status: string;
+  vehicleModel: string;
+  extraProps: Record<string, unknown>;
+};
+
 const TechnicianSchedule: React.FC = () => {
-  const [appointments, setAppointments] = useState<TechnicianAppointmentsDto[]>(
-    []
-  );
-  const [applications, setApplications] = useState<DateOffResponseDTO>([]);
+  const [appointments, setAppointments] = useState<SimpleAppointment[]>([]);
+  const [applications, setApplications] = useState<Date[]>([]);
   const [blockedDates, setBlockedDates] = useState<BlockedDateViewModel[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,17 +39,42 @@ const TechnicianSchedule: React.FC = () => {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
+
     try {
-      const apptsRes = await getTechnicianAppointments({
+      // --- Fetch appointments chỉ với 1 request (nếu backend hỗ trợ)
+      const activeStatuses = [
+        TechnicianWorkingSessionEnum.PENDING,
+        TechnicianWorkingSessionEnum.INPROGRESS,
+        TechnicianWorkingSessionEnum.ADDING_PART,
+      ];
+
+      const appointmentRes = await getTechnicianAppointments({
+        Status: activeStatuses.join(","), // backend phải hỗ trợ CSV
         PageSize: 100,
         PageIndex: 1,
       });
-      setAppointments(apptsRes.items ?? []);
 
-      const dateOffRes = await getDateOff();
-      setApplications(dateOffRes.data ?? []);
+      const mappedAppointments: SimpleAppointment[] = (
+        appointmentRes.items ?? []
+      ).map((a) => ({
+        id: a.id,
+        appointmentDate: a.appointmentDate,
+        status: a.status,
+        vehicleModel: a.vehicleModel,
+        extraProps: { ...a },
+      }));
 
-      const blockedRes = await getBlockedDate();
+      setAppointments(mappedAppointments);
+
+      // --- Fetch date off và blocked dates song song
+      const [dateOffRes, blockedRes] = await Promise.all([
+        getDateOff(),
+        getBlockedDate(),
+      ]);
+
+      setApplications((dateOffRes.data ?? []).map((d) => new Date(d)));
+
       setBlockedDates(
         (blockedRes.data ?? []).map((d) => ({
           ...d,
@@ -55,37 +83,19 @@ const TechnicianSchedule: React.FC = () => {
       );
     } catch (err: unknown) {
       console.error(err);
-      setError((err as Error).message || "Failed to load schedule data");
+      setError((err as Error)?.message || "Failed to load schedule data");
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusClass = (status?: string) => {
-    switch (status?.toLowerCase()) {
-      case "completed":
-        return "appointment-completed";
-      case "in-progress":
-        return "appointment-progress";
-      case "pending":
-        return "appointment-pending";
-      case "canceled":
-        return "appointment-canceled";
-      default:
-        return "appointment";
-    }
-  };
-
+  // --- Map events chỉ 1 lần, gọn hơn
   const events: EventInput[] = [
     ...appointments.map((a) => ({
-      title: `Appointment\nOrder: ${a.orderId}\nCustomer: ${a.customerName}`,
-      start: a.appointmentDate,
-      className: getStatusClass(a.status),
-      extendedProps: {
-        orderId: a.orderId,
-        customerName: a.customerName,
-        status: a.status,
-      },
+      title: `ID: ${a.id}\n${a.vehicleModel}\n${a.status}`,
+      start: dayjs(a.appointmentDate).toDate(),
+      className: "appointment",
+      extendedProps: a.extraProps,
     })),
     ...applications.map((d) => ({
       title: "Day Off",
@@ -95,45 +105,35 @@ const TechnicianSchedule: React.FC = () => {
     })),
     ...blockedDates.map((d) => ({
       title: d.reason || "Blocked",
-      start: d.dateTime.format("YYYY-MM-DD"),
+      start: d.dateTime.toDate(),
       className: "blocked",
       extendedProps: { reason: d.reason },
     })),
   ];
 
-  const renderEventContent = (eventInfo: EventContentArg): JSX.Element => {
-    const { event } = eventInfo;
-    const isDayOff = event.classNames.includes("dayOff");
-    const isBlocked = event.classNames.includes("blocked");
-
-    const tooltipText =
-      isDayOff || isBlocked
-        ? event.extendedProps.reason || "Không có thông tin"
-        : `Status: ${event.extendedProps.status || "N/A"}`;
-
-    return (
-      <Tippy content={tooltipText} placement="top" arrow={true}>
-        <div>
-          {event.title?.split("\n").map((line: string, idx: number) => (
-            <div key={idx}>{line}</div>
-          ))}
-        </div>
-      </Tippy>
-    );
-  };
-
-  if (loading) return <ScheduleWrapper>Loading...</ScheduleWrapper>;
-  if (error) return <ErrorMessage>{error}</ErrorMessage>;
+  const renderEventContent = (eventInfo: EventContentArg) => (
+    <div>
+      {eventInfo.event.title?.split("\n").map((line, idx) => (
+        <span key={idx} style={{ display: "block" }}>
+          {line}
+        </span>
+      ))}
+    </div>
+  );
 
   return (
     <ScheduleWrapper>
       <ScheduleTitle>Technician Schedule</ScheduleTitle>
-      <CalendarContainer>
-        <LazyPerformanceSchedule
-          events={events}
-          renderEventContent={renderEventContent}
-        />
-      </CalendarContainer>
+      {loading && <div>Loading...</div>}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {!loading && !error && (
+        <CalendarContainer>
+          <LazyPerformanceSchedule
+            events={events}
+            renderEventContent={renderEventContent}
+          />
+        </CalendarContainer>
+      )}
     </ScheduleWrapper>
   );
 };

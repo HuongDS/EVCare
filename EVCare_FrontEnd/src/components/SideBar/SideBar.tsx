@@ -199,8 +199,10 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
       if (item.children) {
         return { ...item, children: renderMenuItems(item.children) };
       }
+
       return {
-        ...item,
+        key: item.key,
+        icon: item.icon,
         label: <LinkStyled to={item.route || "#"}>{item.label}</LinkStyled>,
       };
     });
