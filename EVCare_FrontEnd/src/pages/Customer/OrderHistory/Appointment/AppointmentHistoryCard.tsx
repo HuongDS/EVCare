@@ -20,7 +20,8 @@ import SpinnerComponent from "../../../../components/SpinnerComponent";
 import { useEffect, useState } from "react";
 import { AppointmentStatusEnum } from "../../../../models/enums";
 import { ReviewWrapper } from "../../../../components/Review/Review.styled.tsx";
-import ReviewModal from "../../../../components/Review/ReviewModal.tsx";
+// import ReviewModal from "../../../../components/Review/ReviewModal.tsx";
+import LazyReviewModal from "../../../../components/Review/LazyReviewModal.tsx";
 
 interface props {
   data: AppointmentViewDetailModel;
@@ -107,7 +108,8 @@ export default function AppointmentHistoryCard({
           )}
           {isOpenReviewForm && (
             <ReviewWrapper>
-              <ReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} />
+              {/* <ReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} /> */}
+              <LazyReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} />
             </ReviewWrapper>
           )}
         </ButtonStyle>

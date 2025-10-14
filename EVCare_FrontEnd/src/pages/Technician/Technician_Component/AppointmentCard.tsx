@@ -20,6 +20,8 @@ import {
   Info,
   AppointmentStatus,
   ListPart,
+  AppointmentImages,
+  ImageItem,
 } from "./Style/AppointmentCard.styled";
 
 type AppointmentCardProps = {
@@ -67,34 +69,47 @@ export default function AppointmentCard({
           AppointmentID: <span>#{data.id}</span>
         </AppointmentID>
         <AppointmentStatus>
-          <div>
-            <i className="bi bi-check-circle"></i>
-          </div>
-          <div>{currentStatus}</div>
+          <i className="bi bi-check-circle"></i> {currentStatus}
         </AppointmentStatus>
         <AppointmentDate>
-          <div>
-            <i className="bi bi-calendar2-event"></i>
-          </div>
-          <div>{formatDate(data.appointmentDate)}</div>
+          <i className="bi bi-calendar2-event"></i>{" "}
+          {formatDate(data.appointmentDate)}
         </AppointmentDate>
       </CardHeader>
 
-      <hr style={{ margin: "0.5em" }} />
+      <hr style={{ margin: "0.5em 0" }} />
 
       <CardBody>
-        <InformationStyled>
-          <Title>Information</Title>
+        {/* Column 1: Images */}
+        {data.appointmentImages && data.appointmentImages.length > 0 && (
           <div>
-            <NameBox label="Customer's Name" name={data.customerName} />
-            <NameBox label="Vehicle Model" name={data.vehicleModel} />
+            <Title>Appointment Images</Title>
+            <AppointmentImages>
+              {data.appointmentImages.map((img, idx) => (
+                <ImageItem key={idx}>
+                  <img src={img} alt={`Appointment ${idx}`} />
+                </ImageItem>
+              ))}
+            </AppointmentImages>
           </div>
-          <div>
-            <NameBox label="License Plate" name={data.licensePlate} />
-            <NameBox label="Phone Number" name={data.phoneNumber} />
-          </div>
-        </InformationStyled>
+        )}
 
+        {/* Column 2: Information */}
+        <div>
+          <Title>Information</Title>
+          <InformationStyled>
+            <div>
+              <NameBox label="Customer's Name" name={data.customerName} />
+              <NameBox label="Vehicle Model" name={data.vehicleModel} />
+            </div>
+            <div>
+              <NameBox label="License Plate" name={data.licensePlate} />
+              <NameBox label="Phone Number" name={data.phoneNumber} />
+            </div>
+          </InformationStyled>
+        </div>
+
+        {/* Column 3: Services */}
         <div>
           <Title>Service</Title>
           <ListService>
@@ -104,6 +119,7 @@ export default function AppointmentCard({
           </ListService>
         </div>
 
+        {/* Column 4: Parts */}
         {data.parts && data.parts.length > 0 && (
           <div>
             <Title>Parts Added</Title>

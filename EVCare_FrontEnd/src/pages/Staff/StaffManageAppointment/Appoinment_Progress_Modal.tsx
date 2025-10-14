@@ -14,7 +14,7 @@ import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import PaymentPage from "./Appointment_Order";
+import PaymentPage from "./Appointment_Payment";
 import { InvoicePage } from "./Appointment_Invoice";
 
 const ModalStyled = styled(Modal)`
