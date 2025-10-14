@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces;
 using AutoMapper;
+using DataAccess.Dtos.Employees;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Technicians;
 using DataAccess.Entities;
 using DataAccess.Enums;
@@ -51,6 +53,11 @@ namespace Application.Services
         {
             var employee = await _employeeRepository.GetEmployeeByAccountId(accountId);
             return employee.Id;
+        }
+
+        public async Task<PageResultDto<EmployeeViewModel>> GetAllEmployeesAsync(EmployeeQueryDto query)
+        {
+            return await _employeeRepository.GetAllEmployeesAsync(query);
         }
     }
 }
