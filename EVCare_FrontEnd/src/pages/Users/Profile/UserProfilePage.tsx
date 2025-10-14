@@ -7,10 +7,7 @@ import VehiclesSection from "./VehicleSection";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
 import type { UserProfile } from "../../../models/User/UserViewModel";
 import { ContainerWrapper } from "./UserProfile.styled";
-import {
-  getAccountInformation,
-  updateAccount,
-} from "../../../services/accountService";
+import { getAccountInformation, updateAccount } from "../../../services/accountService";
 import { getCustomerId } from "../../../services/customerServices";
 import { getUser } from "../../../token/tokenStore";
 import { handleError } from "../../../utils/errorHandler";
@@ -21,13 +18,9 @@ import type { CustomerViewDto } from "../../../models/CustomerModels/CustomerVie
 import type { AccountViewModel } from "../../../models/Accounts/accountViewModel";
 import InvoiceSection from "./InvoiceSection";
 import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
-// import {getInvoices} from "../../../services/invoicesService";
+import { getInvoices } from "../../../services/invoicesService";
 import type { User } from "../../../models/AuthModel/authModel";
-import {
-  createVehicle,
-  deleteVehicle,
-  getVehicleByCustomerId,
-} from "../../../services/vehicleServicesApi";
+import { createVehicle, deleteVehicle, getVehicleByCustomerId } from "../../../services/vehicleServicesApi";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 
@@ -41,9 +34,7 @@ function UserProfileComponent() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSaveUser = async (
-    updated: Pick<UserProfile, "firstName" | "lastName" | "phone">
-  ) => {
+  const handleSaveUser = async (updated: Pick<UserProfile, "firstName" | "lastName" | "phone">) => {
     setIsLoading(true);
     try {
       const data: AccountUpdateDto = {
@@ -78,10 +69,7 @@ function UserProfileComponent() {
         licensePlate: a.licensePlate,
         image: a.img,
       };
-      setVehicles((prev) => [
-        ...prev,
-        { ...v, id: (prev.at(-1)?.id ?? 0) + 1 },
-      ]);
+      setVehicles((prev) => [...prev, { ...v, id: (prev.at(-1)?.id ?? 0) + 1 }]);
     } catch (error) {
       handleError(error);
       throw Error(error as string);
@@ -124,9 +112,7 @@ function UserProfileComponent() {
         if (response03 == null) {
           throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         }
-        const response04 = await getVehicleByCustomerId(
-          response02.data?.id || 0
-        );
+        const response04 = await getVehicleByCustomerId(response02.data?.id || 0);
         if (response03 == null) {
           throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         }
@@ -134,11 +120,7 @@ function UserProfileComponent() {
         setUser(user);
         setInvoices(response03?.data || []);
         setCusProfile(response02?.data);
-        setTotalSpending(
-          response03?.data
-            ? response03.data.reduce((acc, item) => acc + item.totalPrice, 0)
-            : 0
-        );
+        setTotalSpending(response03?.data ? response03.data.reduce((acc, item) => acc + item.totalPrice, 0) : 0);
       } catch (error) {
         handleError(error);
       } finally {
@@ -171,9 +153,7 @@ function UserProfileComponent() {
             <div className="profile-card">
               <div className="profile-header">
                 <h1 className="profile-title">{profileTitle}</h1>
-                <RankBadge
-                  rank={cusProfile?.rank || CustomerRankEnum.REGULAR}
-                />
+                <RankBadge rank={cusProfile?.rank || CustomerRankEnum.REGULAR} />
               </div>
 
               <PersonalInfoForm
@@ -185,20 +165,12 @@ function UserProfileComponent() {
                 }}
                 onSave={handleSaveUser}
               />
-              {user?.role == RoleEnum.CUSTOMER ? (
-                <SpendingSection amount={totalSpending} />
-              ) : (
-                <></>
-              )}
+              {user?.role == RoleEnum.CUSTOMER ? <SpendingSection amount={totalSpending} /> : <></>}
             </div>
             {user?.role == RoleEnum.CUSTOMER ? (
               <>
                 <div className="profile-card vehicles-section">
-                  <VehiclesSection
-                    vehicles={vehicles}
-                    onAdd={handleAddVehicle}
-                    onDelete={handleDeleteVehicle}
-                  />
+                  <VehiclesSection vehicles={vehicles} onAdd={handleAddVehicle} onDelete={handleDeleteVehicle} />
                 </div>
 
                 <div className="profile-card invoices-section">

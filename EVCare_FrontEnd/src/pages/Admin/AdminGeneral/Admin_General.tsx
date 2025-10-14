@@ -5,7 +5,7 @@ import InvoicesTable from "./InvoicesTable.tsx";
 import { useEffect, useState } from "react";
 import { useAlert } from "../../../context/useAlert.ts";
 import { MSG_TITLE } from "../../../constants/messages/Message.ts";
-// import { getInvoicesWithPagination } from "../../../services/invoicesService.ts";
+import { getInvoicesWithPagination } from "../../../services/invoicesService.ts";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode.ts";
 // import {
 //   countAppointmentsInMonth,

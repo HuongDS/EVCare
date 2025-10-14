@@ -6,10 +6,8 @@ export const Card = styled.div`
   border-radius: 12px;
   margin: 15px;
   padding: 15px 25px;
-  font-family: "Outfit", sans-serif;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  min-width: 0;
   transition: all 0.3s ease;
 
   @media (max-width: 768px) {
@@ -35,7 +33,6 @@ export const CardHeader = styled.div`
   @media (max-width: 480px) {
     flex-direction: column;
     align-items: flex-start;
-    row-gap: 0.4rem;
   }
 `;
 
@@ -50,16 +47,6 @@ export const AppointmentID = styled.div`
     font-weight: 500;
     color: #555;
   }
-
-  @media (max-width: 768px) {
-    font-size: 1em;
-  }
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    row-gap: 0.3rem;
-    font-size: 0.95em;
-  }
 `;
 
 export const AppointmentDate = styled.div`
@@ -72,177 +59,6 @@ export const AppointmentDate = styled.div`
   i {
     font-size: 1.2em;
     color: #777;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 0.95em;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 0.9em;
-    justify-content: flex-start;
-  }
-`;
-
-export const CardBody = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2em;
-  margin-top: 15px;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5em;
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 1.25em;
-  }
-
-  @media (max-width: 480px) {
-    gap: 1em;
-    margin-top: 12px;
-  }
-`;
-
-export const Title = styled.div`
-  font-size: 1.5em;
-  font-weight: bold;
-  padding-bottom: 5px;
-  grid-column: span 3;
-  color: #333;
-
-  @media (max-width: 768px) {
-    font-size: 1.3em;
-    grid-column: span 1;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 1.1em;
-  }
-`;
-
-export const Info = styled.div`
-  font-size: 1em;
-  max-height: 130px;
-  word-break: break-word;
-  color: #555;
-
-  @media (max-width: 768px) {
-    font-size: 0.95em;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 0.9em;
-  }
-`;
-
-export const InformationStyled = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.8em;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 0.6em;
-  }
-
-  @media (max-width: 480px) {
-    gap: 0.5em;
-  }
-`;
-
-export const ListService = styled.div`
-  max-width: 20em;
-  max-height: 6em;
-  overflow-y: auto;
-  margin-top: 8px;
-  padding-right: 4px;
-
-  /* Custom Scrollbar */
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent; /* track ẩn để gọn gàng */
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #c1c1c1, #a5a5a5);
-    border-radius: 4px;
-    transition: background 0.3s ease;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #9b9b9b, #7a7a7a);
-  }
-
-  @media (max-width: 768px) {
-    max-width: 100%;
-    max-height: 5.5em;
-  }
-
-  @media (max-width: 480px) {
-    max-height: 5em;
-  }
-`;
-
-export const ListPart = styled.div`
-  max-width: 20em;
-  max-height: 6.2em;
-  overflow-y: auto;
-  margin-top: 8px;
-  padding-right: 4px;
-
-  /* Custom Scrollbar */
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #c1c1c1, #a5a5a5);
-    border-radius: 4px;
-    transition: background 0.3s ease;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #9b9b9b, #7a7a7a);
-  }
-
-  @media (max-width: 768px) {
-    max-width: 100%;
-    max-height: 5em;
-  }
-
-  @media (max-width: 480px) {
-    max-height: 4.5em;
-  }
-`;
-
-export const ButtonStyled = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 10px;
-
-  @media (max-width: 768px) {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 0.7rem;
-  }
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.6rem;
   }
 `;
 
@@ -257,12 +73,81 @@ export const AppointmentStatus = styled.div`
     font-size: 1.2em;
     color: green;
   }
+`;
 
-  @media (max-width: 768px) {
-    font-size: 0.95em;
+export const CardBody = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5em;
+  margin-top: 15px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25em;
   }
 
-  @media (max-width: 480px) {
-    font-size: 0.9em;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1em;
+  }
+`;
+
+export const Title = styled.div`
+  font-size: 1.5em;
+  font-weight: bold;
+  padding-bottom: 5px;
+  color: #333;
+`;
+
+export const Info = styled.div`
+  font-size: 1em;
+  color: #555;
+`;
+
+export const InformationStyled = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8em;
+`;
+
+export const ListService = styled.div`
+  max-height: 6em;
+  overflow-y: auto;
+  margin-top: 8px;
+  padding-right: 4px;
+`;
+
+export const ListPart = styled.div`
+  max-height: 6em;
+  overflow-y: auto;
+  margin-top: 8px;
+  padding-right: 4px;
+`;
+
+export const ButtonStyled = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 10px;
+`;
+
+export const AppointmentImages = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const ImageItem = styled.div`
+  width: 100%;
+  max-height: 120px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 `;

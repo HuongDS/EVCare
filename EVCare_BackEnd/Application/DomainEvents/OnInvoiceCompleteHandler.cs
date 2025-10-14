@@ -25,12 +25,11 @@
         {
             var today = DateTime.Today;
             var performance = await _adminDashboardServices.GetPerformanceAsync(today, today);
-            var update = new DashboardUpdateDto(
-                   OrdersToday: performance.ThisMonth.Count(),
-                     RevenueToday: performance.ThisMonth.Sum(),
-                        LastUpdate: DateTime.Now
-                );
-            await _hub.Clients.All.SendAsync("AdminDashboardUpdate", update);
+            await _hub.Clients.All.SendAsync("AdminDashboardUpdate", new
+            {
+                Type = "InvoiceComplete",
+                Data = performance
+            });
         }
     }
 }
