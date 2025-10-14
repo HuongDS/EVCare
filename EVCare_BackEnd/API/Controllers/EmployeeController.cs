@@ -3,7 +3,9 @@ using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Appointment;
+using DataAccess.Dtos.Employees;
 using DataAccess.Dtos.Others;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Technician;
 using DataAccess.Dtos.Technicians;
 using Microsoft.AspNetCore.Authorization;
@@ -161,6 +163,30 @@ namespace API.Controllers
 
             }
         }
-        
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllEmployees([FromQuery] EmployeeQueryDto query)
+        {
+            try
+            {
+                var employees = await _employeeServices.GetAllEmployeesAsync(query);
+                return Ok(new ResponseDto<PageResultDto<EmployeeViewModel>>
+                {
+                    data = employees,
+                    message = Message.EMPLOYEE_GET_SUCCESSFULLY,
+                    statusCode = HttpStatus.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST
+                });
+            }
+        }
+
     }
 }
