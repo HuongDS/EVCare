@@ -24,6 +24,7 @@ export const ERROR_MESSAGE = {
   FAILED_TO_ADD_VEHICLE: "Failed to add vehicle",
   FAILED_TO_UPDATE_ACCOUNT: "Failed to Update Account",
   COULD_NOT_FIND_SERVICE_INFORMATION: "Could not find service information",
+  FAILED_TO_BANNED_ACCOUNT: "Failed to ban this account",
 };
 
 export const MSG_TITLE = {
@@ -32,6 +33,8 @@ export const MSG_TITLE = {
   ADD_VEHICLE: "Add Vehicle",
   DELETE_VEHICLE: "Delete Vehicle",
   ADMIN: "Admin",
+  FETCH_DATA: "Fetch Data",
+  BAN_ACCOUNT: "Ban Account",
 };
 
 export const SUCCESS_MESSAGE = {
