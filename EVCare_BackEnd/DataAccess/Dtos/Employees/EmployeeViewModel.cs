@@ -17,6 +17,7 @@ namespace DataAccess.Dtos.Employees
         public string CCCD { get; set; }
         public Enums.RoleEnum Role { get; set; }
         public Enums.EmployeeStatusEnum Status { get; set; }
+        public bool IsBanned { get; set; }
         public string? Avatar { get; set; }
 
         public int? TechnicianId { get; set; }
