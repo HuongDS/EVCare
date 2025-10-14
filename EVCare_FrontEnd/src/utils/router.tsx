@@ -32,6 +32,8 @@ import {
   LazyGeneral,
   LazyApplication,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
+import Admin_Customer_Vehicle from "../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle.tsx";
+
 
 const router = createBrowserRouter([
   {
@@ -91,7 +93,10 @@ const router = createBrowserRouter([
         <AdminLayout />
       </ProtectedRoute>
     ),
-    children: [{ path: "general", element: <Admin_General /> }],
+    children: [
+      { path: "general", element: <Admin_General /> },
+      { path: "manage-customers-and-vehicles", element: <Admin_Customer_Vehicle /> },
+    ],
   },
   // STAFF ROUTES
   {

@@ -39,8 +39,9 @@ import { createAppointment } from "../../../services/appointmentServiceApi";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
 import { LICENSE_PLATE_REGEX } from "../../../constants/regexs/LicensePlateRegex";
-import { ERROR_MESSAGE } from "../../../constants/messages/Message";
+import { ERROR_MESSAGE, MSG_TITLE } from "../../../constants/messages/Message";
 import { LENGTH } from "../../../constants/Code/Constants";
+import { useNotification } from "../../../context/useNotification";
 
 interface Props {
   show: boolean;
@@ -68,6 +69,8 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
   const [appointmentDate, setAppointmentDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [urls, setUrls] = useState<string[]>([]);
+
+  const notification = useNotification();
 
   const handleSelectVehicle = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -141,18 +144,27 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
       !LICENSE_PLATE_REGEX.test(licensePlate) ||
       licensePlate.includes("-")
     ) {
-      alert(ERROR_MESSAGE.LICENSE_PLATE_WRONG);
+      notification.error({
+        message: MSG_TITLE.CREATE_APPOINTMENT,
+        description: ERROR_MESSAGE.LICENSE_PLATE_WRONG,
+      });
       setLicensePlate("");
       setIsLoading(false);
       return;
     }
     if (selectedServices.length === 0) {
-      alert(ERROR_MESSAGE.SERVICES_MUST_NOT_BE_EMPTY);
+      notification.error({
+        message: MSG_TITLE.CREATE_APPOINTMENT,
+        description: ERROR_MESSAGE.SERVICES_MUST_NOT_BE_EMPTY,
+      });
       setIsLoading(false);
       return;
     }
     if (!dateSelected || !timeSelected) {
-      alert(ERROR_MESSAGE.DATE_AND_TIME_CAN_NOT_BE_EMPTY);
+      notification.error({
+        message: MSG_TITLE.CREATE_APPOINTMENT,
+        description: ERROR_MESSAGE.DATE_AND_TIME_CAN_NOT_BE_EMPTY,
+      });
       setIsLoading(false);
       return;
     }
@@ -169,7 +181,10 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
         setSelectedValue(tmp);
       } catch (error) {
         handleError(error);
-        alert(error);
+        notification.error({
+          message: MSG_TITLE.CREATE_APPOINTMENT,
+          description: (error as Error).message,
+        });
         setIsLoading(false);
         setLicensePlate("");
         setIsAddNew(true);
@@ -186,9 +201,15 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
     };
     try {
       const response = await createAppointment(data);
-      alert(response.message);
+      notification.success({
+        message: MSG_TITLE.CREATE_APPOINTMENT,
+        description: response.message,
+      });
     } catch (error) {
-      alert(error);
+      notification.error({
+        message: MSG_TITLE.CREATE_APPOINTMENT,
+        description: (error as Error).message,
+      });
     } finally {
       setIsLoading(false);
       setSelectedServices([]);
@@ -210,6 +231,7 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
     urls,
     dateSelected,
     timeSelected,
+    notification,
   ]);
 
   const handleNoteChange = useCallback((note: string) => {
