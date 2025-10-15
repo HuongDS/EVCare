@@ -1,0 +1,39 @@
+name: EVCare Cron Calls
+
+on:
+  schedule:
+    - cron: "0 22 * * *" # 05:00 VN Attendance
+    - cron: "0 0  * * *" # 07:00 VN Cancel expired
+    - cron: "0 3  * * *" # 10:00 VN Reminder
+  workflow_dispatch:
+
+jobs:
+  call-cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Attendance (05:00 VN)
+        if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '0 22 * * *' }}
+        env:
+          APP: ${{ secrets.APP_URL }}
+          KEY: ${{ secrets.CRON_KEY }}
+        run: |
+          curl -fsS -X POST "$APP/internal-jobs/attendance" \
+               -H "X-Cron-Key: $KEY"
+
+      - name: Cancel expired (07:00 VN)
+        if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '0 0 * * *' }}
+        env:
+          APP: ${{ secrets.APP_URL }}
+          KEY: ${{ secrets.CRON_KEY }}
+        run: |
+          curl -fsS -X POST "$APP/internal-jobs/cancel-expired" \
+               -H "X-Cron-Key: $KEY"
+
+      - name: Reminder (10:00 VN)
+        if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '0 3 * * *' }}
+        env:
+          APP: ${{ secrets.APP_URL }}
+          KEY: ${{ secrets.CRON_KEY }}
+        run: |
+          curl -fsS -X POST "$APP/internal-jobs/reminder" \
+               -H "X-Cron-Key: $KEY"
