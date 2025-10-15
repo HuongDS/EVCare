@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { InputNumber } from "antd";
 import styled from "styled-components";
-import { Package, CheckCircle, Edit3, X, Users } from "lucide-react";
+import { Package, CheckCircle, Edit3, X, Users, SquareX } from "lucide-react";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import {
   useGetOrderDetail,
@@ -24,15 +24,20 @@ import { useQueryClient } from "@tanstack/react-query";
 import ReFreshButton from "../../../components/Button/ReFreshButton";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
+import { handleError } from "../../../utils/errorHandler";
+import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
+import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
   currentStep: number;
+  closeModal: () => void;
 }
 
 export default function Appointment_Part_Tracking({
   data,
   currentStep,
+  closeModal,
 }: Props) {
   const dispatch = useAppDispatch();
   const [parts, setParts] = useState<PartsDetailDto[]>([]);
@@ -41,6 +46,7 @@ export default function Appointment_Part_Tracking({
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [confirm, setConfirm] = useState(false);
 
   //gọi hàm để lấy order detail
   const { data: order, isSuccess } = useGetOrderDetail(data.orderId);
@@ -53,14 +59,17 @@ export default function Appointment_Part_Tracking({
   }, [isSuccess, order]);
 
   //hàm này thay đổi quantity được nhập từ staff
-  const handleQuantityChange = (partId: number, newQuantity: number | null) => {
+  const handleQuantityChange = async (
+    partId: number,
+    newQuantity: number | null
+  ) => {
     if (newQuantity !== null) {
-      setParts(
-        parts.map((part) =>
-          part.id === partId ? { ...part, quantity: newQuantity } : part
-        )
+      const updatedParts = parts.map((part) =>
+        part.id === partId ? { ...part, quantity: newQuantity } : part
       );
+      setParts(updatedParts);
       setEditingPartId(null);
+      await handleQuantityChangeApi(updatedParts);
     } else {
       alert("Change quantity error");
     }
@@ -69,10 +78,10 @@ export default function Appointment_Part_Tracking({
   //staff cập nhật order vừa update lên api
   const { mutateAsync: updateOrder } = useStaffUpdateOrder();
   const queryClient = useQueryClient();
-  const handleQuantityChangeApi = async () => {
+  const handleQuantityChangeApi = async (updatedParts: PartsDetailDto[]) => {
     const newOrderUpdate: UpdateOrderRequest<OrderPartDto> = {
       id: data.orderId,
-      orderParts: parts.map((part) => ({
+      orderParts: updatedParts.map((part) => ({
         partId: part.id,
         technicianId: part.technicianId,
         quantity: part.quantity,
@@ -83,11 +92,8 @@ export default function Appointment_Part_Tracking({
       queryClient.invalidateQueries({
         queryKey: ["OrderDetail", data.orderId],
       });
-      setModalMessage("Order confirmed successfully");
-      setIsSuccessModalOpen(true);
     } catch (error) {
-      setModalMessage(String(error));
-      setIsErrorModalOpen(true);
+      handleError(error);
     }
   };
 
@@ -95,24 +101,29 @@ export default function Appointment_Part_Tracking({
   const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
   const handleConfirmOrder = async () => {
     try {
-      await handleQuantityChangeApi();
       await updateOrderStatus({ orderID: data.orderId, status: "Processing" });
+      await queryClient.invalidateQueries({
+        queryKey: ["OrderDetail", data.orderId],
+      });
+      setModalMessage("Order confirmed successfully");
+      setIsSuccessModalOpen(true);
       dispatch(setStep({ id: data.id, step: currentStep + 1 }));
     } catch (error) {
-      alert("Lỗi khi confirm order");
+      setModalMessage(String(error));
+      setIsErrorModalOpen(true);
     }
   };
 
   //refresh order detail
   const RefreshOrderDetail = () => {
-    queryClient.invalidateQueries({
+    queryClient.refetchQueries({
       queryKey: ["OrderDetail", data.orderId],
     });
   };
 
   const subtotal =
     order?.data?.parts.reduce(
-      (sum, part) => sum + part.price * part.quantity + part.replacementPrice,
+      (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
       0
     ) ?? 0;
 
@@ -129,6 +140,30 @@ export default function Appointment_Part_Tracking({
   const handleCloseModal = () => {
     setIsErrorModalOpen(false);
     setIsSuccessModalOpen(false);
+  };
+
+  //hủy cuộc hẹn
+  const { mutateAsync: appointmentStatus } = changeAppointmentStatus();
+  const handleCancelOrder = async () => {
+    const newOrderUpdate: UpdateOrderRequest<OrderPartDto> = {
+      id: data.orderId,
+      orderParts: [],
+    };
+    try {
+      await appointmentStatus({ appointmentId: data.id, status: "Canceled" });
+      await updateOrder(newOrderUpdate);
+      await updateOrderStatus({ orderID: data.orderId, status: "Canceled" });
+      queryClient.invalidateQueries({
+        queryKey: ["OrderDetail", data.orderId],
+      });
+      closeModal();
+    } catch (error) {
+      alert("failed");
+    }
+  };
+
+  const handleCloseConfirm = () => {
+    setConfirm(false);
   };
 
   return (
@@ -199,7 +234,11 @@ export default function Appointment_Part_Tracking({
               <PartTotal>
                 <TotalLabel>Total</TotalLabel>
                 <TotalValue>
-                  {(part.price * part.quantity).toLocaleString()}₫
+                  {(
+                    part.price * part.quantity +
+                    part.replacementPrice
+                  ).toLocaleString()}
+                  ₫
                 </TotalValue>
               </PartTotal>
             </PartCard>
@@ -222,13 +261,16 @@ export default function Appointment_Part_Tracking({
             <span>Total Amount</span>
             <span>{calculateTotal().toLocaleString()}₫</span>
           </TotalRow>
-          <ConfirmButton
-            onClick={handleConfirmOrder}
-            // disabled={data.status === "InProgress"}
-          >
-            <CheckCircle size={20} />
-            Confirm Order
-          </ConfirmButton>
+          <ActionButton>
+            <ConfirmButton onClick={() => setConfirm(true)}>
+              <SquareX size={20} />
+              Cancel
+            </ConfirmButton>
+            <ConfirmButton onClick={handleConfirmOrder}>
+              <CheckCircle size={20} />
+              Confirm Order
+            </ConfirmButton>
+          </ActionButton>
         </Card>
 
         <Card>
@@ -268,16 +310,25 @@ export default function Appointment_Part_Tracking({
       </ContentWrapper>
       {isSuccessModalOpen && (
         <SuccessModal
-          header="Assign Technician"
+          header="Order Confirm"
           message={modalMessage}
           action={handleCloseModal}
         />
       )}
       {isErrorModalOpen && (
         <FailedModal
-          header="Assign Technician"
+          header="Order Technician"
           message={modalMessage}
           action={handleCloseModal}
+        />
+      )}
+
+      {confirm && (
+        <ConfirmModal
+          open={confirm}
+          onClose={handleCloseConfirm}
+          onConfirm={handleCancelOrder}
+          message="Do you want to cancel this order?"
         />
       )}
     </PageContainer>
@@ -557,6 +608,14 @@ const TotalRow = styled(SummaryRow)`
   }
 `;
 
+const ActionButton = styled.div`
+  display: flex;
+  gap: 10px;
+  button:nth-child(1) {
+    background: linear-gradient(135deg, #c12a2a 0%, #eec0bc 100%);
+  }
+`;
+
 const ConfirmButton = styled.button`
   width: 100%;
   display: flex;
@@ -565,7 +624,7 @@ const ConfirmButton = styled.button`
   gap: 10px;
   padding: 16px;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #75e76f 100%);
   color: white;
   border-radius: 12px;
   font-size: 16px;

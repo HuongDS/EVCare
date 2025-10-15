@@ -96,3 +96,27 @@ export const useGetInvoice = (orderId: number) => {
     },
   });
 };
+
+//[STAFF] - Download invoice pdf
+export const useDownloadInvoice = (orderId: number) => {
+  return useQuery({
+    queryKey: ["DownloadInvoice", orderId],
+    queryFn: async () => {
+      try {
+        const respone = await api.get<string>(`/api/Invoice/${orderId}/print`);
+        return respone.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+    enabled: false,
+  });
+};

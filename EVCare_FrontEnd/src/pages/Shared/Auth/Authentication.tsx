@@ -1,12 +1,31 @@
 import { useCallback, useMemo, useState } from "react";
 import logo from "../../../assets/EVCare.png";
 import SwitchButton from "../../../components/Button/SwitchButton";
-import { FormContainer, HeaderBox, SideImage, StyledModal } from "./Authentication.styled";
+import {
+  FormContainer,
+  HeaderBox,
+  SideImage,
+  StyledModal,
+} from "./Authentication.styled";
 import AuthForm from "./sections/AuthForm";
 import OTPForm from "./sections/OTPForm";
-import { AUTH_FORM_MESSAGE, ERROR_MESSAGE, MSG_TITLE } from "../../../constants/messages/Message";
-import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto } from "../../../models/AuthModel/authModel";
-import { login, register, saveTokens, sendOtp, verifyOtp } from "../../../services/authService";
+import {
+  AUTH_FORM_MESSAGE,
+  ERROR_MESSAGE,
+  MSG_TITLE,
+} from "../../../constants/messages/Message";
+import type {
+  LoginRequestDto,
+  RegisterRequestDto,
+  VerifyOTPDto,
+} from "../../../models/AuthModel/authModel";
+import {
+  login,
+  register,
+  saveTokens,
+  sendOtp,
+  verifyOtp,
+} from "../../../services/authService";
 import { toUseFromJwt } from "../../../token/jwtDecode";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store";
@@ -17,7 +36,11 @@ import { saveUser } from "../../../token/tokenStore";
 import { PASSWORD_REGEX } from "../../../constants/regexs/PasswordRegex";
 import { EMAIL_REGEX } from "../../../constants/regexs/EmailRegex";
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
-import { closeLogin, consumeAction, openAppointmentForm } from "../../../states/uiSlice";
+import {
+  closeLogin,
+  consumeAction,
+  openAppointmentForm,
+} from "../../../states/uiSlice";
 import { ACTION } from "../../../constants/messages/Actions";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
 import { handleError } from "../../../utils/errorHandler";
@@ -42,14 +65,18 @@ export default function Authentication() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState<string[]>(() => Array(LENGTH.OTP_LENGTH).fill("")); // lazy init
+  const [otp, setOtp] = useState<string[]>(() =>
+    Array(LENGTH.OTP_LENGTH).fill("")
+  ); // lazy init
   const [isLoading, setIsLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
   const pending = useSelector((state: RootState) => state.ui.actionAfterLogin);
-  const loginFormOpen = useSelector((state: RootState) => state.ui.loginFormOpen);
+  const loginFormOpen = useSelector(
+    (state: RootState) => state.ui.loginFormOpen
+  );
 
   // Navigate
   const navigate = useNavigate();
@@ -124,7 +151,12 @@ export default function Authentication() {
   }, [email, password, pending, dispatch, navigate, notification]);
 
   const handleSignUp = useCallback(async () => {
-    if (firstName == null || lastName == null || firstName.length == 0 || lastName.length == 0) {
+    if (
+      firstName == null ||
+      lastName == null ||
+      firstName.length === 0 ||
+      lastName.length === 0
+    ) {
       alert(ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
       return;
     } else if (firstName.trim().length == 0 || lastName.trim().length == 0) {
@@ -133,7 +165,10 @@ export default function Authentication() {
     } else if (!EMAIL_REGEX.test(email)) {
       alert(ERROR_MESSAGE.INVALID_EMAIL);
       return;
-    } else if (!PASSWORD_REGEX.test(password) || !PASSWORD_REGEX.test(confirm)) {
+    } else if (
+      !PASSWORD_REGEX.test(password) ||
+      !PASSWORD_REGEX.test(confirm)
+    ) {
       alert(ERROR_MESSAGE.INVALID_PASSWORD);
       return;
     } else if (!PHONE_NUMBER_REGEX.test(phone)) {
@@ -164,7 +199,11 @@ export default function Authentication() {
       setIsOTP(true);
       setIsLoading(false);
     } catch (error) {
-      alert(error instanceof Error ? error.message : ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      alert(
+        error instanceof Error
+          ? error.message
+          : ERROR_MESSAGE.SOME_THING_WENT_WRONG
+      );
       handleError(error);
       setIsLoading(false);
       return;
@@ -225,14 +264,20 @@ export default function Authentication() {
   }, [isOTP, isSignUp, isForgot]);
 
   return (
-    <StyledModal show={loginFormOpen} onHide={() => dispatch(closeLogin())} centered>
+    <StyledModal
+      show={loginFormOpen}
+      onHide={() => dispatch(closeLogin())}
+      centered
+    >
       <SideImage $isSignUp={isSignUp}>
         <img src={logo} alt="EVCare Logo" />
       </SideImage>
       <FormContainer $isSignUp={isSignUp}>
         <HeaderBox>
           <h1>{headerText}</h1>
-          {!isOTP && !isForgot ? <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} /> : null}
+          {!isOTP && !isForgot ? (
+            <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} />
+          ) : null}
         </HeaderBox>
 
         {!isOTP ? (
@@ -268,7 +313,12 @@ export default function Authentication() {
             )}
           </>
         ) : (
-          <OTPForm disable={isLoading} otp={otp} setOtp={setOtp} handleVerifyOTP={handleVerifyOTP} />
+          <OTPForm
+            disable={isLoading}
+            otp={otp}
+            setOtp={setOtp}
+            handleVerifyOTP={handleVerifyOTP}
+          />
         )}
       </FormContainer>
     </StyledModal>
