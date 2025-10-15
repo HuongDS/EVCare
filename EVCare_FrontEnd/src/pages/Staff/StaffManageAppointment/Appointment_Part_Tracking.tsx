@@ -27,6 +27,7 @@ import FailedModal from "../../../components/StatusModal/FailModal";
 import { handleError } from "../../../utils/errorHandler";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
 import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -69,44 +70,37 @@ export default function Appointment_Part_Tracking({
       );
       setParts(updatedParts);
       setEditingPartId(null);
-      await handleQuantityChangeApi(updatedParts);
     } else {
       alert("Change quantity error");
     }
   };
 
-  //staff cập nhật order vừa update lên api
-  const { mutateAsync: updateOrder } = useStaffUpdateOrder();
-  const queryClient = useQueryClient();
-  const handleQuantityChangeApi = async (updatedParts: PartsDetailDto[]) => {
-    const newOrderUpdate: UpdateOrderRequest<OrderPartDto> = {
-      id: data.orderId,
-      orderParts: updatedParts.map((part) => ({
-        partId: part.id,
-        technicianId: part.technicianId,
-        quantity: part.quantity,
-      })),
-    };
-    try {
-      await updateOrder(newOrderUpdate);
-      queryClient.invalidateQueries({
-        queryKey: ["OrderDetail", data.orderId],
-      });
-    } catch (error) {
-      handleError(error);
-    }
-  };
-
   //Khi nhấn confirm thì gọi hàm này
   const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
+  const { mutateAsync: updateOrder, isPending } = useStaffUpdateOrder();
+  const queryClient = useQueryClient();
   const handleConfirmOrder = async () => {
     try {
+      const newOrderUpdate: UpdateOrderRequest<OrderPartDto> = {
+        id: data.orderId,
+        orderParts: parts.map((part) => ({
+          partId: part.id,
+          technicianId: part.technicianId,
+          quantity: part.quantity,
+        })),
+      };
+      await updateOrder(newOrderUpdate);
+
       await updateOrderStatus({ orderID: data.orderId, status: "Processing" });
+
       await queryClient.invalidateQueries({
         queryKey: ["OrderDetail", data.orderId],
       });
+
       setModalMessage("Order confirmed successfully");
+
       setIsSuccessModalOpen(true);
+
       dispatch(setStep({ id: data.id, step: currentStep + 1 }));
     } catch (error) {
       setModalMessage(String(error));
@@ -121,17 +115,14 @@ export default function Appointment_Part_Tracking({
     });
   };
 
-  const subtotal =
-    order?.data?.parts.reduce(
-      (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
-      0
-    ) ?? 0;
+  const subtotal = parts.reduce(
+    (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
+    0
+  );
 
   const vatAmount = (subtotal * (order?.data?.vat ?? 0)) / 100;
 
-  const calculateTotal = () => {
-    return subtotal + vatAmount;
-  };
+  const calculateTotal = () => subtotal + vatAmount;
 
   // Get working technicians from appointment data
   const workingTechnicians = data.technicians || [];
@@ -266,10 +257,14 @@ export default function Appointment_Part_Tracking({
               <SquareX size={20} />
               Cancel
             </ConfirmButton>
-            <ConfirmButton onClick={handleConfirmOrder}>
-              <CheckCircle size={20} />
-              Confirm Order
-            </ConfirmButton>
+            {isPending ? (
+              <SpinnerComponent />
+            ) : (
+              <ConfirmButton onClick={handleConfirmOrder}>
+                <CheckCircle size={20} />
+                Confirm Order
+              </ConfirmButton>
+            )}
           </ActionButton>
         </Card>
 
@@ -317,7 +312,7 @@ export default function Appointment_Part_Tracking({
       )}
       {isErrorModalOpen && (
         <FailedModal
-          header="Order Technician"
+          header="Order Confirm"
           message={modalMessage}
           action={handleCloseModal}
         />

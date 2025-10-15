@@ -25,8 +25,8 @@ export default function Staff_Appoinments() {
   const queryClient = useQueryClient();
   const name = AppointmentStatusEnum;
   const [sortBy, setSortBy] = useState("Pending");
-  // const [sortField, setSortField] = useState("id");
-  // const [sortOrder, setSortOrder] = useState("asc");
+  // const [sortField, setSortField] = useState("AppointmentDate");
+  // const [sortOrder, setSortOrder] = useState("desc");
   const [currenPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [selectedAppointment, setSelectedAppointment] =
