@@ -3,8 +3,7 @@
 // import OrderHistorySort from "../pages/Customer/CustomerComponent/OrderHistorySort";
 // import OrderHistoryCard from "../pages/Customer/OrderHistory/Orders/OrderHistoryCard";
 
-// import { SortDateButton } from "../pages/Staff/StaffComponents/SortDateButton";
-// import DateRangeButton from "../pages/Staff/StaffComponents/SortDateRange";
+import { SortDateButton } from "../pages/Staff/StaffComponents/SortDateButton";
 
 // import Error from "./StatusModal/FailModal";
 // import SuccessPopUp from "./StatusModal/SuccessModal";
@@ -24,8 +23,7 @@ export default function Test() {
       {/* <DropdownMenu /> */}
       {/* <SuccessPopUp message="Login Fail" header="Login" action={() => 1} /> */}
       {/* <Error header="Login" message="Login Success" action={() => 1} /> */}
-      {/* <SortDateButton onSort={() => 1} />
-      <DateRangeButton onDateChange={() => 1} /> */}
+      <SortDateButton onSort={() => 1} />
     </>
   );
 }
