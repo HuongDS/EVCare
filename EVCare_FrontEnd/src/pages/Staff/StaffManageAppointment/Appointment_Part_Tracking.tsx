@@ -24,7 +24,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import ReFreshButton from "../../../components/Button/ReFreshButton";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
-import { handleError } from "../../../utils/errorHandler";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
 import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
 import SpinnerComponent from "../../../components/SpinnerComponent";
