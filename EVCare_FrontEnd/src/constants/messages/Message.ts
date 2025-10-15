@@ -26,6 +26,7 @@ export const ERROR_MESSAGE = {
   CHANGE_APPOINTMENT_STATUS_FAILED: "Failed to cancel appointment! Try again!",
   COULD_NOT_FIND_SERVICE_INFORMATION: "Could not find service information",
   FAILED_TO_BANNED_ACCOUNT: "Failed to ban this account",
+  FAILED_TO_ADD_EMPLOYEE: "Failed to add employee",
 };
 
 export const MSG_TITLE = {
@@ -64,8 +65,7 @@ export const LIST_SERVICES_MESSAGE = {
 
 //List of appointment
 export const LIST_APPOINTMENTS_MESSAGE = {
-  EMPTY_PENDING: (status: string) =>
-    `There are currently no ${status} appointments`,
+  EMPTY_PENDING: (status: string) => `There are currently no ${status} appointments`,
   NO_APPOINTMENT_FOUND: "No appointments found for: ",
 };
 
