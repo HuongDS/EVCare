@@ -33,7 +33,7 @@ import {
   LazyApplication,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import Admin_Customer_Vehicle from "../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle.tsx";
-
+import Admin_Manage_Employee from "../pages/Admin/AdminManageEmployee/Admin_ManageEmployee.tsx";
 
 const router = createBrowserRouter([
   {
@@ -69,14 +69,7 @@ const router = createBrowserRouter([
       {
         path: "account-information",
         element: (
-          <ProtectedRoute
-            allowedRoles={[
-              RoleEnum.CUSTOMER,
-              RoleEnum.ADMIN,
-              RoleEnum.TECHNICIAN,
-              RoleEnum.STAFF,
-            ]}
-          >
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER, RoleEnum.ADMIN, RoleEnum.TECHNICIAN, RoleEnum.STAFF]}>
             <UserProfilePage />
           </ProtectedRoute>
         ),
@@ -96,6 +89,7 @@ const router = createBrowserRouter([
     children: [
       { path: "general", element: <Admin_General /> },
       { path: "manage-customers-and-vehicles", element: <Admin_Customer_Vehicle /> },
+      { path: "manage-employees", element: <Admin_Manage_Employee /> },
     ],
   },
   // STAFF ROUTES
