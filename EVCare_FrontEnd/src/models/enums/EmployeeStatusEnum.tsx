@@ -1,6 +1,7 @@
 //EmployeeStatus
 export enum EmployeeStatusEnum {
-  Available = 0,
-  Busy = 1,
-  OnLeave = 2,
+  Available = "Available",
+  Busy = "Busy",
+  OnLeave = "OnLeave",
+  All = "",
 }

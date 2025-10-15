@@ -5,6 +5,8 @@ import type { FullCustomerInfor } from "../models/CustomerModels/FullCustomerInf
 import type { PageResultDto } from "../models/PageResult/PageResultDto";
 import { handleError } from "../utils/errorHandler";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
+import type { EmployeeStatusEnum, RoleEnum } from "../models/enums";
+import type { EmployeeViewModel } from "../models/Employee/EmployeeViewModel";
 
 export async function getAllCustomerInformation(keyword: string, pageSize: number, pageIndex: number) {
   try {
@@ -32,5 +34,29 @@ export async function banAccount(accountId: number) {
       throw new Error(errMsg);
     }
     throw new Error(ERROR_MESSAGE.FAILED_TO_BANNED_ACCOUNT);
+  }
+}
+
+export async function getAllEmployee(
+  keyword: string,
+  role: RoleEnum,
+  status: EmployeeStatusEnum,
+  pageSize: number,
+  pageIndex: number
+) {
+  try {
+    const response = await api.get<ResponseDto<PageResultDto<EmployeeViewModel>>>("/api/Employee", {
+      params: {
+        keyword: keyword,
+        role: role,
+        status: status,
+        pageSize: pageSize,
+        pageIndex: pageIndex,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    throw error;
   }
 }
