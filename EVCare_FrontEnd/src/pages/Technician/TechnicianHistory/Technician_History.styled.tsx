@@ -91,7 +91,6 @@ export const SortSelect = styled.select`
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
   }
 `;
-
 export const AppointmentList = styled.div`
   display: flex;
   flex-direction: column;
