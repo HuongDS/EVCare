@@ -25,14 +25,14 @@ export default function TechnicianHistory() {
     []
   );
   const [statusFilter, setStatusFilter] = useState<
-    "All" | "Completed" | "Cancelled"
+    "All" | "Completed" | "Canceled"
   >("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchAppointments = async (
-    status?: "Completed" | "Cancelled" | "All"
+    status?: "Completed" | "Canceled" | "All"
   ) => {
     setLoading(true);
     try {
@@ -44,12 +44,12 @@ export default function TechnicianHistory() {
           PageIndex: 1,
           Status: "Completed",
         });
-        const cancelled = await getTechnicianAppointments({
+        const canceled = await getTechnicianAppointments({
           PageSize: 50,
           PageIndex: 1,
-          Status: "Cancelled",
+          Status: "Canceled",
         });
-        allItems = [...(completed.items ?? []), ...(cancelled.items ?? [])];
+        allItems = [...(completed.items ?? []), ...(canceled.items ?? [])];
       } else {
         const data = await getTechnicianAppointments({
           PageSize: 50,
@@ -117,10 +117,10 @@ export default function TechnicianHistory() {
         />
 
         <SortTable
-          sortName={["All", "Completed", "Cancelled"]}
+          sortName={["All", "Completed", "Canceled"]}
           active={statusFilter}
           onChange={(val) =>
-            setStatusFilter(val as "All" | "Completed" | "Cancelled")
+            setStatusFilter(val as "All" | "Completed" | "Canceled")
           }
         />
       </ControlsWrapper>
