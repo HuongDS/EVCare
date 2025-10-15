@@ -88,6 +88,7 @@ namespace DataAccess.Repositories
                                        .Distinct()
                                        .ToListAsync();
             await _dbContext.Employees
+                   .IgnoreQueryFilters()
                    .Where(e => e.Status == EmployeeStatusEnum.Available && activeTechnicianIds.Contains(e.TechnicianId.Value))
                    .ExecuteUpdateAsync(e => e.SetProperty(e => e.Status, _ => EmployeeStatusEnum.Busy));
 

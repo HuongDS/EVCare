@@ -46,8 +46,17 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<DataAccess.Entities.Application>> GetApplicationsToday()
         {
+            var tzVn = TimeZoneInfo.FindSystemTimeZoneById(
+                         OperatingSystem.IsWindows() ? "SE Asia Standard Time" : "Asia/Ho_Chi_Minh");
+
+            var utcNow = DateTime.UtcNow;
+            var vnNow = TimeZoneInfo.ConvertTimeFromUtc(utcNow, tzVn);
+            var todayVn = DateOnly.FromDateTime(vnNow);
+
             return await _dbSet
-                .Where(x => DateOnly.FromDateTime(x.DateOff) == DateOnly.FromDateTime(DateTime.Now) && x.Status == Enums.ApplicationStatusEnum.Approved)
+                .Where(x =>
+                    DateOnly.FromDateTime(x.DateOff) == todayVn &&
+                    x.Status == Enums.ApplicationStatusEnum.Approved)
                 .ToListAsync();
         }
 
