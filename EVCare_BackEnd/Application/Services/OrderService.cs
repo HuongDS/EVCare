@@ -189,6 +189,7 @@ namespace Application.Services
                         Quantity = part.Quantity,
                         TechnicianId = part.TechnicianId,
                         Price = originalPart.Price,
+                        ReplacementPrice = originalPart.ReplacementPrice
                     });
                 }
 
