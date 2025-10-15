@@ -22,6 +22,9 @@ import { formatCurrency } from "../../../utils/formatCurrency";
 import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
 import { useAppDispatch } from "../../../states/store";
 import { setStep } from "../../../states/appointmentSlice";
+import { useQueryClient } from "@tanstack/react-query";
+import type { ResponseDto } from "../../../models/OrderModel/UpdateOrderModel";
+import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
 
 interface PaymentPageProps {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -36,30 +39,35 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
   const { data: orderDetail } = useGetOrderDetail(data.orderId);
   const { mutateAsync: appointmentStatus } = changeAppointmentStatus();
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
 
   const handlePayment = async () => {
     try {
-      await handlePaymentMethod();
+      const response = await handlePaymentMethod();
+
+      if (paymentMethod === "PayOs" && response?.data) {
+        return;
+      }
+
+      await queryClient.invalidateQueries({
+        queryKey: ["Invoice", orderDetail?.data?.id],
+      });
+
       await appointmentStatus({
         appointmentId: data.id,
         status: "Done",
       });
-      dispatch(setStep({ id: data.id, step: currentStep + 2 }));
+
+      const newInvoice = queryClient.getQueryData<
+        ResponseDto<InvoiceViewModel>
+      >(["Invoice", orderDetail?.data?.id]);
+
+      if (newInvoice?.data?.status === "Completed") {
+        dispatch(setStep({ id: data.id, step: currentStep + 2 }));
+      }
     } catch (error) {
-      alert("error payment");
+      handleError(error);
     }
-  };
-
-  const subtotal =
-    orderDetail?.data?.parts.reduce(
-      (sum, part) => sum + part.price * part.quantity + part.replacementPrice,
-      0
-    ) ?? 0;
-
-  const vatAmount = (subtotal * (orderDetail?.data?.vat ?? 0)) / 100;
-
-  const calculateTotal = () => {
-    return subtotal + vatAmount;
   };
 
   //lấy qr code
@@ -74,11 +82,24 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
       if (paymentMethod === "PayOs" && response.data !== null) {
         setQrCode(response?.data || "");
       }
+      return response;
     } catch (error) {
       handleError(error);
       alert(error);
     }
-  }, [data.orderId, paymentMethod, paymentMethod]);
+  }, [orderDetail?.data?.id, orderDetail?.data?.price, paymentMethod]);
+
+  const subtotal =
+    orderDetail?.data?.parts.reduce(
+      (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
+      0
+    ) ?? 0;
+
+  const vatAmount = (subtotal * (orderDetail?.data?.vat ?? 0)) / 100;
+
+  const calculateTotal = () => {
+    return subtotal + vatAmount;
+  };
 
   return (
     <PageContainer>
@@ -143,7 +164,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
                       <td>{formatCurrency(part.replacementPrice)}</td>
                       <td>
                         {formatCurrency(
-                          part.price * part.quantity + part.replacementPrice
+                          (part.price + part.replacementPrice) * part.quantity
                         )}
                       </td>
                     </tr>
@@ -390,6 +411,16 @@ const PaymentBtn = styled(Button)<{ $selected: boolean }>`
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
+    }
+    
+    &:disabled {
+    opacity: 0.6 !important;
+    pointer-events: none !important;
+    background: #f0f0f0 !important;
+    color: #999 !important;
+    border-color: #ddd !important;
+    box-shadow: none !important;
+    transform: none !important;
     }
   `}
 `;

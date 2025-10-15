@@ -22,7 +22,7 @@ const ModalStyled = styled(Modal)`
   justify-content: center;
   top: 2%;
   .ant-modal-content {
-    width: 1200px !important;
+    width: 1000px !important;
     height: 95vh !important;
   }
 `;
