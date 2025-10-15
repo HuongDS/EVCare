@@ -6,13 +6,13 @@ import { useAppDispatch } from "../../../states/store";
 import { setStep } from "../../../states/appointmentSlice";
 import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
 import { CreateNewOrder } from "../../../services/orderServiceApi";
-// import { useState } from "react";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -21,7 +21,9 @@ interface Props {
 
 export default function Appointment_CheckIn({ data, currentStep }: Props) {
   const dispatch = useAppDispatch();
-  const order = CreateNewOrder();
+  const { mutateAsync: newOrder } = CreateNewOrder();
+  const { mutateAsync: appointmentStatus } = changeAppointmentStatus();
+  const queryClient = useQueryClient();
 
   const handleCheckIn = async (status: "CheckedIn" | "Canceled") => {
     try {
@@ -35,13 +37,15 @@ export default function Appointment_CheckIn({ data, currentStep }: Props) {
         created_At: new Date().toISOString(),
       };
 
-      const response = await order.mutateAsync(createNewOrderParams);
-      if (response.data) {
-        await changeAppointmentStatus(changeStatus);
-        dispatch(setStep({ id: data.id, step: currentStep + 1 }));
-      } else {
-        alert("Khong tao duoc order");
-      }
+      const response = await newOrder(createNewOrderParams);
+
+      data.orderId = response.data?.orderID || 0;
+
+      await appointmentStatus(changeStatus);
+
+      await queryClient.invalidateQueries({ queryKey: ["Staff Appointments"] });
+
+      dispatch(setStep({ id: data.id, step: currentStep + 1 }));
     } catch (error) {
       console.error("Error changing appointment status:", error);
     }

@@ -1,21 +1,17 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import AppointmentCard from "../Technician_Component/AppointmentCard";
-import LoadingOverlay from "../Technician_Component/LoadingOverlay";
 import SortTable from "../Technician_Component/SortTable";
 
 import {
   AppointmentWrapper,
   TitleWrapper,
   Title,
-  AppointmentList,
-  Watermark,
-  ErrorMessage,
 } from "./Technician_General.styled";
 
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
+import { CardListSection } from "../Technician_Component/CardListSection";
 
 export default function Technician_General() {
   const location = useLocation();
@@ -100,13 +96,11 @@ export default function Technician_General() {
     TechnicianWorkingSessionEnum.CONFIRM,
     TechnicianWorkingSessionEnum.INPROGRESS,
     TechnicianWorkingSessionEnum.COMPLETED,
-    TechnicianWorkingSessionEnum.CANCELLED,
+    TechnicianWorkingSessionEnum.CANCELED,
   ];
 
   return (
     <AppointmentWrapper>
-      {isLoading && <LoadingOverlay />}
-
       <TitleWrapper>
         <Title>Technician Jobs</Title>
       </TitleWrapper>
@@ -115,27 +109,22 @@ export default function Technician_General() {
         sortName={sortName}
         active={activeStatus}
         onChange={(val) => {
-          setActiveStatus(val);
-          fetchAppointments(val);
+          // ✅ Không reset layout, chỉ fetch lại card
+          if (val !== activeStatus) {
+            setActiveStatus(val);
+            fetchAppointments(val);
+          }
         }}
       />
 
-      {isError ? (
-        <ErrorMessage>Error loading technician appointments</ErrorMessage>
-      ) : appointments.length === 0 ? (
-        <Watermark>No appointments found</Watermark>
-      ) : (
-        <AppointmentList className={fade ? "fade-out" : ""}>
-          {appointments.map((item) => (
-            <AppointmentCard
-              key={item.id}
-              data={item}
-              onStatusChange={handleUpdateStatus}
-              onPartsUpdated={handlePartsUpdated}
-            />
-          ))}
-        </AppointmentList>
-      )}
+      <CardListSection
+        isError={isError}
+        fade={fade}
+        appointments={appointments}
+        onStatusChange={handleUpdateStatus}
+        onPartsUpdated={handlePartsUpdated}
+        isLoading={isLoading}
+      />
     </AppointmentWrapper>
   );
 }
