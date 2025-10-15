@@ -7,6 +7,7 @@ import { handleError } from "../utils/errorHandler";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import type { EmployeeStatusEnum, RoleEnum } from "../models/enums";
 import type { EmployeeViewModel } from "../models/Employee/EmployeeViewModel";
+import type { EmployeeRegisterDto } from "../models/Employee/EmployeeRegisterDto";
 
 export async function getAllCustomerInformation(keyword: string, pageSize: number, pageIndex: number) {
   try {
@@ -58,5 +59,18 @@ export async function getAllEmployee(
   } catch (error) {
     handleError(error);
     throw error;
+  }
+}
+
+export async function addEmployee(data: EmployeeRegisterDto) {
+  try {
+    await api.post("/api/Auth/register-for-employee", data);
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FAILED_TO_ADD_EMPLOYEE;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.FAILED_TO_ADD_EMPLOYEE);
   }
 }
