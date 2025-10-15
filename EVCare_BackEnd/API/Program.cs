@@ -351,9 +351,7 @@ app.UseHangfireServer();
 RecurringJob.AddOrUpdate<IAppointmentExpiryJob>("cancel-expired-appointments-daily-7am", job => job.CancelAppointment(), Cron.Daily(7), tzVn);
 RecurringJob.AddOrUpdate<IReminderService>("reminder-service", job => job.SendEmailRemindersAsync(), Cron.Daily(10), tzVn);
 RecurringJob.AddOrUpdate<IAttendanceService>("attendance-service", job => job.MarkAttendanceAsync(), Cron.Daily(5), tzVn);
-RecurringJob.AddOrUpdate("keep-alive",
-    () => new HttpClient().GetAsync("https://evcare-begpg9dchmcsddej.southeastasia-01.azurewebsites.net/api/Health")
-    , "*/10 * * * *", tzVn);
+
 
 app.MapControllers();
 //app.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
