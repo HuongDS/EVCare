@@ -12,7 +12,6 @@ namespace DataAccess.Dtos.Employees
     {
         public RoleEnum role { get; set; }
         public string CCCD { get; set; }
-        public decimal baseSalary { get; set; }
         public double expYear { get; set; }
         public RegisterRequestDto accountInfo { get; set; }
 

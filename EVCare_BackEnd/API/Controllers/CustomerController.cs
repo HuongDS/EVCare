@@ -57,7 +57,7 @@ namespace API.Controllers
         }
 
         [HttpGet()]
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles="Admin,Staff")]
         public async Task<IActionResult> GetAllCustomers([FromQuery]CustomerQueryDto model)
         {
             try
