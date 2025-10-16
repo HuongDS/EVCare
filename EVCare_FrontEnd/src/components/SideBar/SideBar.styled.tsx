@@ -72,6 +72,7 @@ export const MenuStyled = styled(Menu)`
     border-radius: 30px;
     color: white;
     font-weight: 600;
+    width: 90%;
 
     a {
       color: white !important;
