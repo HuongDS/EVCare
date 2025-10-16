@@ -4,17 +4,19 @@ import { useGetAllCategory } from "../../../services/serviceServicesApi";
 import FilterService from "./section/FilterService";
 import ReviewSection from "./section/ReviewSection";
 import SearchBar from "../../../components/SearchBar/Search";
+
 import type { ReviewResponseDto } from "../../../models/Review/ReviewResponseDto";
 import * as S from "./Review.styled";
+import Banner from "./section/Banner";
+import ClickSpark from "../../../components/ClickEffect/ClickEffect";
 
 export default function ReviewServicePage() {
-  const [selectedServices, setSelectedServices] = useState<number[]>([]); // ✅ nhiều lựa chọn
+  const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [reviews, setReviews] = useState<ReviewResponseDto[]>([]);
 
   const { isLoading } = useGetAllCategory();
 
-  // ✅ Fetch tất cả review 1 lần
   useEffect(() => {
     (async () => {
       const reviewRes = await getAllReview();
@@ -22,7 +24,6 @@ export default function ReviewServicePage() {
     })();
   }, []);
 
-  // ✅ Lọc theo nhiều service được chọn
   const filteredByService = useMemo(() => {
     if (selectedServices.length === 0) return reviews;
     return reviews.filter((r) =>
@@ -38,20 +39,17 @@ export default function ReviewServicePage() {
 
     if (!normalizedKeyword) return filteredByService;
 
-    const keywords = normalizedKeyword.split(" "); // tách từng từ khóa
+    const keywords = normalizedKeyword.split(" ");
 
     return filteredByService.filter((r) =>
       r.services.some((s) => {
         const name = s.name.toLowerCase();
-        // match nếu tất cả từ khóa đều xuất hiện trong service name
         return keywords.every((kw) => name.includes(kw));
       })
     );
   }, [filteredByService, searchKeyword]);
 
-  const handleSearchChange = (value: string) => {
-    setSearchKeyword(value);
-  };
+  const handleSearchChange = (value: string) => setSearchKeyword(value);
 
   const handleSelectService = (serviceId: number) => {
     setSelectedServices((prev) =>
@@ -64,21 +62,33 @@ export default function ReviewServicePage() {
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <S.Container>
-      <S.Sidebar>
-        <FilterService
-          selectedServices={selectedServices}
-          onSelectService={handleSelectService}
-        />
-      </S.Sidebar>
-
-      <S.MainContent>
-        <SearchBar
-          placeholder="Search reviews by service name..."
-          handleSearchValue={handleSearchChange}
-        />
-        <ReviewSection reviews={filteredReviews} />
-      </S.MainContent>
-    </S.Container>
+    <>
+      <ClickSpark
+        sparkColor="#16a34a"
+        sparkSize={10}
+        sparkRadius={15}
+        sparkCount={8}
+        duration={400}
+      >
+        <Banner />
+        <S.Container>
+          <S.Sidebar>
+            <FilterService
+              selectedServices={selectedServices}
+              onSelectService={handleSelectService}
+            />
+          </S.Sidebar>
+          <S.MainContent>
+            <S.SearchWrapper>
+              <SearchBar
+                placeholder="Search"
+                handleSearchValue={handleSearchChange}
+              />
+            </S.SearchWrapper>
+            <ReviewSection reviews={filteredReviews} />
+          </S.MainContent>
+        </S.Container>
+      </ClickSpark>
+    </>
   );
 }
