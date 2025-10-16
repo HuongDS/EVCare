@@ -4,17 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using DataAccess.Dtos.Part;
+using DataAccess.Dtos.PartCategory;
 using DataAccess.Entities;
 
 namespace Application.Mappings
 {
-    public class PartProfile : Profile
+    public class PartCategoryProfile : Profile
     {
-        public PartProfile()
+        public PartCategoryProfile()
         {
-            CreateMap<PartViewModel, Part>();
-            CreateMap<PartStaffUpdateModel, Part>();
+            CreateMap<PartCategoryCreateModel, PartCategory>();
         }
     }
 }

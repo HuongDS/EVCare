@@ -11,6 +11,7 @@ namespace Application.Interfaces
 {
     public interface IPartCategoryService
     {
+        Task<int> CreateCategory(PartCategoryCreateModel model);
         public Task<PageResultDto<PartCategoryViewModel>> GetCategories(CategoryQueryDto model);
        
     }
