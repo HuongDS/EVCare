@@ -103,8 +103,15 @@ export const useDownloadInvoice = (orderId: number) => {
     queryKey: ["DownloadInvoice", orderId],
     queryFn: async () => {
       try {
-        const respone = await api.get<string>(`/api/Invoice/${orderId}/print`);
-        return respone.data;
+        const response = await api.get(`/api/Invoice/${orderId}/print`, {
+          responseType: "blob",
+          headers: {
+            Accept: "application/pdf",
+          },
+        });
+        const blob = new Blob([response.data], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(blob);
+        return url;
       } catch (error) {
         handleError(error);
         if (axios.isAxiosError(error)) {

@@ -8,6 +8,7 @@ using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
 using DataAccess.Enums;
 using DataAccess.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.Services
 {
@@ -78,6 +79,8 @@ namespace Application.Services
         {
             try
             {
+               
+
                 await _appointmentRepository.UpdateAppointmentStatusAsync(data.appointmentID, data.status);
                 return data.appointmentID;
             }
@@ -170,9 +173,26 @@ namespace Application.Services
         public async Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(model.AppointmentId);
+
             if (appointment == null)
             {
                 throw new Exception("Appointment not found");
+            }
+           
+            if (appointment.Status == AppointmentStatusEnum.Done || appointment.Status == AppointmentStatusEnum.Canceled)
+            {
+                throw new Exception("Cannot update status of completed or canceled appointment");
+            }
+            if (model.Status == AppointmentStatusEnum.CheckedIn)
+            {
+                var utcNow = DateTime.UtcNow;
+                var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                var vnTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vnZone);
+                if (DateOnly.FromDateTime(appointment.Appointment_Date) != DateOnly.FromDateTime(vnTime))
+                {
+                    throw new Exception("Can only check-in on the day of the appointment");
+                }
+
             }
             _mapper.Map(model, appointment);
             if(appointment.Employee == null) appointment.EmployeeId = employeeId;

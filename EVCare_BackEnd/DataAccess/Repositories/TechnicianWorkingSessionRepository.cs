@@ -58,6 +58,15 @@ namespace DataAccess.Repositories
 
         }
 
+        public async Task MakeAvaliable(int id)
+        {
+            var technicianId = await _dbContext.TechnicianWorkingSessions
+                .Where(x => x.OrderId == id)
+                .Select(x => x.TechnicianId).ToListAsync();
+            await _dbContext.Employees.Where(x => technicianId.Contains(x.Technician.Id)).ExecuteUpdateAsync(x=>x.SetProperty(s=>s.Status, Enums.EmployeeStatusEnum.Available));
+
+        }
+
         public async Task MakeCancel(int id)
         {
             await _dbContext.TechnicianWorkingSessions.Where(x => x.OrderId == id).ExecuteUpdateAsync(
