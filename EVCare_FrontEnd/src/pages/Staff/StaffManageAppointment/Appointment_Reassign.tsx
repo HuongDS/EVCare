@@ -77,7 +77,6 @@ export default function Appointment_Reassign({ show, close, data }: props) {
   const { mutateAsync: reAssign } = useAssignTechnician();
   const queryClient = useQueryClient();
   const handleReAssign = async () => {
-    console.log("dang cho");
     try {
       await reAssign({
         orderId: data.orderId,
@@ -86,7 +85,6 @@ export default function Appointment_Reassign({ show, close, data }: props) {
       });
       queryClient.invalidateQueries({ queryKey: ["Staff Appointments"] });
       setSelectedTechnicians([]);
-      close();
       setIsSuccessModalOpen(true);
       setModalMessage("ReAssign Technicians successfully");
     } catch (error) {
@@ -99,6 +97,7 @@ export default function Appointment_Reassign({ show, close, data }: props) {
   const handleCloseModal = () => {
     setIsErrorModalOpen(false);
     setIsSuccessModalOpen(false);
+    close();
   };
 
   return (

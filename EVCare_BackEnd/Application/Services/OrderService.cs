@@ -107,10 +107,12 @@ namespace Application.Services
             if(order.Status == OrderStatusEnum.Canceled)
             {
                 await _technicianWorkingSessionRepository.MakeCancel(order.Id);
+                await _technicianWorkingSessionRepository.MakeAvaliable(order.Id);
             }
             if(order.Status == OrderStatusEnum.Processing)
             {
                 await _technicianWorkingSessionRepository.MakeProcessing(order.Id);
+               
             }
             await _orderRepository.UpdateAsync(order);
             return new ResponseDto<OrderResponseDto>
@@ -189,6 +191,7 @@ namespace Application.Services
                         Quantity = part.Quantity,
                         TechnicianId = part.TechnicianId,
                         Price = originalPart.Price,
+                        ReplacementPrice = originalPart.ReplacementPrice
                     });
                 }
 

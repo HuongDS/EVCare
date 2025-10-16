@@ -1,32 +1,18 @@
 import { useState } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import styled from "styled-components";
 
-type SortOrder = "newest" | "oldest" | "none";
+type SortOrder = "asc" | "desc";
 
 interface SortDateButtonProps {
   onSort: (order: SortOrder) => void;
+  disabled: boolean;
 }
 
-export const SortDateButton = ({ onSort }: SortDateButtonProps) => {
-  const [sortOrder, setSortOrder] = useState<SortOrder>("none");
+export const SortDateButton = ({ onSort, disabled }: SortDateButtonProps) => {
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
-  const buttonStyle: React.CSSProperties = {
-    background: "linear-gradient(to right, #6366f1, #191b7f)",
-    color: "white",
-    fontFamily: "'Outfit', sans-serif",
-    fontWeight: "600",
-    padding: "4px 8px",
-    borderRadius: "12px",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "16px",
-    boxShadow:
-      "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-    transition: "all 0.3s ease",
-  };
+  const buttonStyle: React.CSSProperties = {};
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -41,12 +27,10 @@ export const SortDateButton = ({ onSort }: SortDateButtonProps) => {
   const handleClick = () => {
     let newOrder: SortOrder;
 
-    if (sortOrder === "none") {
-      newOrder = "newest";
-    } else if (sortOrder === "newest") {
-      newOrder = "oldest";
+    if (sortOrder === "desc") {
+      newOrder = "asc";
     } else {
-      newOrder = "none";
+      newOrder = "desc";
     }
 
     setSortOrder(newOrder);
@@ -55,9 +39,9 @@ export const SortDateButton = ({ onSort }: SortDateButtonProps) => {
 
   const getIcon = () => {
     switch (sortOrder) {
-      case "newest":
+      case "desc":
         return <ArrowDown size={20} />;
-      case "oldest":
+      case "asc":
         return <ArrowUp size={20} />;
       default:
         return <ArrowUpDown size={20} />;
@@ -66,24 +50,50 @@ export const SortDateButton = ({ onSort }: SortDateButtonProps) => {
 
   const getText = () => {
     switch (sortOrder) {
-      case "newest":
+      case "desc":
         return "Newest";
-      case "oldest":
+      case "asc":
         return "Oldest";
       default:
-        return "Default";
+        return "Newest";
     }
   };
 
   return (
-    <button
+    <ButtonStyled
       onClick={handleClick}
       style={dynamicStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      disabled={disabled}
     >
       {getIcon()}
       {getText()}
-    </button>
+    </ButtonStyled>
   );
 };
+
+const ButtonStyled = styled.button`
+  background: linear-gradient(to right, #00ad4e, #67f68b);
+  color: white;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  padding: 2px 4px;
+  margin-right: 2%;
+  height: 35px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+
+  &:disabled {
+    background: #ccc;
+    color: #686868;
+  }
+`;

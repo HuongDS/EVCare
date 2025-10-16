@@ -72,6 +72,7 @@ export const MenuStyled = styled(Menu)`
     border-radius: 30px;
     color: white;
     font-weight: 600;
+    width: 90%;
 
     a {
       color: white !important;
@@ -84,7 +85,6 @@ export const MenuStyled = styled(Menu)`
 
   .ant-menu-item:hover,
   .ant-menu-submenu-title:hover {
-    background: rgba(24, 144, 255, 0.1);
     color: #00ad4e;
     border-radius: 30px;
   }

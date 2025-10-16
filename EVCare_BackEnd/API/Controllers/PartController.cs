@@ -19,8 +19,8 @@ namespace API.Controllers
             _partService = partService;
         }
         [HttpGet]
-        [Authorize(Roles ="Technician")]
-        public async Task<IActionResult> GetAllParts([FromQuery]PartQueryDto model)
+        [Authorize(Roles = "Technician")]
+        public async Task<IActionResult> GetAllParts([FromQuery] PartQueryDto model)
         {
             try
             {
@@ -41,9 +41,60 @@ namespace API.Controllers
                     data = null,
                     message = ex.Message,
                     statusCode = HttpStatus.BAD_REQUEST,
-                }); 
+                });
 
             }
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreatePart(PartCreateModel model)
+        {
+            try
+            {
+                var data = await _partService.CreateAPart(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.CREATED,
+                    message = Message.PART_CREATE_SUCCESSFULLY,
+                    data = data
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdatePart([FromQuery]int id,[FromBody]PartAdminUpdateModel model)
+        {
+            try
+            {
+                await _partService.UpdateAPart(id,model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.PART_UPDATE_SUCCESSFULLY,
+                   
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
+
     }
 }

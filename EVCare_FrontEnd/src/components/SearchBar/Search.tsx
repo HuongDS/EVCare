@@ -11,7 +11,7 @@ const SearchBar = ({
   searchValue,
 }: handleSearchProps) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleSearchValue(event.target.value);
+    handleSearchValue(event.target.value.trim());
   };
   return (
     <StyledWrapper>
