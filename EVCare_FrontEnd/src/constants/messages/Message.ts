@@ -39,6 +39,7 @@ export const MSG_TITLE = {
   BAN_ACCOUNT: "Ban Account",
   REVIEW: "Review",
   CREATE_APPOINTMENT: "Create Appointment",
+  ADD_EMPLOYEE: "Add Employee",
 };
 
 export const SUCCESS_MESSAGE = {
