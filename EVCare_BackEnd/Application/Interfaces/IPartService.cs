@@ -11,7 +11,8 @@ namespace Application.Interfaces
     public interface IPartService
     {
         Task<int> CreateAPart(PartCreateModel model);
+        Task DeleteAPart(int id);
         Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model);
-        Task UpdateAPart(int id,PartAdminUpdateModel model);
+        Task UpdateAPart(int id,PartStaffUpdateModel model);
     }
 }
