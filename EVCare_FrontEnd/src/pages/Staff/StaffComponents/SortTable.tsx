@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router";
 import styled from "styled-components";
+import { SortDateButton } from "./SortDateButton";
 
+const SortWrapperStyled = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 const Container = styled.div`
   display: flex;
   gap: 8px;
@@ -85,30 +91,40 @@ const Category = styled(Link)<CategoryProps>`
 
 interface MyComponentProps {
   sortName: string[];
-  handleSortBy: (v: string) => void;
+  setSortBy: (v: string) => void;
+  setSortOrder: (v: string) => void;
+  disabled: boolean;
 }
 
-const SortTable: React.FC<MyComponentProps> = ({ sortName, handleSortBy }) => {
+const SortTable: React.FC<MyComponentProps> = ({
+  sortName,
+  setSortBy,
+  setSortOrder,
+  disabled,
+}) => {
   const [activeCategory, setActiveCategory] = useState<string>(sortName[0]);
 
   const selectCategory = (category: string) => {
     setActiveCategory(category);
-    handleSortBy(category.trim().replace(/\s+/g, ""));
+    setSortBy(category.trim().replace(/\s+/g, ""));
   };
 
   return (
-    <Container>
-      {sortName.map((name) => (
-        <Category
-          to={`/staff/appointments`}
-          key={name}
-          $active={activeCategory === name}
-          onClick={() => selectCategory(name)}
-        >
-          {name}
-        </Category>
-      ))}
-    </Container>
+    <SortWrapperStyled>
+      <Container>
+        {sortName.map((name) => (
+          <Category
+            to={`/staff/appointments`}
+            key={name}
+            $active={activeCategory === name}
+            onClick={() => selectCategory(name)}
+          >
+            {name}
+          </Category>
+        ))}
+      </Container>
+      <SortDateButton onSort={setSortOrder} disabled={disabled} />
+    </SortWrapperStyled>
   );
 };
 
