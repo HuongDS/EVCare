@@ -6,6 +6,7 @@ const BORDER = "#e3e8e5";
 const TEXT_MAIN = "#1f2937";
 
 export const Container = styled.div`
+  font-family: "Outfit", sans-serif;
   display: flex;
   gap: 28px;
   padding: 32px;
@@ -19,8 +20,8 @@ export const Container = styled.div`
   }
 `;
 
-/* 🎯 Sidebar filter */
 export const Sidebar = styled.aside`
+  font-family: "Outfit", sans-serif;
   flex: 0 0 260px;
   background: #ffffff;
   border-radius: 20px;
@@ -45,9 +46,10 @@ export const Sidebar = styled.aside`
   }
 `;
 
-/* 💬 Main content */
 export const MainContent = styled.main`
   flex: 1;
+  display: flex;
+  flex-direction: column;
   background: #ffffff;
   border-radius: 20px;
   border: 1px solid ${BORDER};
@@ -77,7 +79,6 @@ export const MainContent = styled.main`
   }
 `;
 
-/* 🧭 Title section */
 export const Title = styled.h2`
   font-size: 1.6rem;
   font-weight: 700;
@@ -97,29 +98,12 @@ export const Title = styled.h2`
   }
 `;
 
-/* 🔍 Search bar wrapper */
 export const SearchWrapper = styled.div`
   margin-bottom: 24px;
   position: relative;
-
-  input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid ${BORDER};
-    border-radius: 12px;
-    font-size: 0.95rem;
-    transition: all 0.25s ease;
-    background: #fafbfc;
-
-    &:focus {
-      border-color: ${PRIMARY};
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
-      background: #ffffff;
-    }
-  }
+  align-self: center;
 `;
 
-/* 🧩 Card grid (ReviewSection layout) */
 export const CardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

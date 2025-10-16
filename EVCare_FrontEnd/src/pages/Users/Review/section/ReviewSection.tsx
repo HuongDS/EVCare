@@ -16,6 +16,7 @@ import {
   CustomerReview,
 } from "./ReviewSection.styled";
 import StarRating from "../../../../components/Review/StartRating";
+import ClickSpark from "../../../../components/ClickEffect/ClickEffect";
 
 interface ReviewSectionProps {
   reviews: ReviewResponseDto[];
@@ -25,39 +26,47 @@ export default function ReviewSection({ reviews }: ReviewSectionProps) {
   if (!reviews.length) return <div>No reviews yet.</div>;
 
   return (
-    <ReviewContainer>
-      {reviews.map((review) => (
-        <ReviewCard key={review.id}>
-          <HeadSection>
-            <HeadLeft>
-              <Avatar>{review.customerName.charAt(0).toUpperCase()}</Avatar>
-              <CustomerName>{review.customerName}</CustomerName>
-            </HeadLeft>
-            <HeadRight>
-              <CreateAt>
-                {new Date(review.createdAt).toLocaleDateString("en-GB")}
-              </CreateAt>
-            </HeadRight>
-          </HeadSection>
+    <ClickSpark
+      sparkColor="#16a34a"
+      sparkSize={10}
+      sparkRadius={15}
+      sparkCount={8}
+      duration={400}
+    >
+      <ReviewContainer>
+        {reviews.map((review) => (
+          <ReviewCard key={review.id}>
+            <HeadSection>
+              <HeadLeft>
+                <Avatar>{review.customerName.charAt(0).toUpperCase()}</Avatar>
+                <CustomerName>{review.customerName}</CustomerName>
+              </HeadLeft>
+              <HeadRight>
+                <CreateAt>
+                  {new Date(review.createdAt).toLocaleDateString("en-GB")}
+                </CreateAt>
+              </HeadRight>
+            </HeadSection>
 
-          <Divider />
+            <Divider />
 
-          <BodySection>
-            <ServiceList>
-              {review.services.map((s) => s.name).join(", ")}
-            </ServiceList>
+            <BodySection>
+              <ServiceList>
+                {review.services.map((s) => s.name).join(", ")}
+              </ServiceList>
 
-            <ExpRow>
-              <ExpLabel>Customer’s Experience</ExpLabel>
-              <StarRating rating={review.rating} onRate={() => {}} />
-            </ExpRow>
+              <ExpRow>
+                <ExpLabel>Customer’s Experience</ExpLabel>
+                <StarRating rating={review.rating} onRate={() => {}} />
+              </ExpRow>
 
-            <CustomerReview
-              dangerouslySetInnerHTML={{ __html: review.content }}
-            />
-          </BodySection>
-        </ReviewCard>
-      ))}
-    </ReviewContainer>
+              <CustomerReview
+                dangerouslySetInnerHTML={{ __html: review.content }}
+              />
+            </BodySection>
+          </ReviewCard>
+        ))}
+      </ReviewContainer>
+    </ClickSpark>
   );
 }
