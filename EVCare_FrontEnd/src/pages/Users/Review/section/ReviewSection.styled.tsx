@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const COLORS = {
-  primary: "#16a34a", // ✅ đổi sang màu chủ đạo mới
+  primary: "#16a34a",
   grayDark: "#222",
   grayMedium: "#666",
   grayLight: "#f5f5f5",
@@ -14,6 +14,7 @@ const BREAKPOINTS = {
 };
 
 export const ReviewContainer = styled.div`
+  font-family: "Outfit", sans-serif;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -30,10 +31,11 @@ export const ReviewContainer = styled.div`
 `;
 
 export const ReviewCard = styled.div`
+  font-family: "Outfit", sans-serif;
   background: #fff;
   border-radius: 12px;
   padding: 20px;
-  border-left: 5px solid ${COLORS.primary}; /* ✅ thêm viền màu chủ đạo */
+  border-left: 5px solid ${COLORS.primary};
   box-shadow: 0 2px 8px rgba(22, 163, 74, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
