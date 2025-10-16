@@ -34,6 +34,7 @@ import {
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import Admin_Customer_Vehicle from "../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle.tsx";
 import Admin_Manage_Employee from "../pages/Admin/AdminManageEmployee/Admin_ManageEmployee.tsx";
+import AddEmployee from "../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee.tsx";
 
 const router = createBrowserRouter([
   {
@@ -90,6 +91,7 @@ const router = createBrowserRouter([
       { path: "general", element: <Admin_General /> },
       { path: "manage-customers-and-vehicles", element: <Admin_Customer_Vehicle /> },
       { path: "manage-employees", element: <Admin_Manage_Employee /> },
+      { path: "add-employee", element: <AddEmployee /> },
     ],
   },
   // STAFF ROUTES
