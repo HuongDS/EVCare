@@ -14,6 +14,7 @@ import {
   ShoppingOutlined,
   SolutionOutlined,
   TeamOutlined,
+  UserAddOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -67,7 +68,13 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "6",
-      icon: <LogoutOutlined size={20} />,
+      icon: <UserAddOutlined />,
+      label: "Add Employee",
+      route: "/admin/add-employee",
+    },
+    {
+      key: "7",
+      icon: <LogoutOutlined />,
       label: "Logout",
       action: () => logout,
     },
