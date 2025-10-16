@@ -355,7 +355,7 @@ namespace DataAccess.Repositories
                 .Include(x => x.Order).ThenInclude(x => x.OrderParts)
                 .Select(x => new PaymentPendingPickupEmailModel
                 {
-                    Amount = x.Order.OrderParts.Sum(x => x.Price * x.Quantity),
+                    Amount = x.Order.OrderParts.Sum(x => (x.Price + x.ReplacementPrice) * x.Quantity) * (1 + center.Vat / 100m),
                     CloseDate = center.WorkEndDay,
                     CloseTime = center.CloseTime,
                     CompletedAt = DateTime.Now,

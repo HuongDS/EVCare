@@ -43,7 +43,8 @@ namespace DataAccess.Repositories
                         Price = x.Price,
                         Quantity = x.Quantity,
                         TechnicianId = x.TechnicianId,
-                        ReplacementPrice = x.Part.ReplacementPrice
+                        ReplacementPrice = x.Part.ReplacementPrice,
+                        Stock = x.Part.Stock
 
                     }),
                     Vat = center.Vat,
