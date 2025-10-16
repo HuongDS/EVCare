@@ -13,6 +13,7 @@ import type {
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { useQueryClient } from "@tanstack/react-query";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -22,7 +23,8 @@ interface Props {
 export default function Appointment_CheckIn({ data, currentStep }: Props) {
   const dispatch = useAppDispatch();
   const { mutateAsync: newOrder } = CreateNewOrder();
-  const { mutateAsync: appointmentStatus } = changeAppointmentStatus();
+  const { mutateAsync: appointmentStatus, isPending } =
+    changeAppointmentStatus();
   const queryClient = useQueryClient();
 
   const handleCheckIn = async (status: "CheckedIn" | "Canceled") => {
@@ -107,12 +109,16 @@ export default function Appointment_CheckIn({ data, currentStep }: Props) {
           backgroundColor="#f1f1f1"
           action={() => handleCheckIn("Canceled")}
         />
-        <ButtonAction
-          text="Check In"
-          color="white"
-          backgroundColor="#00AD4E"
-          action={() => handleCheckIn("CheckedIn")}
-        />
+        {isPending ? (
+          <SpinnerComponent />
+        ) : (
+          <ButtonAction
+            text="Check In"
+            color="white"
+            backgroundColor="#00AD4E"
+            action={() => handleCheckIn("CheckedIn")}
+          />
+        )}
       </ButtonWapper>
     </>
   );

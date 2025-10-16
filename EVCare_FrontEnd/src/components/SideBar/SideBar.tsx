@@ -37,32 +37,32 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
   [RoleEnum.ADMIN]: [
     {
       key: "1",
-      icon: <HomeOutlined />,
+      icon: <HomeOutlined size={20} />,
       label: "General",
       route: "/admin/general",
     },
     {
       key: "2",
-      icon: <SolutionOutlined />,
+      icon: <SolutionOutlined size={20} />,
       label: "Customer & Vehicle",
       route: "/admin/manage-customers-and-vehicles",
     },
     {
       key: "3",
-      icon: <TeamOutlined />,
+      icon: <TeamOutlined size={20} />,
       label: "Manage Employees",
       route: "/admin/manage-employees",
     },
 
     {
       key: "4",
-      icon: <LineChartOutlined />,
+      icon: <LineChartOutlined size={20} />,
       label: "Finance & Reports",
       route: "/admin/finance-reports",
     },
     {
       key: "5",
-      icon: <QuestionCircleOutlined />,
+      icon: <QuestionCircleOutlined size={20} />,
       label: "Help & Information",
       route: "/admin/help",
     },
@@ -82,43 +82,43 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
   [RoleEnum.STAFF]: [
     {
       key: "1",
-      icon: <HomeOutlined />,
+      icon: <HomeOutlined size={20} />,
       label: "General",
       route: "/staff/general",
     },
     {
       key: "2",
-      icon: <InboxOutlined />,
+      icon: <InboxOutlined size={20} />,
       label: "Inventory",
       route: "/staff/inventory",
     },
     {
       key: "3",
-      icon: <TeamOutlined />,
+      icon: <TeamOutlined size={20} />,
       label: "Technicians",
       route: "/staff/technicians",
     },
     {
       key: "4",
-      icon: <UserOutlined />,
+      icon: <UserOutlined size={20} />,
       label: "Customers",
       route: "/staff/customers",
     },
     {
       key: "5",
-      icon: <ShoppingOutlined />,
+      icon: <ShoppingOutlined size={20} />,
       label: "Appointments",
       route: "/staff/appointments",
     },
     {
       key: "6",
-      icon: <SolutionOutlined />,
+      icon: <SolutionOutlined size={20} />,
       label: "Application",
       route: "/staff/customers",
     },
     {
       key: "8",
-      icon: <LogoutOutlined />,
+      icon: <LogoutOutlined size={20} />,
       label: "Logout",
       action: () => logout,
     },
@@ -126,37 +126,37 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
   [RoleEnum.TECHNICIAN]: [
     {
       key: "1",
-      icon: <HomeOutlined />,
+      icon: <HomeOutlined size={20} />,
       label: "General",
       route: "/technician",
     },
     {
       key: "2",
-      icon: <ApartmentOutlined />,
+      icon: <ApartmentOutlined size={20} />,
       label: "My Jobs",
       route: "/technician/my-jobs",
     },
     {
       key: "3",
-      icon: <CalendarOutlined />,
+      icon: <CalendarOutlined size={20} />,
       label: "Schedule",
       route: "/technician/schedule",
     },
     {
       key: "4",
-      icon: <ClockCircleOutlined />,
+      icon: <ClockCircleOutlined size={20} />,
       label: "History",
       route: "/technician/history",
     },
     {
       key: "5",
-      icon: <SolutionOutlined />,
+      icon: <SolutionOutlined size={20} />,
       label: "Application",
       route: "/technician/application",
     },
     {
       key: "6",
-      icon: <LogoutOutlined />,
+      icon: <LogoutOutlined size={20} />,
       label: "Logout",
       action: () => logout,
     },
@@ -176,7 +176,9 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
   useEffect(() => {
     const currentPath = window.location.pathname;
-    const foundKey = menuByRole[role].find((item) => item.route === currentPath)?.key;
+    const foundKey = menuByRole[role].find(
+      (item) => item.route === currentPath
+    )?.key;
 
     if (foundKey) {
       setSelectedKey([foundKey]);

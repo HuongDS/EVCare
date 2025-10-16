@@ -2,7 +2,10 @@ import styled from "styled-components";
 import { Calendar, Phone, User, Car, FileText, CreditCard } from "lucide-react";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate, formatDateNoTime } from "../../../utils/formatDate";
-import { useGetInvoice } from "../../../services/invoicesService";
+import {
+  useDownloadInvoice,
+  useGetInvoice,
+} from "../../../services/invoicesService";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import type {
   TechnicianModel,
@@ -10,6 +13,7 @@ import type {
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { useGetOrderDetail } from "../../../services/orderServiceApi";
 import { DownloadButton } from "../../../components/Button/PrintButton";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 type InvoicePageProps = {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -33,24 +37,29 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
   };
 
   //hàm tải invoice
-  // const { refetch } = useDownloadInvoice(orderDetail?.data?.id ?? 0);
+  const { refetch, isLoading } = useDownloadInvoice(orderDetail?.data?.id ?? 0);
 
-  // const handleDownloadInvoice = async () => {
-  //   const { data: url } = await refetch();
-  // //   // if (url) {
-  // //   //   const a = document.createElement("a");
-  // //   //   a.href = url;
-  // //   //   a.download = "invoice.pdf";
-  // //   //   document.body.appendChild(a);
-  // //   //   a.click();
-  // //   //   a.remove();
-  // //   // }
-  // //   // console.log(url);
-  // // };
+  const handleDownloadInvoice = async () => {
+    const { data: url } = await refetch();
+    if (url) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `invoice_${orderDetail?.data?.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+  };
   return (
     <PageContainer>
       <InvoiceWrapper>
-        <DownloadButton action={() => 1} />
+        {isLoading ? (
+          <SpinStyled>
+            <SpinnerComponent />
+          </SpinStyled>
+        ) : (
+          <DownloadButton action={handleDownloadInvoice} />
+        )}
         <InvoiceContainer>
           {/* Header */}
           <InvoiceHeader>
@@ -511,4 +520,10 @@ const InvoiceFooter = styled.div`
   @media (max-width: 768px) {
     padding: 20px;
   }
+`;
+
+const SpinStyled = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 10px;
 `;

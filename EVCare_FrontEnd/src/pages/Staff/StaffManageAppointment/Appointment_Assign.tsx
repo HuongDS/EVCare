@@ -14,6 +14,7 @@ import { setStep } from "../../../states/appointmentSlice";
 import { handleError } from "../../../utils/errorHandler";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 interface AssignedTechnician {
   technicianID: number;
@@ -78,7 +79,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
     .flat();
 
   //Thay đổi appointment status - gán technicians vào appointment
-  const { mutateAsync: assignTech } = useAssignTechnician();
+  const { mutateAsync: assignTech, isPending } = useAssignTechnician();
   const handleAssignTechnician = async () => {
     try {
       console.log("Orderid: " + data.orderId);
@@ -130,10 +131,14 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
                 <ClearButton onClick={() => setSelectedTechnicians([])}>
                   Clear All
                 </ClearButton>
-                <SubmitButton onClick={handleAssignTechnician}>
-                  <CheckCircle size={20} />
-                  Assign Technicians
-                </SubmitButton>
+                {isPending ? (
+                  <SpinnerComponent />
+                ) : (
+                  <SubmitButton onClick={handleAssignTechnician}>
+                    <CheckCircle size={20} />
+                    Assign Technicians
+                  </SubmitButton>
+                )}
               </ButtonGroup>
             )}
           </SectionHeader>
