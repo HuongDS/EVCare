@@ -43,5 +43,30 @@ namespace API.Controllers
 
             }
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateCategory(PartCategoryCreateModel model)
+        {
+            try
+            {
+                var data = await _partCategoryService.CreateCategory(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.CREATED,
+                    message = Message.PART_Category_CREATE_SUCCESSFULLY,
+                    data = data
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
     }
 }

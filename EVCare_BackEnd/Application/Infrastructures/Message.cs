@@ -141,5 +141,9 @@ namespace Application.Infrastructures
 
         public static string PART_UPDATE_SUCCESSFULLY = "Update part successfully";
 
+        public static string PART_DELETE_SUCCESSFULLY = "Delete part successfully";
+
+        public static string PART_Category_CREATE_SUCCESSFULLY = "Create part category successfully";
+
     }
 }
