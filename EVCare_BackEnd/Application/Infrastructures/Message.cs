@@ -136,5 +136,10 @@ namespace Application.Infrastructures
         public static string? ACCOUNT_HAS_BEEN_DISABLED ="Account has been disabled.";
 
         public static string EMPLOYEE_GET_SUCCESSFULLY = "Get employee successfully";
+
+        public static string PART_CREATE_SUCCESSFULLY = "Create part successfully";
+
+        public static string PART_UPDATE_SUCCESSFULLY = "Update part successfully";
+
     }
 }
