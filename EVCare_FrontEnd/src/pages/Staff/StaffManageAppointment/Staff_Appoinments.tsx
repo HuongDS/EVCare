@@ -25,8 +25,7 @@ export default function Staff_Appoinments() {
   const queryClient = useQueryClient();
   const name = AppointmentStatusEnum;
   const [sortBy, setSortBy] = useState("Pending");
-  // const [sortField, setSortField] = useState("AppointmentDate");
-  // const [sortOrder, setSortOrder] = useState("desc");
+  const [sortOrder, setSortOrder] = useState("asc");
   const [currenPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [selectedAppointment, setSelectedAppointment] =
@@ -60,16 +59,12 @@ export default function Staff_Appoinments() {
     });
   };
 
-  const handleSortBy = (status: string) => {
-    setSortBy(status);
-  };
-
   //Gọi api lấy list cuộc hẹn
   const { data: appointments, isLoading } = useGetAllAppointments({
     ...((searchValue && { customerName: searchValue }) || {}), //chỉ gửi customer name nếu nó k rỗng
     status: sortBy,
-    // sortField: sortField,
-    // sortOrder: sortOrder,
+    sortField: "AppointmentDate",
+    sortOrder: sortOrder,
     pageIndex: currenPage,
     pageSize: 10,
   });
@@ -112,6 +107,11 @@ export default function Staff_Appoinments() {
     name.CANCELED,
   ];
 
+  //sort field Date
+  const handleSortByDate = (v: string) => {
+    setSortOrder(v);
+  };
+
   return (
     <>
       <AppoitmentWrapper>
@@ -122,7 +122,12 @@ export default function Staff_Appoinments() {
             handleSearchValue={handleSearch}
           />
         </TitleWrapper>
-        <SortTable sortName={sortName} handleSortBy={handleSortBy} />
+        <SortTable
+          sortName={sortName}
+          setSortBy={setSortBy}
+          setSortOrder={handleSortByDate}
+          disabled={appointments?.data?.items?.length === 0}
+        />
         <SpinnerStyled>{isLoading && <SpinnerComponent />}</SpinnerStyled>
         <ListAppointmentStyled>
           {appointments?.data?.items?.length !== 0 ? (

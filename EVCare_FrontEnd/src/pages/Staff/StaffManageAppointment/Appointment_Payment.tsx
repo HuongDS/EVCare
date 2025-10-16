@@ -25,6 +25,7 @@ import { setStep } from "../../../states/appointmentSlice";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ResponseDto } from "../../../models/OrderModel/UpdateOrderModel";
 import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 interface PaymentPageProps {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -71,7 +72,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
   };
 
   //lấy qr code
-  const { mutateAsync: payment } = usePayByPayOS();
+  const { mutateAsync: payment, isPending } = usePayByPayOS();
   const handlePaymentMethod = useCallback(async () => {
     try {
       const response = await payment({
@@ -221,7 +222,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
             {/* QR Code Display */}
             {paymentMethod === "PayOs" && (
               <QRSection>
-                <iframe src={qrcode} />
+                {isPending ? <SpinnerComponent /> : <iframe src={qrcode} />}
                 {/* <CountdownTimer onTimeUp={handleGetQRCode} /> */}
                 <QRInfo>
                   <p>Scan QR code to complete payment</p>
@@ -460,6 +461,8 @@ const AmountTag = styled(Tag)`
 `;
 
 const Footer = styled.div`
+  display: flex;
+  gap: 10px;
   padding: 24px 32px;
   background: #f8f9fa;
   border-top: 1px solid #e0e0e0;
