@@ -461,6 +461,8 @@ const AmountTag = styled(Tag)`
 `;
 
 const Footer = styled.div`
+  display: flex;
+  gap: 10px;
   padding: 24px 32px;
   background: #f8f9fa;
   border-top: 1px solid #e0e0e0;
