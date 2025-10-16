@@ -148,25 +148,33 @@ namespace Application.Services
             };
             await _customerRepository.AddAsync(newCustomer);
         }
-        public async Task RegisterEmployeeOrTechnicianAsync(AccountResponseDto account, EmployeeRegisterDto data)
+        public async Task RegisterEmployeeOrTechnicianAsync(EmployeeRegisterDto data)
         {
-            var entityAccount = await _accountRepository.GetByIdAsync(account.accountId);
-            entityAccount.Role = data.role;
-            await _accountRepository.UpdateAsync(entityAccount);
-
+            var newAccount = new Account
+            {
+                Email = data.accountInfo.email,
+                Phone = data.accountInfo.phone,
+                Hash_Password = BCrypt.Net.BCrypt.HashPassword(data.accountInfo.password),
+                Create_At = DateTime.UtcNow,
+                Updated_At = DateTime.UtcNow,
+                Deleted_At = DateTime.MinValue,
+                Role = data.role,
+                First_Name = data.accountInfo.firstName.Trim(),
+                Last_Name = data.accountInfo.lastName.Trim(),
+            };
+            newAccount = await _accountRepository.AddAsync(newAccount);
             var newEmployee = new Employee
             {
-                AccountId = account.accountId,
+                AccountId = newAccount.Id,
                 CCCD = data.CCCD,
                 Status = EmployeeStatusEnum.Available,
                 Deleted_At = DateTime.MinValue,
                 Updated_At = DateTime.UtcNow,
             };
             await _employeeRepository.AddAsync(newEmployee);
-
             if (data.role == RoleEnum.Technician)
             {
-                var employee = await _employeeRepository.GetEmployeeByAccountId(account.accountId);
+                var employee = await _employeeRepository.GetEmployeeByAccountId(newAccount.Id);
                 var newTechnician = new Technician
                 {
                     EmployeeId = employee.Id,
@@ -175,6 +183,7 @@ namespace Application.Services
                 };
                 await _technicianRepository.AddAsync(newTechnician);
             };
+
         }
         public async Task<ResponseDto<LoginResponseDto>> LoginAsync(LoginRequestDto data, HttpContext context)
         {
@@ -188,7 +197,7 @@ namespace Application.Services
             {
                 throw new Exception(Message.LOGIN_FAILED);
             }
-            if(account.Deleted_At!=DateTime.MinValue)
+            if (account.Deleted_At != DateTime.MinValue)
             {
                 throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
             }
@@ -215,7 +224,7 @@ namespace Application.Services
                 var newAccount = new Account
                 {
                     Email = email,
-                    Phone = "0944444444",
+                    Phone = "0900000000",
                     Hash_Password = hashPassword,
                     Create_At = DateTime.UtcNow,
                     Updated_At = DateTime.UtcNow,

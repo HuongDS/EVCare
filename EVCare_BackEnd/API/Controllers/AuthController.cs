@@ -90,13 +90,12 @@ namespace API.Controllers
 
             try
             {
-                var account = await _authServices.RegisterAccountAsync(data.accountInfo);
-                await _authServices.RegisterEmployeeOrTechnicianAsync(account, data);
-                return Ok(new ResponseDto<AccountResponseDto>
+                await _authServices.RegisterEmployeeOrTechnicianAsync(data);
+                return Ok(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.OK,
                     message = Message.REGISTER_SUCCESS,
-                    data = account
+                    data = null
                 });
             }
             catch (Exception ex)
