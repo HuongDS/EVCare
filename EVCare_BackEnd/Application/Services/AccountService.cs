@@ -62,6 +62,14 @@ namespace Application.Services
             {
                 throw new Exception(Message.PHONE_EXISTS);
             }
+            if (data.password != null)
+            {
+                if (!Regex.IsMatch(data.password, RegexPartterns.PASSWORD_PATTERN))
+                {
+                    throw new Exception(Message.WEAK_PASSWORD);
+                }
+                account.Hash_Password = BCrypt.Net.BCrypt.HashPassword(data.password);
+            }
             account.First_Name = data.firstName;
             account.Last_Name = data.lastName;
             account.Phone = data.phone;
