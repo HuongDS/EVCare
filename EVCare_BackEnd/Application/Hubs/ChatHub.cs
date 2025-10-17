@@ -39,7 +39,7 @@ namespace Application.Hubs
             var msg = await _chatServices.SaveMessageAsync(conversationId, senderId, text, atts);
             var counterPart = await _conversationService.GetCounterpartAsync(conversationId, senderId);
 
-            await Clients.User(counterPart.ToString()).SendAsync("ReceiveMessage", new
+            var sendData = new
             {
                 id = msg.Id,
                 conversationId = conversationId,
@@ -47,8 +47,10 @@ namespace Application.Hubs
                 text = msg.Text,
                 attachments = atts,
                 sentAt = msg.SentAt
-            });
-            await Clients.User(senderId.ToString()).SendAsync("ReceiveMessageAck", msg.Id.ToString());
+            };
+
+            await Clients.User(counterPart.ToString()).SendAsync("ReceiveMessage", sendData);
+            await Clients.User(senderId.ToString()).SendAsync("ReceiveMessageAck", sendData);
             await Clients.Group(conversationId.ToString()).SendAsync("UpdateConversation", new { conversationId });
         }
 
