@@ -26,7 +26,17 @@ namespace DataAccess.Repositories
                     Id = tc.Id,
                     Name = tc.Name,
                     Description = tc.Description,
-                    IsDeleted = tc.Deleted_At != DateTime.MinValue
+                    IsDeleted = tc.Deleted_At != DateTime.MinValue,
+                    Services = tc.TechnicianSkills
+                       .Where(ts=>ts.TechnicianCategoryId == tc.Id)
+                       .Select(ts => new DataAccess.Dtos.Service.ServiceViewModel
+                          {
+                            Id = ts.Service.Id,
+                            Name = ts.Service.Name,
+                            Description = ts.Service.Description,
+                            IsDeleted = ts.Service.Deleted_At != DateTime.MinValue
+                          }).ToList()
+
                 });
             if (!string.IsNullOrEmpty(model.Name))
             {
