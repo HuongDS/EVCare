@@ -40,10 +40,10 @@ namespace Application.Services
                     new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer },
                     new Participant { AccountId = staffAccountId, Role = DataAccess.Enums.RoleEnum.Staff }
                 },
-                Unread = new Dictionary<int, int>
+                Unread = new Dictionary<string, int>
                 {
-                    { customerAccountId, 0 },
-                    { staffAccountId, 0 }
+                     { customerAccountId.ToString(), 0 },
+                    { staffAccountId.ToString(), 0 }
                 },
             };
 
@@ -63,10 +63,10 @@ namespace Application.Services
                     new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer },
                     new Participant { AccountId = staffId, Role = DataAccess.Enums.RoleEnum.Staff }
                 },
-                Unread = new Dictionary<int, int>
+                Unread = new Dictionary<string, int>
                 {
-                    { customerAccountId, 0 },
-                    { staffId, 0 }
+                    { customerAccountId.ToString(), 0 },
+                    { staffId.ToString(), 0 }
                 },
             };
 
@@ -99,7 +99,7 @@ namespace Application.Services
             var res = new Dictionary<int, int>();
             foreach (var c in items)
             {
-                if (c.Unread.TryGetValue(accountId, out var cnt))
+                if (c.Unread.TryGetValue(accountId.ToString(), out var cnt))
                     res[c.Id] = cnt;
             }
             return res;

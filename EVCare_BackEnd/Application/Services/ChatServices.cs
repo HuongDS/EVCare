@@ -45,13 +45,13 @@ namespace Application.Services
                 SentAt = msg.SentAt,
                 SenderId = senderId
             };
-            if (conv.Unread.ContainsKey(receiverId.Value))
+            if (conv.Unread.ContainsKey(receiverId.Value.ToString()))
             {
-                conv.Unread[receiverId.Value]++;
+                conv.Unread[receiverId.Value.ToString()]++;
             }
             else
             {
-                conv.Unread[receiverId.Value] = 1;
+                conv.Unread[receiverId.Value.ToString()] = 1;
             }
             conv.UpdatedAt = DateTime.UtcNow;
             var update = Builders<Conversation>.Update
