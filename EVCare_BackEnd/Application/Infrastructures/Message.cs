@@ -137,6 +137,11 @@ namespace Application.Infrastructures
 
         public static string EMPLOYEE_GET_SUCCESSFULLY = "Get employee successfully";
 
+        public static string PART_CREATE_SUCCESSFULLY = "Create part successfully";
+
+        public static string PART_UPDATE_SUCCESSFULLY = "Update part successfully";
+
+
         // Staff
         public static string NOT_FOUND_STAFF_SASTISFY = "Not found staff satisfy the requirement.";
 
