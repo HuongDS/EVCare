@@ -19,7 +19,7 @@ export const StaffChatPage = () => {
   useEffect(() => {
     if (!connection) return;
     connection.on("NewConsultation", (conv) => {
-      message.info(`Bạn có cuộc tư vấn mới: ${conv.topic}`);
+      message.info(`Bạn có cuộc tư vấn mới:`);
       setConversations((prev) => [conv, ...prev]);
     });
   }, [connection]);

@@ -68,11 +68,7 @@ namespace Application.Hubs
 
             await Groups.AddToGroupAsync(Context.ConnectionId, conversation.Id.ToString());
 
-            await Clients.User(conversation.Participants[1].AccountId.ToString()).SendAsync("NewConsultation", new
-            {
-                conversationId = conversation.Id,
-                customerId
-            });
+            await Clients.User(conversation.Participants[1].AccountId.ToString()).SendAsync("NewConsultation", conversation);
 
             await Clients.User(customerId.ToString()).SendAsync("ConsultationStarted", new
             {
