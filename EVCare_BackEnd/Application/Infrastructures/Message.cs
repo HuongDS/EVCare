@@ -148,7 +148,7 @@ namespace Application.Infrastructures
         // Chat
         public static string CHAT_MESSAGE_SENT_SUCCESSFULLY = "Chat message sent successfully.";
         public static string DOMAIN_CREATE_SUCCESS = "Domain created successfully";
-    };
+
         public static string PART_DELETE_SUCCESSFULLY = "Delete part successfully";
 
         public static string PART_Category_CREATE_SUCCESSFULLY = "Create part category successfully";
