@@ -8,6 +8,7 @@ import { ChatSidebar } from "./ChatSideBar";
 import { ChatWindow } from "./ChatWindow";
 import type { RootState } from "../../../states/store";
 import { useSelector } from "react-redux";
+import { RoleEnum } from "../../../models/enums";
 
 const { Sider, Content } = Layout;
 
@@ -16,6 +17,7 @@ export const ChatPage: React.FC = () => {
   const [selected, setSelected] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
+  const role = useSelector((state: RootState) => state.auth.user?.role);
 
   useEffect(() => {
     (async () => {
@@ -33,9 +35,11 @@ export const ChatPage: React.FC = () => {
   return (
     <Layout className="h-[calc(100vh-80px)] border rounded-lg overflow-hidden">
       <Sider width={300} className="bg-white border-r p-2 flex flex-col">
-        <Button type="primary" icon={<MessageOutlined />} onClick={() => setModalOpen(true)} className="mb-3">
-          Tư vấn ngay
-        </Button>
+        {role == RoleEnum.CUSTOMER && (
+          <Button type="primary" icon={<MessageOutlined />} onClick={() => setModalOpen(true)} className="mb-3">
+            Tư vấn ngay
+          </Button>
+        )}
         <ChatSidebar
           accountId={accountId?.toString() ?? ""}
           conversations={conversations}
