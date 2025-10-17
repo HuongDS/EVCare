@@ -15,6 +15,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ChatController : ControllerBase
     {
         private readonly IConversationService _conversationService;
@@ -42,20 +43,31 @@ namespace API.Controllers
         }
 
         [HttpPost("consultations")]
-        [Authorize]
         [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> StartConsultation()
         {
-            var customerAccountId = HttpContext.Items["AccountId"];
-            var c = await _conversationService.StartConsultationAsync(customerAccountId.ToString());
-            return Ok(new { conversationId = c.Id.ToString(), assignedTo = c.AssignedTo });
+            try
+            {
+                var customerAccountId = (string)HttpContext.Items["AccountId"];
+                var c = await _conversationService.StartConsultationAsync(customerAccountId);
+                return Ok(new { conversationId = c.Id.ToString(), assignedTo = c.AssignedTo });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
         }
 
         [HttpGet("conversations")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> List(int pageIndex = 1, int pageSize = 20)
         {
-            var accountId = HttpContext.Items["AccountId"];
+            var accountId = (string)HttpContext.Items["AccountId"];
             var (list, totalPages, totalItems) = await _conversationService.ListMineAsync(accountId.ToString(), pageSize, pageIndex);
             return Ok(list.Select(c => new
             {
@@ -87,7 +99,7 @@ namespace API.Controllers
         [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> Read(string conversationId, string upToMessageId)
         {
-            var accountId = HttpContext.Items["AccountId"];
+            var accountId = (string)HttpContext.Items["AccountId"];
             await _chatServices.MarkAsReadUpToAsync(conversationId, accountId.ToString(), upToMessageId);
             await _conversationService.ResetUnreadAsync(conversationId, accountId.ToString());
             return Ok();
