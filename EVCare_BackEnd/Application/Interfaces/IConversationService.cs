@@ -9,11 +9,11 @@ namespace Application.Interfaces
 {
     public interface IConversationService
     {
-        Task<Conversation> CreateOrGetConsultationAsync(int customerAccountId, int staffAccountId);
-        Task<int> GetCounterpartAsync(int conversationId, int accountId);
-        Task<Dictionary<int, int>> GetUnreadSummaryAsync(int accountId);
-        Task<(List<Conversation>, int, int)> ListMineAsync(int accountId, int pageSize, int pageIndex);
-        Task ResetUnreadAsync(int conversationId, int accountId);
-        Task<Conversation> StartConsultationAsync(int customerAccountId);
+        Task<Conversation> CreateOrGetConsultationAsync(string customerAccountId, string staffAccountId);
+        Task<string> GetCounterpartAsync(string conversationId, string accountId);
+        Task<Dictionary<int, int>> GetUnreadSummaryAsync(string accountId);
+        Task<(List<Conversation>, int, int)> ListMineAsync(string accountId, int pageSize, int pageIndex);
+        Task ResetUnreadAsync(string conversationId, string accountId);
+        Task<Conversation> StartConsultationAsync(string customerAccountId);
     }
 }

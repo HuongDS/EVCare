@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace DataAccess.Dtos.MongoDb_Message
 {
     public class Conversation
     {
-        public int Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
         public string Type { get; set; } = "consultation";
         public List<Participant> Participants { get; set; } = new();
         public string? AssignedTo { get; set; }

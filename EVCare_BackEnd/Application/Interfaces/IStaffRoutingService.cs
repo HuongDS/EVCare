@@ -8,6 +8,6 @@ namespace Application.Interfaces
 {
     public interface IStaffRoutingService
     {
-        Task<int> FindAvailableAsync();
+        Task<string> FindAvailableAsync();
     }
 }

@@ -9,7 +9,7 @@ namespace DataAccess.Dtos.MongoDb_Message
 {
     public class Participant
     {
-        public int AccountId { get; set; }
+        public string AccountId { get; set; }
         public RoleEnum Role { get; set; }
     }
 }
