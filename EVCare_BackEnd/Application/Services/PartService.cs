@@ -35,14 +35,31 @@ namespace Application.Services
             return id;
         }
 
+        public async Task DeleteAPart(int id)
+        {
+            var part = await _partRepository.GetByIdAsync(id);
+            if (part == null)
+            {
+                throw new Exception("Part not found");
+            }
+            part.Deleted_At = DateTime.UtcNow;
+            await _partRepository.UpdateAsync(part);
+        }
+
         public async Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
         {
             return await _partRepository.GetAllParts(model);
         }
 
-        public Task UpdateAPart(int id, PartAdminUpdateModel model)
+        public async Task UpdateAPart(int id, PartStaffUpdateModel model)
         {
-            throw new NotImplementedException();
+            var part = await _partRepository.GetByIdAsync(id);
+            if(part.Deleted_At!=DateTime.MinValue)
+            {
+                throw new Exception("Part has been deleted");
+            }
+            _mapper.Map(model, part);
+            await _partRepository.UpdateAsync(part);
         }
     }
 }
