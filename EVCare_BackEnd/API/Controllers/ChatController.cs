@@ -15,6 +15,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ChatController : ControllerBase
     {
         private readonly IConversationService _conversationService;
@@ -42,55 +43,65 @@ namespace API.Controllers
         }
 
         [HttpPost("consultations")]
-        [Authorize]
         [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> StartConsultation()
         {
-            var customerAccountId = HttpContext.Items["AccountId"];
-            var c = await _conversationService.StartConsultationAsync(customerAccountId.ToString());
-            return Ok(new { conversationId = c.Id.ToString(), assignedTo = c.AssignedTo });
-        }
-
-        [HttpGet("conversations")]
-        [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> List(int pageIndex = 1, int pageSize = 20)
-        {
-            var accountId = HttpContext.Items["AccountId"];
-            var (list, totalPages, totalItems) = await _conversationService.ListMineAsync(accountId.ToString(), pageSize, pageIndex);
-            return Ok(list.Select(c => new
+            try
             {
-                id = c.Id,
-                type = c.Type,
-                lastMessage = c.LastMessage,
-                updatedAt = c.UpdatedAt,
-                unread = c.Unread.TryGetValue(accountId.ToString(), out var x) ? x : 0,
-                participants = c.Participants
-            }));
-        }
-
-        [HttpGet("history/{conversationId}")]
-        public async Task<IActionResult> History(string conversationId, int skip = 0, int take = 30)
-        {
-            var list = await _chatServices.GetHistoryAsync(conversationId, skip, take);
-            return Ok(list.OrderBy(m => m.SentAt).Select(m => new
+                var customerAccountId = (string)HttpContext.Items["AccountId"];
+                var c = await _conversationService.StartConsultationAsync(customerAccountId);
+                return Ok(new { conversationId = c.Id.ToString(), assignedTo = c.AssignedTo });
+            }
+            catch (Exception ex)
             {
-                id = m.Id,
-                senderId = m.SenderId,
-                receiverId = m.ReceiverId,
-                text = m.Text,
-                attachments = m.Attachments,
-                sentAt = m.SentAt
-            }));
-        }
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
 
-        [HttpPost("read/{conversationId}")]
-        [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> Read(string conversationId, string upToMessageId)
-        {
-            var accountId = HttpContext.Items["AccountId"];
-            await _chatServices.MarkAsReadUpToAsync(conversationId, accountId.ToString(), upToMessageId);
-            await _conversationService.ResetUnreadAsync(conversationId, accountId.ToString());
-            return Ok();
+            [HttpGet("conversations")]
+            [ServiceFilter(typeof(SetAccountIdFilter))]
+            public async Task<IActionResult> List(int pageIndex = 1, int pageSize = 20)
+            {
+                var accountId = (string)HttpContext.Items["AccountId"];
+                var (list, totalPages, totalItems) = await _conversationService.ListMineAsync(accountId.ToString(), pageSize, pageIndex);
+                return Ok(list.Select(c => new
+                {
+                    id = c.Id,
+                    type = c.Type,
+                    lastMessage = c.LastMessage,
+                    updatedAt = c.UpdatedAt,
+                    unread = c.Unread.TryGetValue(accountId.ToString(), out var x) ? x : 0,
+                    participants = c.Participants
+                }));
+            }
+
+            [HttpGet("history/{conversationId}")]
+            public async Task<IActionResult> History(string conversationId, int skip = 0, int take = 30)
+            {
+                var list = await _chatServices.GetHistoryAsync(conversationId, skip, take);
+                return Ok(list.OrderBy(m => m.SentAt).Select(m => new
+                {
+                    id = m.Id,
+                    senderId = m.SenderId,
+                    receiverId = m.ReceiverId,
+                    text = m.Text,
+                    attachments = m.Attachments,
+                    sentAt = m.SentAt
+                }));
+            }
+
+            [HttpPost("read/{conversationId}")]
+            [ServiceFilter(typeof(SetAccountIdFilter))]
+            public async Task<IActionResult> Read(string conversationId, string upToMessageId)
+            {
+                var accountId = (string)HttpContext.Items["AccountId"];
+                await _chatServices.MarkAsReadUpToAsync(conversationId, accountId.ToString(), upToMessageId);
+                await _conversationService.ResetUnreadAsync(conversationId, accountId.ToString());
+                return Ok();
+            }
         }
     }
-}
