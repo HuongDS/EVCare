@@ -48,8 +48,8 @@ namespace API.Controllers
         {
             try
             {
-                var customerAccountId = (string)HttpContext.Items["AccountId"];
-                var c = await _conversationService.StartConsultationAsync(customerAccountId);
+                var customerAccountId = HttpContext.Items["AccountId"];
+                var c = await _conversationService.StartConsultationAsync(customerAccountId.ToString());
                 return Ok(new { conversationId = c.Id.ToString(), assignedTo = c.AssignedTo });
             }
             catch (Exception ex)
@@ -67,7 +67,7 @@ namespace API.Controllers
         [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> List(int pageIndex = 1, int pageSize = 20)
         {
-            var accountId = (string)HttpContext.Items["AccountId"];
+            var accountId = HttpContext.Items["AccountId"];
             var (list, totalPages, totalItems) = await _conversationService.ListMineAsync(accountId.ToString(), pageSize, pageIndex);
             return Ok(list.Select(c => new
             {
@@ -99,7 +99,7 @@ namespace API.Controllers
         [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> Read(string conversationId, string upToMessageId)
         {
-            var accountId = (string)HttpContext.Items["AccountId"];
+            var accountId = HttpContext.Items["AccountId"];
             await _chatServices.MarkAsReadUpToAsync(conversationId, accountId.ToString(), upToMessageId);
             await _conversationService.ResetUnreadAsync(conversationId, accountId.ToString());
             return Ok();
