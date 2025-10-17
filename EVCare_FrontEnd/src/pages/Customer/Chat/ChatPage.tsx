@@ -13,7 +13,7 @@ const { Sider, Content } = Layout;
 
 export const ChatPage: React.FC = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
 
@@ -36,12 +36,16 @@ export const ChatPage: React.FC = () => {
         <Button type="primary" icon={<MessageOutlined />} onClick={() => setModalOpen(true)} className="mb-3">
           Tư vấn ngay
         </Button>
-        <ChatSidebar accountId={accountId ?? 0} conversations={conversations} onSelect={(c) => setSelected(c.id)} />
+        <ChatSidebar
+          accountId={accountId?.toString() ?? ""}
+          conversations={conversations}
+          onSelect={(c) => setSelected(c.id)}
+        />
       </Sider>
 
       <Content className="p-0 flex-1 bg-gray-50">
         {selected ? (
-          <ChatWindow accountId={accountId ?? 0} conversationId={selected} />
+          <ChatWindow accountId={accountId?.toString() ?? ""} conversationId={selected} />
         ) : (
           <div className="flex items-center justify-center h-full text-gray-400">
             Chọn cuộc trò chuyện hoặc nhấn “Tư vấn ngay”

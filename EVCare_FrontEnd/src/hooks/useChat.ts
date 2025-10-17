@@ -4,7 +4,7 @@ import { getChatConnection } from "../signalr/chatConnection";
 import type Message from "../models/Message/Message";
 import type Attachment from "../models/Message/Attachment ";
 
-export function useChat(conversationId?: number) {
+export function useChat(conversationId?: string) {
   const connectionRef = useRef<signalR.HubConnection | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [unread, setUnread] = useState<number>(0);
