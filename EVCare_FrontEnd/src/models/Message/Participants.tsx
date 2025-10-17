@@ -1,6 +1,6 @@
 import type { RoleEnum } from "../enums";
 
 export type Participants = {
-  accountId: number;
+  accountId: string;
   role: RoleEnum;
 };

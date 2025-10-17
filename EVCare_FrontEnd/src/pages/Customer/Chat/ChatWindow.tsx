@@ -7,8 +7,8 @@ import { getHistory } from "../../../services/chatService";
 import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
 
 interface ChatWindowProps {
-  conversationId: number;
-  accountId: number;
+  conversationId: string;
+  accountId: string;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountId }) => {

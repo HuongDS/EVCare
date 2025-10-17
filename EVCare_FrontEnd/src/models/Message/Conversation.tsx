@@ -1,7 +1,7 @@
 import type { Participants } from "./Participants";
 
 export type Conversation = {
-  id: number;
+  id: string;
   type: string;
   lastMessage: string;
   updateAt: string;

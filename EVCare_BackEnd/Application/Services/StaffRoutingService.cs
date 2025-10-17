@@ -20,16 +20,17 @@ namespace Application.Services
         {
             _dbContext = dbContext;
         }
-        public async Task<int> FindAvailableAsync()
+        public async Task<string> FindAvailableAsync()
         {
             var candidate = await _dbContext.Accounts
                 .Include(a => a.Employee)
                 .Where(a => a.Role == RoleEnum.Staff && a.Deleted_At == DateTime.MinValue && a.Employee.Status == EmployeeStatusEnum.Available)
+                .OrderByDescending(a => a.Id)
                 .FirstOrDefaultAsync();
 
             if (candidate is null) throw new Exception(Message.NOT_FOUND_STAFF_SASTISFY);
 
-            return candidate.Id;
+            return candidate.Id.ToString();
         }
     }
 }
