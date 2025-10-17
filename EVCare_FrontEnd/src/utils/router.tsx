@@ -33,6 +33,7 @@ import {
   LazyApplication,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import Admin_Customer_Vehicle from "../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle.tsx";
+import Review from "../pages/Users/Review/Review.tsx";
 import Admin_Manage_Employee from "../pages/Admin/AdminManageEmployee/Admin_ManageEmployee.tsx";
 import AddEmployee from "../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee.tsx";
 import { ChatPage } from "../pages/Customer/Chat/ChatPage.tsx";
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: "contact",
         element: <ContactUs />,
+      },
+      {
+        path: "review",
+        element: <Review />,
       },
       // CUSTOMER ROUTES
       {
