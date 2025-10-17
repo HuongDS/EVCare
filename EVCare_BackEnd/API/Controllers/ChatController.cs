@@ -6,6 +6,7 @@ using Application.Infrastructures;
 using Application.Interfaces;
 using Application.Services;
 using DataAccess.Dtos.MongoDb_Message;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -41,6 +42,7 @@ namespace API.Controllers
         }
 
         [HttpPost("consultations")]
+        [Authorize]
         [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> StartConsultation()
         {
