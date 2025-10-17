@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.Services;
 using DataAccess.Dtos.MongoDb_Message;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Application.Hubs
 {
+    [Authorize]
     public class ChatHub : Hub
     {
         private readonly IChatServices _chatServices;
