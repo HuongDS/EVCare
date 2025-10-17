@@ -68,5 +68,30 @@ namespace API.Controllers
                 });
             }
         }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]    
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            try
+            {
+                await _partCategoryService.DeleteCategory(id);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.PART_Category_DELETE_SUCCESSFULLY,
+                    data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
     }
 }

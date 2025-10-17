@@ -21,6 +21,7 @@ namespace DataAccess.Repositories
             return await _db.TechnicianSkills.AsNoTracking().
                 Include(x => x.Service)
                 .Include(x => x.TechnicianCategories)
+                .Where(x=>x.TechnicianCategories.Deleted_At==DateTime.MinValue)
                 .GroupBy(x => x.TechnicianCategories.Name)
                 .Select(g => new ServiceCategoryViewModel
                 {
