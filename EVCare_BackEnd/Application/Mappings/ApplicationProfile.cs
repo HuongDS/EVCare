@@ -33,6 +33,7 @@ namespace Application.Mappings
                 opt.MapFrom(src => src.Note))
                 .ForMember(dest => dest.createdAt, opt =>
                 opt.MapFrom(src => src.Create_At));
+            CreateMap<ApplicationUpdateDto, DataAccess.Entities.Application>();
         }
     }
 }
