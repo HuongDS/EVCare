@@ -24,7 +24,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
                 {item.unread[Number(accountId)] > 0 && <Badge count={item.unread[Number(accountId)]} />}
               </div>
             }
-            description={item.lastMessage || "Không có tin nhắn"}
+            description={item.lastMessage.text ?? "Không có tin nhắn"}
           />
         </List.Item>
       )}
