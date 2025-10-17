@@ -15,22 +15,24 @@ export function useChat(conversationId?: string) {
     connectionRef.current = conn;
 
     conn.on("ReceiveMessage", (m) => setMessages((prev) => [...prev, m]));
-    conn.on("ReceiveMessageAck", () => {
-      /* update local pending -> sent */
-    });
+    conn.on("ReceiveMessageAck", () => {});
     conn.on("UnreadChanged", ({ conversationId: cid, unread }) => {
       if (cid === conversationId) setUnread(unread);
     });
     conn.on("Typing", ({ userId }) => setTypingUsers((s) => Array.from(new Set([...s, userId]))));
     conn.on("StopTyping", ({ userId }) => setTypingUsers((s) => s.filter((x) => x !== userId)));
 
-    conn.start().then(async () => {
-      if (conversationId) await conn.invoke("JoinConversation", conversationId);
-    });
+    if (conn.state === "Disconnected") {
+      conn.start().catch((err) => console.error("SignalR start error:", err));
+    }
 
-    return () => {
-      conn.stop();
-    };
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    const conn = connectionRef.current;
+    if (!conn || conn.state !== "Connected") return;
+    conn.invoke("JoinConversation", conversationId).catch((err) => console.error("JoinConversation failed:", err));
   }, [conversationId]);
 
   const send = async (text: string, attachments?: Attachment[]) =>
