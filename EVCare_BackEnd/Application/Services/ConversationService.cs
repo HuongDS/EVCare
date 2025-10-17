@@ -74,7 +74,7 @@ namespace Application.Services
             return conversation;
         }
 
-        public async Task<(IEnumerable<Conversation>, int, int)> ListMineAsync(int accountId, int pageSize, int pageIndex)
+        public async Task<(List<Conversation>, int, int)> ListMineAsync(int accountId, int pageSize, int pageIndex)
         {
             var filter = Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == accountId);
             var conversations = await _conversations.Find(filter)

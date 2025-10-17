@@ -46,7 +46,7 @@ namespace API.Controllers
         {
             var customerAccountId = (int)HttpContext.Items["AccountId"];
             var c = await _conversationService.StartConsultationAsync(customerAccountId);
-            return Ok(new { conversationId = c.Id.ToString(), assignedTo = c.AssignedTo });
+            return Ok(new { conversationId = c.Id, assignedTo = c.AssignedTo });
         }
 
         [HttpGet("conversations")]
