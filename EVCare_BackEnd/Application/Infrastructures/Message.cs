@@ -157,5 +157,7 @@ namespace Application.Infrastructures
 
         public static string TECHNICIAN_CATEGORY_GET_SUCCESSFULLY = "Get technician categories successfully";
 
+        public static string APPLICATION_UPDATE_SUCCESS = "Application updated successfully";
+
     }
 }
