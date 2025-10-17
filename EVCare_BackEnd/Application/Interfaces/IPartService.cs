@@ -10,6 +10,8 @@ namespace Application.Interfaces
 {
     public interface IPartService
     {
+        Task<int> CreateAPart(PartCreateModel model);
         Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model);
+        Task UpdateAPart(int id,PartAdminUpdateModel model);
     }
 }
