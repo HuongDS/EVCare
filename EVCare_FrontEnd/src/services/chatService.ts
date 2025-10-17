@@ -7,7 +7,7 @@ export async function listConversations() {
   return response.data;
 }
 
-export async function getHistory(conversationId: number, skip = 0, take = 30) {
+export async function getHistory(conversationId: string, skip = 0, take = 30) {
   const response = await api.get<HistoryMessage[]>(`/api/Chat/history/${conversationId}`, {
     params: {
       skip: skip,
@@ -18,6 +18,6 @@ export async function getHistory(conversationId: number, skip = 0, take = 30) {
 }
 
 export async function startConsultation() {
-  const response = await api.post<{ conversationId: number; assignedTo: number }>("/api/Chat/consultations");
+  const response = await api.post<{ conversationId: string; assignedTo: string }>("/api/Chat/consultations");
   return response.data;
 }

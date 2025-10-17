@@ -6,7 +6,7 @@ import type { Conversation } from "../../../models/Message/Conversation";
 interface ChatSidebarProps {
   conversations: Conversation[];
   onSelect: (conv: Conversation) => void;
-  accountId: number;
+  accountId: string;
 }
 
 export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelect, accountId }) => {
@@ -21,7 +21,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
             title={
               <div className="flex justify-between items-center">
                 <span>{item.type === "consultation" ? "Tư vấn" : "Trao đổi đơn hàng"}</span>
-                {item.unread[accountId] > 0 && <Badge count={item.unread[accountId]} />}
+                {item.unread[Number(accountId)] > 0 && <Badge count={item.unread[Number(accountId)]} />}
               </div>
             }
             description={item.lastMessage || "Không có tin nhắn"}

@@ -9,8 +9,8 @@ namespace Application.Interfaces
 {
     public interface IChatServices
     {
-        Task<List<Message>> GetHistoryAsync(int conversationId, int skip, int take);
-        Task MarkAsReadUpToAsync(int conversationId, int readerId, int upToMessageId);
-        Task<Message> SaveMessageAsync(int conversationId, int senderId, string text, List<Attachment> atts);
+        Task<List<Message>> GetHistoryAsync(string conversationId, int skip, int take);
+        Task MarkAsReadUpToAsync(string conversationId, string readerId, string upToMessageId);
+        Task<Message> SaveMessageAsync(string conversationId, string senderId, string text, List<Attachment> atts);
     }
 }

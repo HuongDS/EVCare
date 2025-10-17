@@ -21,7 +21,7 @@ namespace Application.Services
             _conv = mongoDb.GetCollection<Conversation>("conversations");
         }
 
-        public async Task<Message> SaveMessageAsync(int conversationId, int senderId, string text, List<Attachment> atts)
+        public async Task<Message> SaveMessageAsync(string conversationId, string senderId, string text, List<Attachment> atts)
         {
             var conv = await _conv.Find(c => c.Id == conversationId).FirstOrDefaultAsync();
             if (conv == null) throw new Exception("Conversation not found");
@@ -31,7 +31,7 @@ namespace Application.Services
             {
                 ConversationId = conversationId,
                 SenderId = senderId,
-                ReceiverId = receiverId.Value,
+                ReceiverId = receiverId,
                 Text = text,
                 Attachments = atts,
                 SentAt = DateTime.UtcNow
@@ -45,13 +45,13 @@ namespace Application.Services
                 SentAt = msg.SentAt,
                 SenderId = senderId
             };
-            if (conv.Unread.ContainsKey(receiverId.Value.ToString()))
+            if (conv.Unread.ContainsKey(receiverId))
             {
-                conv.Unread[receiverId.Value.ToString()]++;
+                conv.Unread[receiverId]++;
             }
             else
             {
-                conv.Unread[receiverId.Value.ToString()] = 1;
+                conv.Unread[receiverId] = 1;
             }
             conv.UpdatedAt = DateTime.UtcNow;
             var update = Builders<Conversation>.Update
@@ -62,7 +62,7 @@ namespace Application.Services
             return msg;
         }
 
-        public async Task<List<Message>> GetHistoryAsync(int conversationId, int skip, int take)
+        public async Task<List<Message>> GetHistoryAsync(string conversationId, int skip, int take)
         {
             return await _msg.Find(m => m.ConversationId == conversationId)
                 .SortByDescending(m => m.SentAt)
@@ -71,7 +71,7 @@ namespace Application.Services
                 .ToListAsync();
         }
 
-        public async Task MarkAsReadUpToAsync(int conversationId, int readerId, int upToMessageId)
+        public async Task MarkAsReadUpToAsync(string conversationId, string readerId, string upToMessageId)
         {
             var update = Builders<Conversation>.Update.Set($"Unread.{readerId}", 0);
             await _conv.UpdateOneAsync(c => c.Id == conversationId, update);

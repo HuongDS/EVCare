@@ -31,9 +31,9 @@ namespace Application.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString());
         }
 
-        public async Task SendMessage(int conversationId, string text, List<Attachment> atts)
+        public async Task SendMessage(string conversationId, string text, List<Attachment> atts)
         {
-            var senderId = Context.UserIdentifier is null ? 0 : int.Parse(Context.UserIdentifier);
+            var senderId = Context.UserIdentifier;
             var msg = await _chatServices.SaveMessageAsync(conversationId, senderId, text, atts);
             var counterPart = await _conversationService.GetCounterpartAsync(conversationId, senderId);
 
@@ -50,9 +50,9 @@ namespace Application.Hubs
             await Clients.Group(conversationId.ToString()).SendAsync("UpdateConversation", new { conversationId });
         }
 
-        public async Task MaskAsRead(int conversationId, int upToMessageId)
+        public async Task MaskAsRead(string conversationId, string upToMessageId)
         {
-            var userId = Context.UserIdentifier is null ? 0 : int.Parse(Context.UserIdentifier);
+            var userId = Context.UserIdentifier;
 
             await _chatServices.MarkAsReadUpToAsync(conversationId, userId, upToMessageId);
 
@@ -63,7 +63,7 @@ namespace Application.Hubs
 
         public async Task StartConsultation()
         {
-            var customerId = Context.UserIdentifier is null ? 0 : int.Parse(Context.UserIdentifier);
+            var customerId = Context.UserIdentifier;
             var conversation = await _conversationService.StartConsultationAsync(customerId);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, conversation.Id.ToString());

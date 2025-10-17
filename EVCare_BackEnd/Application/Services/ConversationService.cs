@@ -17,11 +17,11 @@ namespace Application.Services
 
         public ConversationService(IMongoDatabase db, IStaffRoutingService route)
         {
-            _conversations = db.GetCollection<Conversation>("Conversations");
+            _conversations = db.GetCollection<Conversation>("conversations");
             _route = route;
         }
 
-        public async Task<Conversation> CreateOrGetConsultationAsync(int customerAccountId, int staffAccountId)
+        public async Task<Conversation> CreateOrGetConsultationAsync(string customerAccountId, string staffAccountId)
         {
             var conversation = Builders<Conversation>.Filter.And(
                     Builders<Conversation>.Filter.Eq(c => c.Type, "consultation"),
@@ -51,7 +51,7 @@ namespace Application.Services
             return newConversation;
         }
 
-        public async Task<Conversation> StartConsultationAsync(int customerAccountId)
+        public async Task<Conversation> StartConsultationAsync(string customerAccountId)
         {
             var staffId = await _route.FindAvailableAsync();
 
@@ -68,13 +68,14 @@ namespace Application.Services
                     { customerAccountId.ToString(), 0 },
                     { staffId.ToString(), 0 }
                 },
+                AssignedTo = staffId
             };
 
             await _conversations.InsertOneAsync(conversation);
             return conversation;
         }
 
-        public async Task<(List<Conversation>, int, int)> ListMineAsync(int accountId, int pageSize, int pageIndex)
+        public async Task<(List<Conversation>, int, int)> ListMineAsync(string accountId, int pageSize, int pageIndex)
         {
             var filter = Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == accountId);
             var conversations = await _conversations.Find(filter)
@@ -84,13 +85,13 @@ namespace Application.Services
             return (conversations, totalPages, totalItems);
         }
 
-        public async Task ResetUnreadAsync(int conversationId, int accountId)
+        public async Task ResetUnreadAsync(string conversationId, string accountId)
         {
             var update = Builders<Conversation>.Update.Set($"Unread.{accountId}", 0);
             await _conversations.UpdateOneAsync(c => c.Id == conversationId, update);
         }
 
-        public async Task<Dictionary<int, int>> GetUnreadSummaryAsync(int accountId)
+        public async Task<Dictionary<int, int>> GetUnreadSummaryAsync(string accountId)
         {
             var filter = Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == accountId);
             var projects = Builders<Conversation>.Projection.Include(c => c.Id).Include(c => c.Unread);
@@ -100,12 +101,12 @@ namespace Application.Services
             foreach (var c in items)
             {
                 if (c.Unread.TryGetValue(accountId.ToString(), out var cnt))
-                    res[c.Id] = cnt;
+                    res[int.Parse(c.Id)] = cnt;
             }
             return res;
         }
 
-        public async Task<int> GetCounterpartAsync(int conversationId, int accountId)
+        public async Task<string> GetCounterpartAsync(string conversationId, string accountId)
         {
             var c = await _conversations.Find(x => x.Id == conversationId).FirstOrDefaultAsync();
             if (c == null) throw new KeyNotFoundException("Conversation not found");
