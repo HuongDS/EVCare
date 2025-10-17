@@ -15,7 +15,7 @@ namespace DataAccess.Dtos.MongoDb_Message
         public string? AssignedTo { get; set; }
         public string Status { get; set; } = "active"; // active | closed
 
-        public Dictionary<int, int> Unread { get; set; } = new();
+        public Dictionary<string, int> Unread { get; set; } = new();
         public LastMessage LastMessage { get; set; } = new();
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
