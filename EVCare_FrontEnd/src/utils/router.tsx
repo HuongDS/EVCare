@@ -36,6 +36,7 @@ import Admin_Customer_Vehicle from "../pages/Admin/AdminCustomer&Vehicle/Admin_C
 import Review from "../pages/Users/Review/Review.tsx";
 import Admin_Manage_Employee from "../pages/Admin/AdminManageEmployee/Admin_ManageEmployee.tsx";
 import AddEmployee from "../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee.tsx";
+import { ChatPage } from "../pages/Customer/Chat/ChatPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -82,6 +83,14 @@ const router = createBrowserRouter([
       },
 
       { path: "test", element: <Test /> },
+      {
+        path: "chat-with-staff",
+        element: (
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
+            <ChatPage />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   // ADMIN ROUTES
@@ -113,6 +122,7 @@ const router = createBrowserRouter([
       { path: "technicians", element: <Manage_Technicians /> },
       { path: "customers", element: <Manage_Customer /> },
       { path: "appointments", element: <Staff_Appoinments /> },
+      { path: "chat-with-customer", element: <ChatPage /> },
     ],
   },
   // TECHINICIAN ROUTES
