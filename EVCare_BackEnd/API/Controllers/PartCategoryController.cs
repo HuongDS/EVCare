@@ -75,7 +75,7 @@ namespace API.Controllers
         {
             try
             {
-                // Deletion logic to be implemented
+                await _partCategoryService.DeleteCategory(id);
                 return Ok(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.OK,
