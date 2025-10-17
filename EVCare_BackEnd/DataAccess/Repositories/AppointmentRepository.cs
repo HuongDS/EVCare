@@ -374,9 +374,9 @@ namespace DataAccess.Repositories
         public async Task<bool> CheckAllReadyForPickup(int vehicleId)
         {
             var anyReadyForPickUp = await _dbContext.Appointments
-                 .Where(x => x.VehicleId == vehicleId && (x.Status != AppointmentStatusEnum.Done || x.Status != AppointmentStatusEnum.Canceled))
-                 .AnyAsync(x => x.VehicleId == vehicleId && x.Status != AppointmentStatusEnum.ReadyForPickup);
-            return !anyReadyForPickUp;
+                 .Where(x => x.VehicleId == vehicleId && (x.Status != AppointmentStatusEnum.Done && x.Status != AppointmentStatusEnum.Canceled))
+                 .AllAsync(x => x.Status == AppointmentStatusEnum.ReadyForPickup);
+            return anyReadyForPickUp;
         }
 
         public async Task<IEnumerable<int>> GetAppointmentReadyForPickUpByVehicleId(int vehicleId)
