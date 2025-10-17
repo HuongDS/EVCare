@@ -4,6 +4,7 @@ using API.Filters;
 using API.Hubs;
 using API.Middlewares;
 using Application.DomainEvents;
+using Application.Hubs;
 using Application.Interfaces;
 using Application.IService;
 using Application.Mapping;
@@ -28,6 +29,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Azure.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using QuestPDF.Infrastructure;
 using StackExchange.Redis;
 
@@ -144,6 +146,9 @@ builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
     c.BaseAddress = new Uri("https://generativelanguage.googleapis.com/v1beta/");
 });
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IChatServices, ChatServices>();
+builder.Services.AddScoped<IConversationService, ConversationService>();
+builder.Services.AddScoped<IStaffRoutingService, StaffRoutingService>();
 
 //builder.Services.AddScoped<IAiInsightServices, MockAiInsightServices>();
 builder.Services.AddScoped<OnInvoiceCompleteHandler>();
@@ -211,6 +216,14 @@ builder.Services.AddCors(options =>
         .AllowCredentials());
 });
 
+// MongoDb
+builder.Services.AddSingleton<IMongoClient>(_ => new MongoClient(builder.Configuration.GetConnectionString("MongoDb")));
+builder.Services.AddSingleton(sp =>
+{
+    var client = sp.GetRequiredService<IMongoClient>();
+    return client.GetDatabase(builder.Configuration["Chat:Database"] ?? "EVCare");
+});
+
 // Authentication
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
 builder.Services.AddAuthentication(opt =>
@@ -237,7 +250,8 @@ builder.Services.AddAuthentication(opt =>
             var accessToken = context.Request.Query["access_token"];
             var path = context.HttpContext.Request.Path;
             if (!string.IsNullOrEmpty(accessToken) &&
-                (path.StartsWithSegments("/hubs/adminDashboard")))
+                (path.StartsWithSegments("/hubs/adminDashboard")) &&
+                (path.StartsWithSegments("/hubs/chat")))
             {
                 context.Token = accessToken;
             }
@@ -359,6 +373,7 @@ app.MapControllers();
 app.UseAzureSignalR(routes =>
 {
     routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
+    routes.MapHub<ChatHub>("/hubs/chat");
 });
 //app.UseEndpoints(endpoints =>
 //{
