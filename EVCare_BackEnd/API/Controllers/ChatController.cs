@@ -46,7 +46,7 @@ namespace API.Controllers
         {
             var customerAccountId = (int)HttpContext.Items["AccountId"];
             var c = await _conversationService.StartConsultationAsync(customerAccountId);
-            return Ok(new { conversationId = c.Id, assignedTo = c.AssignedTo });
+            return Ok(new { conversationId = c.Id.ToString(), assignedTo = c.AssignedTo });
         }
 
         [HttpGet("conversations")]
@@ -61,7 +61,7 @@ namespace API.Controllers
                 type = c.Type,
                 lastMessage = c.LastMessage,
                 updatedAt = c.UpdatedAt,
-                unread = c.Unread.TryGetValue(accountId, out var x) ? x : 0,
+                unread = c.Unread.TryGetValue(accountId.ToString(), out var x) ? x : 0,
                 participants = c.Participants
             }));
         }
