@@ -133,8 +133,15 @@ namespace Application.Infrastructures
 
         public static string DELETE_ACCOUNT_SUCCESS = "Delete Account successfully";
 
-        public static string? ACCOUNT_HAS_BEEN_DISABLED ="Account has been disabled.";
+        public static string? ACCOUNT_HAS_BEEN_DISABLED = "Account has been disabled.";
 
         public static string EMPLOYEE_GET_SUCCESSFULLY = "Get employee successfully";
-    }
+
+        // Staff
+        public static string NOT_FOUND_STAFF_SASTISFY = "Not found staff satisfy the requirement.";
+
+        // Chat
+        public static string CHAT_MESSAGE_SENT_SUCCESSFULLY = "Chat message sent successfully.";
+        public static string DOMAIN_CREATE_SUCCESS = "Domain created successfully";
+    };
 }

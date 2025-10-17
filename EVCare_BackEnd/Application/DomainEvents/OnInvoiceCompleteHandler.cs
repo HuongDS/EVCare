@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using API.Hubs;
     using Application.Interfaces;
+    using DataAccess.Dtos.MongoDb_Message;
     using DataAccess.Dtos.Others;
     using Microsoft.AspNetCore.SignalR;
 

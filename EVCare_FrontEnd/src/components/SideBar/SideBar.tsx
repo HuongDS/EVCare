@@ -117,6 +117,12 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       route: "/staff/customers",
     },
     {
+      key: "7",
+      icon: <SolutionOutlined />,
+      label: "Application",
+      route: "/staff/chat-with-customer",
+    },
+    {
       key: "8",
       icon: <LogoutOutlined />,
       label: "Logout",
