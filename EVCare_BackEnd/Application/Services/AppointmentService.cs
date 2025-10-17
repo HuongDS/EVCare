@@ -183,17 +183,17 @@ namespace Application.Services
             {
                 throw new Exception("Cannot update status of completed or canceled appointment");
             }
-            if (model.Status == AppointmentStatusEnum.CheckedIn)
-            {
-                var utcNow = DateTime.UtcNow;
-                var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                var vnTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vnZone);
-                if (DateOnly.FromDateTime(appointment.Appointment_Date) != DateOnly.FromDateTime(vnTime))
-                {
-                    throw new Exception("Can only check-in on the day of the appointment");
-                }
+            //if (model.Status == AppointmentStatusEnum.CheckedIn)
+            //{
+            //    var utcNow = DateTime.UtcNow;
+            //    var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            //    var vnTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vnZone);
+            //    if (DateOnly.FromDateTime(appointment.Appointment_Date) != DateOnly.FromDateTime(vnTime))
+            //    {
+            //        throw new Exception("Can only check-in on the day of the appointment");
+            //    }
 
-            }
+            //}
             _mapper.Map(model, appointment);
             if(appointment.Employee == null) appointment.EmployeeId = employeeId;
             await _appointmentRepository.UpdateAsync(appointment);
