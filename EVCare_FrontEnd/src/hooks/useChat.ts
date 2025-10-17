@@ -14,8 +14,14 @@ export function useChat(conversationId?: string) {
     const conn = getChatConnection();
     connectionRef.current = conn;
 
+    conn.off("ReceiveMessage");
+    conn.off("ReceiveMessageAck");
+    conn.off("UnreadChanged");
+    conn.off("Typing");
+    conn.off("StopTyping");
+
     conn.on("ReceiveMessage", (m) => setMessages((prev) => [...prev, m]));
-    conn.on("ReceiveMessageAck", () => {});
+    conn.on("ReceiveMessageAck", (m) => setMessages((prev) => [...prev, m]));
     conn.on("UnreadChanged", ({ conversationId: cid, unread }) => {
       if (cid === conversationId) setUnread(unread);
     });
@@ -26,7 +32,13 @@ export function useChat(conversationId?: string) {
       conn.start().catch((err) => console.error("SignalR start error:", err));
     }
 
-    return () => {};
+    return () => {
+      conn.off("ReceiveMessage");
+      conn.off("ReceiveMessageAck");
+      conn.off("UnreadChanged");
+      conn.off("Typing");
+      conn.off("StopTyping");
+    };
   }, []);
 
   useEffect(() => {
