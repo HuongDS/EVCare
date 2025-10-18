@@ -12,6 +12,7 @@ namespace Application.Interfaces
     {
         Task<int> CreateAPart(PartCreateModel model);
         Task DeleteAPart(int id);
+        Task<byte[]> ExportPartAsync();
         Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model);
         Task UpdateAPart(int id,PartStaffUpdateModel model);
     }

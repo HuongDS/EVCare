@@ -51,6 +51,11 @@ namespace DataAccess.Repositories
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
         }
 
+        public async Task<IEnumerable<Part>> GetAllWithCategory()
+        {
+            return await _dbContext.Parts.Include(x => x.Category).AsNoTracking().ToListAsync();
+        }
+
         public async Task<Dictionary<int,Part>> GetPartWithIDs(List<int> partIds)
         {
             return await _dbContext.Parts.Where(x=>partIds.Contains(x.Id)).ToDictionaryAsync(p=>p.Id);

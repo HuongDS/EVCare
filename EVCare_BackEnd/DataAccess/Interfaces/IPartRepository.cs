@@ -17,5 +17,6 @@ namespace DataAccess.Interfaces
         void Update(Part part);
         Task<Dictionary<int, Part>> GetPartWithIDs(List<int> partIds);
         Task DeleteByCategoryId(int id);
+        Task <IEnumerable<Part>> GetAllWithCategory();
     }
 }
