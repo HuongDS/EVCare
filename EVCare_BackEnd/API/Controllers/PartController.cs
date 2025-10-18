@@ -122,7 +122,7 @@ namespace API.Controllers
         }
 
         [HttpGet("export")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ExportParts()
         {
             try
