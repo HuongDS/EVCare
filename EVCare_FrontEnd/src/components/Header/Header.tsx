@@ -68,6 +68,7 @@ export default function Header() {
         <Link to="/service">Service</Link>
         <Link to="/about">About</Link>
         <Link to="/contact">Contact</Link>
+        <Link to="/review">Reviews</Link>
       </Menu>
       {isAuthenticated ? (
         <div
@@ -79,7 +80,10 @@ export default function Header() {
         </div>
       ) : (
         <Buttons>
-          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
+          <button
+            className="btn btn-fill"
+            onClick={() => dispatch(openLogin())}
+          >
             Get Started
           </button>
         </Buttons>
@@ -97,6 +101,9 @@ export default function Header() {
               </Dropdown.Item>
               <Dropdown.Item as="button" onClick={() => navigate("/contact")}>
                 Contact
+              </Dropdown.Item>
+              <Dropdown.Item as="button" onClick={() => navigate("/review")}>
+                Reviews
               </Dropdown.Item>
             </DropdownButton>
           )}
