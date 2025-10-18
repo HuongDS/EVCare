@@ -16,11 +16,23 @@ export async function review(data: ReviewCreateDto) {
   }
 }
 
-export async function getAllReview(): Promise<
-  ResponseDto<PageModel<ReviewResponseDto>>
-> {
+export async function getAllReview(
+  pageIndex = 1,
+  pageSize = 10,
+  rating?: number | null,
+  serviceIds?: number[]
+): Promise<ResponseDto<PageModel<ReviewResponseDto>>> {
   try {
-    const response = await api.get("/api/Review");
+    const params: Record<string, unknown> = {
+      pageIndex,
+      pageSize,
+    };
+
+    if (rating !== null && rating !== undefined) params.rating = rating;
+    if (serviceIds && serviceIds.length > 0)
+      params.serviceIds = serviceIds.join(",");
+
+    const response = await api.get("/api/Review", { params });
     return response.data;
   } catch (error) {
     handleError(error);
