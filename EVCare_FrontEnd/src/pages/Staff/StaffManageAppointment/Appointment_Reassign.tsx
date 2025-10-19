@@ -70,7 +70,7 @@ export default function Appointment_Reassign({ show, close, data }: props) {
       await reAssign({
         orderId: data.orderId,
         technicianIds: assignedTechnicianIDs,
-        status: "Pending",
+        status: "InProgress",
       });
       queryClient.invalidateQueries({ queryKey: ["Staff Appointments"] });
       setSelectedTechnicians([]);
