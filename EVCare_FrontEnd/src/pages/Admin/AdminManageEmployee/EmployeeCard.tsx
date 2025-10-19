@@ -28,7 +28,7 @@ const EmployeeCard: React.FC<Props> = ({ emp, onBan }) => {
 
       <div className="employee-details">
         <div className="detail-item"> {emp.email}</div>
-        <div className="detail-item"> {emp.phone}</div>
+        <div className="detail-item"> {emp.phone ?? "default"}</div>
         <div className="detail-item">
           <span>CCCD:</span> {emp.cccd}
         </div>

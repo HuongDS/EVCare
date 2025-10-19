@@ -11,6 +11,7 @@ export const StatusColors: Record<string, string> = {
   "In Progress": "#3b82f6",
   InProgress: "#3b82f6",
   Done: "#22c55e",
+  ReadyForPickup: "#14b8a6",
   Available: "#16a34a",
   Busy: "#eab308",
   OnLeave: "#a855f7",
@@ -19,6 +20,5 @@ export const StatusColors: Record<string, string> = {
   InStock: "#22c55e",
   LowStock: "#f59e0b",
   OutOfStock: "#ef4444",
-  ReadyForPickup: "#14b8a6",
   AddingPart: "#0ea5e9",
 };

@@ -72,7 +72,7 @@ function UserProfileComponent() {
       setVehicles((prev) => [...prev, { ...v, id: (prev.at(-1)?.id ?? 0) + 1 }]);
     } catch (error) {
       handleError(error);
-      throw Error(error as string);
+      throw Error((error as Error).message);
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +88,7 @@ function UserProfileComponent() {
       setVehicles((prev) => prev.filter((v) => v.id !== id));
     } catch (error) {
       handleError(error);
-      throw Error(error as string);
+      throw Error((error as Error).message);
     }
     setIsLoading(false);
   };

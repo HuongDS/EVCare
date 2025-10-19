@@ -245,6 +245,8 @@ export const StatusBadge = styled.span<StatusBadgeProps>`
         return "#4caf50";
       case AppointmentStatusEnum.CANCELED:
         return "#f44336";
+      case AppointmentStatusEnum.READY_FOR_PICKUP:
+        return "#14b8a6";
       default:
         return "#9e9e9e";
     }
