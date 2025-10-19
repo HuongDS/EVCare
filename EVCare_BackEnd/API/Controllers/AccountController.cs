@@ -105,7 +105,7 @@ namespace API.Controllers
         [HttpPost("verify-password")]
         [Authorize(Roles = "Customer, Staff, Technician")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> VerifyPassword([FromQuery] AccountUpdatePasswordDto data)
+        public async Task<IActionResult> VerifyPassword([FromBody] AccountUpdatePasswordDto data)
         {
             try
             {
