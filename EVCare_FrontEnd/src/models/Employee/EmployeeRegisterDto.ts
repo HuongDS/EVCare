@@ -6,4 +6,5 @@ export type EmployeeRegisterDto = {
   CCCD: string;
   expYear: number;
   accountInfo: RegisterRequestDto;
+  avatar: string;
 };
