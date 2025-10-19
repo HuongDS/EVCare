@@ -3,11 +3,13 @@ import styled from "styled-components";
 import { InputNumber, Select, Button, Card, Typography } from "antd";
 import { Package, Save, Filter, AlertCircle, DollarSign } from "lucide-react";
 import {
+  useExportInventoryToExcel,
   useGetAllPartCategories,
   useGetParts,
 } from "../../../services/staffService";
 import SearchBar from "../../../components/SearchBar/Search";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import { DownloadButton } from "../../../components/Button/DownloadButton";
 
 const { Text } = Typography;
 
@@ -74,6 +76,8 @@ const Staff_Inventory = () => {
     setTotalValue(totalValue ?? 0);
   }, []);
 
+  const { mutate: exportToExcel, isPending } = useExportInventoryToExcel();
+
   return (
     <Container>
       <HeaderSection>
@@ -83,6 +87,14 @@ const Staff_Inventory = () => {
               <Package size={28} />
               Inventory Management
             </Title>
+            {isPending ? (
+              <SpinnerComponent />
+            ) : (
+              <DownloadButton
+                action={() => exportToExcel()}
+                text="Export to Excel"
+              />
+            )}
           </TitleRow>
           <StatsGrid>
             <StatCard>
