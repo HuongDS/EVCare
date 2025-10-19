@@ -49,7 +49,13 @@ export default function Appoinment_Progress_Modal({
   const renderContent = () => {
     switch (currentStep) {
       case 0:
-        return <Appointment_CheckIn data={data} currentStep={currentStep} />;
+        return (
+          <Appointment_CheckIn
+            data={data}
+            currentStep={currentStep}
+            close={close}
+          />
+        );
       case 1:
         return <AssignTechnicianPage data={data} currentStep={currentStep} />;
       case 2:

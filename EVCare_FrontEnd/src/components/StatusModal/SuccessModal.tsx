@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import SuccessIcon from "../IconsAnimation/successIcon";
+import ButtonAction from "../Button/ReviewButton";
 
 const initBox = keyframes`
     from {
@@ -60,6 +61,7 @@ const Container = styled.div`
   padding: 2rem 2rem;
   min-width: 30rem;
   animation: ${initBox} 0.15s linear;
+  font-family: "Outfit", sans-serif;
 `;
 
 const IconContainer = styled.div``;
@@ -92,7 +94,12 @@ const PopUp = ({ header, message, action }: PopUpProps) => {
         <p>{message}</p>
       </BodyContainer>
       <ButtonContainer>
-        <button onClick={action}>OK</button>
+        <ButtonAction
+          action={action}
+          text="Continue"
+          backgroundColor="#00AD4E"
+          color="white"
+        />
       </ButtonContainer>
     </Container>
   );

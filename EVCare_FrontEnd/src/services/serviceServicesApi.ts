@@ -5,7 +5,7 @@ import type { ServiceCategoryViewModel } from "../models/ServicesModel/ServiceCa
 import { handleError } from "../utils/errorHandler";
 
 /**
- * [CUSTOMER, STAFF, ADMIN] get all service catagory
+ * [CUSTOMER, STAFF, ADMIN] get all service category
  * @returns
  * author: SONG HUONG
  */

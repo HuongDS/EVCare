@@ -37,6 +37,7 @@ import Review from "../pages/Users/Review/Review.tsx";
 import Admin_Manage_Employee from "../pages/Admin/AdminManageEmployee/Admin_ManageEmployee.tsx";
 import AddEmployee from "../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee.tsx";
 import { ChatPage } from "../pages/Customer/Chat/ChatPage.tsx";
+import PolicyPage from "../pages/Users/PolicyPage/Policy.tsx";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
         element: <ServiceList />,
       },
       { path: "about", element: <AboutUs /> },
+      { path: "policy", element: <PolicyPage /> },
       {
         path: "contact",
         element: <ContactUs />,
@@ -76,7 +78,14 @@ const router = createBrowserRouter([
       {
         path: "account-information",
         element: (
-          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER, RoleEnum.ADMIN, RoleEnum.TECHNICIAN, RoleEnum.STAFF]}>
+          <ProtectedRoute
+            allowedRoles={[
+              RoleEnum.CUSTOMER,
+              RoleEnum.ADMIN,
+              RoleEnum.TECHNICIAN,
+              RoleEnum.STAFF,
+            ]}
+          >
             <UserProfilePage />
           </ProtectedRoute>
         ),
@@ -103,7 +112,10 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "general", element: <Admin_General /> },
-      { path: "manage-customers-and-vehicles", element: <Admin_Customer_Vehicle /> },
+      {
+        path: "manage-customers-and-vehicles",
+        element: <Admin_Customer_Vehicle />,
+      },
       { path: "manage-employees", element: <Admin_Manage_Employee /> },
       { path: "add-employee", element: <AddEmployee /> },
     ],
