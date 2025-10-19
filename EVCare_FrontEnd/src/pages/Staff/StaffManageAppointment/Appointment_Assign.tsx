@@ -29,9 +29,7 @@ interface props {
 const AssignTechnicianPage = ({ data, currentStep }: props) => {
   const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTechnicians, setSelectedTechnicians] = useState<
-    AssignedTechnician[]
-  >([]);
+  const [selectedTechnicians, setSelectedTechnicians] = useState<AssignedTechnician[]>([]);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -54,9 +52,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
       ) || [];
 
   //Add technician vào list
-  const handleAddTechnician = async (
-    technician: TechnicianModel<TechnicianSkills>
-  ) => {
+  const handleAddTechnician = async (technician: TechnicianModel<TechnicianSkills>) => {
     const newAssignment: AssignedTechnician = {
       technicianID: technician.id,
       technician,
@@ -68,15 +64,11 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
 
   //xóa technician ra khỏi list
   const handleRemoveTechnician = (technicianID: number) => {
-    setSelectedTechnicians(
-      selectedTechnicians.filter((st) => st.technicianID !== technicianID)
-    );
+    setSelectedTechnicians(selectedTechnicians.filter((st) => st.technicianID !== technicianID));
   };
 
   //lấy mảng id các technician để gán qua api
-  const techniciansList = selectedTechnicians
-    .map((tech) => tech.technicianID)
-    .flat();
+  const techniciansList = selectedTechnicians.map((tech) => tech.technicianID).flat();
 
   //Thay đổi appointment status - gán technicians vào appointment
   const { mutateAsync: assignTech, isPending } = useAssignTechnician();
@@ -128,9 +120,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
             <h2>Assigned Technicians ({selectedTechnicians.length})</h2>
             {selectedTechnicians.length > 0 && (
               <ButtonGroup>
-                <ClearButton onClick={() => setSelectedTechnicians([])}>
-                  Clear All
-                </ClearButton>
+                <ClearButton onClick={() => setSelectedTechnicians([])}>Clear All</ClearButton>
                 {isPending ? (
                   <SpinnerComponent />
                 ) : (
@@ -155,9 +145,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
                 <TechnicianCard
                   key={assignment.technicianID}
                   technician={assignment.technician}
-                  onRemove={() =>
-                    handleRemoveTechnician(assignment.technicianID)
-                  }
+                  onRemove={() => handleRemoveTechnician(assignment.technicianID)}
                   isSelected
                 />
               ))}
@@ -199,19 +187,9 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
         </Card>
       </ContentWrapper>
       {isSuccessModalOpen && (
-        <SuccessModal
-          header="Assign Technician"
-          message={modalMessage}
-          action={handleChangeStep}
-        />
+        <SuccessModal header="Assign Technician" message={modalMessage} action={handleChangeStep} />
       )}
-      {isErrorModalOpen && (
-        <FailedModal
-          header="Assign Technician"
-          message={modalMessage}
-          action={handleCloseModal}
-        />
-      )}
+      {isErrorModalOpen && <FailedModal header="Assign Technician" message={modalMessage} action={handleCloseModal} />}
     </PageContainer>
   );
 };
@@ -223,12 +201,7 @@ interface TechnicianCardProps {
   isSelected?: boolean;
 }
 
-const TechnicianCard = ({
-  technician,
-  onAdd,
-  onRemove,
-  isSelected = false,
-}: TechnicianCardProps) => {
+const TechnicianCard = ({ technician, onAdd, onRemove, isSelected = false }: TechnicianCardProps) => {
   return (
     <TechnicianCardWrapper $isSelected={isSelected}>
       {isSelected && onRemove && (
@@ -239,24 +212,19 @@ const TechnicianCard = ({
 
       <TechnicianHeader>
         <Avatar
-          src={
-            technician.avatar ||
-            `https://ui-avatars.com/api/?name=${technician.fullName}&background=random`
-          }
+          src={technician.avatar || `https://ui-avatars.com/api/?name=${technician.fullName}&background=random`}
           alt={technician.fullName}
         />
         <TechnicianInfo>
           <h3>{technician.fullName}</h3>
-          <StatusBadge $status={technician.status}>
-            {technician.status}
-          </StatusBadge>
+          <StatusBadge $status={technician.status}>{technician.status}</StatusBadge>
         </TechnicianInfo>
       </TechnicianHeader>
 
       <InfoSection>
         {technician.phone && (
           <InfoItem>
-            <Phone size={14} /> {technician.phone}
+            <Phone size={14} /> {technician.phone ?? "default"}
           </InfoItem>
         )}
       </InfoSection>
@@ -267,9 +235,7 @@ const TechnicianCard = ({
           {technician.skills.slice(0, 3).map((skill) => (
             <SkillTag key={skill.id}>{skill.name}</SkillTag>
           ))}
-          {technician.skills.length > 3 && (
-            <SkillTag $isMore>+{technician.skills.length - 3} more</SkillTag>
-          )}
+          {technician.skills.length > 3 && <SkillTag $isMore>+{technician.skills.length - 3} more</SkillTag>}
         </SkillTags>
       </SkillsSection>
 

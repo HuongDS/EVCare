@@ -19,8 +19,8 @@ namespace API.Controllers
             _partService = partService;
         }
         [HttpGet]
-        [Authorize(Roles ="Technician")]
-        public async Task<IActionResult> GetAllParts([FromQuery]PartQueryDto model)
+        [Authorize(Roles = "Technician, Staff")]
+        public async Task<IActionResult> GetAllParts([FromQuery] PartQueryDto model)
         {
             try
             {
@@ -41,8 +41,105 @@ namespace API.Controllers
                     data = null,
                     message = ex.Message,
                     statusCode = HttpStatus.BAD_REQUEST,
-                }); 
+                });
 
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreatePart(PartCreateModel model)
+        {
+            try
+            {
+                var data = await _partService.CreateAPart(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.CREATED,
+                    message = Message.PART_CREATE_SUCCESSFULLY,
+                    data = data
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
+
+        [HttpPut()]
+        [Authorize(Roles = "Staff,Admin")]
+        public async Task<IActionResult> UpdatePart([FromQuery] int id, [FromBody] PartStaffUpdateModel model)
+        {
+            try
+            {
+                await _partService.UpdateAPart(id, model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.PART_UPDATE_SUCCESSFULLY,
+
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteAPart(int id)
+        {
+            try
+            {
+                await _partService.DeleteAPart(id);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.PART_DELETE_SUCCESSFULLY,
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
+
+        [HttpGet("export")]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> ExportParts()
+        {
+            try
+            {
+                var content = await _partService.ExportPartAsync();
+
+                var fileName = $"Parts_{DateOnly.FromDateTime(DateTime.Now)}.xlsx";
+                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
             }
         }
     }

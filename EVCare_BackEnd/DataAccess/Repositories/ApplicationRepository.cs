@@ -17,6 +17,34 @@ namespace DataAccess.Repositories
         public ApplicationRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
+
+        public async Task<PageResultDto<ApplicationAdminViewDto>> GetAllApplicationsAsync(ApplicationQueryDto model)
+        {
+            var query =  _dbContext.Applications.AsNoTracking()
+                .Select(a => new ApplicationAdminViewDto
+                {
+                    Id = a.Id,
+                    CreatedAt = a.Create_At,
+                    DateOff = a.DateOff,
+                    EmployeeName = a.Employee.Account.First_Name +" " + a.Employee.Account.Last_Name,
+                    Reason = a.Reason,
+                    Status = a.Status,
+                    Note = a.Note
+
+                })
+                .Where(x=>DateOnly.FromDateTime(x.DateOff)>=model.FromDate && DateOnly.FromDateTime(x.DateOff)<=model.ToDate);
+
+            if (model.Status.HasValue) query = query.Where(a => a.Status == model.Status);
+            if(!string.IsNullOrEmpty(model.Keyword))
+            {
+                query = query.Where(a => a.EmployeeName.Contains(model.Keyword));
+            }
+           
+            query.ApplySorting(model.SortField, model.SortOrder);
+            return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+
+        }
+
         public async Task<bool> GetApplicationByEmployeeIDAndDateOffAsync(int employeeId, DateTime dateOff)
         {
             var application = await _dbSet.FirstOrDefaultAsync(a => a.EmployeeId == employeeId && a.DateOff.Date == dateOff.Date);

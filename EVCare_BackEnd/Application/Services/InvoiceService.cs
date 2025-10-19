@@ -297,7 +297,6 @@ namespace Application.Services
                             table.ColumnsDefinition(cols =>
                             {
                                 cols.RelativeColumn(3);
-                                cols.RelativeColumn(1);
                             });
 
                             table.Header(header =>

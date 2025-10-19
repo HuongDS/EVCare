@@ -31,6 +31,11 @@ namespace Application.Services
             return application.Id;
         }
 
+        public async Task<PageResultDto<ApplicationAdminViewDto>> GetAllApplicationsAsync(ApplicationQueryDto query)
+        {
+            return await _applicationRepository.GetAllApplicationsAsync(query);
+        }
+
         public async Task<PageResultDto<ApplicationViewDto>> GetApplicationAsync(ApplicationQueryDto query, int employeeId)
         {
             return await _applicationRepository.GetApplicationByEmployeeIdAsync(query, employeeId);
@@ -57,6 +62,18 @@ namespace Application.Services
                 data = _mapper.Map<ApplicationViewDto>(newApplication)
             };
             return result;
+        }
+
+        public async Task UpdateApplicationAsync(ApplicationUpdateDto data)
+        {
+
+            var application = await _applicationRepository.GetByIdAsync(data.Id);
+            if (application == null)
+            {
+                throw new Exception(Message.APPLICATION_NOT_FOUND);
+            }
+            _mapper.Map(data, application);
+            await _applicationRepository.UpdateAsync(application);
         }
     }
 }

@@ -1227,20 +1227,20 @@ namespace DataAccess.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
-                {
-                    b.Property<int>("ServiceCategoryId")
-                        .HasColumnType("int");
+            //modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
+            //    {
+            //        b.Property<int>("ServiceCategoryId")
+            //            .HasColumnType("int");
 
-                    b.Property<int>("TechnicianCategoryId")
-                        .HasColumnType("int");
+            //        b.Property<int>("TechnicianCategoryId")
+            //            .HasColumnType("int");
 
-                    b.HasKey("ServiceCategoryId", "TechnicianCategoryId");
+            //        b.HasKey("ServiceCategoryId", "TechnicianCategoryId");
 
-                    b.HasIndex("TechnicianCategoryId");
+            //        b.HasIndex("TechnicianCategoryId");
 
-                    b.ToTable("TechnicianSkills");
-                });
+            //        b.ToTable("TechnicianSkills");
+            //    });
 
             modelBuilder.Entity("DataAccess.Entities.TechnicianWorkingSession", b =>
                 {
@@ -1545,35 +1545,35 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Entities.TechnicianCategory", "TechnicianCategory")
-                        .WithMany("Technicians")
-                        .HasForeignKey("TechnicianCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    //b.HasOne("DataAccess.Entities.TechnicianCategory", "TechnicianCategory")
+                    //    .WithMany("Technicians")
+                    //    .HasForeignKey("TechnicianCategoryId")
+                    //    .OnDelete(DeleteBehavior.Restrict)
+                    //    .IsRequired();
 
                     b.Navigation("Employee");
 
-                    b.Navigation("TechnicianCategory");
+                  //  b.Navigation("TechnicianCategory");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
-                {
-                    b.HasOne("DataAccess.Entities.ServiceCategory", "ServiceCategories")
-                        .WithMany("TechnicianSkills")
-                        .HasForeignKey("ServiceCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            //modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
+            //    {
+            //        //b.HasOne("DataAccess.Entities.ServiceCategory", "ServiceCategories")
+            //        //    .WithMany("TechnicianSkills")
+            //        //    .HasForeignKey("ServiceCategoryId")
+            //        //    .OnDelete(DeleteBehavior.Cascade)
+            //        //    .IsRequired();
 
-                    b.HasOne("DataAccess.Entities.TechnicianCategory", "TechnicianCategories")
-                        .WithMany("TechnicianSkills")
-                        .HasForeignKey("TechnicianCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            //        //b.HasOne("DataAccess.Entities.TechnicianCategory", "TechnicianCategories")
+            //        //    .WithMany("TechnicianSkills")
+            //        //    .HasForeignKey("TechnicianCategoryId")
+            //        //    .OnDelete(DeleteBehavior.Cascade)
+            //        //    .IsRequired();
 
-                    b.Navigation("ServiceCategories");
+            //        b.Navigation("ServiceCategories");
 
-                    b.Navigation("TechnicianCategories");
-                });
+            //        b.Navigation("TechnicianCategories");
+            //    });
 
             modelBuilder.Entity("DataAccess.Entities.TechnicianWorkingSession", b =>
                 {

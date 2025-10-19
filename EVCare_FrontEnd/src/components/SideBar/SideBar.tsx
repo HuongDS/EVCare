@@ -14,6 +14,7 @@ import {
   ShoppingOutlined,
   SolutionOutlined,
   TeamOutlined,
+  UserAddOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -67,7 +68,13 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "6",
-      icon: <LogoutOutlined size={20} />,
+      icon: <UserAddOutlined />,
+      label: "Add Employee",
+      route: "/admin/add-employee",
+    },
+    {
+      key: "7",
+      icon: <LogoutOutlined />,
       label: "Logout",
       action: () => logout,
     },
@@ -108,6 +115,12 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       icon: <SolutionOutlined size={20} />,
       label: "Application",
       route: "/staff/customers",
+    },
+    {
+      key: "7",
+      icon: <SolutionOutlined />,
+      label: "Chat",
+      route: "/staff/chat-with-customer",
     },
     {
       key: "8",
@@ -169,9 +182,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
   useEffect(() => {
     const currentPath = window.location.pathname;
-    const foundKey = menuByRole[role].find(
-      (item) => item.route === currentPath
-    )?.key;
+    const foundKey = menuByRole[role].find((item) => item.route === currentPath)?.key;
 
     if (foundKey) {
       setSelectedKey([foundKey]);

@@ -27,7 +27,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, appointmentDat
       await review(data);
     } catch (error) {
       handleError(error);
-      showAlert("error", MSG_TITLE.REVIEW, error as string);
+      showAlert("error", MSG_TITLE.REVIEW, (error as Error).message);
     }
     setSubmitted(true);
     setTimeout(onClose, 2500);

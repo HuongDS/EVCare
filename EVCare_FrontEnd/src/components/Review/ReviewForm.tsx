@@ -59,7 +59,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, onCancel, appointment
           </div>
           <div className="info-item">
             <div className="info-label">Phone Number</div>
-            <div className="info-value">{data?.phoneNumber}</div>
+            <div className="info-value">{data?.customerPhone ?? "default"}</div>
           </div>
         </div>
 

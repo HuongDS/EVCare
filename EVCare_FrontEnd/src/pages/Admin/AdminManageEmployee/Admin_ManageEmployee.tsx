@@ -38,7 +38,7 @@ const Admin_Manage_Employee: React.FC = () => {
         await banAccount(banModal.emp?.accountId);
         showAlert("success", MSG_TITLE.BAN_ACCOUNT, "Banned successfully");
       } catch (error) {
-        showAlert("error", MSG_TITLE.BAN_ACCOUNT, error as string);
+        showAlert("error", MSG_TITLE.BAN_ACCOUNT, (error as Error).message);
       }
     }
   };

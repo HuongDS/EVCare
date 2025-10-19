@@ -21,6 +21,15 @@ namespace DataAccess.Repositories
         {
             return await _dbSet.AnyAsync(x => x.Id == partId);
         }
+
+        public async Task DeleteByCategoryId(int id)
+        {
+           await _dbContext.Parts.Where(x=>x.CategoryId == id)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(p => p.Deleted_At, DateTime.Now)
+                );
+        }
+
         public Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
         {
             var query = _dbContext.Parts.AsNoTracking()
@@ -40,6 +49,11 @@ namespace DataAccess.Repositories
 
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+        }
+
+        public async Task<IEnumerable<Part>> GetAllWithCategory()
+        {
+            return await _dbContext.Parts.Include(x => x.Category).AsNoTracking().ToListAsync();
         }
 
         public async Task<Dictionary<int,Part>> GetPartWithIDs(List<int> partIds)

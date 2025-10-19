@@ -69,6 +69,7 @@ export default function Header() {
         <Link to="/about">About</Link>
         <Link to="/policy">Policy</Link>
         <Link to="/contact">Contact</Link>
+        <Link to="/review">Reviews</Link>
       </Menu>
       {isAuthenticated ? (
         <div
@@ -101,6 +102,9 @@ export default function Header() {
               </Dropdown.Item>
               <Dropdown.Item as="button" onClick={() => navigate("/contact")}>
                 Contact
+              </Dropdown.Item>
+              <Dropdown.Item as="button" onClick={() => navigate("/review")}>
+                Reviews
               </Dropdown.Item>
             </DropdownButton>
           )}

@@ -14,6 +14,7 @@ namespace DataAccess.Dtos.Employees
         public string CCCD { get; set; }
         public double expYear { get; set; }
         public RegisterRequestDto accountInfo { get; set; }
+        public string avatar { get; set; }
 
     }
 }
