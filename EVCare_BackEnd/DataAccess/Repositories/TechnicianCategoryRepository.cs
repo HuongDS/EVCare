@@ -20,6 +20,10 @@ namespace DataAccess.Repositories
 
         public Task<PageResultDto<TechnicianCategoryViewModel>> GetAllTechnicianCategories(TechnicianCategoryDto model)
         {
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                model.Name = "";
+            }
             var query = _dbContext.TechnicianCategories.
                 Select(tc => new TechnicianCategoryViewModel
                 {
@@ -28,7 +32,7 @@ namespace DataAccess.Repositories
                     Description = tc.Description,
                     IsDeleted = tc.Deleted_At != DateTime.MinValue,
                     Services = tc.TechnicianSkills
-                       .Where(ts => ts.TechnicianCategoryId == tc.Id)
+                       .Where(ts => ts.TechnicianCategoryId == tc.Id && ts.Service.Name.Contains(model.Name.ToLower().Trim()))
                        .Select(ts => new DataAccess.Dtos.Service.ServiceViewModel
                        {
                            Id = ts.Service.Id,
@@ -38,10 +42,10 @@ namespace DataAccess.Repositories
                        }).ToList()
 
                 });
-            if (!string.IsNullOrEmpty(model.Name))
-            {
-                query = query.Where(tc => tc.Name.Contains(model.Name.Trim()));
-            }
+            //if (!string.IsNullOrEmpty(model.Name))
+            //{
+            //    query = query.Where(tc => tc.Name.Contains(model.Name.Trim()));
+            //}
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
         }
