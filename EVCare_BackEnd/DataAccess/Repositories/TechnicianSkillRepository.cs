@@ -18,26 +18,14 @@ namespace DataAccess.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task AddTechnicianSkillAsync(TechnicianSkillCreateModel model)
+        public async Task AddTechnicianSkillAsync(IEnumerable<TechnicianSkill> model)
         {
-            
-            var entity = new TechnicianSkill
-            {
-                TechnicianId = model.TechnicianId,
-                //TechnicianCategoryId = model.TechnicianCategoryId,
-                ServiceId = model.ServiceId.Value
-            };
-            await _dbContext.TechnicianSkills.AddAsync(entity);
+            await _dbContext.TechnicianSkills.AddRangeAsync(model);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<int>> GetServiceIdsByCategoryIdAsync(int technicianCategoryId)
-        {
-            return null;
-            //return await _dbContext.TechnicianSkills.Where(ts => ts.TechnicianCategoryId == technicianCategoryId)
-            //     .Select(ts => ts.ServiceId)
-            //     .Distinct().ToListAsync();
-                
-        }
+      
+
+       
     }
 }

@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.TechnicianSkill;
+using DataAccess.Entities;
 
 namespace DataAccess.Interfaces
 {
     public interface ITechnicianSkillRepository
     {
-        Task AddTechnicianSkillAsync(TechnicianSkillCreateModel model);
-        Task<IEnumerable<int>> GetServiceIdsByCategoryIdAsync(int technicianCategoryId);
+        Task AddTechnicianSkillAsync(IEnumerable<TechnicianSkill> model);
+      
     }
 }
