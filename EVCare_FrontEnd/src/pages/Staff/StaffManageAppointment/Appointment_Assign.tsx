@@ -550,7 +550,7 @@ const StatusBadge = styled.span<{ $status: string }>`
           color: #e65100;
           border-color: #ffcc80;
         `;
-      case "Offline":
+      case "OnLeave":
         return `
           background: #f5f5f5;
           color: #616161;

@@ -33,8 +33,8 @@ export type StaffAppointmentsDto<T> = {
 export type GetAppointmentsParams = {
   customerName?: string;
   status?: string;
-  beginTime?: Date;
-  endTime?: Date;
+  beginTime?: string;
+  endTime?: string;
   pageSize?: number;
   pageIndex?: number;
   sortField?: string;

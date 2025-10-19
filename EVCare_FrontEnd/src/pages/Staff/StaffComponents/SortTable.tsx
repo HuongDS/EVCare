@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router";
 import styled from "styled-components";
 import { SortDateButton } from "./SortDateButton";
+import SortDateRange from "./SortDateRange";
 
 const SortWrapperStyled = styled.div`
   display: flex;
@@ -93,6 +94,8 @@ interface MyComponentProps {
   sortName: string[];
   setSortBy: (v: string) => void;
   setSortOrder: (v: string) => void;
+  setBeginDate: (v: string) => void;
+  setEndDate: (v: string) => void;
   disabled: boolean;
 }
 
@@ -100,6 +103,8 @@ const SortTable: React.FC<MyComponentProps> = ({
   sortName,
   setSortBy,
   setSortOrder,
+  setBeginDate,
+  setEndDate,
   disabled,
 }) => {
   const [activeCategory, setActiveCategory] = useState<string>(sortName[0]);
@@ -123,6 +128,7 @@ const SortTable: React.FC<MyComponentProps> = ({
           </Category>
         ))}
       </Container>
+      <SortDateRange setBeginDate={setBeginDate} setEndDate={setEndDate} />
       <SortDateButton onSort={setSortOrder} disabled={disabled} />
     </SortWrapperStyled>
   );
