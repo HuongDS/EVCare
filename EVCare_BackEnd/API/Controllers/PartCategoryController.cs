@@ -20,13 +20,14 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles ="Technician,Admin")]
-        public async Task<IActionResult> GetCategories([FromQuery]CategoryQueryDto model)
+        [Authorize(Roles = "Technician,Admin,Staff")]
+        public async Task<IActionResult> GetCategories([FromQuery] CategoryQueryDto model)
         {
             try
             {
                 var data = await _partCategoryService.GetCategories(model);
-                return Ok(new ResponseDto<PageResultDto<PartCategoryViewModel>>{
+                return Ok(new ResponseDto<PageResultDto<PartCategoryViewModel>>
+                {
                     data = data,
                     message = Message.PART_Category_GET_SUCCESSFULLY,
                     statusCode = HttpStatus.OK,
@@ -70,7 +71,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]    
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             try
