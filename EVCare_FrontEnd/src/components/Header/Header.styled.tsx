@@ -93,7 +93,7 @@ export const SearchBar = styled.div`
 `;
 
 export const Menu = styled.nav`
-  width: 35%;
+  width: 40%;
   display: flex;
   justify-content: space-between;
   font-size: 1.2rem;
@@ -133,6 +133,7 @@ export const Menu = styled.nav`
   }
 
   @media (min-width: 750px) and (max-width: 900px) {
+    width: 80%;
     font-size: 16px;
   }
   @media (max-width: 750px) {
