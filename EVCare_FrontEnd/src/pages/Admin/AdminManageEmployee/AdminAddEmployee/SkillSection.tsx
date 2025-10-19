@@ -1,6 +1,6 @@
 import React from "react";
-import type { EmployeeSkill } from "../../../../models/Employee/EmployeeSkill";
 import type { EmployeeSkillCategoryViewModel } from "../../../../models/Employee/EmployeeSkillCategoryViewModel";
+import type { EmployeeSkill } from "../../../../models/Employee/EmployeeSkill";
 
 interface SkillsSectionProps {
   skillGroups: EmployeeSkillCategoryViewModel[];
@@ -36,18 +36,16 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
       </div>
 
       <div className="skills-groups">
-        {skillGroups.map((group) => (
-          <div className="skill-group" key={group.id}>
+        {skillGroups.map((group, i) => (
+          <div className="skill-group" key={i}>
             <div className="skill-group-header">
               <span>{group.name}</span>
             </div>
 
             <div className="skill-group-body">
-              {group.services.map((skill) => {
-                const id = `skill-${skill.id}-${skill.name}`;
-                return skill.isDeleted ? (
-                  <></>
-                ) : (
+              {group.services.map((skill, i) => {
+                const id = `${i}-${skill.id}-${skill.name}`;
+                return (
                   <div className="skill-checkbox-wrapper" key={id}>
                     <input
                       type="checkbox"
@@ -75,6 +73,9 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
             selectedSkills.map((skill) => (
               <span key={skill.id} className="selected-skill-tag">
                 {skill.name}
+                <span className="remove-skill" onClick={() => setSelectedSkills(skill)}>
+                  ×
+                </span>
               </span>
             ))
           ) : (

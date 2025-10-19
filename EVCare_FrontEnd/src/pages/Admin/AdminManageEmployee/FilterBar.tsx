@@ -45,7 +45,7 @@ const FilterBar: React.FC<Props> = ({
         <option value={EmployeeStatusEnum.OnLeave}>On Leave</option>
       </select>
 
-      <button onClick={() => navigate("/add-employee")} className="add-employee-btn">
+      <button onClick={() => navigate("/admin/add-employee")} className="add-employee-btn">
         + Add Employee
       </button>
     </div>

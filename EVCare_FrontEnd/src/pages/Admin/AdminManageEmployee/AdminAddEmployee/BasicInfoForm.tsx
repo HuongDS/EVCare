@@ -1,5 +1,6 @@
 import React from "react";
 import type { RoleEnum } from "../../../../models/enums";
+import UploadImage from "../../../../components/UploadFields/uploadImage";
 
 interface BasicInfoFormProps {
   firstName: string;
@@ -18,6 +19,7 @@ interface BasicInfoFormProps {
   setPhone: (v: string) => void;
   setEmail: (v: string) => void;
   setSelectedRole: (v: RoleEnum) => void;
+  setAddImage: (v: string) => void;
 }
 
 const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
@@ -37,6 +39,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   setPhone,
   setEmail,
   setSelectedRole,
+  setAddImage,
 }) => {
   return (
     <div className="form-section">
@@ -86,7 +89,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             className="form-input"
             placeholder="example@evcare.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value.trim())}
             required
           />
         </div>
@@ -102,7 +105,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             className="form-input"
             placeholder="09 xxxx xxxx"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value.trim())}
             required
           />
         </div>
@@ -118,7 +121,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             className="form-input"
             placeholder="001234567890"
             value={CCCD}
-            onChange={(e) => setCCCD(e.target.value)}
+            onChange={(e) => setCCCD(e.target.value.trim())}
             required
           />
         </div>
@@ -134,7 +137,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             className="form-input"
             placeholder="Enter password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value.trim())}
             required
           />
         </div>
@@ -142,7 +145,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         {/* Confirm Password */}
         <div className="form-group">
           <label className="form-label">
-            Password<span className="required">*</span>
+            Confirm Password<span className="required">*</span>
           </label>
           <input
             type="password"
@@ -150,7 +153,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             className="form-input"
             placeholder="Enter confirm password"
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => setConfirmPassword(e.target.value.trim())}
             required
           />
         </div>
@@ -168,7 +171,16 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value as RoleEnum)}
             required
+            disabled
           />
+        </div>
+
+        {/* Image */}
+        <div className="form-group">
+          <label className="form-label">
+            Add Image<span className="required">*</span>
+          </label>
+          <UploadImage handleFileSubmit={setAddImage} imgQuantity={1} />
         </div>
       </div>
     </div>
