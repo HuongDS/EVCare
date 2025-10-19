@@ -18,22 +18,12 @@ namespace Application.Services
         }
         public async Task AddTechnicianSkillAsync(TechnicianSkillCreateModel model)
         {
-            if (model.ServiceId.HasValue)
+            var technicianSkills = model.ServiceIds.Select(serviceId => new DataAccess.Entities.TechnicianSkill
             {
-                await _technicianSkillRepository.AddTechnicianSkillAsync(model);
-                return;
-            }
-            var listServiceIds = await _technicianSkillRepository.GetServiceIdsByCategoryIdAsync(model.TechnicianCategoryId);
-            foreach (var serviceId in listServiceIds)
-            {
-                var technicianSkillModel = new TechnicianSkillCreateModel
-                {
-                    TechnicianId = model.TechnicianId,
-                    TechnicianCategoryId = model.TechnicianCategoryId,
-                    ServiceId = serviceId
-                };
-                await _technicianSkillRepository.AddTechnicianSkillAsync(technicianSkillModel);
-            }
+                TechnicianId = model.TechnicianId,
+                ServiceId = serviceId
+            });
+            await _technicianSkillRepository.AddTechnicianSkillAsync(technicianSkills);
         }
     }
 }
