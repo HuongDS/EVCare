@@ -1,12 +1,27 @@
 import React from "react";
+import { SkillsSection } from "./SkillSection";
+import type { EmployeeSkillCategoryViewModel } from "../../../../models/Employee/EmployeeSkillCategoryViewModel";
+import type { EmployeeSkill } from "../../../../models/Employee/EmployeeSkill";
 
 interface TechnicianFieldsProps {
   show: boolean;
   expYear: number;
   handleChange: (e: number) => void;
+  skillGroups: EmployeeSkillCategoryViewModel[];
+  selectedSkills: EmployeeSkill[];
+  setSelectedSkills: (v: EmployeeSkill) => void;
+  setSearchSkills: (v: string) => void;
 }
 
-const TechnicianFields: React.FC<TechnicianFieldsProps> = ({ show, expYear, handleChange }) => {
+const TechnicianFields: React.FC<TechnicianFieldsProps> = ({
+  show,
+  expYear,
+  handleChange,
+  skillGroups,
+  selectedSkills,
+  setSelectedSkills,
+  setSearchSkills,
+}) => {
   if (!show) return null;
 
   return (
@@ -28,6 +43,12 @@ const TechnicianFields: React.FC<TechnicianFieldsProps> = ({ show, expYear, hand
           required
         />
       </div>
+      <SkillsSection
+        setSearchSkills={setSearchSkills}
+        skillGroups={skillGroups}
+        selectedSkills={selectedSkills}
+        setSelectedSkills={setSelectedSkills}
+      />
     </div>
   );
 };

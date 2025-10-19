@@ -220,6 +220,7 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
       setTimeSelected(undefined);
       setSelectedValue(0);
       setIsAddNew(true);
+      setUrls([]);
     }
   }, [
     selectedValue,
