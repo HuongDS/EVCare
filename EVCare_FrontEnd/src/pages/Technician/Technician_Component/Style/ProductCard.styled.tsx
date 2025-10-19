@@ -8,15 +8,13 @@ export const CardContainer = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     transform: translateY(-6px) scale(1.03);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
   }
 
-  /* 📱 Responsive cho mobile, ví dụ iPhone 14 Pro Max */
   @media (max-width: 480px) {
     max-width: 90%; /* rộng hơn so với 250px */
     margin: 0 auto; /* căn giữa card */

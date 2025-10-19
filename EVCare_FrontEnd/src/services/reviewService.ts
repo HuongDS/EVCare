@@ -1,10 +1,6 @@
 import { api } from "../api/api";
 import type { ReviewCreateDto } from "../models/Review/ReviewCreateDto";
-import type {
-  ReviewResponseDto,
-  ResponseDto,
-  PageModel,
-} from "../models/Review/ReviewResponseDto";
+import type { ReviewResponseDto, ResponseDto, PageModel } from "../models/Review/ReviewResponseDto";
 import { handleError } from "../utils/errorHandler";
 
 export async function review(data: ReviewCreateDto) {
@@ -12,9 +8,10 @@ export async function review(data: ReviewCreateDto) {
     await api.post("/api/Review", data);
   } catch (error) {
     handleError(error);
-    throw new Error(error as string);
+    throw new Error((error as Error).message);
   }
 }
+
 
 export async function getAllReview(
   pageIndex = 1,

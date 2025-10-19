@@ -22,7 +22,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onBan, setOpenBanModal }) => 
             <div className="user-name">{user.customerName}</div>
             <div className="user-contact">
               <div className="contact-item">
-                <span>{user.phoneNumber}</span>
+                <span>{user.phoneNumber ?? "default"}</span>
               </div>
               <div className="contact-item">
                 <span>{user.email}</span>
