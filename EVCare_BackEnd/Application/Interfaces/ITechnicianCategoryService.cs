@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.TechnicianCategory;
-using DataAccess.Entities;
 
-namespace DataAccess.Interfaces
+namespace Application.Interfaces
 {
-    public interface ITechnicianCategoryRepository : IGenericRepository<TechnicianCategory>
+    public interface ITechnicianCategoryService
     {
         Task<PageResultDto<TechnicianCategoryViewModel>> GetAllTechnicianCategories(TechnicianCategoryDto model);
     }
