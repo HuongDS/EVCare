@@ -18,7 +18,7 @@ namespace Application.Services
         private readonly IAccountRepository _accountRepository;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IMapper _mapper;
-        public AccountService(IAccountRepository accountRepository, IMapper mapper,IRefreshTokenRepository refreshTokenRepository)
+        public AccountService(IAccountRepository accountRepository, IMapper mapper, IRefreshTokenRepository refreshTokenRepository)
         {
             _accountRepository = accountRepository;
             _mapper = mapper;
@@ -62,20 +62,39 @@ namespace Application.Services
             {
                 throw new Exception(Message.PHONE_EXISTS);
             }
-            if (data.password != null)
-            {
-                if (!Regex.IsMatch(data.password, RegexPartterns.PASSWORD_PATTERN))
-                {
-                    throw new Exception(Message.WEAK_PASSWORD);
-                }
-                account.Hash_Password = BCrypt.Net.BCrypt.HashPassword(data.password);
-            }
             account.First_Name = data.firstName;
             account.Last_Name = data.lastName;
             account.Phone = data.phone;
             await _accountRepository.UpdateAsync(account);
             var result = _mapper.Map<AccountViewModel>(account);
             return result;
+        }
+
+        public async Task<AccountViewModel> UpdatePasswordByAccountId(int accountId, AccountUpdatePasswordDto data)
+        {
+            var account = await _accountRepository.GetByIdAsync(accountId);
+            if (account is null)
+            {
+                throw new Exception(Message.ACCOUNT_NOT_FOUND);
+            }
+            if (!Regex.IsMatch(data.newPassword, RegexPartterns.PASSWORD_PATTERN))
+            {
+                throw new Exception(Message.WEAK_PASSWORD);
+            }
+            account.Hash_Password = BCrypt.Net.BCrypt.HashPassword(data.newPassword);
+            await _accountRepository.UpdateAsync(account);
+            var result = _mapper.Map<AccountViewModel>(account);
+            return result;
+        }
+
+        public async Task<bool> VerifyPasswordByAcccountId(int accountId, string password)
+        {
+            var account = await _accountRepository.GetByIdAsync(accountId);
+            if (account is null)
+            {
+                throw new Exception(Message.ACCOUNT_NOT_FOUND);
+            }
+            return BCrypt.Net.BCrypt.Verify(password, account.Hash_Password);
         }
     }
 }
