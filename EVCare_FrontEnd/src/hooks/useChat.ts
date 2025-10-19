@@ -25,8 +25,8 @@ export function useChat(conversationId?: string) {
     conn.on("UnreadChanged", ({ conversationId: cid, unread }) => {
       if (cid === conversationId) setUnread(unread);
     });
-    conn.on("Typing", ({ userId }) => setTypingUsers((s) => Array.from(new Set([...s, userId]))));
-    conn.on("StopTyping", ({ userId }) => setTypingUsers((s) => s.filter((x) => x !== userId)));
+    conn.on("UserStartedTyping", ({ userId }) => setTypingUsers((s) => Array.from(new Set([...s, userId]))));
+    conn.on("UserStoppedTyping", ({ userId }) => setTypingUsers((s) => s.filter((x) => x !== userId)));
 
     if (conn.state === "Disconnected") {
       conn.start().catch((err) => console.error("SignalR start error:", err));
@@ -53,8 +53,8 @@ export function useChat(conversationId?: string) {
   const markRead = async (upToMessageId: number) =>
     connectionRef.current?.invoke("MarkAsRead", conversationId, upToMessageId);
 
-  const startTyping = async () => connectionRef.current?.invoke("StartTyping", conversationId);
-  const stopTyping = async () => connectionRef.current?.invoke("StopTyping", conversationId);
+  const startTyping = async () => connectionRef.current?.invoke("UserStartedTyping", conversationId);
+  const stopTyping = async () => connectionRef.current?.invoke("UserStoppedTyping", conversationId);
 
   return { messages, setMessages, unread, typingUsers, send, markRead, startTyping, stopTyping };
 }
