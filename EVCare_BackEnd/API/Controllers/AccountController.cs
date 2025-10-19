@@ -141,10 +141,10 @@ namespace API.Controllers
             try
             {
                 var accountId = (int)HttpContext.Items["AccountId"];
-                await _accountService.UpdatePasswordByAccountId(accountId, data);
-                return Ok(new ResponseDto<object>
+                var response = await _accountService.UpdatePasswordByAccountId(accountId, data);
+                return Ok(new ResponseDto<AccountViewModel>
                 {
-                    data = null,
+                    data = response,
                     statusCode = HttpStatus.OK,
                     message = Message.CHANGE_PASSWORD_SUCCESS
                 });
