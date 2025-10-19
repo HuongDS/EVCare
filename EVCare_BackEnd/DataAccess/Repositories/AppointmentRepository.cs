@@ -250,45 +250,55 @@ namespace DataAccess.Repositories
         public async Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model)
         {
             var query = _dbSet
-                .Where(x => x.Status == model.Status && DateOnly.FromDateTime(x.Appointment_Date) >= model.BeginTime && DateOnly.FromDateTime(x.Appointment_Date) <= model.EndTime)
-                .Include(a => a.Vehicle).ThenInclude(v => v.Category)
-                .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
-                .Include(a => a.Customer).ThenInclude(a => a.Account)
                 .Select(a => new AppointmentViewModel
                 {
-                    Id = a.Id,
-                    AppointmentDate = a.Appointment_Date,
-                    Services = a.AppointmentServices.Select(x => new Dtos.Service.ServiceViewFormModel
-                    {
-                        Id = x.ServiceId,
-                        Name = x.Service.Name
-                    }).ToList(),
-                    Status = a.Status,
-                    VehicleModel = a.Vehicle.Category.Name,
-                    LicensePlate = a.Vehicle.LicensePlate,
-                    AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
-                    CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
-                    PhoneNumber = a.Customer.Account.Phone,
-                    Note = a.Note,
-                    OrderId = a.OrderId,
-                    Technicians = a.Order!=null? a.Order.TechnicianWorkingSessions
-                                    .Select(t => new TechnicianViewModel
-                                    {
-                                        Id = t.TechnicianId,
-                                        ExpYears = t.Technician.ExpYear,
-                                        FullName = t.Technician.Employee.Account.First_Name + " " + t.Technician.Employee.Account.Last_Name,
-                                        Phone = t.Technician.Employee.Account.Phone,
-                                        Skills = t.Technician.TechnicianSkills
-                                                    .Select(ts => new ServiceViewFormModel
-                                                    {
-                                                        Id = ts.ServiceId,
-                                                        Name = ts.Service.Name
-                                                    })
-                                                    .ToList(),
-                                        Status = t.Technician.Employee.Status
-                                    }).ToList() : new List<TechnicianViewModel>()
+                   Id = a.Id,
+                   Services = a.AppointmentServices.Select(x=>new ServiceViewFormModel
+                   {
+                       Id = x.ServiceId,
+                          Name = x.Service.Name
+                   }).ToList(),
+                     AppointmentDate = a.Appointment_Date,
+                        Status = a.Status,
+                        VehicleModel = a.Vehicle.Category.Name,
+                        LicensePlate = a.Vehicle.LicensePlate,
+                        AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
+                        CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
+                        PhoneNumber = a.Customer.Account.Phone,
+                        OrderId = a.OrderId,
+                        Note = a.Note,
+                        Technicians = a.Order.TechnicianWorkingSessions
+                                        .Select(t => new TechnicianViewModel
+                                        {
+                                            Id = t.TechnicianId,
+                                            ExpYears = t.Technician.ExpYear,
+                                            FullName = t.Technician.Employee.Account.First_Name + " " + t.Technician.Employee.Account.Last_Name,
+                                            Phone = t.Technician.Employee.Account.Phone,
+                                            Skills = t.Technician.TechnicianSkills
+                                                        .Select(ts => new ServiceViewFormModel
+                                                        {
+                                                            Id = ts.ServiceId,
+                                                            Name = ts.Service.Name
+                                                        })
+                                                        .ToList(),
+                                            Status = t.Technician.Employee.Status
+                                        }).ToList()
+
 
                 }).Where(x => x.CustomerName.Contains(model.CustomerName));
+
+            if( model.Status.HasValue)
+            {
+                query = query.Where(x => x.Status == model.Status.Value);
+            }
+            if (model.BeginTime.HasValue)
+            {
+                query = query.Where(x => DateOnly.FromDateTime(x.AppointmentDate) >= model.BeginTime.Value);
+            }
+            if (model.EndTime.HasValue)
+            {
+                query = query.Where(x => DateOnly.FromDateTime(x.AppointmentDate) <= model.EndTime.Value);
+            }
 
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);

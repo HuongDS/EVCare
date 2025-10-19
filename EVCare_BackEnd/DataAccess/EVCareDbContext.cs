@@ -24,7 +24,7 @@ namespace DataAccess
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Account> Accounts { get; set; }
        
-        public DbSet<TechnicianCategory> TechnicianCategories { get; set; }
+        public DbSet<ServiceCategory> ServiceCategories { get; set; }
         public DbSet<Technician> Technicians { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Alert> Alerts { get; set; }
@@ -51,7 +51,7 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new VehicleConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
             modelBuilder.ApplyConfiguration(new RefreshTokenConfigurtation());
-            modelBuilder.ApplyConfiguration(new TechnicianCategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new ServiceCategoryConfiguration());
             modelBuilder.ApplyConfiguration(new TechnicianConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
             //modelBuilder.ApplyConfiguration(new ServiceCategoryConfiguration());
