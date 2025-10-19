@@ -1,6 +1,6 @@
-// ProductModal.tsx
 import { useState, useEffect } from "react";
 import { Box, Modal, Fade, Backdrop, IconButton } from "@mui/material";
+import { NumberField } from "@base-ui-components/react/number-field";
 import ImageSkeleton from "./ImageSkeleton";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 
@@ -11,7 +11,6 @@ import {
   TopRow,
   PriceQuantity,
   QuantityControl,
-  QuantityNumber,
 } from "./Style/ProductModal.styled";
 
 import ButtonAction from "../../../components/Button/ReviewButton";
@@ -56,12 +55,19 @@ export default function ProductModal({
     if (quantity > 1) setQuantity((prev) => prev - 1);
   };
 
+  const handleChange = (value: number | null) => {
+    if (!part) return;
+    const safeValue = value ?? 1;
+    if (safeValue < 1) setQuantity(1);
+    else if (safeValue > part.quantity) setQuantity(part.quantity);
+    else setQuantity(safeValue);
+  };
+
   const handleAdd = () => {
     if (part) {
-      console.log("Adding to cart from modal:", part, quantity);
       onAddToCart?.(part, quantity);
+      onClose();
     }
-    onClose();
   };
 
   return (
@@ -83,9 +89,11 @@ export default function ProductModal({
               alt={part?.name || "Product"}
               height={180}
             />
+
             <ProductName variant="h6">
               {part?.name || "Product Name"}
             </ProductName>
+
             <Info>
               <TopRow>
                 <PriceQuantity>
@@ -93,7 +101,6 @@ export default function ProductModal({
                   <span>Stock: {part?.quantity ?? 0}</span>
                 </PriceQuantity>
 
-                {/* 👉 dùng ButtonAction thay cho MuiButton */}
                 <ButtonAction
                   text="Add To Cart"
                   color="white"
@@ -102,6 +109,7 @@ export default function ProductModal({
                 />
               </TopRow>
 
+              {/* 🔢 Quantity Input with NumberField */}
               <QuantityControl>
                 <IconButton
                   size="small"
@@ -116,7 +124,27 @@ export default function ProductModal({
                 >
                   –
                 </IconButton>
-                <QuantityNumber>{quantity}</QuantityNumber>
+
+                <NumberField.Root
+                  min={1}
+                  max={part?.quantity ?? 1}
+                  value={quantity}
+                  onValueChange={(value) => handleChange(value)}
+                  className="number-field"
+                >
+                  <NumberField.Input
+                    className="quantity-input"
+                    style={{
+                      width: "60px",
+                      textAlign: "center",
+                      fontSize: "16px",
+                      border: "1px solid #ccc",
+                      borderRadius: "6px",
+                      padding: "4px 0",
+                    }}
+                  />
+                </NumberField.Root>
+
                 <IconButton
                   size="small"
                   onClick={handleIncrease}
