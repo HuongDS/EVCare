@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Service;
 using DataAccess.Dtos.ServiceCategory;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -18,23 +19,18 @@ namespace DataAccess.Repositories
         }
         public async Task<IEnumerable<ServiceCategoryViewModel>> GetServiceCategoryAndService()
         {
-            return await _db.TechnicianSkills.AsNoTracking().
-                Include(x => x.Service)
-                .Include(x => x.TechnicianCategories)
-                .GroupBy(x => x.TechnicianCategories.Name)
-                .Select(g => new ServiceCategoryViewModel
-                {
-                    Name = g.Key,
-                    Services = g.Where(x=>x.Service.Deleted_At==null)
-                    .Select(x => new Dtos.Service.ServiceViewFormModel
+            return await _db.ServiceCategories     
+                .Select(sc => new ServiceCategoryViewModel
+                { 
+                    Name = sc.Name,
+                    Services = sc.Services.Select(s => new ServiceViewFormModel
                     {
-                        Id = x.ServiceId,
-                        Name = x.Service.Name,
-                    }).Distinct().ToList()
+                        Id = s.Id,
+                        Name = s.Name,
+                    
+                    }).ToList()
 
-
-                })
-                .ToListAsync();
+                }).ToListAsync();
         }
     }
 }

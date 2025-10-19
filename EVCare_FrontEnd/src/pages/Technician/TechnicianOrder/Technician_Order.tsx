@@ -208,7 +208,7 @@ export default function TechnicianOrder({
       onPartsUpdated?.(currentOrderId);
       alert("✅ Order parts updated successfully!");
 
-      // 🔹 Đóng modal
+      // Đóng modal
       setCartOpen(false);
 
       navigate("/technician", { state: { tab: "ADDING_PART" } });

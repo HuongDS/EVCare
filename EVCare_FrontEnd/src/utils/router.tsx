@@ -33,8 +33,10 @@ import {
   LazyApplication,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import Admin_Customer_Vehicle from "../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle.tsx";
+import Review from "../pages/Users/Review/Review.tsx";
 import Admin_Manage_Employee from "../pages/Admin/AdminManageEmployee/Admin_ManageEmployee.tsx";
-import Payment_Success_Page from "../pages/Staff/StaffManageAppointment/Payment_Success_Page.tsx";
+import AddEmployee from "../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee.tsx";
+import { ChatPage } from "../pages/Customer/Chat/ChatPage.tsx";
 import PolicyPage from "../pages/Users/PolicyPage/Policy.tsx";
 
 const router = createBrowserRouter([
@@ -52,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: "contact",
         element: <ContactUs />,
+      },
+      {
+        path: "review",
+        element: <Review />,
       },
       // CUSTOMER ROUTES
       {
@@ -86,6 +92,14 @@ const router = createBrowserRouter([
       },
 
       { path: "test", element: <Test /> },
+      {
+        path: "chat-with-staff",
+        element: (
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
+            <ChatPage />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   // ADMIN ROUTES
@@ -103,6 +117,7 @@ const router = createBrowserRouter([
         element: <Admin_Customer_Vehicle />,
       },
       { path: "manage-employees", element: <Admin_Manage_Employee /> },
+      { path: "add-employee", element: <AddEmployee /> },
     ],
   },
   // STAFF ROUTES
@@ -119,7 +134,7 @@ const router = createBrowserRouter([
       { path: "technicians", element: <Manage_Technicians /> },
       { path: "customers", element: <Manage_Customer /> },
       { path: "appointments", element: <Staff_Appoinments /> },
-      { path: "paymentSuccess", element: <Payment_Success_Page /> },
+      { path: "chat-with-customer", element: <ChatPage /> },
     ],
   },
   // TECHINICIAN ROUTES

@@ -18,6 +18,13 @@ namespace DataAccess.Repositories
         {
         }
 
+        public async Task Delete(int id)
+        {
+            await _dbContext.PartCategories
+                .Where(x => x.Id == id)
+                .ExecuteUpdateAsync(x => x.SetProperty(p => p.Deleted_At, p => DateTime.Now));
+        }
+
         public async Task<PageResultDto<PartCategoryViewModel>> GetCategories(CategoryQueryDto model)
         {
             var query =  _dbContext.PartCategories.AsNoTracking()
@@ -25,7 +32,8 @@ namespace DataAccess.Repositories
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    Description = x.Description
+                    Description = x.Description,
+                    IsDeleted = x.Deleted_At != DateTime.MinValue
 
                 }).ApplySorting(model.SortField, model.SortOrder);
 

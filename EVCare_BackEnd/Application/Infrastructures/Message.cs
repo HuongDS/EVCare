@@ -37,6 +37,9 @@ namespace Application.Infrastructures
         public const string UPDATE_ACCOUNT_SUCCESS = "Update Account successfully";
         public const string PHONE_EXISTS = "Phone number already exists.";
         public const string EMAIL_EXISTS = "Email already exists.";
+        public const string OLD_PASSWORD_INCORRECT = "Old password is incorrect.";
+        public const string VERIFY_PASSWORD_SUCCESS = "Password verified successfully.";
+        public const string CHANGE_PASSWORD_SUCCESS = "Password changed successfully.";
 
         // Parttern
         public const string WEAK_PASSWORD = "Password is too weak. It must be at least 8 characters, at least 1 letter, 1 number and 1 special character.";
@@ -133,8 +136,31 @@ namespace Application.Infrastructures
 
         public static string DELETE_ACCOUNT_SUCCESS = "Delete Account successfully";
 
-        public static string? ACCOUNT_HAS_BEEN_DISABLED ="Account has been disabled.";
+        public static string? ACCOUNT_HAS_BEEN_DISABLED = "Account has been disabled.";
 
         public static string EMPLOYEE_GET_SUCCESSFULLY = "Get employee successfully";
+
+        public static string PART_CREATE_SUCCESSFULLY = "Create part successfully";
+
+        public static string PART_UPDATE_SUCCESSFULLY = "Update part successfully";
+
+
+        // Staff
+        public static string NOT_FOUND_STAFF_SASTISFY = "Not found staff satisfy the requirement.";
+
+        // Chat
+        public static string CHAT_MESSAGE_SENT_SUCCESSFULLY = "Chat message sent successfully.";
+        public static string DOMAIN_CREATE_SUCCESS = "Domain created successfully";
+
+        public static string PART_DELETE_SUCCESSFULLY = "Delete part successfully";
+
+        public static string PART_Category_CREATE_SUCCESSFULLY = "Create part category successfully";
+
+        public static string PART_Category_DELETE_SUCCESSFULLY = "Delete part category successfully";
+
+        public static string TECHNICIAN_CATEGORY_GET_SUCCESSFULLY = "Get technician categories successfully";
+
+        public static string APPLICATION_UPDATE_SUCCESS = "Application updated successfully";
+
     }
 }

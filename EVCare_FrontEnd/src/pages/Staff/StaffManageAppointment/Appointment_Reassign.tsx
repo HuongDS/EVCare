@@ -6,15 +6,13 @@ import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import {
-  useAssignTechnician,
-  useGetTechniciansToday,
-} from "../../../services/appointmentServiceApi";
+import { useAssignTechnician, useGetTechniciansToday } from "../../../services/appointmentServiceApi";
 import { useState } from "react";
 import { CheckCircle, CircleX, Phone, Search, User } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
+import { handleError } from "../../../utils/errorHandler";
 
 interface props {
   show: boolean;
@@ -30,9 +28,7 @@ export default function Appointment_Reassign({ show, close, data }: props) {
   }
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTechnicians, setSelectedTechnicians] = useState<
-    AssignedTechnician[]
-  >([]);
+  const [selectedTechnicians, setSelectedTechnicians] = useState<AssignedTechnician[]>([]);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -43,22 +39,17 @@ export default function Appointment_Reassign({ show, close, data }: props) {
   });
 
   // Lấy danh sách ID của technician đã được gán (cả trước đó và mới chọn)
-  const assignedTechnicianIDs = [
-    ...selectedTechnicians.map((st) => st.technicianID),
-  ];
+  const assignedTechnicianIDs = [...selectedTechnicians.map((st) => st.technicianID)];
 
   const filteredTechnicians =
     technicians?.data?.items
       ?.flat()
       .filter(
         (tech) =>
-          tech.fullName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          !assignedTechnicianIDs.includes(tech.id)
+          tech.fullName.toLowerCase().includes(searchQuery.toLowerCase()) && !assignedTechnicianIDs.includes(tech.id)
       ) || [];
 
-  const handleAddTechnician = async (
-    technician: TechnicianModel<TechnicianSkills>
-  ) => {
+  const handleAddTechnician = async (technician: TechnicianModel<TechnicianSkills>) => {
     const newAssignment: AssignedTechnician = {
       technicianID: technician.id,
       technician,
@@ -69,9 +60,7 @@ export default function Appointment_Reassign({ show, close, data }: props) {
   };
 
   const handleRemoveTechnician = (technicianID: number) => {
-    setSelectedTechnicians(
-      selectedTechnicians.filter((st) => st.technicianID !== technicianID)
-    );
+    setSelectedTechnicians(selectedTechnicians.filter((st) => st.technicianID !== technicianID));
   };
 
   const { mutateAsync: reAssign } = useAssignTechnician();
@@ -88,6 +77,7 @@ export default function Appointment_Reassign({ show, close, data }: props) {
       setIsSuccessModalOpen(true);
       setModalMessage("ReAssign Technicians successfully");
     } catch (error) {
+      handleError(error);
       setIsErrorModalOpen(true);
       setModalMessage("ReAssign Technicians failed! Try again");
     }
@@ -141,9 +131,7 @@ export default function Appointment_Reassign({ show, close, data }: props) {
                 <h2>New Assignments ({selectedTechnicians.length})</h2>
                 {selectedTechnicians.length > 0 && (
                   <ButtonGroup>
-                    <ClearButton onClick={() => setSelectedTechnicians([])}>
-                      Clear All
-                    </ClearButton>
+                    <ClearButton onClick={() => setSelectedTechnicians([])}>Clear All</ClearButton>
                     <SubmitButton onClick={handleReAssign}>
                       <CheckCircle size={20} />
                       Confirm Re-Assignment
@@ -164,9 +152,7 @@ export default function Appointment_Reassign({ show, close, data }: props) {
                     <TechnicianCard
                       key={assignment.technicianID}
                       technician={assignment.technician}
-                      onRemove={() =>
-                        handleRemoveTechnician(assignment.technicianID)
-                      }
+                      onRemove={() => handleRemoveTechnician(assignment.technicianID)}
                       isSelected
                     />
                   ))}
@@ -215,19 +201,9 @@ export default function Appointment_Reassign({ show, close, data }: props) {
         </PageContainer>
       </ModalStyled>
       {isSuccessModalOpen && (
-        <SuccessModal
-          header="Assign Technician"
-          message={modalMessage}
-          action={handleCloseModal}
-        />
+        <SuccessModal header="Assign Technician" message={modalMessage} action={handleCloseModal} />
       )}
-      {isErrorModalOpen && (
-        <FailedModal
-          header="Assign Technician"
-          message={modalMessage}
-          action={handleCloseModal}
-        />
-      )}
+      {isErrorModalOpen && <FailedModal header="Assign Technician" message={modalMessage} action={handleCloseModal} />}
     </>
   );
 }
@@ -242,7 +218,7 @@ interface TechnicianCardProps {
     technicianID: number;
   };
 }
-const TechnicianCard = ({
+export const TechnicianCard = ({
   technician,
   onAdd,
   onRemove,
@@ -251,43 +227,31 @@ const TechnicianCard = ({
   assignmentInfo,
 }: TechnicianCardProps) => {
   return (
-    <TechnicianCardWrapper
-      $isSelected={isSelected}
-      $isPrevious={isPreviouslyAssigned}
-    >
+    <TechnicianCardWrapper $isSelected={isSelected} $isPrevious={isPreviouslyAssigned}>
       {isSelected && onRemove && (
         <RemoveButton onClick={onRemove}>
           <CircleX />
         </RemoveButton>
       )}
 
-      {isPreviouslyAssigned && (
-        <PreviousBadge>Currently Assigned</PreviousBadge>
-      )}
+      {isPreviouslyAssigned && <PreviousBadge>Currently Assigned</PreviousBadge>}
 
       <TechnicianHeader>
         <Avatar
-          src={
-            technician.avatar ||
-            `https://ui-avatars.com/api/?name=${technician.fullName}&background=random`
-          }
+          src={technician.avatar || `https://ui-avatars.com/api/?name=${technician.fullName}&background=random`}
           alt={technician.fullName}
         />
         <TechnicianInfo>
           <h3>{technician.fullName}</h3>
-          <TechnicianId>
-            ID: {assignmentInfo?.technicianID || technician.id}
-          </TechnicianId>
-          <StatusBadge $status={technician.status}>
-            {technician.status}
-          </StatusBadge>
+          <TechnicianId>ID: {assignmentInfo?.technicianID || technician.id}</TechnicianId>
+          <StatusBadge $status={technician.status}>{technician.status}</StatusBadge>
         </TechnicianInfo>
       </TechnicianHeader>
 
       <InfoSection>
         {technician.phone && (
           <InfoItem>
-            <Phone size={14} /> {technician.phone}
+            <Phone size={14} /> {technician.phone ?? "default"}
           </InfoItem>
         )}
       </InfoSection>
@@ -298,9 +262,7 @@ const TechnicianCard = ({
           {technician.skills.slice(0, 3).map((skill) => (
             <SkillTag key={skill.id}>{skill.name}</SkillTag>
           ))}
-          {technician.skills.length > 3 && (
-            <SkillTag $isMore>+{technician.skills.length - 3} more</SkillTag>
-          )}
+          {technician.skills.length > 3 && <SkillTag $isMore>+{technician.skills.length - 3} more</SkillTag>}
         </SkillTags>
       </SkillsSection>
 
@@ -496,15 +458,8 @@ const TechnicianCardWrapper = styled.div<{
   $isPrevious?: boolean;
 }>`
   position: relative;
-  border: 2px solid
-    ${(props) =>
-      props.$isPrevious
-        ? "#00ad4e"
-        : props.$isSelected
-        ? "#2196f3"
-        : "#e0e0e0"};
-  background: ${(props) =>
-    props.$isPrevious ? "#e8f5e9" : props.$isSelected ? "#e3f2fd" : "white"};
+  border: 2px solid ${(props) => (props.$isPrevious ? "#00ad4e" : props.$isSelected ? "#2196f3" : "#e0e0e0")};
+  background: ${(props) => (props.$isPrevious ? "#e8f5e9" : props.$isSelected ? "#e3f2fd" : "white")};
   border-radius: 10px;
   padding: 16px;
   transition: all 0.3s ease;

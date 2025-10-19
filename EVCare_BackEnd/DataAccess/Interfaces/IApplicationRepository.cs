@@ -11,6 +11,7 @@ namespace DataAccess.Interfaces
 {
     public interface IApplicationRepository : IGenericRepository<DataAccess.Entities.Application>
     {
+        Task<PageResultDto<ApplicationAdminViewDto>> GetAllApplicationsAsync(ApplicationQueryDto query);
         Task<bool> GetApplicationByEmployeeIDAndDateOffAsync(int employeeId, DateTime dateOff);
         Task<PageResultDto<ApplicationViewDto>> GetApplicationByEmployeeIdAsync(ApplicationQueryDto query, int employeeId);
         Task<IEnumerable<DataAccess.Entities.Application>> GetApplicationsToday();

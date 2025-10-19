@@ -34,7 +34,7 @@ export default function Admin_Customer_Vehicle() {
       } catch (error) {
         notification.error({
           message: MSG_TITLE.BAN_ACCOUNT,
-          description: error as string,
+          description: (error as Error).message,
         });
       }
     }
@@ -59,7 +59,7 @@ export default function Admin_Customer_Vehicle() {
       } catch (error) {
         notification.error({
           message: MSG_TITLE.FETCH_DATA,
-          description: error as string,
+          description: (error as Error).message,
         });
       }
     };

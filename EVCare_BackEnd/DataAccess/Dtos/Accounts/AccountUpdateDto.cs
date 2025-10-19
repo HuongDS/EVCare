@@ -11,5 +11,7 @@ namespace DataAccess.Dtos.Accounts
         public string firstName { get; set; }
         public string lastName { get; set; }
         public string phone { get; set; }
+
+
     }
 }

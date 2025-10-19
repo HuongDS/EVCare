@@ -136,7 +136,7 @@ export default function Appointment_CheckIn({
           </GroupField>
           <GroupField>
             <div>Phone Number</div>
-            <p>{data.phoneNumber}</p>
+            <p>{data.phoneNumber ?? "default"}</p>
           </GroupField>
         </CustomerInformation>
 

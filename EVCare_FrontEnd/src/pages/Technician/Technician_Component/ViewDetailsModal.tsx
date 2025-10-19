@@ -20,20 +20,9 @@ interface Props {
   appointment: TechnicianAppointmentsDto | null;
 }
 
-const ViewDetailsModal: React.FC<Props> = ({
-  isOpen,
-  onClose,
-  appointment,
-}) => {
+const ViewDetailsModal: React.FC<Props> = ({ isOpen, onClose, appointment }) => {
   return (
-    <Modal
-      open={isOpen}
-      onCancel={onClose}
-      footer={null}
-      width={800}
-      centered
-      closable
-    >
+    <Modal open={isOpen} onCancel={onClose} footer={null} width={800} centered closable>
       <ModalContainer>
         <Header>
           <h2>Details</h2>
@@ -44,30 +33,24 @@ const ViewDetailsModal: React.FC<Props> = ({
             <InfoSection>
               <div>
                 <InfoItem>
-                  <span className="label">Appointment ID:</span> #
-                  {appointment.id}
+                  <span className="label">Appointment ID:</span> #{appointment.id}
                 </InfoItem>
                 <InfoItem>
-                  <span className="label">Customer:</span>{" "}
-                  {appointment.customerName}
+                  <span className="label">Customer:</span> {appointment.customerName}
                 </InfoItem>
                 <InfoItem>
-                  <span className="label">Vehicle:</span>{" "}
-                  {appointment.vehicleModel}
+                  <span className="label">Vehicle:</span> {appointment.vehicleModel}
                 </InfoItem>
               </div>
               <div>
                 <InfoItem>
-                  <span className="label">License Plate:</span>{" "}
-                  {appointment.licensePlate}
+                  <span className="label">License Plate:</span> {appointment.licensePlate}
                 </InfoItem>
                 <InfoItem>
-                  <span className="label">Phone:</span>{" "}
-                  {appointment.phoneNumber}
+                  <span className="label">Phone:</span> {appointment.phoneNumber ?? "default"}
                 </InfoItem>
                 <InfoItem>
-                  <span className="label">Date:</span>{" "}
-                  {formatDate(appointment.appointmentDate)}
+                  <span className="label">Date:</span> {formatDate(appointment.appointmentDate)}
                 </InfoItem>
               </div>
             </InfoSection>

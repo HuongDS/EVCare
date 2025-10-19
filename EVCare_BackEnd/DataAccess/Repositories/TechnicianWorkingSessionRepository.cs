@@ -58,6 +58,15 @@ namespace DataAccess.Repositories
 
         }
 
+        public async Task MakeAvaliable(int id)
+        {
+            var technicianId = await _dbContext.TechnicianWorkingSessions
+                .Where(x => x.OrderId == id)
+                .Select(x => x.TechnicianId).ToListAsync();
+            await _dbContext.Employees.Where(x => technicianId.Contains(x.Technician.Id)).ExecuteUpdateAsync(x=>x.SetProperty(s=>s.Status, Enums.EmployeeStatusEnum.Available));
+
+        }
+
         public async Task MakeCancel(int id)
         {
             await _dbContext.TechnicianWorkingSessions.Where(x => x.OrderId == id).ExecuteUpdateAsync(
@@ -84,7 +93,7 @@ namespace DataAccess.Repositories
             if (model.Status == Enums.TechnicianWorkingSessionEnum.Completed) {
 
                 var employee = await _dbContext.Employees.FirstOrDefaultAsync(x=>x.Technician.Id == technician);
-               if(employee.Status==Enums.EmployeeStatusEnum.Busy) employee.Status = Enums.EmployeeStatusEnum.Available;
+                if(employee.Status==Enums.EmployeeStatusEnum.Busy) employee.Status = Enums.EmployeeStatusEnum.Available;
                 data.EndTime = DateTime.Now;
             }
             await _dbContext.SaveChangesAsync();

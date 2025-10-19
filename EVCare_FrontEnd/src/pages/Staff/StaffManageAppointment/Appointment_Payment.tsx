@@ -33,9 +33,7 @@ interface PaymentPageProps {
 }
 
 const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<
-    "VnPay" | "PayOs" | "Cash"
-  >();
+  const [paymentMethod, setPaymentMethod] = useState<"VnPay" | "PayOs" | "Cash">();
   const [qrcode, setQrCode] = useState("");
   const { data: orderDetail } = useGetOrderDetail(data.orderId);
   const { mutateAsync: appointmentStatus } = changeAppointmentStatus();
@@ -59,9 +57,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
         status: "Done",
       });
 
-      const newInvoice = queryClient.getQueryData<
-        ResponseDto<InvoiceViewModel>
-      >(["Invoice", orderDetail?.data?.id]);
+      const newInvoice = queryClient.getQueryData<ResponseDto<InvoiceViewModel>>(["Invoice", orderDetail?.data?.id]);
 
       if (newInvoice?.data?.status === "Completed") {
         dispatch(setStep({ id: data.id, step: currentStep + 2 }));
@@ -91,10 +87,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
   }, [orderDetail?.data?.id, orderDetail?.data?.price, paymentMethod]);
 
   const subtotal =
-    orderDetail?.data?.parts.reduce(
-      (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
-      0
-    ) ?? 0;
+    orderDetail?.data?.parts.reduce((sum, part) => sum + (part.price + part.replacementPrice) * part.quantity, 0) ?? 0;
 
   const vatAmount = (subtotal * (orderDetail?.data?.vat ?? 0)) / 100;
 
@@ -122,7 +115,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
                 <InfoLabel>
                   <PhoneOutlined /> Phone
                 </InfoLabel>
-                <InfoValue>{data.phoneNumber}</InfoValue>
+                <InfoValue>{data.phoneNumber ?? "default"}</InfoValue>
               </InfoItem>
               <InfoItem>
                 <InfoLabel>
@@ -163,11 +156,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
                       <td>{part.quantity}</td>
                       <td>{formatCurrency(part.price)}</td>
                       <td>{formatCurrency(part.replacementPrice)}</td>
-                      <td>
-                        {formatCurrency(
-                          (part.price + part.replacementPrice) * part.quantity
-                        )}
-                      </td>
+                      <td>{formatCurrency((part.price + part.replacementPrice) * part.quantity)}</td>
                     </tr>
                   ))}
                 </TableBody>
@@ -225,9 +214,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
                 {isPending ? <SpinnerComponent /> : <iframe src={qrcode} />}
                 <QRInfo>
                   <p>Scan QR code to complete payment</p>
-                  <AmountTag>
-                    Amount: {formatCurrency(calculateTotal())}
-                  </AmountTag>
+                  <AmountTag>Amount: {formatCurrency(calculateTotal())}</AmountTag>
                 </QRInfo>
               </QRSection>
             )}
@@ -235,12 +222,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
         </MainContent>
 
         <Footer>
-          <ConfirmButton
-            type="primary"
-            size="large"
-            onClick={handlePayment}
-            disabled={!paymentMethod}
-          >
+          <ConfirmButton type="primary" size="large" onClick={handlePayment} disabled={!paymentMethod}>
             Confirm Payment
           </ConfirmButton>
         </Footer>
