@@ -67,6 +67,7 @@ export default function Header() {
         </Link>
         <Link to="/service">Service</Link>
         <Link to="/about">About</Link>
+        <Link to="/policy">Policy</Link>
         <Link to="/contact">Contact</Link>
       </Menu>
       {isAuthenticated ? (
@@ -79,7 +80,10 @@ export default function Header() {
         </div>
       ) : (
         <Buttons>
-          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
+          <button
+            className="btn btn-fill"
+            onClick={() => dispatch(openLogin())}
+          >
             Get Started
           </button>
         </Buttons>

@@ -5,3 +5,11 @@ export type CustomerViewDto = {
   address: string;
   rank: CustomerRankEnum;
 };
+
+export type GetCustomerListParams = {
+  keyword?: string;
+  pageSize?: number;
+  pageIndex?: number;
+  sortField?: string;
+  sortOrder?: string;
+};
