@@ -224,7 +224,6 @@ namespace Application.Services
                 var newAccount = new Account
                 {
                     Email = email,
-                    Phone = "0900000000",
                     Hash_Password = hashPassword,
                     Create_At = DateTime.UtcNow,
                     Updated_At = DateTime.UtcNow,
