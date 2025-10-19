@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    [Migration("20250912082041_createOrderPartsTable")]
-    partial class createOrderPartsTable
+    [Migration("20251019130140_updateServiceCategories")]
+    partial class updateServiceCategories
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,7 +52,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Hash_Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Last_Name")
@@ -61,7 +60,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasMaxLength(11)
                         .HasColumnType("nvarchar(11)");
 
@@ -79,7 +77,8 @@ namespace DataAccess.Migrations
                         .IsUnique();
 
                     b.HasIndex("Phone")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Phone] IS NOT NULL");
 
                     b.ToTable("Accounts");
 
@@ -138,6 +137,34 @@ namespace DataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.Alert", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Create_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Is_Read")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.ToTable("Alerts");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Application", b =>
                 {
                     b.Property<int>("Id")
@@ -155,15 +182,14 @@ namespace DataAccess.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Reason")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -194,10 +220,16 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Deleted_At")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReviewId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -230,6 +262,54 @@ namespace DataAccess.Migrations
                     b.HasIndex("AppointmentId");
 
                     b.ToTable("AppointmentServices");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Appointmentimage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.ToTable("AppointmentImages");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.CenterUnavailableDays", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CenterUnavailableDays");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
@@ -277,8 +357,8 @@ namespace DataAccess.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("BaseSalary")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Avatar")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CCCD")
                         .IsRequired()
@@ -287,11 +367,14 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Deleted_At")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TechnicianId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("rate")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -305,31 +388,75 @@ namespace DataAccess.Migrations
                         {
                             Id = 1,
                             AccountId = 1,
-                            BaseSalary = 12000000m,
                             CCCD = "079123456789",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Updated_At = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            rate = 5
+                            Status = 0,
+                            Updated_At = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
                             AccountId = 2,
-                            BaseSalary = 10000000m,
                             CCCD = "079987654321",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Updated_At = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            rate = 4
+                            Status = 0,
+                            Updated_At = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
                             AccountId = 4,
-                            BaseSalary = 15000000m,
                             CCCD = "079555666777",
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = 0,
                             Updated_At = new DateTime(2025, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Invoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Create_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("OrderCode")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Payment_Method")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Total_Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Updated_At")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("OrderCode")
+                        .IsUnique()
+                        .HasFilter("[OrderCode] IS NOT NULL");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Order", b =>
@@ -349,6 +476,9 @@ namespace DataAccess.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("Updated_At")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppointmentId")
@@ -365,12 +495,23 @@ namespace DataAccess.Migrations
                     b.Property<int>("PartId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TechnicianId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("OrderId", "PartId");
+                    b.Property<decimal>("ReplacementPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("OrderId", "PartId", "TechnicianId");
 
                     b.HasIndex("PartId");
+
+                    b.HasIndex("TechnicianId");
 
                     b.ToTable("OrderParts");
                 });
@@ -407,6 +548,9 @@ namespace DataAccess.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("ReplacementPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
@@ -430,6 +574,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/piston.jpg",
                             Name = "Piston",
                             Price = 1200000m,
+                            ReplacementPrice = 0m,
                             Stock = 50,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -443,6 +588,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/sparkplug.jpg",
                             Name = "Spark Plug",
                             Price = 150000m,
+                            ReplacementPrice = 0m,
                             Stock = 200,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -456,6 +602,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/brakepad.jpg",
                             Name = "Brake Pad",
                             Price = 800000m,
+                            ReplacementPrice = 0m,
                             Stock = 120,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -469,6 +616,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/brakerotor.jpg",
                             Name = "Brake Rotor",
                             Price = 2500000m,
+                            ReplacementPrice = 0m,
                             Stock = 60,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -482,6 +630,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/battery.jpg",
                             Name = "Car Battery",
                             Price = 3500000m,
+                            ReplacementPrice = 0m,
                             Stock = 40,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -495,6 +644,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/alternator.jpg",
                             Name = "Alternator",
                             Price = 4200000m,
+                            ReplacementPrice = 0m,
                             Stock = 30,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -508,6 +658,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/shockabsorber.jpg",
                             Name = "Shock Absorber",
                             Price = 1800000m,
+                            ReplacementPrice = 0m,
                             Stock = 70,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -521,6 +672,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/tierod.jpg",
                             Name = "Tie Rod",
                             Price = 950000m,
+                            ReplacementPrice = 0m,
                             Stock = 90,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -534,6 +686,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/tire.jpg",
                             Name = "All-Season Tire",
                             Price = 2200000m,
+                            ReplacementPrice = 0m,
                             Stock = 100,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -547,6 +700,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/alloywheel.jpg",
                             Name = "Alloy Wheel",
                             Price = 2800000m,
+                            ReplacementPrice = 0m,
                             Stock = 50,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -560,6 +714,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/radiator.jpg",
                             Name = "Radiator",
                             Price = 3100000m,
+                            ReplacementPrice = 0m,
                             Stock = 35,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -573,6 +728,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/waterpump.jpg",
                             Name = "Water Pump",
                             Price = 1450000m,
+                            ReplacementPrice = 0m,
                             Stock = 80,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -586,6 +742,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/muffler.jpg",
                             Name = "Muffler",
                             Price = 2100000m,
+                            ReplacementPrice = 0m,
                             Stock = 45,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -599,6 +756,7 @@ namespace DataAccess.Migrations
                             Image = "images/parts/catalyticconverter.jpg",
                             Name = "Catalytic Converter",
                             Price = 5200000m,
+                            ReplacementPrice = 0m,
                             Stock = 25,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
@@ -747,72 +905,15 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<DateTime>("Updated_At")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppointmentId");
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
 
                     b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.ReviewEmployee", b =>
-                {
-                    b.Property<int>("ReviewId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Create_At")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int>("Rates")
-                        .HasColumnType("int");
-
-                    b.HasKey("ReviewId", "EmployeeId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("ReviewEmployees");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Salary", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Bonus")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("Create_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DayWork")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("Salaries");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Service", b =>
@@ -823,13 +924,10 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Create_At")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Deleted_At")
+                    b.Property<DateTime?>("Deleted_At")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -843,329 +941,132 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ServiceCategoryId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("ServiceCategoryId");
 
                     b.ToTable("Services");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            CategoryId = 1,
+                            Id = 11,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Installation of new water and drainage pipes in residential and commercial buildings.",
                             Duration = 2.5m,
                             Name = "Pipe Installation",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 1,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Detection and repair of pipe leaks to prevent water damage and reduce waste.",
-                            Duration = 1.5m,
-                            Name = "Leak Repair",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryId = 2,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Installation of electrical wiring for new constructions or renovations.",
-                            Duration = 3.0m,
-                            Name = "Wiring Installation",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CategoryId = 2,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Repair and replacement of broken or faulty light fixtures and switches.",
-                            Duration = 1.0m,
-                            Name = "Light Fixture Repair",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CategoryId = 3,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Installation of new air conditioning units for residential and office spaces.",
-                            Duration = 4.0m,
-                            Name = "Air Conditioner Installation",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CategoryId = 3,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Regular inspection and maintenance of heating systems to ensure efficiency.",
-                            Duration = 2.0m,
-                            Name = "Heater Maintenance",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CategoryId = 4,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Repair and restoration of wooden furniture such as chairs, tables, and cabinets.",
-                            Duration = 2.0m,
-                            Name = "Furniture Repair",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CategoryId = 4,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Custom installation of wooden doors and windows with fittings.",
-                            Duration = 3.5m,
-                            Name = "Door and Window Installation",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CategoryId = 5,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Painting of walls, ceilings, and trim inside residential and office buildings.",
-                            Duration = 5.0m,
-                            Name = "Interior Painting",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CategoryId = 5,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Weather-resistant painting of exterior walls and structures.",
-                            Duration = 6.0m,
-                            Name = "Exterior Painting",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CategoryId = 6,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Comprehensive cleaning service for kitchens, bathrooms, and high-traffic areas.",
-                            Duration = 3.0m,
-                            Name = "Deep Cleaning",
+                            ServiceCategoryId = 1,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 12,
-                            CategoryId = 6,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Regular cleaning services for office spaces, desks, and meeting rooms.",
-                            Duration = 2.5m,
-                            Name = "Office Cleaning",
+                            Description = "Detection and repair of pipe leaks to prevent water damage and reduce waste.",
+                            Duration = 1.5m,
+                            Name = "Leak Repair",
+                            ServiceCategoryId = 1,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 13,
-                            CategoryId = 7,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Mowing, fertilizing, and maintaining healthy lawns and garden areas.",
-                            Duration = 2.0m,
-                            Name = "Lawn Care",
+                            Description = "Installation of electrical wiring for new constructions or renovations.",
+                            Duration = 3.0m,
+                            Name = "Wiring Installation",
+                            ServiceCategoryId = 1,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 14,
-                            CategoryId = 7,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Safe trimming and pruning of trees and shrubs to maintain landscape design.",
-                            Duration = 3.0m,
-                            Name = "Tree Trimming",
+                            Description = "Repair and replacement of broken or faulty light fixtures and switches.",
+                            Duration = 1.0m,
+                            Name = "Light Fixture Repair",
+                            ServiceCategoryId = 2,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 15,
-                            CategoryId = 8,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Troubleshooting and repairing cooling system issues in refrigerators.",
-                            Duration = 2.5m,
-                            Name = "Refrigerator Repair",
+                            Description = "Installation of new air conditioning units for residential and office spaces.",
+                            Duration = 4.0m,
+                            Name = "Air Conditioner Installation",
+                            ServiceCategoryId = 1,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 16,
-                            CategoryId = 8,
                             Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Repair and maintenance of washing machines including drum and motor issues.",
+                            Description = "Regular inspection and maintenance of heating systems to ensure efficiency.",
                             Duration = 2.0m,
-                            Name = "Washing Machine Repair",
+                            Name = "Heater Maintenance",
+                            ServiceCategoryId = 3,
+                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Repair and restoration of wooden furniture such as chairs, tables, and cabinets.",
+                            Duration = 2.0m,
+                            Name = "Furniture Repair",
+                            ServiceCategoryId = 5,
+                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Custom installation of wooden doors and windows with fittings.",
+                            Duration = 3.5m,
+                            Name = "Door and Window Installation",
+                            ServiceCategoryId = 4,
+                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Painting of walls, ceilings, and trim inside residential and office buildings.",
+                            Duration = 5.0m,
+                            Name = "Interior Painting",
+                            ServiceCategoryId = 5,
+                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Weather-resistant painting of exterior walls and structures.",
+                            Duration = 6.0m,
+                            Name = "Exterior Painting",
+                            ServiceCategoryId = 2,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
             modelBuilder.Entity("DataAccess.Entities.ServiceCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Create_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Deleted_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Updated_At")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ServiceCategories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "All plumbing related services including installation, repair, and maintenance of pipes, fixtures, and fittings.",
-                            Name = "Plumbing",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Installation and repair of electrical wiring, outlets, switches, lighting systems, and power distribution.",
-                            Name = "Electrical",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Heating, ventilation, and air conditioning services including installation, maintenance, and repair.",
-                            Name = "HVAC",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Woodwork, furniture repair, installation of doors, windows, cabinets, and other carpentry services.",
-                            Name = "Carpentry",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Interior and exterior painting, wall treatments, and surface preparation for residential and commercial spaces.",
-                            Name = "Painting",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Residential, office, and industrial cleaning services including deep cleaning and regular maintenance.",
-                            Name = "Cleaning",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Garden design, lawn care, tree trimming, and outdoor space maintenance services.",
-                            Name = "Landscaping",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Create_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Installation and repair of household appliances including refrigerators, washing machines, ovens, and dishwashers.",
-                            Name = "Appliance Repair",
-                            Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Technician", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Created_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("ExpYear")
-                        .HasColumnType("float");
-
-                    b.Property<int>("TechnicianCategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId")
-                        .IsUnique();
-
-                    b.HasIndex("TechnicianCategoryId");
-
-                    b.ToTable("Technicians");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.TechnicianCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1187,7 +1088,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TechnicianCategories");
+                    b.ToTable("ServiceCategories");
 
                     b.HasData(
                         new
@@ -1227,20 +1128,94 @@ namespace DataAccess.Migrations
                         });
                 });
 
-            //modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
-            //    {
-            //        b.Property<int>("ServiceCategoryId")
-            //            .HasColumnType("int");
+            modelBuilder.Entity("DataAccess.Entities.ServiceCenter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-            //        b.Property<int>("TechnicianCategoryId")
-            //            .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-            //        b.HasKey("ServiceCategoryId", "TechnicianCategoryId");
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-            //        b.HasIndex("TechnicianCategoryId");
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
 
-            //        b.ToTable("TechnicianSkills");
-            //    });
+                    b.Property<TimeSpan>("CloseTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("DailyBookingLimit")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Hotline")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan>("OpenTime")
+                        .HasColumnType("time");
+
+                    b.Property<decimal>("Vat")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("WorkEndDay")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkSlot")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkStartDay")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServiceCenters");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Technician", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("ExpYear")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique();
+
+                    b.ToTable("Technicians");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
+                {
+                    b.Property<int>("TechnicianId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TechnicianId", "ServiceId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("TechnicianSkills");
+                });
 
             modelBuilder.Entity("DataAccess.Entities.TechnicianWorkingSession", b =>
                 {
@@ -1288,17 +1263,30 @@ namespace DataAccess.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Last_Appointment")
+                    b.Property<DateTime?>("Last_Appointment")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("Last_Kilometer")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("LicensePlate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("NextServiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReminderIntervalMonths")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("LicensePlate")
+                        .IsUnique();
 
                     b.ToTable("Vehicles");
 
@@ -1309,7 +1297,9 @@ namespace DataAccess.Migrations
                             CategoryId = 1,
                             CustomerId = 1,
                             Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Last_Appointment = new DateTime(2025, 2, 4, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Last_Appointment = new DateTime(2025, 2, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LicensePlate = "59A-123.45",
+                            ReminderIntervalMonths = 0
                         });
                 });
 
@@ -1354,6 +1344,17 @@ namespace DataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.Alert", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Appointment", "Appointment")
+                        .WithMany("Alerts")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Application", b =>
                 {
                     b.HasOne("DataAccess.Entities.Employee", "Employee")
@@ -1376,8 +1377,7 @@ namespace DataAccess.Migrations
                     b.HasOne("DataAccess.Entities.Employee", "Employee")
                         .WithMany("Appointments")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("DataAccess.Entities.Vehicle", "Vehicle")
                         .WithMany("Appointments")
@@ -1411,6 +1411,17 @@ namespace DataAccess.Migrations
                     b.Navigation("Service");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.Appointmentimage", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Appointment", "Appointment")
+                        .WithMany("AppointmentImages")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
                 {
                     b.HasOne("DataAccess.Entities.Account", "Account")
@@ -1431,6 +1442,25 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Invoice", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Customer", "Customer")
+                        .WithMany("Invoices")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DataAccess.Entities.Order", "Order")
+                        .WithOne("Invoice")
+                        .HasForeignKey("DataAccess.Entities.Invoice", "OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Order", b =>
@@ -1458,9 +1488,17 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DataAccess.Entities.Technician", "Technician")
+                        .WithMany("OrderParts")
+                        .HasForeignKey("TechnicianId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Order");
 
                     b.Navigation("Part");
+
+                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Part", b =>
@@ -1488,53 +1526,23 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.Review", b =>
                 {
                     b.HasOne("DataAccess.Entities.Appointment", "Appointment")
-                        .WithMany("Reviews")
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithOne("Review")
+                        .HasForeignKey("DataAccess.Entities.Review", "AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Appointment");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.ReviewEmployee", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Employee", "Employee")
-                        .WithMany("ReviewEmployees")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Entities.Review", "Review")
-                        .WithMany("ReviewEmployees")
-                        .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Review");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Salary", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Employee", "Employee")
-                        .WithMany("Salaries")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("DataAccess.Entities.Service", b =>
                 {
-                    b.HasOne("DataAccess.Entities.ServiceCategory", "Category")
+                    b.HasOne("DataAccess.Entities.ServiceCategory", "ServiceCategory")
                         .WithMany("Services")
-                        .HasForeignKey("CategoryId")
+                        .HasForeignKey("ServiceCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("ServiceCategory");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
@@ -1545,35 +1553,27 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    //b.HasOne("DataAccess.Entities.TechnicianCategory", "TechnicianCategory")
-                    //    .WithMany("Technicians")
-                    //    .HasForeignKey("TechnicianCategoryId")
-                    //    .OnDelete(DeleteBehavior.Restrict)
-                    //    .IsRequired();
-
                     b.Navigation("Employee");
-
-                  //  b.Navigation("TechnicianCategory");
                 });
 
-            //modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
-            //    {
-            //        //b.HasOne("DataAccess.Entities.ServiceCategory", "ServiceCategories")
-            //        //    .WithMany("TechnicianSkills")
-            //        //    .HasForeignKey("ServiceCategoryId")
-            //        //    .OnDelete(DeleteBehavior.Cascade)
-            //        //    .IsRequired();
+            modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Service", "Service")
+                        .WithMany("TechnicianSkills")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            //        //b.HasOne("DataAccess.Entities.TechnicianCategory", "TechnicianCategories")
-            //        //    .WithMany("TechnicianSkills")
-            //        //    .HasForeignKey("TechnicianCategoryId")
-            //        //    .OnDelete(DeleteBehavior.Cascade)
-            //        //    .IsRequired();
+                    b.HasOne("DataAccess.Entities.Technician", "Technician")
+                        .WithMany("TechnicianSkills")
+                        .HasForeignKey("TechnicianId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            //        b.Navigation("ServiceCategories");
+                    b.Navigation("Service");
 
-            //        b.Navigation("TechnicianCategories");
-            //    });
+                    b.Navigation("Technician");
+                });
 
             modelBuilder.Entity("DataAccess.Entities.TechnicianWorkingSession", b =>
                 {
@@ -1624,16 +1624,22 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.Appointment", b =>
                 {
+                    b.Navigation("Alerts");
+
+                    b.Navigation("AppointmentImages");
+
                     b.Navigation("AppointmentServices");
 
                     b.Navigation("Order");
 
-                    b.Navigation("Reviews");
+                    b.Navigation("Review");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Customer", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("Invoices");
 
                     b.Navigation("Vehicles");
                 });
@@ -1644,15 +1650,13 @@ namespace DataAccess.Migrations
 
                     b.Navigation("Appointments");
 
-                    b.Navigation("ReviewEmployees");
-
-                    b.Navigation("Salaries");
-
                     b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Order", b =>
                 {
+                    b.Navigation("Invoice");
+
                     b.Navigation("OrderParts");
 
                     b.Navigation("TechnicianWorkingSessions");
@@ -1668,28 +1672,23 @@ namespace DataAccess.Migrations
                     b.Navigation("Parts");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Review", b =>
+            modelBuilder.Entity("DataAccess.Entities.Service", b =>
                 {
-                    b.Navigation("ReviewEmployees");
+                    b.Navigation("TechnicianSkills");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.ServiceCategory", b =>
                 {
                     b.Navigation("Services");
-
-                    b.Navigation("TechnicianSkills");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
                 {
-                    b.Navigation("TechnicianWorkingSessions");
-                });
+                    b.Navigation("OrderParts");
 
-            modelBuilder.Entity("DataAccess.Entities.TechnicianCategory", b =>
-                {
                     b.Navigation("TechnicianSkills");
 
-                    b.Navigation("Technicians");
+                    b.Navigation("TechnicianWorkingSessions");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Vehicle", b =>
