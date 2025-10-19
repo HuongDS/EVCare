@@ -9,7 +9,7 @@ using DataAccess.Entities;
 
 namespace DataAccess.Interfaces
 {
-    public interface ITechnicianCategoryRepository : IGenericRepository<TechnicianCategory>
+    public interface ITechnicianCategoryRepository : IGenericRepository<ServiceCategory>
     {
         Task<PageResultDto<TechnicianCategoryViewModel>> GetAllTechnicianCategories(TechnicianCategoryDto model);
     }

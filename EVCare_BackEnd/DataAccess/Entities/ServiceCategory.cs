@@ -7,13 +7,13 @@ using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
 {
-    public class TechnicianCategory : IEntity, IDelete
+    public class ServiceCategory : IEntity, IDelete
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime Deleted_At { get; set; }
-        public ICollection<TechnicianSkill> TechnicianSkills { get; set; }
+        public ICollection<Service> Services { get; set; }
 
     }
 }

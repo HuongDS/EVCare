@@ -48,20 +48,20 @@ namespace DataAccess.Migrations
                 table: "Accounts",
                 column: "Id");
 
-            migrationBuilder.CreateTable(
-                name: "TechnicianCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Deleted_At = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TechnicianCategories", x => x.Id);
-                });
+            //migrationBuilder.CreateTable(
+            //    name: "TechnicianCategories",
+            //    columns: table => new
+            //    {
+            //        Id = table.Column<int>(type: "int", nullable: false)
+            //            .Annotation("SqlServer:Identity", "1, 1"),
+            //        Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+            //        Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+            //        Deleted_At = table.Column<DateTime>(type: "datetime2", nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_TechnicianCategories", x => x.Id);
+            //    });
 
             migrationBuilder.CreateTable(
                 name: "Technicians",
@@ -70,7 +70,7 @@ namespace DataAccess.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    TechnicianCategoryId = table.Column<int>(type: "int", nullable: false),
+                 //   TechnicianCategoryId = table.Column<int>(type: "int", nullable: false),
                     Created_At = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -82,25 +82,25 @@ namespace DataAccess.Migrations
                         principalTable: "Employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Technicians_TechnicianCategories_TechnicianCategoryId",
-                        column: x => x.TechnicianCategoryId,
-                        principalTable: "TechnicianCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                    //table.ForeignKey(
+                    //    name: "FK_Technicians_TechnicianCategories_TechnicianCategoryId",
+                    //   // column: x => x.TechnicianCategoryId,
+                    //    principalTable: "TechnicianCategories",
+                    //    principalColumn: "Id",
+                    //    onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.InsertData(
-                table: "TechnicianCategories",
-                columns: new[] { "Id", "Deleted_At", "Description", "Name" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Responsible for diagnosing, repairing, and maintaining vehicle engines, including fuel systems, cooling systems, and performance optimization.", "Engine Specialist" },
-                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Focuses on manual and automatic transmissions, clutches, gear systems, and drivetrains to ensure smooth power delivery.", "Transmission Specialist" },
-                    { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Handles inspection, repair, and replacement of braking systems, including pads, rotors, calipers, and hydraulic lines.", "Brake Specialist" },
-                    { 4, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Works on vehicle electrical components such as wiring, batteries, alternators, lighting, sensors, and onboard electronics.", "Electrical Systems Specialist" },
-                    { 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Maintains and repairs suspension systems, steering components, and alignment to ensure vehicle stability and handling.", "Suspension and Steering Specialist" }
-                });
+            //migrationBuilder.InsertData(
+            //    table: "TechnicianCategories",
+            //    columns: new[] { "Id", "Deleted_At", "Description", "Name" },
+            //    values: new object[,]
+            //    {
+            //        { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Responsible for diagnosing, repairing, and maintaining vehicle engines, including fuel systems, cooling systems, and performance optimization.", "Engine Specialist" },
+            //        { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Focuses on manual and automatic transmissions, clutches, gear systems, and drivetrains to ensure smooth power delivery.", "Transmission Specialist" },
+            //        { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Handles inspection, repair, and replacement of braking systems, including pads, rotors, calipers, and hydraulic lines.", "Brake Specialist" },
+            //        { 4, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Works on vehicle electrical components such as wiring, batteries, alternators, lighting, sensors, and onboard electronics.", "Electrical Systems Specialist" },
+            //        { 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Maintains and repairs suspension systems, steering components, and alignment to ensure vehicle stability and handling.", "Suspension and Steering Specialist" }
+            //    });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Technicians_EmployeeId",
@@ -108,10 +108,10 @@ namespace DataAccess.Migrations
                 column: "EmployeeId",
                 unique: true);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Technicians_TechnicianCategoryId",
-                table: "Technicians",
-                column: "TechnicianCategoryId");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_Technicians_TechnicianCategoryId",
+            //    table: "Technicians",
+            //    column: "TechnicianCategoryId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Customers_Accounts_AccountId",
