@@ -16,5 +16,6 @@ namespace DataAccess.Interfaces
         Task<bool> CheckExist(int partId);
         void Update(Part part);
         Task<Dictionary<int, Part>> GetPartWithIDs(List<int> partIds);
+        Task DeleteByCategoryId(int id);
     }
 }

@@ -3,7 +3,6 @@ import styled from "styled-components";
 const PRIMARY = "#16a34a";
 const BG_LIGHT = "#f7faf9";
 const BORDER = "#e3e8e5";
-const TEXT_MAIN = "#1f2937";
 
 export const Container = styled.div`
   font-family: "Outfit", sans-serif;
@@ -21,7 +20,6 @@ export const Container = styled.div`
 `;
 
 export const Sidebar = styled.aside`
-  font-family: "Outfit", sans-serif;
   flex: 0 0 260px;
   background: #ffffff;
   border-radius: 20px;
@@ -79,49 +77,61 @@ export const MainContent = styled.main`
   }
 `;
 
-export const Title = styled.h2`
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: ${TEXT_MAIN};
-  margin-bottom: 20px;
+export const SortWrapper = styled.div`
+  text-align: right;
+  margin-bottom: 12px;
+`;
+
+export const SortButton = styled.button`
+  background: ${PRIMARY};
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-size: 1em;
+
+  &:hover {
+    background: #15803d;
+    transform: translateY(-2px);
+  }
+`;
+
+export const LoadingText = styled.p`
+  text-align: center;
+  margin-top: 1rem;
+  color: #555;
+`;
+
+export const EndText = styled.p`
+  text-align: center;
+  margin: 1rem;
+  color: #777;
+`;
+
+export const ActiveFilterInfo = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  background: #f0fdf4;
+  color: ${PRIMARY};
+  border: 1px solid ${BORDER};
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
 
-  &::before {
-    content: "";
-    display: inline-block;
-    width: 8px;
-    height: 24px;
-    background: ${PRIMARY};
-    border-radius: 4px;
-  }
-`;
-
-export const SearchWrapper = styled.div`
-  margin-bottom: 24px;
-  position: relative;
-  align-self: center;
-`;
-
-export const CardGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
-  animation: fadeInCards 0.4s ease;
-
-  @keyframes fadeInCards {
-    from {
-      opacity: 0;
-      transform: scale(0.97);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+  span:first-child {
+    color: #333;
+    font-weight: 600;
   }
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+  &:hover {
+    background: #dcfce7;
+    transform: translateY(-1px);
   }
 `;
