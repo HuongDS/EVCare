@@ -170,6 +170,7 @@ namespace Application.Services
                 Status = EmployeeStatusEnum.Available,
                 Deleted_At = DateTime.MinValue,
                 Updated_At = DateTime.UtcNow,
+                Avatar = data.avatar,
             };
             await _employeeRepository.AddAsync(newEmployee);
             if (data.role == RoleEnum.Technician)
