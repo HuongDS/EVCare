@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Skeleton from "@mui/material/Skeleton";
 
 interface ImageSkeletonProps {
-  src?: string | null; // 👈 cho phép null
+  src?: string | null;
   alt: string;
   className?: string;
   height?: number;
@@ -17,47 +17,56 @@ export default function ImageSkeleton({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  // 🩹 Reset lại khi src thay đổi
+  useEffect(() => {
+    setLoading(true);
+    setError(false);
+  }, [src]);
+
+  // ⏱ Timeout fallback để không chờ vô hạn
   useEffect(() => {
     const timer = setTimeout(() => {
       if (loading) {
         setLoading(false);
         setError(true);
       }
-    }, 5000);
+    }, 7000); // tăng nhẹ thời gian load
     return () => clearTimeout(timer);
   }, [loading, src]);
 
-  if (!src && !error) {
-    return (
-      <Skeleton
-        variant="rectangular"
-        width="100%"
-        height={height}
-        animation="wave"
-      />
-    );
-  }
+  const finalSrc =
+    error || !src ? "https://placehold.co/300x180?text=No+Image" : src;
 
   return (
-    <>
-      {loading && !error && (
+    <div style={{ position: "relative", width: "100%" }}>
+      {loading && (
         <Skeleton
           variant="rectangular"
           width="100%"
           height={height}
           animation="wave"
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: `${height}px`,
+            borderRadius: "8px",
+          }}
         />
       )}
+
       <img
-        src={error || !src ? "https://placehold.co/300x180?text=No+Image" : src}
+        src={finalSrc}
         alt={alt}
         className={className}
         style={{
-          display: loading ? "none" : "block",
           objectFit: "cover",
           width: "100%",
           height: `${height}px`,
           borderRadius: "8px",
+          opacity: loading ? 0 : 1,
+          transition: "opacity 0.3s ease-in-out",
         }}
         loading="lazy"
         onLoad={() => setLoading(false)}
@@ -66,6 +75,6 @@ export default function ImageSkeleton({
           setError(true);
         }}
       />
-    </>
+    </div>
   );
 }
