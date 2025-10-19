@@ -120,5 +120,27 @@ namespace API.Controllers
                 });
             }
         }
+
+        [HttpGet("export")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ExportParts()
+        {
+            try
+            {
+                var content = await _partService.ExportPartAsync();
+
+                var fileName = $"Parts_{DateOnly.FromDateTime(DateTime.Now)}.xlsx";
+                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
     }
 }
