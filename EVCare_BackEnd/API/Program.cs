@@ -103,7 +103,6 @@ builder.Services.AddScoped<ITechnicianWorkingSessionRepository, TechnicianWorkin
 builder.Services.AddScoped<IPartCategoryRepository, PartCategoryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
-builder.Services.AddScoped<ITechnicianCategoryRepository, TechnicianCategoryRepository>();
 builder.Services.AddScoped<ITechnicianSkillRepository, TechnicianSkillRepository>();
 
 
@@ -139,7 +138,7 @@ builder.Services.AddHttpClient<IPayOSGateWay, PayOSGateWay>();
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<IRedisService, RedisService>();
 builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
-builder.Services.AddScoped<ITechnicianCategoryService, TechnicianCategoryService>();
+
 builder.Services.AddScoped<ITechnicianSkillService, TechnicianSkillService>();
 //builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
 //{
