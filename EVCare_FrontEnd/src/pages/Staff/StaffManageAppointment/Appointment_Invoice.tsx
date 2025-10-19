@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Calendar, Phone, User, Car, FileText, CreditCard } from "lucide-react";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { formatDate, formatDateNoTime } from "../../../utils/formatDate";
+import { formatDate } from "../../../utils/formatDate";
 import {
   useDownloadInvoice,
   useGetInvoice,
@@ -121,7 +121,7 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
                   <InfoItem>
                     <Calendar size={16} />
                     <span>
-                      Service Date: {formatDateNoTime(data.appointmentDate)}
+                      Service Date: {formatDate(data.appointmentDate)}
                     </span>
                   </InfoItem>
                 </InfoList>
