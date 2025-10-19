@@ -39,10 +39,11 @@ const AddEmployee: React.FC = () => {
   const [searchSkills, setSearchSkills] = useState("");
   const [addImage, setAddImage] = useState("");
   const [technicianId, setTechnicianId] = useState(0);
+  const [isSubmit, setIsSubmit] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
+    setIsSubmit(true);
     try {
       if (firstName == null || lastName == null) {
         throw new Error(ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
@@ -91,12 +92,27 @@ const AddEmployee: React.FC = () => {
         };
         await addSkillToTechnician(data);
       }
-      showAlert("success", MSG_TITLE.ADD_EMPLOYEE, "Add new Employee successfully !");
+      notification.success({
+        message: MSG_TITLE.ADD_EMPLOYEE,
+        description: "Add new Employee successfully !",
+      });
     } catch (error) {
       showAlert("error", MSG_TITLE.ADD_EMPLOYEE, (error as Error).message);
       return;
+    } finally {
+      setFirstName("");
+      setLastName("");
+      setCCCD("");
+      setPassword("");
+      setConfirmPassword("");
+      setPhone("");
+      setEmail("");
+      setExpYear(0);
+      setSelectedSkills([]);
+      setSkillGroups([]);
+      setTechnicianId(0);
+      setIsSubmit(false);
     }
-    showAlert("success", MSG_TITLE.ADD_EMPLOYEE, "Added Successfully!");
   };
 
   const handleSelectSkill = (skill: EmployeeSkill) => {
@@ -166,7 +182,7 @@ const AddEmployee: React.FC = () => {
                 setSearchSkills={setSearchSkills}
               />
 
-              <FormActions onSubmit={handleSubmit} onCancel={() => window.history.back()} />
+              <FormActions isSubmit={isSubmit} onSubmit={handleSubmit} onCancel={() => window.history.back()} />
             </form>
           </div>
         </div>
