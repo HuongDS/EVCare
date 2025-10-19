@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import AdminLayout from "../pages/Admin/AdminComponents/AdminLayout";
 import StaffLayout from "../components/Layouts/StaffLayout";
 import HomePage from "../pages/Users/HomePage/HomePage";
@@ -129,6 +129,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
+      { index: true, element: <Navigate to="general" replace /> },
       { path: "general", element: <Staff_General /> },
       { path: "inventory", element: <Staff_Inventory /> },
       { path: "technicians", element: <Manage_Technicians /> },

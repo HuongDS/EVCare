@@ -3,13 +3,14 @@ import styled from "styled-components";
 
 interface DownloadButtonProps {
   action: () => void;
+  text: string;
 }
-export const DownloadButton = ({ action }: DownloadButtonProps) => {
+export const DownloadButton = ({ action, text }: DownloadButtonProps) => {
   return (
     <PrintButtonWrapper>
       <ButtonContainer>
         <Download />
-        <button onClick={action}>Print Invoice</button>
+        <button onClick={action}>{text}</button>
       </ButtonContainer>
     </PrintButtonWrapper>
   );
@@ -22,7 +23,7 @@ const PrintButtonWrapper = styled.div`
 `;
 
 const ButtonContainer = styled.div`
-  width: 20%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
