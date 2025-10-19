@@ -234,8 +234,13 @@ namespace Application.Services
                 };
                 await _accountRepository.AddAsync(newAccount);
                 account = await _accountRepository.GetAccountByEmail(newAccount.Email);
+                await RegisterCustomerAsync(new AccountResponseDto
+                {
+                    accountId = account.Id,
+                });
             }
             return await GenerateTokenAsync(account, new ResponseDto<LoginResponseDto>(), context);
+
         }
         public async Task<ResponseDto<LoginResponseDto>> GenerateTokenAsync(Account account, ResponseDto<LoginResponseDto> response, HttpContext context)
         {

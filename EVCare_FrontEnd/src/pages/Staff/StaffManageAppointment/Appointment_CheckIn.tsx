@@ -23,8 +23,7 @@ interface Props {
 export default function Appointment_CheckIn({ data, currentStep }: Props) {
   const dispatch = useAppDispatch();
   const { mutateAsync: newOrder } = CreateNewOrder();
-  const { mutateAsync: appointmentStatus, isPending } =
-    changeAppointmentStatus();
+  const { mutateAsync: appointmentStatus, isPending } = changeAppointmentStatus();
   const queryClient = useQueryClient();
 
   const handleCheckIn = async (status: "CheckedIn" | "Canceled") => {
@@ -73,7 +72,7 @@ export default function Appointment_CheckIn({ data, currentStep }: Props) {
           </GroupField>
           <GroupField>
             <div>Phone Number</div>
-            <p>{data.phoneNumber}</p>
+            <p>{data.phoneNumber ?? "default"}</p>
           </GroupField>
         </CustomerInformation>
 
@@ -103,12 +102,7 @@ export default function Appointment_CheckIn({ data, currentStep }: Props) {
         </TextAreaContainer>
       </CheckInWrapper>
       <ButtonWapper>
-        <ButtonAction
-          text="Cancel"
-          color="red"
-          backgroundColor="#f1f1f1"
-          action={() => handleCheckIn("Canceled")}
-        />
+        <ButtonAction text="Cancel" color="red" backgroundColor="#f1f1f1" action={() => handleCheckIn("Canceled")} />
         {isPending ? (
           <SpinnerComponent />
         ) : (

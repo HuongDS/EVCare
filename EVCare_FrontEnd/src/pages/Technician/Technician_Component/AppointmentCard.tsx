@@ -29,31 +29,21 @@ import {
 
 type AppointmentCardProps = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
+  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
   onPartsUpdated?: (orderId: number) => void;
 };
 
-export default function AppointmentCard({
-  data,
-  onStatusChange,
-  onPartsUpdated,
-}: AppointmentCardProps) {
-  const [currentStatus, setCurrentStatus] =
-    useState<TechnicianWorkingSessionEnum>(
-      data.status as TechnicianWorkingSessionEnum
-    );
+export default function AppointmentCard({ data, onStatusChange, onPartsUpdated }: AppointmentCardProps) {
+  const [currentStatus, setCurrentStatus] = useState<TechnicianWorkingSessionEnum>(
+    data.status as TechnicianWorkingSessionEnum
+  );
 
   const [currentImage, setCurrentImage] = useState(0);
 
   useEffect(() => {
     if (!data.appointmentImages || data.appointmentImages.length <= 1) return;
     const timer = setInterval(() => {
-      setCurrentImage((prev) =>
-        prev === data.appointmentImages!.length - 1 ? 0 : prev + 1
-      );
+      setCurrentImage((prev) => (prev === data.appointmentImages!.length - 1 ? 0 : prev + 1));
     }, 3000);
     return () => clearInterval(timer);
   }, [data.appointmentImages]);
@@ -84,13 +74,10 @@ export default function AppointmentCard({
           AppointmentID: <span>#{data.id}</span>
         </AppointmentID>
 
-        <AppointmentStatus $status={currentStatus}>
-          {currentStatus.replace("_", " ")}
-        </AppointmentStatus>
+        <AppointmentStatus $status={currentStatus}>{currentStatus.replace("_", " ")}</AppointmentStatus>
 
         <AppointmentDate>
-          <i className="bi bi-calendar2-event"></i>{" "}
-          {formatDate(data.appointmentDate)}
+          <i className="bi bi-calendar2-event"></i> {formatDate(data.appointmentDate)}
         </AppointmentDate>
       </CardHeader>
 
@@ -113,11 +100,7 @@ export default function AppointmentCard({
 
               <DotsContainer>
                 {data.appointmentImages.map((_, idx) => (
-                  <Dot
-                    key={idx}
-                    $active={idx === currentImage}
-                    onClick={() => setCurrentImage(idx)}
-                  />
+                  <Dot key={idx} $active={idx === currentImage} onClick={() => setCurrentImage(idx)} />
                 ))}
               </DotsContainer>
             </AppointmentImagesWrapper>
@@ -134,7 +117,7 @@ export default function AppointmentCard({
             </div>
             <div>
               <NameBox label="License Plate" name={data.licensePlate} />
-              <NameBox label="Phone Number" name={data.phoneNumber} />
+              <NameBox label="Phone Number" name={data.phoneNumber ?? "default"} />
             </div>
           </InformationStyled>
         </div>
@@ -165,12 +148,7 @@ export default function AppointmentCard({
       </CardBody>
 
       <ButtonStyled>
-        <ReviewButton
-          status={currentStatus}
-          onAction={handleAction}
-          appointment={data}
-          orderId={data.orderId}
-        />
+        <ReviewButton status={currentStatus} onAction={handleAction} appointment={data} orderId={data.orderId} />
       </ButtonStyled>
     </Card>
   );
