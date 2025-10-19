@@ -19,7 +19,7 @@ namespace API.Controllers
             _partService = partService;
         }
         [HttpGet]
-        [Authorize(Roles = "Technician")]
+        [Authorize(Roles = "Technician, Staff")]
         public async Task<IActionResult> GetAllParts([FromQuery] PartQueryDto model)
         {
             try
@@ -110,7 +110,7 @@ namespace API.Controllers
                 });
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
