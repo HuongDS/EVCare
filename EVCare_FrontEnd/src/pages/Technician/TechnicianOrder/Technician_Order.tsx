@@ -32,6 +32,7 @@ import {
 
 import { LENGTH } from "../../../constants/Code/Constants";
 import ButtonAction from "../../../components/Button/ReviewButton";
+import { useNotification } from "../../../context/useNotification";
 
 interface TechnicianOrderProps {
   orderId?: number;
@@ -60,6 +61,7 @@ export default function TechnicianOrder({
 }: TechnicianOrderProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const notification = useNotification();
   const stateOrderId = (location.state as { orderId: number })?.orderId;
 
   const [currentOrderId, setCurrentOrderId] = useState<number | null>(
@@ -206,7 +208,10 @@ export default function TechnicianOrder({
     try {
       await updateOrderParts(payload);
       onPartsUpdated?.(currentOrderId);
-      alert("✅ Order parts updated successfully!");
+      notification.success({
+        message: "Update Successful",
+        description: "Order parts updated successfully!",
+      });
 
       // Đóng modal
       setCartOpen(false);
@@ -214,7 +219,10 @@ export default function TechnicianOrder({
       navigate("/technician", { state: { tab: "ADDING_PART" } });
     } catch (err) {
       console.error(err);
-      alert("❌ Failed to update order parts");
+      notification.error({
+        message: "Update Failed",
+        description: "Failed to update order parts. Please try again.",
+      });
     } finally {
       setIsSending(false);
     }
