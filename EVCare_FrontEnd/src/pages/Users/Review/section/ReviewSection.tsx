@@ -23,8 +23,6 @@ interface ReviewSectionProps {
 }
 
 export default function ReviewSection({ reviews }: ReviewSectionProps) {
-  if (!reviews.length) return <div>No reviews yet.</div>;
-
   return (
     <ClickSpark
       sparkColor="#16a34a"
