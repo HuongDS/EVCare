@@ -1,14 +1,12 @@
 import axios from "axios";
+import type { TechinicianSkillRegistDto } from "../models/Techinician/TechinicianSkillRegisterDto";
 import { handleError } from "../utils/errorHandler";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import { api } from "../api/api";
-import type { ResponseDto } from "../models/AuthModel/authModel";
-import type { EmployeeSkillCategoryViewModel } from "../models/Employee/EmployeeSkillCategoryViewModel";
 
-export async function getTechnicianCategories() {
+export async function addSkillToTechnician(data: TechinicianSkillRegistDto) {
   try {
-    const response = await api.get<ResponseDto<EmployeeSkillCategoryViewModel[]>>("/api/ServiceCategory");
-    return response.data;
+    await api.post("/api/TechnicianSkill", data);
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
