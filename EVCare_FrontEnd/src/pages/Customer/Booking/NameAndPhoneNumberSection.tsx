@@ -15,7 +15,7 @@ function NameAndPhoneNumberComponent({ accountInfor }: Props) {
       </FormGroup>
       <FormGroup>
         <Label>Phone Number</Label>
-        <Input type="tel" disabled defaultValue={accountInfor?.phone} />
+        <Input type="tel" disabled defaultValue={accountInfor?.phone ?? "default"} />
       </FormGroup>
     </>
   );

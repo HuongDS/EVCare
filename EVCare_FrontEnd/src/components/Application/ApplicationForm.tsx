@@ -10,16 +10,7 @@ import type {
   ResponseDto,
 } from "../../models/ApplicationModel/ApplicationModels";
 import type { AccountViewModel } from "../../models/Accounts/accountViewModel";
-import {
-  FormContainer,
-  Title,
-  Field,
-  Label,
-  Input,
-  Grid,
-  ErrorText,
-  SuccessText,
-} from "./ApplicationForm.styled";
+import { FormContainer, Title, Field, Label, Input, Grid, ErrorText, SuccessText } from "./ApplicationForm.styled";
 import dayjs from "dayjs";
 import ButtonAction from "../Button/ReviewButton";
 import DatePicker from "./DatePickerLazyPerformance";
@@ -161,7 +152,7 @@ export default function ApplicationForm({
           </Grid>
           <Field>
             <Label>Phone Number</Label>
-            <Input readOnly value={account.phone || ""} />
+            <Input readOnly value={account.phone || "default"} />
           </Field>
         </>
       )}
@@ -212,8 +203,7 @@ export default function ApplicationForm({
               "undo redo | formatselect | " +
               "bold italic underline | bullist numlist outdent indent | " +
               "removeformat | help",
-            content_style:
-              "body { font-family:Outfit,sans-serif; font-size:15px; line-height:1.6; }",
+            content_style: "body { font-family:Outfit,sans-serif; font-size:15px; line-height:1.6; }",
           }}
           onEditorChange={(newValue) => setReason(newValue)}
         />

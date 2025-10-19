@@ -57,7 +57,7 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
                 <NameBoxComponent label="Vehicle Model" name={data.vehicleName} />
               </Row>
               <Row>
-                <NameBoxComponent label="Phone" name={data.customerPhone} />
+                <NameBoxComponent label="Phone" name={data.customerPhone ?? "default"} />
                 <NameBoxComponent label="Date" name={dayjs(data.appointmentDate).format("DD/MM/YYYY")} />
               </Row>
               <Row>
