@@ -72,7 +72,7 @@ namespace API.Controllers
         }
 
         [HttpPut()]
-        [Authorize(Roles = "Staff,Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdatePart([FromQuery] int id, [FromBody] PartStaffUpdateModel model)
         {
             try
