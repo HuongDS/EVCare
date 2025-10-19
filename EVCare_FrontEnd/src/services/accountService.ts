@@ -7,6 +7,7 @@ import { store } from "../states/store";
 import { setGlobalError } from "../states/errorSlice";
 import type { ResponseDto } from "../models/AuthModel/authModel";
 import type { AccountUpdateDto } from "../models/Accounts/AccountUpdateDto";
+import type { AccountUpdatePasswordDto } from "../models/Accounts/AccountUpdatePasswordDto";
 
 export async function getAccountInformation() {
   try {
@@ -33,6 +34,33 @@ export async function getAccountInformation() {
 export async function updateAccount(data: AccountUpdateDto) {
   try {
     const response = await api.put<ResponseDto<AccountViewModel>>("/api/Account/update-me", data);
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FAILED_TO_UPDATE_ACCOUNT;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
+
+export async function verifyOldPassword(data: AccountUpdatePasswordDto) {
+  try {
+    await api.post("/api/Account/verify-password", data);
+  } catch (error) {
+    handleError(error);
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.OLD_PASSWORD_INCORRECT;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
+
+export async function updatePassword(data: AccountUpdatePasswordDto) {
+  try {
+    const response = await api.put<ResponseDto<AccountViewModel>>("/api/Account/update-password", data);
     return response.data;
   } catch (error) {
     handleError(error);
