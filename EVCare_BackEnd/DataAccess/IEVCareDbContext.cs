@@ -17,7 +17,10 @@ namespace DataAccess
         public DbSet<VehiclesCategory> VehiclesCategories { get; set; }
         public DbSet<TechnicianSkill> TechnicianSkills { get; set; }
         public DbSet<Account> Accounts { get; set; }
-        public DbSet<TechnicianCategory> TechnicianCategories { get; set; }
+        public DbSet<ServiceCategory> ServiceCategories
+        {
+            get; set;
+        }
         public DbSet<Technician> Technicians { get; set; }
         //public DbSet<ServiceCategory> ServiceCategories { get; set; }
         public DbSet<Service> Services { get; set; }

@@ -24,7 +24,7 @@ namespace DataAccess.Repositories
             var entity = new TechnicianSkill
             {
                 TechnicianId = model.TechnicianId,
-                TechnicianCategoryId = model.TechnicianCategoryId,
+                //TechnicianCategoryId = model.TechnicianCategoryId,
                 ServiceId = model.ServiceId.Value
             };
             await _dbContext.TechnicianSkills.AddAsync(entity);
@@ -33,9 +33,10 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<int>> GetServiceIdsByCategoryIdAsync(int technicianCategoryId)
         {
-            return await _dbContext.TechnicianSkills.Where(ts => ts.TechnicianCategoryId == technicianCategoryId)
-                 .Select(ts => ts.ServiceId)
-                 .Distinct().ToListAsync();
+            return null;
+            //return await _dbContext.TechnicianSkills.Where(ts => ts.TechnicianCategoryId == technicianCategoryId)
+            //     .Select(ts => ts.ServiceId)
+            //     .Distinct().ToListAsync();
                 
         }
     }

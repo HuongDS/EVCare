@@ -18,24 +18,25 @@ namespace DataAccess.Repositories
         }
         public async Task<IEnumerable<ServiceCategoryViewModel>> GetServiceCategoryAndService()
         {
-            return await _db.TechnicianSkills.AsNoTracking().
-                Include(x => x.Service)
-                .Include(x => x.TechnicianCategories)
-                .Where(x=>x.TechnicianCategories.Deleted_At==DateTime.MinValue)
-                .GroupBy(x => x.TechnicianCategories.Name)
-                .Select(g => new ServiceCategoryViewModel
-                {
-                    Name = g.Key,
-                    Services = g.Where(x=>x.Service.Deleted_At==null)
-                    .Select(x => new Dtos.Service.ServiceViewFormModel
-                    {
-                        Id = x.ServiceId,
-                        Name = x.Service.Name,
-                    }).Distinct().ToList()
+            return null;
+            //return await _db.TechnicianSkills.AsNoTracking().
+            //    Include(x => x.Service)
+                
+            //    .Where(x=>x.TechnicianCategories.Deleted_At==DateTime.MinValue)
+            //    .GroupBy(x => x.TechnicianCategories.Name)
+            //    .Select(g => new ServiceCategoryViewModel
+            //    {
+            //        Name = g.Key,
+            //        Services = g.Where(x=>x.Service.Deleted_At==null)
+            //        .Select(x => new Dtos.Service.ServiceViewFormModel
+            //        {
+            //            Id = x.ServiceId,
+            //            Name = x.Service.Name,
+            //        }).Distinct().ToList()
 
 
-                })
-                .ToListAsync();
+            //    })
+            //    .ToListAsync();
         }
     }
 }

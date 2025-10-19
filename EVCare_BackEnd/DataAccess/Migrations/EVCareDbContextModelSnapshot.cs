@@ -938,10 +938,15 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ServiceCategoryId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ServiceCategoryId");
 
                     b.ToTable("Services");
 
@@ -954,6 +959,7 @@ namespace DataAccess.Migrations
                             Description = "Installation of new water and drainage pipes in residential and commercial buildings.",
                             Duration = 2.5m,
                             Name = "Pipe Installation",
+                            ServiceCategoryId = 1,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -964,6 +970,7 @@ namespace DataAccess.Migrations
                             Description = "Detection and repair of pipe leaks to prevent water damage and reduce waste.",
                             Duration = 1.5m,
                             Name = "Leak Repair",
+                            ServiceCategoryId = 1,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -974,6 +981,7 @@ namespace DataAccess.Migrations
                             Description = "Installation of electrical wiring for new constructions or renovations.",
                             Duration = 3.0m,
                             Name = "Wiring Installation",
+                            ServiceCategoryId = 1,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -984,6 +992,7 @@ namespace DataAccess.Migrations
                             Description = "Repair and replacement of broken or faulty light fixtures and switches.",
                             Duration = 1.0m,
                             Name = "Light Fixture Repair",
+                            ServiceCategoryId = 2,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -994,6 +1003,7 @@ namespace DataAccess.Migrations
                             Description = "Installation of new air conditioning units for residential and office spaces.",
                             Duration = 4.0m,
                             Name = "Air Conditioner Installation",
+                            ServiceCategoryId = 1,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1004,6 +1014,7 @@ namespace DataAccess.Migrations
                             Description = "Regular inspection and maintenance of heating systems to ensure efficiency.",
                             Duration = 2.0m,
                             Name = "Heater Maintenance",
+                            ServiceCategoryId = 3,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1014,6 +1025,7 @@ namespace DataAccess.Migrations
                             Description = "Repair and restoration of wooden furniture such as chairs, tables, and cabinets.",
                             Duration = 2.0m,
                             Name = "Furniture Repair",
+                            ServiceCategoryId = 5,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1024,6 +1036,7 @@ namespace DataAccess.Migrations
                             Description = "Custom installation of wooden doors and windows with fittings.",
                             Duration = 3.5m,
                             Name = "Door and Window Installation",
+                            ServiceCategoryId = 4,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1034,6 +1047,7 @@ namespace DataAccess.Migrations
                             Description = "Painting of walls, ceilings, and trim inside residential and office buildings.",
                             Duration = 5.0m,
                             Name = "Interior Painting",
+                            ServiceCategoryId = 5,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -1044,7 +1058,70 @@ namespace DataAccess.Migrations
                             Description = "Weather-resistant painting of exterior walls and structures.",
                             Duration = 6.0m,
                             Name = "Exterior Painting",
+                            ServiceCategoryId = 2,
                             Updated_At = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.ServiceCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Deleted_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServiceCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Responsible for diagnosing, repairing, and maintaining vehicle engines, including fuel systems, cooling systems, and performance optimization.",
+                            Name = "Engine Specialist"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Focuses on manual and automatic transmissions, clutches, gear systems, and drivetrains to ensure smooth power delivery.",
+                            Name = "Transmission Specialist"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Handles inspection, repair, and replacement of braking systems, including pads, rotors, calipers, and hydraulic lines.",
+                            Name = "Brake Specialist"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Works on vehicle electrical components such as wiring, batteries, alternators, lighting, sensors, and onboard electronics.",
+                            Name = "Electrical Systems Specialist"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Maintains and repairs suspension systems, steering components, and alignment to ensure vehicle stability and handling.",
+                            Name = "Suspension and Steering Specialist"
                         });
                 });
 
@@ -1122,84 +1199,17 @@ namespace DataAccess.Migrations
                     b.ToTable("Technicians");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.TechnicianCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Deleted_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TechnicianCategories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Responsible for diagnosing, repairing, and maintaining vehicle engines, including fuel systems, cooling systems, and performance optimization.",
-                            Name = "Engine Specialist"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Focuses on manual and automatic transmissions, clutches, gear systems, and drivetrains to ensure smooth power delivery.",
-                            Name = "Transmission Specialist"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Handles inspection, repair, and replacement of braking systems, including pads, rotors, calipers, and hydraulic lines.",
-                            Name = "Brake Specialist"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Works on vehicle electrical components such as wiring, batteries, alternators, lighting, sensors, and onboard electronics.",
-                            Name = "Electrical Systems Specialist"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Deleted_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Maintains and repairs suspension systems, steering components, and alignment to ensure vehicle stability and handling.",
-                            Name = "Suspension and Steering Specialist"
-                        });
-                });
-
             modelBuilder.Entity("DataAccess.Entities.TechnicianSkill", b =>
                 {
                     b.Property<int>("TechnicianId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TechnicianCategoryId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
-                    b.HasKey("TechnicianId", "TechnicianCategoryId", "ServiceId");
+                    b.HasKey("TechnicianId", "ServiceId");
 
                     b.HasIndex("ServiceId");
-
-                    b.HasIndex("TechnicianCategoryId");
 
                     b.ToTable("TechnicianSkills");
                 });
@@ -1521,6 +1531,17 @@ namespace DataAccess.Migrations
                     b.Navigation("Appointment");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.Service", b =>
+                {
+                    b.HasOne("DataAccess.Entities.ServiceCategory", "ServiceCategory")
+                        .WithMany("Services")
+                        .HasForeignKey("ServiceCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServiceCategory");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
                 {
                     b.HasOne("DataAccess.Entities.Employee", "Employee")
@@ -1540,12 +1561,6 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Entities.TechnicianCategory", "TechnicianCategories")
-                        .WithMany("TechnicianSkills")
-                        .HasForeignKey("TechnicianCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DataAccess.Entities.Technician", "Technician")
                         .WithMany("TechnicianSkills")
                         .HasForeignKey("TechnicianId")
@@ -1555,8 +1570,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Service");
 
                     b.Navigation("Technician");
-
-                    b.Navigation("TechnicianCategories");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.TechnicianWorkingSession", b =>
@@ -1661,6 +1674,11 @@ namespace DataAccess.Migrations
                     b.Navigation("TechnicianSkills");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.ServiceCategory", b =>
+                {
+                    b.Navigation("Services");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
                 {
                     b.Navigation("OrderParts");
@@ -1668,11 +1686,6 @@ namespace DataAccess.Migrations
                     b.Navigation("TechnicianSkills");
 
                     b.Navigation("TechnicianWorkingSessions");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.TechnicianCategory", b =>
-                {
-                    b.Navigation("TechnicianSkills");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Vehicle", b =>
