@@ -64,7 +64,7 @@ namespace API.Controllers
             try
             {
                 var employeeId = (int)HttpContext.Items["EmployeeId"];
-                var result = await _applicationServices.GetApplicationAsync(query,employeeId);
+                var result = await _applicationServices.GetApplicationAsync(query, employeeId);
                 return Ok(new ResponseDto<PageResultDto<ApplicationViewDto>>
                 {
                     statusCode = HttpStatus.OK,
@@ -98,6 +98,56 @@ namespace API.Controllers
                     statusCode = HttpStatus.OK,
                     data = result,
                     message = Message.APPLICATION_GET_SUCCESS
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllApplicationsAsync([FromQuery] ApplicationQueryDto query)
+        {
+            try
+            {
+                var result = await _applicationServices.GetAllApplicationsAsync(query);
+                return Ok(new ResponseDto<PageResultDto<ApplicationAdminViewDto>>
+                {
+                    statusCode = HttpStatus.OK,
+                    data = result,
+                    message = Message.APPLICATION_GET_SUCCESS
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateApplicationStatusAsync(ApplicationUpdateDto data)
+        {
+            try
+            {
+
+                await _applicationServices.UpdateApplicationAsync(data);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPLICATION_UPDATE_SUCCESS,
+                 
                 });
             }
             catch (Exception ex)

@@ -153,5 +153,11 @@ namespace Application.Infrastructures
 
         public static string PART_Category_CREATE_SUCCESSFULLY = "Create part category successfully";
 
+        public static string PART_Category_DELETE_SUCCESSFULLY = "Delete part category successfully";
+
+        public static string TECHNICIAN_CATEGORY_GET_SUCCESSFULLY = "Get technician categories successfully";
+
+        public static string APPLICATION_UPDATE_SUCCESS = "Application updated successfully";
+
     }
 }
