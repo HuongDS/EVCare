@@ -18,6 +18,9 @@ namespace DataAccess.Configuration
                   .WithOne(x => x.Employee)
                   .HasForeignKey<Employee>(x => x.AccountId)
                   .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(x => x.CCCD).IsRequired();
+            builder.HasIndex(x => x.CCCD).IsUnique();
+
             builder.HasData(new Employee
             {
                 Id = 1,

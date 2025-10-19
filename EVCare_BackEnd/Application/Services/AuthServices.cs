@@ -13,6 +13,7 @@ using Application.Infrastructures;
 using Application.Interfaces;
 using Application.Parttern;
 using Azure;
+using CloudinaryDotNet.Core;
 using DataAccess.Dtos.Accounts;
 using DataAccess.Dtos.Customers;
 using DataAccess.Dtos.Employees;
@@ -148,8 +149,31 @@ namespace Application.Services
             };
             await _customerRepository.AddAsync(newCustomer);
         }
-        public async Task RegisterEmployeeOrTechnicianAsync(EmployeeRegisterDto data)
+        public async Task<int> RegisterEmployeeOrTechnicianAsync(EmployeeRegisterDto data)
         {
+            var checkEmailExist = await _accountRepository.GetAccountByEmail(data.accountInfo.email);
+            var checkPhoneExist = await _accountRepository.GetAccountByPhoneAsync(data.accountInfo.phone);
+            if (checkEmailExist != null)
+            {
+                throw new Exception(Message.EMAIL_EXISTS);
+            }
+            if (checkPhoneExist != null)
+            {
+                throw new Exception(Message.PHONE_EXISTS);
+            }
+            if (!Regex.IsMatch(data.accountInfo.email, RegexPartterns.EMAIL_PATTERN))
+            {
+                throw new Exception(Message.INVALID_EMAIL);
+            }
+            if (!Regex.IsMatch(data.accountInfo.phone, RegexPartterns.PHONE_NUMBER_PATTERN))
+            {
+                throw new Exception(Message.INVALID_PHONE);
+            }
+            if (!Regex.IsMatch(data.accountInfo.password, RegexPartterns.PASSWORD_PATTERN))
+            {
+                throw new Exception(Message.WEAK_PASSWORD);
+            }
+            var newIdReturned = 0;
             var newAccount = new Account
             {
                 Email = data.accountInfo.email,
@@ -172,7 +196,8 @@ namespace Application.Services
                 Updated_At = DateTime.UtcNow,
                 Avatar = data.avatar,
             };
-            await _employeeRepository.AddAsync(newEmployee);
+            var tmp = await _employeeRepository.AddAsync(newEmployee);
+            newIdReturned = tmp.Id;
             if (data.role == RoleEnum.Technician)
             {
                 var employee = await _employeeRepository.GetEmployeeByAccountId(newAccount.Id);
@@ -182,9 +207,10 @@ namespace Application.Services
                     ExpYear = data.expYear,
                     Created_At = DateTime.UtcNow,
                 };
-                await _technicianRepository.AddAsync(newTechnician);
+                var tmp02 = await _technicianRepository.AddAsync(newTechnician);
+                newIdReturned = tmp02.Id;
             };
-
+            return newIdReturned;
         }
         public async Task<ResponseDto<LoginResponseDto>> LoginAsync(LoginRequestDto data, HttpContext context)
         {

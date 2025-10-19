@@ -14,7 +14,6 @@ import {
   ShoppingOutlined,
   SolutionOutlined,
   TeamOutlined,
-  UserAddOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -65,12 +64,6 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       icon: <QuestionCircleOutlined size={20} />,
       label: "Help & Information",
       route: "/admin/help",
-    },
-    {
-      key: "6",
-      icon: <UserAddOutlined />,
-      label: "Add Employee",
-      route: "/admin/add-employee",
     },
     {
       key: "7",

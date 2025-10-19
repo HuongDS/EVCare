@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Application.Hubs
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Staff")]
     public class StaffDashboardHub : Hub
     {
     }
