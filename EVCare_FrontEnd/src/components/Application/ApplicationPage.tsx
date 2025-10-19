@@ -1,4 +1,3 @@
-// src/pages/Shared/Application/ApplicationPage.tsx
 import React, { useState } from "react";
 import ApplicationForm from "./ApplicationForm";
 import SortTable from "../../pages/Technician/Technician_Component/SortTable";

@@ -8,6 +8,7 @@ import { ERROR_MESSAGE, MSG_TITLE } from "../../../../constants/messages/Message
 import { updatePassword, verifyOldPassword } from "../../../../services/accountService";
 import { PASSWORD_REGEX } from "../../../../constants/regexs/PasswordRegex";
 import { useAlert } from "../../../../context/useAlert";
+import SpinnerComponent from "../../../../components/SpinnerComponent";
 
 interface Props {
   open: boolean;
@@ -67,18 +68,20 @@ export const ChangePasswordModal: React.FC<Props> = ({ open, onClose }) => {
     try {
       await verifyOldPassword(data);
       const response = await updatePassword(data);
+      if (!response.data) {
+        throw new Error(response.message);
+      }
       notification.success({
         message: MSG_TITLE.UPDATE_PASSWORD,
         description: response.message,
       });
     } catch (error) {
-      notification.success({ message: MSG_TITLE.UPDATE_PASSWORD, description: (error as Error).message });
-    }
-
-    setTimeout(() => {
-      onClose();
+      notification.error({ message: MSG_TITLE.UPDATE_PASSWORD, description: (error as Error).message });
+    } finally {
+      //   onClose();
       resetForm();
-    }, 2000);
+      setSubmitted(false);
+    }
   };
 
   const resetForm = () => {
@@ -95,10 +98,10 @@ export const ChangePasswordModal: React.FC<Props> = ({ open, onClose }) => {
     setSubmitted(false);
   };
 
-  if (!open) return null;
+  //   if (!open) return null;
 
   return (
-    <div className={`modal ${open ? "active" : ""}`} onClick={onClose}>
+    <div className={`modal ${open ? "active" : ""}`}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         {!submitted ? (
           <>
@@ -151,7 +154,7 @@ export const ChangePasswordModal: React.FC<Props> = ({ open, onClose }) => {
             </form>
           </>
         ) : (
-          <></>
+          <SpinnerComponent />
         )}
       </div>
     </div>

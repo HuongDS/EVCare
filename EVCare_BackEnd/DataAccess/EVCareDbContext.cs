@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Configuration;
+using DataAccess.Configurations;
 using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,7 @@ namespace DataAccess
        
         public DbSet<ServiceCategory> ServiceCategories { get; set; }
         public DbSet<Technician> Technicians { get; set; }
+        public DbSet<PartHistory>  PartHistories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Alert> Alerts { get; set; }
         public DbSet<Appointmentimage> AppointmentImages { get; set; }
@@ -68,6 +70,7 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new AlertConfiguration());
             modelBuilder.ApplyConfiguration(new AppointmentImageConfiguration());
             modelBuilder.ApplyConfiguration(new InvoiceConfiguration());
+            modelBuilder.ApplyConfiguration(new PartHistoryConfiguration());
 
         }
         public async Task<int> SaveChangesAsync()

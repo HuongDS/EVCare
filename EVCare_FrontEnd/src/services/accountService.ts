@@ -47,7 +47,8 @@ export async function updateAccount(data: AccountUpdateDto) {
 
 export async function verifyOldPassword(data: AccountUpdatePasswordDto) {
   try {
-    await api.post("/api/Account/verify-password", data);
+    const response = await api.post<ResponseDto<boolean>>("/api/Account/verify-password", data);
+    return response.data;
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
@@ -60,7 +61,7 @@ export async function verifyOldPassword(data: AccountUpdatePasswordDto) {
 
 export async function updatePassword(data: AccountUpdatePasswordDto) {
   try {
-    const response = await api.put<ResponseDto<AccountViewModel>>("/api/Account/update-password", data);
+    const response = await api.post<ResponseDto<AccountViewModel>>("/api/Account/update-password", data);
     return response.data;
   } catch (error) {
     handleError(error);
