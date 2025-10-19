@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { InputNumber, Select, Button, Card, Typography } from "antd";
-import { Package, Save, Filter, AlertCircle, DollarSign } from "lucide-react";
+import {
+  Package,
+  Save,
+  Filter,
+  AlertCircle,
+  ChartCandlestick,
+} from "lucide-react";
 import {
   useExportInventoryToExcel,
   useGetAllPartCategories,
@@ -125,7 +131,7 @@ const Staff_Inventory = () => {
               <StatHeader>
                 <StatLabel>Inventory Value</StatLabel>
                 <StatIcon $color="#e8e8e8">
-                  <DollarSign size={20} />
+                  <ChartCandlestick size={20} />
                 </StatIcon>
               </StatHeader>
               <StatValue style={{ fontSize: "1.5rem" }}>
