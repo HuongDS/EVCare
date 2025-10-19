@@ -26,6 +26,8 @@ export default function Staff_Appoinments() {
   const name = AppointmentStatusEnum;
   const [sortBy, setSortBy] = useState("Pending");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [beginTime, setBeginTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [currenPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [selectedAppointment, setSelectedAppointment] =
@@ -64,6 +66,8 @@ export default function Staff_Appoinments() {
     ...((searchValue && { customerName: searchValue }) || {}), //chỉ gửi customer name nếu nó k rỗng
     status: sortBy,
     sortField: "AppointmentDate",
+    ...((beginTime && { beginTime: beginTime }) || {}),
+    ...((endTime && { endTime: endTime }) || {}),
     sortOrder: sortOrder,
     pageIndex: currenPage,
     pageSize: 10,
@@ -124,6 +128,8 @@ export default function Staff_Appoinments() {
         </TitleWrapper>
         <SortTable
           sortName={sortName}
+          setBeginDate={setBeginTime}
+          setEndDate={setEndTime}
           setSortBy={setSortBy}
           setSortOrder={handleSortByDate}
           disabled={appointments?.data?.items?.length === 0}
