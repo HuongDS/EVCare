@@ -9,7 +9,6 @@ namespace DataAccess.Dtos.TechnicianSkill
     public class TechnicianSkillCreateModel
     {
         public int TechnicianId { get; set; }
-        public int TechnicianCategoryId { get; set; }
-        public int? ServiceId { get; set;}
+        public IEnumerable<int> ServiceIds { get; set;}
     }
 }
