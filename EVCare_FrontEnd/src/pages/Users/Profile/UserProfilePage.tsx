@@ -153,7 +153,11 @@ function UserProfileComponent() {
             <div className="profile-card">
               <div className="profile-header">
                 <h1 className="profile-title">{profileTitle}</h1>
-                <RankBadge rank={cusProfile?.rank || CustomerRankEnum.REGULAR} />
+                {profileData?.role !== RoleEnum.CUSTOMER ? (
+                  <></>
+                ) : (
+                  <RankBadge rank={cusProfile?.rank || CustomerRankEnum.REGULAR} />
+                )}
               </div>
 
               <PersonalInfoForm

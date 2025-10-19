@@ -27,6 +27,7 @@ export const ERROR_MESSAGE = {
   COULD_NOT_FIND_SERVICE_INFORMATION: "Could not find service information",
   FAILED_TO_BANNED_ACCOUNT: "Failed to ban this account",
   FAILED_TO_ADD_EMPLOYEE: "Failed to add employee",
+  OLD_PASSWORD_INCORRECT: "Old password is incorrect.",
 };
 
 export const MSG_TITLE = {
@@ -40,6 +41,7 @@ export const MSG_TITLE = {
   REVIEW: "Review",
   CREATE_APPOINTMENT: "Create Appointment",
   ADD_EMPLOYEE: "Add Employee",
+  UPDATE_PASSWORD: "Update Password",
 };
 
 export const SUCCESS_MESSAGE = {
