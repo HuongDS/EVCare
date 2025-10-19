@@ -12,7 +12,7 @@ import type {
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { useGetOrderDetail } from "../../../services/orderServiceApi";
-import { DownloadButton } from "../../../components/Button/PrintButton";
+import { DownloadButton } from "../../../components/Button/DownloadButton";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 
 type InvoicePageProps = {
@@ -58,7 +58,16 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
             <SpinnerComponent />
           </SpinStyled>
         ) : (
-          <DownloadButton action={handleDownloadInvoice} />
+          <div
+            style={{
+              width: "20%",
+            }}
+          >
+            <DownloadButton
+              action={handleDownloadInvoice}
+              text="Print Invoice"
+            />
+          </div>
         )}
         <InvoiceContainer>
           {/* Header */}

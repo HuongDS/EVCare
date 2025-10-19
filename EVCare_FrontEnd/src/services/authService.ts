@@ -14,6 +14,7 @@ import { store } from "../states/store";
 import { setGlobalError } from "../states/errorSlice";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import type { AccountViewModel } from "../models/Accounts/accountViewModel";
+import { useQuery } from "@tanstack/react-query";
 
 // login
 export async function login(loginData: LoginRequestDto) {
@@ -177,3 +178,25 @@ export async function getMe() {
     throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }
+
+export const useGetAccount = () => {
+  return useQuery({
+    queryKey: ["Account"],
+    queryFn: async () => {
+      try {
+        const response = await api.get<ResponseDto<AccountViewModel>>(
+          "/api/Account/me"
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg = error.message;
+          store.dispatch(setGlobalError(errMsg));
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};

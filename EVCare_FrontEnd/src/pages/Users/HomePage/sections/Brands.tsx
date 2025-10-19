@@ -12,6 +12,7 @@ const SliderWrapper = styled.div`
   overflow: hidden;
   background: #f5f5f5;
   padding: 20px 0;
+  margin: 50px 0;
 `;
 
 const SlideTrack = styled.div`
