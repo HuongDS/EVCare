@@ -74,6 +74,14 @@ export default function Appointment_Part_Tracking({
     }
   };
 
+  //hàm này xóa 1 part trong order
+  const handleDeletePart = (partId: number) => {
+    const updatedParts = parts.map((part) =>
+      part.id === partId ? { ...part, quantity: 0 } : part
+    );
+    setParts(updatedParts);
+  };
+
   //Khi nhấn confirm thì gọi hàm này
   const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
   const { mutateAsync: updateOrder, isPending } = useStaffUpdateOrder();
@@ -205,6 +213,7 @@ export default function Appointment_Part_Tracking({
                         handleQuantityChange(part.id, tempValue)
                       }
                       autoFocus
+                      style={{ fontFamily: "Outfit" }}
                     />
                     <IconButton onClick={() => setEditingPartId(null)}>
                       <X size={16} />
@@ -217,6 +226,12 @@ export default function Appointment_Part_Tracking({
                     <IconButton onClick={() => setEditingPartId(part.id)}>
                       <Edit3 size={16} />
                     </IconButton>
+                    <IconButton
+                      onClick={() => handleDeletePart(part.id)}
+                      style={{ background: "#dc3545" }}
+                    >
+                      <X size={16} />
+                    </IconButton>
                   </QuantityDisplay>
                 )}
               </QuantitySection>
@@ -225,8 +240,8 @@ export default function Appointment_Part_Tracking({
                 <TotalLabel>Total</TotalLabel>
                 <TotalValue>
                   {(
-                    part.price * part.quantity +
-                    part.replacementPrice
+                    (part.price + part.replacementPrice) *
+                    part.quantity
                   ).toLocaleString()}
                   ₫
                 </TotalValue>
