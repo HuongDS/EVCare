@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Card, Avatar, Tag, Button, Statistic, Typography } from "antd";
 import {
@@ -11,7 +11,7 @@ import {
   TrendingUp,
   Clock,
 } from "lucide-react";
-import { getMe } from "../../../services/authService";
+import { useGetAccount } from "../../../services/authService";
 import { useGetAllAppointments } from "../../../services/appointmentServiceApi";
 import StatusTag from "../../../components/StatusTags/StatusTag";
 import dayjs from "dayjs";
@@ -19,20 +19,13 @@ import dayjs from "dayjs";
 const { Title } = Typography;
 
 const StaffDashboard: React.FC = () => {
-  const [staffData, setStaffData] = useState<any>(null);
   const { data: appointments } = useGetAllAppointments({
     status: "Done",
     beginTime: dayjs().format("MM/DD/YYYY"),
     endTime: dayjs().format("MM/DD/YYYY"),
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getMe();
-      setStaffData(response.data);
-    };
-    fetchData();
-  }, []);
+  const { data: staffInfo } = useGetAccount();
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -57,27 +50,26 @@ const StaffDashboard: React.FC = () => {
       <ContentWrapper>
         <WelcomeSection>
           <h1>
-            {getCurrentGreeting()}, {staffData?.first_Name}! 👋
+            {getCurrentGreeting()}, {staffInfo?.data?.first_Name}!
           </h1>
         </WelcomeSection>
 
         <Grid>
-          {/* Staff Info Card */}
-          {staffData && (
+          {staffInfo && (
             <ProfileCard>
               <ProfileHeader>
                 <StyledAvatar
                   size={60}
-                  src={`https://ui-avatars.com/api/?name=${staffData?.last_Name}&background=667eea&color=fff&bold=true`}
+                  src={`https://ui-avatars.com/api/?name=${staffInfo.data?.last_Name}&background=667eea&color=fff&bold=true`}
                   alt="Avatar"
                 />
                 <Title
                   level={3}
                   style={{ margin: "1rem 0 0.5rem", color: "#fffff" }}
                 >
-                  {staffData.first_Name} {staffData.last_Name}
+                  {staffInfo.data?.first_Name} {staffInfo.data?.last_Name}
                 </Title>
-                <RoleTag>{staffData.role}</RoleTag>
+                <RoleTag>{staffInfo.data?.role}</RoleTag>
               </ProfileHeader>
 
               <ProfileInfo>
@@ -85,14 +77,14 @@ const StaffDashboard: React.FC = () => {
                   <IdCard size={20} />
                   <span>ID:</span>
                   <span style={{ marginLeft: "auto", color: "#6b7280" }}>
-                    {staffData.id}
+                    {staffInfo.data?.id}
                   </span>
                 </InfoRow>
                 <InfoRow>
                   <Phone size={20} />
                   <span>Phone:</span>
                   <span style={{ marginLeft: "auto", color: "#6b7280" }}>
-                    {staffData.phone}
+                    {staffInfo.data?.phone}
                   </span>
                 </InfoRow>
                 <InfoRow>
@@ -105,7 +97,7 @@ const StaffDashboard: React.FC = () => {
                       fontSize: "0.85rem",
                     }}
                   >
-                    {staffData.email}
+                    {staffInfo.data?.email}
                   </span>
                 </InfoRow>
               </ProfileInfo>
@@ -120,7 +112,6 @@ const StaffDashboard: React.FC = () => {
             </ProfileCard>
           )}
 
-          {/* Today's Overview */}
           <StyledCard>
             <Title
               level={4}
