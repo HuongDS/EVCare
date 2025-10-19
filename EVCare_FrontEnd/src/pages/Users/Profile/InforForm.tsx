@@ -4,6 +4,9 @@ import { ERROR_MESSAGE, MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/me
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
 import { useNotification } from "../../../context/useNotification";
 import { useAlert } from "../../../context/useAlert";
+import { ChangePassordStyleWrapper } from "./ChangePassword/ChangePassword.styled";
+import { ChangePasswordButton } from "./ChangePassword/ChangePasswordButton";
+import { ChangePasswordModal } from "./ChangePassword/ChangePasswordModal";
 
 interface Props {
   defaultValues: {
@@ -21,6 +24,7 @@ export default function PersonalInfoForm({ defaultValues, onSave }: Props) {
   const [firstName, setFirstName] = useState(defaultValues.firstName);
   const [lastName, setLastName] = useState(defaultValues.lastName);
   const [phone, setPhone] = useState(defaultValues.phone);
+  const [openChangePasswordForm, setOpenChangePasswordForm] = useState(false);
 
   const firstName0 = useRef(defaultValues.firstName);
   const lastName0 = useRef(defaultValues.lastName);
@@ -131,6 +135,13 @@ export default function PersonalInfoForm({ defaultValues, onSave }: Props) {
             <button className="edit-btn" onClick={onSaveClick}>
               Save Changes
             </button>
+            {openChangePasswordForm ? (
+              <ChangePassordStyleWrapper>
+                <ChangePasswordModal open={openChangePasswordForm} onClose={() => setOpenChangePasswordForm(false)} />
+              </ChangePassordStyleWrapper>
+            ) : (
+              <ChangePasswordButton onClick={() => setOpenChangePasswordForm(true)} />
+            )}
             <button className="cancel-btn" onClick={onCancel}>
               Cancel
             </button>
