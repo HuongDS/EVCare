@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Dtos.Accounts
 {
-    public class AccountUpdateDto
+    public class AccountUpdatePasswordDto
     {
-        public string firstName { get; set; }
-        public string lastName { get; set; }
-        public string phone { get; set; }
-
-
+        public string newPassword { get; set; }
+        public string oldPassword { get; set; }
     }
 }

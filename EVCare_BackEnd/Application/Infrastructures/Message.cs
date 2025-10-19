@@ -37,6 +37,9 @@ namespace Application.Infrastructures
         public const string UPDATE_ACCOUNT_SUCCESS = "Update Account successfully";
         public const string PHONE_EXISTS = "Phone number already exists.";
         public const string EMAIL_EXISTS = "Email already exists.";
+        public const string OLD_PASSWORD_INCORRECT = "Old password is incorrect.";
+        public const string VERIFY_PASSWORD_SUCCESS = "Password verified successfully.";
+        public const string CHANGE_PASSWORD_SUCCESS = "Password changed successfully.";
 
         // Parttern
         public const string WEAK_PASSWORD = "Password is too weak. It must be at least 8 characters, at least 1 letter, 1 number and 1 special character.";
