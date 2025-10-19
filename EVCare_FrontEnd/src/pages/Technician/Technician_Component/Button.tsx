@@ -104,7 +104,7 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
 
       {(status === TechnicianWorkingSessionEnum.CONFIRM ||
         status === TechnicianWorkingSessionEnum.COMPLETED ||
-        status === TechnicianWorkingSessionEnum.CANCELLED) && (
+        status === TechnicianWorkingSessionEnum.CANCELED) && (
         <ButtonAction
           text="View Details"
           color="#fff"
