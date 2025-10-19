@@ -274,6 +274,132 @@ export const AdminAddEmployeeWrapper = styled.div`
     background: #f5f5f5;
   }
 
+  .skills-search {
+    margin: 15px 0 20px 0;
+  }
+
+  .skills-section {
+    margin-top: 25px;
+  }
+
+  .skills-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 15px;
+  }
+
+  .skill-group {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .skill-group-header {
+    background: #f9f9f9;
+    padding: 15px 20px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .skill-group-body {
+    padding: 15px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .skill-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+  .skill-checkbox {
+    display: none;
+  }
+
+  .skill-label {
+    padding: 8px 16px;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .skill-label:hover {
+    border-color: #00ad4e;
+    background: #f9f9f9;
+  }
+
+  .skill-checkbox:checked + .skill-label {
+    background: #00ad4e;
+    border-color: #00ad4e;
+    color: #fff;
+  }
+
+  .selected-skills-display {
+    margin-top: 25px;
+    padding: 20px;
+    background: #fff;
+    border: 2px dashed #e0e0e0;
+    border-radius: 8px;
+  }
+
+  .selected-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 12px;
+  }
+
+  .selected-skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 40px;
+    align-items: center;
+  }
+
+  .no-skills-text {
+    color: #999;
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  .selected-skill-tag {
+    padding: 8px 16px;
+    background: #00ad4e;
+    color: #fff;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .remove-skill {
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 16px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .remove-skill:hover {
+    opacity: 1;
+  }
+
   @media (max-width: 768px) {
     .sidebar {
       transform: translateX(-100%);
