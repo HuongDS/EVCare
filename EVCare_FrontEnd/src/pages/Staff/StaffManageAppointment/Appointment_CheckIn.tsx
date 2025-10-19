@@ -14,43 +14,106 @@ import type {
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { useQueryClient } from "@tanstack/react-query";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import { useState } from "react";
+import SuccessModal from "../../../components/StatusModal/SuccessModal";
+import FailedModal from "../../../components/StatusModal/FailModal";
+import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
+import { APPOINTMENT_MESSAGE } from "../../../constants/messages/Message";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
   currentStep: number;
+  close: () => void;
 }
 
-export default function Appointment_CheckIn({ data, currentStep }: Props) {
+export default function Appointment_CheckIn({
+  data,
+  currentStep,
+  close,
+}: Props) {
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [confirm, setConfirm] = useState(false);
+  const [title, setTitle] = useState("");
   const dispatch = useAppDispatch();
   const { mutateAsync: newOrder } = CreateNewOrder();
   const { mutateAsync: appointmentStatus, isPending } =
     changeAppointmentStatus();
   const queryClient = useQueryClient();
 
-  const handleCheckIn = async (status: "CheckedIn" | "Canceled") => {
+  const handleChangeAppointmentStatus = async (status: string) => {
+    const changeStatus = {
+      appointmentId: data.id,
+      status: status,
+    };
     try {
-      const changeStatus = {
-        appointmentId: data.id,
-        status: status,
-      };
-
-      const createNewOrderParams = {
-        appointmentID: data.id,
-        created_At: new Date().toISOString(),
-      };
-
-      const response = await newOrder(createNewOrderParams);
-
-      data.orderId = response.data?.orderID || 0;
-
       await appointmentStatus(changeStatus);
-
-      await queryClient.invalidateQueries({ queryKey: ["Staff Appointments"] });
-
-      dispatch(setStep({ id: data.id, step: currentStep + 1 }));
+      return true;
     } catch (error) {
-      console.error("Error changing appointment status:", error);
+      setTitle("Appointment Status");
+      setModalMessage(String(error));
+      setIsErrorModalOpen(true);
+      return false;
     }
+  };
+
+  const handleCreateOrder = async () => {
+    const createNewOrderParams = {
+      appointmentID: data.id,
+      created_At: new Date().toISOString(),
+    };
+    try {
+      const order = await newOrder(createNewOrderParams);
+
+      if (order.data?.orderID !== null) {
+        data.orderId = order.data?.orderID || 0;
+        setTitle("Check In");
+        setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_SUCCESS);
+        setIsSuccessModalOpen(true);
+        await queryClient.invalidateQueries({
+          queryKey: ["Staff Appointments"],
+        });
+      }
+    } catch (error) {
+      setTitle("Check In");
+      setModalMessage(String(error));
+      setIsErrorModalOpen(true);
+    }
+  };
+
+  const handleCheckIn = async (status: "CheckedIn") => {
+    const isStatusChanged = await handleChangeAppointmentStatus(status);
+    if (isStatusChanged) {
+      await handleCreateOrder();
+    }
+  };
+
+  const handleCancel = async (status: "Canceled") => {
+    const isStatusChanged = await handleChangeAppointmentStatus(status);
+    setTitle("Appointment Cancellation");
+
+    if (isStatusChanged) {
+      setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CANCEL_SUCCESS);
+      setIsSuccessModalOpen(true);
+      await queryClient.invalidateQueries({
+        queryKey: ["Staff Appointments"],
+      });
+      setTimeout(() => {
+        close();
+      }, 2000);
+    } else {
+      setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CANCEL_FAIL);
+      setIsErrorModalOpen(true);
+    }
+  };
+
+  const handleChangeSteps = () => {
+    dispatch(setStep({ id: data.id, step: currentStep + 1 }));
+  };
+
+  const handleCloseModal = () => {
+    setIsErrorModalOpen(false);
   };
   return (
     <>
@@ -89,8 +152,6 @@ export default function Appointment_CheckIn({ data, currentStep }: Props) {
         </ServiceGroup>
 
         <ImageGroup>
-          {/* Uncomment to display vehicle images */}
-
           {data?.appointmentImages?.map((img, i) => (
             <Zoom key={i}>
               <img src={img} alt={`image ${i + 1}`} key={i} />
@@ -103,23 +164,47 @@ export default function Appointment_CheckIn({ data, currentStep }: Props) {
         </TextAreaContainer>
       </CheckInWrapper>
       <ButtonWapper>
-        <ButtonAction
-          text="Cancel"
-          color="red"
-          backgroundColor="#f1f1f1"
-          action={() => handleCheckIn("Canceled")}
-        />
         {isPending ? (
           <SpinnerComponent />
         ) : (
-          <ButtonAction
-            text="Check In"
-            color="white"
-            backgroundColor="#00AD4E"
-            action={() => handleCheckIn("CheckedIn")}
-          />
+          <>
+            <ButtonAction
+              text="Cancel"
+              color="red"
+              backgroundColor="#f1f1f1"
+              action={() => setConfirm(true)}
+            />
+            <ButtonAction
+              text="Check In"
+              color="white"
+              backgroundColor="#00AD4E"
+              action={() => handleCheckIn("CheckedIn")}
+            />
+          </>
         )}
       </ButtonWapper>
+      {isSuccessModalOpen && (
+        <SuccessModal
+          header={title}
+          message={modalMessage}
+          action={handleChangeSteps}
+        />
+      )}
+      {isErrorModalOpen && (
+        <FailedModal
+          header={title}
+          message={modalMessage}
+          action={handleCloseModal}
+        />
+      )}
+      {confirm && (
+        <ConfirmModal
+          onClose={() => setConfirm(false)}
+          onConfirm={() => handleCancel("Canceled")}
+          open={confirm}
+          message="Do you want to cancel this appointment?"
+        />
+      )}
     </>
   );
 }
