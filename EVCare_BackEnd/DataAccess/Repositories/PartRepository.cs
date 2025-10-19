@@ -21,6 +21,15 @@ namespace DataAccess.Repositories
         {
             return await _dbSet.AnyAsync(x => x.Id == partId);
         }
+
+        public async Task DeleteByCategoryId(int id)
+        {
+           await _dbContext.Parts.Where(x=>x.CategoryId == id)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(p => p.Deleted_At, DateTime.Now)
+                );
+        }
+
         public Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
         {
             var query = _dbContext.Parts.AsNoTracking()
