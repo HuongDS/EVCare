@@ -11,6 +11,7 @@ using AutoMapper;
 using ClosedXML.Excel;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Part;
+using DataAccess.Entities;
 using DataAccess.Interfaces;
 using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -22,23 +23,35 @@ namespace Application.Services
     {
         private readonly IPartRepository _partRepository;
         private readonly IPartCategoryRepository _partCategoryRepository;
+        private readonly IPartHistoryRepository _partHistoryRepository;
+        private readonly IAccountRepository _accountRepository;
         private readonly IMapper _mapper;
-        public PartService(IPartRepository partRepository,IPartCategoryRepository partCategoryRepository,IMapper mapper)
-        {
+        public PartService(
+            IPartRepository partRepository,IPartCategoryRepository partCategoryRepository, IMapper mapper
+            , IPartHistoryRepository partHistoryRepository, IAccountRepository accountRepository) {
             _partRepository = partRepository;
             _partCategoryRepository = partCategoryRepository;
             _mapper = mapper;
+            _partHistoryRepository = partHistoryRepository;
+            _accountRepository = accountRepository;
         }
 
-        public async Task<int> CreateAPart(PartCreateModel model)
+        public async Task<int> CreateAPart(PartCreateModel model,int employeeId)
         {
             var category = await _partCategoryRepository.GetByIdAsync(model.CategoryId);
             if (category == null)
             {
                 throw new Exception("Category not found");
             }
+            
             var part = _mapper.Map<DataAccess.Entities.Part>(model);
             var id = (await _partRepository.AddAsync(part)).Id;
+
+            var partHistory = _mapper.Map<PartHistory>(model);
+            partHistory.PartId = id;
+            var account = await _accountRepository.GetByIdAsync(employeeId);
+            partHistory.EmployeeName = account.First_Name + " " + account.Last_Name;
+            await _partHistoryRepository.AddAsync(partHistory);
             return id;
         }
 

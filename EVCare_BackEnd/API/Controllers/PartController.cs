@@ -1,4 +1,5 @@
-﻿using Application.Dtos;
+﻿using API.Filters;
+using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Pagination;
@@ -48,11 +49,13 @@ namespace API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
+        //[ServiceFilter(typeof(SetEmployeeIdFilter))]
         public async Task<IActionResult> CreatePart(PartCreateModel model)
         {
             try
             {
-                var data = await _partService.CreateAPart(model);
+                //var employeeId = (int)HttpContext.Items["EmployeeId"];
+                var data = await _partService.CreateAPart(model,0);
                 return Ok(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.CREATED,

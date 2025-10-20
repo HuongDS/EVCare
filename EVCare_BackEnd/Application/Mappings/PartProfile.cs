@@ -15,6 +15,7 @@ namespace Application.Mappings
         {
             CreateMap<PartViewModel, Part>();
             CreateMap<PartStaffUpdateModel, Part>();
+            CreateMap<PartCreateModel, Part>();
         }
     }
 }

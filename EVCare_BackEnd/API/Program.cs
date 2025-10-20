@@ -104,6 +104,7 @@ builder.Services.AddScoped<IPartCategoryRepository, PartCategoryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<ITechnicianSkillRepository, TechnicianSkillRepository>();
+builder.Services.AddScoped<IPartHistoryRepository, PartHistoryRepository>();
 
 
 
@@ -165,6 +166,7 @@ builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 builder.Services.AddAutoMapper(typeof(AppointmentProfile));
 builder.Services.AddAutoMapper(typeof(AccountProfile));
 builder.Services.AddAutoMapper(typeof(PartCategoryProfile));
+builder.Services.AddAutoMapper(typeof(PartHistoryProfile));
 //builder.Services.AddAutoMapper(typeof(ServiceCenterProfile));
 
 //Action Filter
