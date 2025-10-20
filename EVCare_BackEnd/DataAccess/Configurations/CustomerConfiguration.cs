@@ -18,7 +18,7 @@ namespace DataAccess.Configuration
                 .WithOne(x => x.Customer)
                 .HasForeignKey<Customer>(x => x.AccountId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+           
             builder.HasData(
                 new Customer
                 {

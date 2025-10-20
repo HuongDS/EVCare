@@ -494,7 +494,6 @@ namespace API.Controllers
                     message = Message.APPOINTMENT_GET_SUCCESS,
                     data = data
                 });
-
             }
             catch (Exception ex)
             {
