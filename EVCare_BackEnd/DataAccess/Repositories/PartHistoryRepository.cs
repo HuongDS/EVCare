@@ -10,6 +10,9 @@ namespace DataAccess.Repositories {
     public class PartHistoryRepository : GenericRepository<PartHistory>, IPartHistoryRepository {
         public PartHistoryRepository(EVCareDbContext dbContext) : base(dbContext) {
         }
-
+        public override async Task<PartHistory> AddAsync(PartHistory entity) {
+            await _dbContext.PartHistories.AddAsync(entity);
+            return entity;
+        }
     }
 }

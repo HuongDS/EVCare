@@ -20,7 +20,7 @@ namespace API.Controllers
             _partService = partService;
         }
         [HttpGet]
-        [Authorize(Roles = "Technician, Staff")]
+        [Authorize(Roles = "Technician, Staff,Admin")]
         public async Task<IActionResult> GetAllParts([FromQuery] PartQueryDto model)
         {
             try
@@ -49,13 +49,13 @@ namespace API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        //[ServiceFilter(typeof(SetEmployeeIdFilter))]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> CreatePart(PartCreateModel model)
         {
             try
             {
-                //var employeeId = (int)HttpContext.Items["EmployeeId"];
-                var data = await _partService.CreateAPart(model,0);
+                var accountId = (int)HttpContext.Items["AccountId"];
+                var data = await _partService.CreateAPart(model,accountId);
                 return Ok(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.CREATED,

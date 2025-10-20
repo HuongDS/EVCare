@@ -21,7 +21,10 @@ namespace DataAccess.Repositories
         {
             return await _dbSet.AnyAsync(x => x.Id == partId);
         }
-
+        public override async Task<Part> AddAsync(Part entity) {
+            await _dbContext.Parts.AddAsync(entity);
+            return entity;
+        }
         public async Task DeleteByCategoryId(int id)
         {
            await _dbContext.Parts.Where(x=>x.CategoryId == id)
