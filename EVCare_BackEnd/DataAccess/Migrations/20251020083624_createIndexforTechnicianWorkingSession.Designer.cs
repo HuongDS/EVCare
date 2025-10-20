@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251020083624_createIndexforTechnicianWorkingSession")]
+    partial class createIndexforTechnicianWorkingSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -251,9 +254,6 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.HasIndex("OrderId", "Appointment_Date")
-                        .HasDatabaseName("IX_Appointments_OrderId_AppointmentDate");
-
                     b.ToTable("Appointments");
                 });
 
@@ -490,8 +490,7 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppointmentId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Orders_AppointmentId");
+                        .IsUnique();
 
                     b.ToTable("Orders");
                 });

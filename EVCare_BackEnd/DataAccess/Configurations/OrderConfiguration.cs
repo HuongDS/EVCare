@@ -18,7 +18,9 @@ namespace DataAccess.Configuration
                 .WithOne(a=>a.Order)
                 .HasForeignKey<Order>(o=>o.AppointmentId)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder.HasIndex(x => x.AppointmentId);
+            builder.HasIndex(x => x.AppointmentId)
+                  .HasDatabaseName("IX_Orders_AppointmentId");
+            
         }
     }
 }
