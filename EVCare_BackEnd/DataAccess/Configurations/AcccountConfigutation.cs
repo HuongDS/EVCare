@@ -28,7 +28,7 @@ namespace DataAccess.Configuration
             //       .WithOne(e=>e.Account)
             //       .HasForeignKey<Employee>(e=>e.AccountId)
             //       .OnDelete(DeleteBehavior.Cascade);
-
+            builder.HasIndex(x => new { x.First_Name, x.Last_Name });
 
 
             builder.HasData(
