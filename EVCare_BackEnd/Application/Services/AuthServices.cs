@@ -209,6 +209,8 @@ namespace Application.Services
                 };
                 var tmp02 = await _technicianRepository.AddAsync(newTechnician);
                 newIdReturned = tmp02.Id;
+                tmp.TechnicianId = newIdReturned;
+                await _employeeRepository.UpdateAsync(tmp);
             };
             return newIdReturned;
         }
