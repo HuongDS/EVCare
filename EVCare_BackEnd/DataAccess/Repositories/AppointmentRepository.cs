@@ -250,6 +250,7 @@ namespace DataAccess.Repositories
         public async Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model)
         {
             var query = _dbSet
+                .AsNoTracking()
                 .Select(a => new AppointmentViewModel
                 {
                    Id = a.Id,
