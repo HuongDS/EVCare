@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251020043512_updateAppointmentDate")]
+    partial class updateAppointmentDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,7 +208,7 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Appointment_Date")
+                    b.Property<DateTime>("AppointmentDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Create_At")
@@ -239,7 +242,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Appointment_Date")
+                    b.HasIndex("AppointmentDate")
                         .HasDatabaseName("IX_Appointments_AppointmentDate");
 
                     b.HasIndex("CustomerId");
@@ -250,9 +253,6 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("IX_Appointments_Status");
 
                     b.HasIndex("VehicleId");
-
-                    b.HasIndex("OrderId", "Appointment_Date")
-                        .HasDatabaseName("IX_Appointments_OrderId_AppointmentDate");
 
                     b.ToTable("Appointments");
                 });
@@ -490,8 +490,7 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppointmentId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Orders_AppointmentId");
+                        .IsUnique();
 
                     b.ToTable("Orders");
                 });
@@ -1289,8 +1288,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("TechnicianId", "OrderId");
 
-                    b.HasIndex("OrderId")
-                        .HasDatabaseName("IX_TechnicianWorkingSessions_OrderId");
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("TechnicianId", "Status")
                         .HasDatabaseName("IX_TechnicianWorkingSessions_TechnicianId_Status");
