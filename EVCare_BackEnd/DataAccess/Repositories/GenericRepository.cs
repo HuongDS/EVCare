@@ -40,7 +40,7 @@ namespace DataAccess.Repositories
             return await _dbSet.Skip((payindex - 1) * payload).Take(payload).ToListAsync();
         }
 
-        public async Task<T> AddAsync(T entity)
+        public virtual async Task<T> AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
