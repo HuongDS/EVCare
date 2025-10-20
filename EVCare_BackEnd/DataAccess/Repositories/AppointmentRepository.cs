@@ -304,9 +304,10 @@ namespace DataAccess.Repositories
 
         //}
         public async Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model) {
-        
+
             var baseQuery = _dbSet
                 .AsNoTracking()
+                .Include(a=>a.Customer).ThenInclude(a=>a.Account)
                 .Where(a =>
                     (string.IsNullOrEmpty(model.CustomerName)
                         || (a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name)
@@ -314,26 +315,37 @@ namespace DataAccess.Repositories
                     && (!model.Status.HasValue || a.Status == model.Status.Value)
                     && (!model.BeginTime.HasValue || DateOnly.FromDateTime(a.Appointment_Date) >= model.BeginTime.Value)
                     && (!model.EndTime.HasValue || DateOnly.FromDateTime(a.Appointment_Date) <= model.EndTime.Value)
-                )
-                .Select(a => new
-                {
-                    a.Id,
-                    a.Appointment_Date,
-                    a.Status,
-                    CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name
-                });
-
-         
-           baseQuery = baseQuery.ApplySorting(model.SortField, model.SortOrder);
-
-            var pagedResult = await PaginationHelper.PaginationAsync(baseQuery, model.PageSize.Value, model.PageIndex.Value);
+                );
+               baseQuery = baseQuery.ApplySorting(model.SortField, model.SortOrder);
+            var pagedResult = await PaginationHelper.PaginationAsync(
+                                              baseQuery.Select(a => new
+                                              {
+                                                  a.Id
+                                              }),
+                                              model.PageSize.Value,
+                                              model.PageIndex.Value
+                                                );
             if (!pagedResult.Items.Any())
                 return new PageResultDto<AppointmentViewModel>(new List<AppointmentViewModel>(), 0, model.PageSize.Value, model.PageIndex.Value);
 
             var appointmentIds = pagedResult.Items.Select(x => x.Id).ToList();
             var appointments = await _dbSet
                 .AsNoTracking()
-                .AsSplitQuery()
+                 .Include(a => a.Vehicle)
+                .Include(a => a.Customer).ThenInclude(c => c.Account)
+                .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
+                .Include(a => a.AppointmentImages)
+                .Include(a => a.Order)
+                    .ThenInclude(order => order.TechnicianWorkingSessions)
+                        .ThenInclude(tws => tws.Technician)
+                            .ThenInclude(t => t.Employee)
+                                .ThenInclude(e => e.Account)
+  
+                .Include(a => a.Order)
+                    .ThenInclude(order => order.TechnicianWorkingSessions)
+                        .ThenInclude(tws => tws.Technician)
+                            .ThenInclude(t => t.TechnicianSkills)
+                                .ThenInclude(ts => ts.Service)
                 .Where(a => appointmentIds.Contains(a.Id))
                 .Select(a => new AppointmentViewModel
                 {
@@ -393,7 +405,7 @@ namespace DataAccess.Repositories
             var end = model.EndTime?.ToDateTime(TimeOnly.MaxValue);
             var query = _dbContext.TechnicianWorkingSessions
                 .AsNoTracking()
-                .AsSplitQuery()
+                .Include(t=>t.Order).ThenInclude(o=>o.Appointment)
                 .Where(tws => tws.TechnicianId == technicianId
                     && (!model.Status.HasValue || tws.Status == model.Status.Value)
                     && (!start.HasValue || tws.Order.Appointment.Appointment_Date >= start.Value)
@@ -412,8 +424,28 @@ namespace DataAccess.Repositories
             var orderIds = pagedResult.Items.Select(x => x.OrderId).ToList();
             var appointments = await _dbContext.Appointments
                 .AsNoTracking()
-                .AsSplitQuery()
+                
                 .Where(a => orderIds.Contains(a.OrderId.Value))
+                 .Include(a => a.Vehicle)
+                    .ThenInclude(v => v.Category)
+                .Include(a => a.Customer)
+                    .ThenInclude(c => c.Account)
+                .Include(a => a.AppointmentServices)
+                    .ThenInclude(asv => asv.Service)
+                .Include(a => a.AppointmentImages)
+                .Include(a => a.Order)
+                    .ThenInclude(o => o.OrderParts)
+                        .ThenInclude(op => op.Part)
+                .Include(a => a.Order)
+                    .ThenInclude(o => o.TechnicianWorkingSessions)
+                        .ThenInclude(tws => tws.Technician)
+                            .ThenInclude(t => t.Employee)
+                                .ThenInclude(e => e.Account)
+                .Include(a => a.Order)
+                    .ThenInclude(o => o.TechnicianWorkingSessions)
+                        .ThenInclude(tws => tws.Technician)
+                            .ThenInclude(t => t.TechnicianSkills)
+                                .ThenInclude(ts => ts.Service)
                 .Select(a => new AppointmentTechnicianViewModel
                 {
                     Id = a.Id,
