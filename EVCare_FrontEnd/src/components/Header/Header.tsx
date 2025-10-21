@@ -1,5 +1,5 @@
 import logo from "../../assets/EVCare.png";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; // (NEW) Đã thêm `useState`
 import { Link, useNavigate } from "react-router";
 import Authentication from "../../pages/Shared/Auth/Authentication";
 import { Navbar, Logo, Menu, Buttons } from "./Header.styled";
@@ -24,6 +24,24 @@ export default function Header() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 750);
   const dispatch = useDispatch<AppDispatch>();
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 750);
     window.addEventListener("resize", handleResize);
@@ -32,12 +50,6 @@ export default function Header() {
       setTongle(true);
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     setShowAuth(false);
-  //   }
-  // }, [isAuthenticated]);
 
   const handleLogout = async () => {
     const response = await logout();
@@ -53,8 +65,9 @@ export default function Header() {
     stopAdminDashboardConnection();
     navigate("/");
   };
+
   return (
-    <Navbar>
+    <Navbar $isScrolled={isScrolled}>
       <Logo>
         <Link to="/">
           <img src={logo} alt="EVCare logo" />
@@ -62,9 +75,7 @@ export default function Header() {
       </Logo>
 
       <Menu>
-        <Link to="/" className="active">
-          Home
-        </Link>
+        <Link to="/">Home</Link>
         <Link to="/service">Service</Link>
         <Link to="/about">About</Link>
         <Link to="/policy">Policies</Link>
@@ -81,10 +92,7 @@ export default function Header() {
         </div>
       ) : (
         <Buttons>
-          <button
-            className="btn btn-fill"
-            onClick={() => dispatch(openLogin())}
-          >
+          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
             Get Started
           </button>
         </Buttons>
