@@ -86,7 +86,6 @@ export default function OrderList() {
               <AppointmentHistoryCard
                 appointmentId={a.id}
                 onViewAppointmentDetail={onViewAppointmentDetail}
-                key={a.id}
                 data={a}
                 loadingModalDetail={loadingModalDetail}
               />

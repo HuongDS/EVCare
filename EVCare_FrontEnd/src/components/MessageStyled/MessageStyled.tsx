@@ -2,7 +2,7 @@ import type React from "react";
 import styled from "styled-components";
 import "bootstrap-icons/font/bootstrap-icons.css";
 interface props {
-  icon: string;
+  icon: React.ReactNode;
   message: React.ReactNode;
 }
 
@@ -10,7 +10,7 @@ interface props {
 export const NOT_FOUND_ITEMS = ({ icon, message }: props) => {
   return (
     <Wrrapper>
-      <i className={icon}></i>
+      {icon}
       <h4>{message}</h4>
     </Wrrapper>
   );
