@@ -76,7 +76,7 @@ namespace API.Controllers
 
         [HttpPut()]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdatePart([FromQuery] int id, [FromBody] PartStaffUpdateModel model)
+        public async Task<IActionResult> UpdatePart([FromQuery] int id, [FromBody] PartAdminUpdateModel model)
         {
             try
             {
@@ -86,6 +86,32 @@ namespace API.Controllers
                     statusCode = HttpStatus.OK,
                     message = Message.PART_UPDATE_SUCCESSFULLY,
 
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
+
+        [HttpPut("staff")]
+        [Authorize(Roles = "Staff")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+        public async Task<IActionResult> StaffUpdatePart([FromBody] PartStaffUpdateModel model)
+        {
+            try
+            {
+                var accountId = (int)HttpContext.Items["AccountId"];
+                await _partService.StaffUpdateAPart(model,accountId);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.PART_UPDATE_SUCCESSFULLY,
                 });
             }
             catch (Exception ex)

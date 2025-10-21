@@ -14,6 +14,7 @@ namespace Application.Interfaces
         Task DeleteAPart(int id);
         Task<byte[]> ExportPartAsync();
         Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model);
-        Task UpdateAPart(int id,PartStaffUpdateModel model);
+        Task StaffUpdateAPart(PartStaffUpdateModel model,int accountId);
+        Task UpdateAPart(int id,PartAdminUpdateModel model);
     }
 }
