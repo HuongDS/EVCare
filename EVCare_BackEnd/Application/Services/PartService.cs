@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Application.Interfaces;
 using AutoMapper;
 using ClosedXML.Excel;
+using CloudinaryDotNet;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Part;
 using DataAccess.Entities;
@@ -61,18 +62,68 @@ namespace Application.Services
            
         }
 
-        public async Task DeleteAPart(int id)
+        public async Task DeleteAPart(int id,int accountId)
+        {
+
+           await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                var part = await _partRepository.GetByIdAsync(id);
+                if(part == null)
+                {
+                    throw new Exception("Part not found");
+                }
+                if (part.Deleted_At != DateTime.MinValue)
+                {
+                    throw new Exception("Part has been deleted");
+                }
+                part.Deleted_At = DateTime.Now;
+                await _partRepository.UpdateAsync(part);
+                var account = await _accountRepository.GetByIdAsync(accountId);
+                var partHistory = new PartHistory
+                {
+                    PartId = part.Id,
+                    OldQuantity = part.Stock,
+                    NewQuantity = part.Stock,
+                    OldUnitPrice = part.Price,
+                    NewUnitPrice = part.Price,
+                    OldReplacePrice = part.ReplacementPrice,
+                    NewReplacePrice = part.ReplacementPrice,
+                    ActionType = DataAccess.Enums.ActionTypeEnum.Delete,
+                    ChangeDate = DateTime.Now,
+                    EmployeeName = account.First_Name + " " + account.Last_Name
+                };
+                await _partHistoryRepository.AddAsync(partHistory);
+            });
+        }
+        public async Task DetelePart(int id,int accountId)
         {
             var part = await _partRepository.GetByIdAsync(id);
-            if (part == null)
-            {
+            if (part == null) {
                 throw new Exception("Part not found");
             }
-            part.Deleted_At = DateTime.UtcNow;
+            if (part.Deleted_At != DateTime.MinValue) {
+                throw new Exception("Part has been deleted");
+            }
+            part.Deleted_At = DateTime.Now;
             await _partRepository.UpdateAsync(part);
+            var account = await _accountRepository.GetByIdAsync(accountId);
+            var partHistory = new PartHistory
+            {
+                PartId = part.Id,
+                OldQuantity = part.Stock,
+                NewQuantity = part.Stock,
+                OldUnitPrice = part.Price,
+                NewUnitPrice = part.Price,
+                OldReplacePrice = part.ReplacementPrice,
+                NewReplacePrice = part.ReplacementPrice,
+                ActionType = DataAccess.Enums.ActionTypeEnum.Delete,
+                ChangeDate = DateTime.Now,
+                EmployeeName = account.First_Name + " " + account.Last_Name
+            };
+            await _partHistoryRepository.AddAsync(partHistory);
         }
 
-    
+
 
         public async Task<byte[]> ExportPartAsync()
     {
@@ -165,6 +216,38 @@ namespace Application.Services
             return await _partRepository.GetAllParts(model);
         }
 
+        public async Task RestoreAPart(int id, int accountId) {
+            var part = await _partRepository.GetByIdAsync(id);
+            if(part == null)
+            {
+                throw new Exception("Part not found");
+            }
+            part.Deleted_At = DateTime.MinValue;
+            await _partRepository.UpdateAsync(part);
+            var account = await _accountRepository.GetByIdAsync(accountId);
+            var partHistory = new PartHistory
+            {
+                PartId = part.Id,
+                OldQuantity = part.Stock,
+                NewQuantity = part.Stock,
+                OldUnitPrice = part.Price,
+                NewUnitPrice = part.Price,
+                OldReplacePrice = part.ReplacementPrice,
+                NewReplacePrice = part.ReplacementPrice,
+                ActionType = DataAccess.Enums.ActionTypeEnum.Restore,
+                ChangeDate = DateTime.Now,
+                EmployeeName = account.First_Name + " " + account.Last_Name
+            };
+            await _partHistoryRepository.AddAsync(partHistory);
+        }
+
+        public async Task RestoreAPartSave(int id, int accountId) {
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                await RestoreAPart(id, accountId);
+            });
+        }
+
         public async Task StaffUpdateAPart(PartStaffUpdateModel model,int accountId) {
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
@@ -187,7 +270,7 @@ namespace Application.Services
                    NewUnitPrice = model.UnitPrice,
                    OldReplacePrice = part.ReplacementPrice,
                    NewReplacePrice = part.ReplacementPrice,
-                   ActionType = DataAccess.Enums.ActionTypeEnum.Update,
+                   ActionType = DataAccess.Enums.ActionTypeEnum.Delete,
                    ChangeDate = DateTime.Now,
                    EmployeeName = account.First_Name + " " + account.Last_Name
 

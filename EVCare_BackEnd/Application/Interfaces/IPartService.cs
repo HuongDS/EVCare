@@ -11,10 +11,13 @@ namespace Application.Interfaces
     public interface IPartService
     {
         Task<int> CreateAPart(PartCreateModel model,int employeeId);
-        Task DeleteAPart(int id);
+        Task DeleteAPart(int id,int accountId);
+        Task DetelePart(int id, int acccountId);
+        Task RestoreAPart(int id,int accountId);
         Task<byte[]> ExportPartAsync();
         Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model);
         Task StaffUpdateAPart(PartStaffUpdateModel model,int accountId);
         Task UpdateAPart(int id,PartAdminUpdateModel model);
+        Task RestoreAPartSave(int id, int accountId);
     }
 }

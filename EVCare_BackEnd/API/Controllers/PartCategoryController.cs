@@ -1,4 +1,5 @@
-﻿using Application.Dtos;
+﻿using API.Filters;
+using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Pagination;
@@ -11,20 +12,16 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PartCategoryController : ControllerBase
-    {
+    public class PartCategoryController : ControllerBase {
         private readonly IPartCategoryService _partCategoryService;
-        public PartCategoryController(IPartCategoryService partCategoryService)
-        {
+        public PartCategoryController(IPartCategoryService partCategoryService) {
             _partCategoryService = partCategoryService;
         }
 
         [HttpGet]
         [Authorize(Roles = "Technician,Admin,Staff")]
-        public async Task<IActionResult> GetCategories([FromQuery] CategoryQueryDto model)
-        {
-            try
-            {
+        public async Task<IActionResult> GetCategories([FromQuery] CategoryQueryDto model) {
+            try {
                 var data = await _partCategoryService.GetCategories(model);
                 return Ok(new ResponseDto<PageResultDto<PartCategoryViewModel>>
                 {
@@ -34,8 +31,7 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -47,10 +43,8 @@ namespace API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateCategory(PartCategoryCreateModel model)
-        {
-            try
-            {
+        public async Task<IActionResult> CreateCategory(PartCategoryCreateModel model) {
+            try {
                 var data = await _partCategoryService.CreateCategory(model);
                 return Ok(new ResponseDto<int>
                 {
@@ -59,8 +53,7 @@ namespace API.Controllers
                     data = data
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
@@ -72,11 +65,11 @@ namespace API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteCategory(int id)
-        {
-            try
-            {
-                await _partCategoryService.DeleteCategory(id);
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+        public async Task<IActionResult> DeleteCategory(int id) {
+            try {
+                var accountId = (int)HttpContext.Items["AccountId"];
+                await _partCategoryService.DeleteCategory(id, accountId);
                 return Ok(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.OK,
@@ -84,8 +77,31 @@ namespace API.Controllers
                     data = null
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
+
+        [HttpPut("{id}/restore")]
+        [Authorize(Roles = "Admin")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+        public async Task<IActionResult> RestoreCategory(int id) {
+            try {
+                var accountId = (int)HttpContext.Items["AccountId"];
+                await _partCategoryService.RestoreCategory(id, accountId);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = "Successfully restored part category",
+                    data = null
+                });
+            }
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
