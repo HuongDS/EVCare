@@ -19,5 +19,6 @@ namespace Application.Interfaces
         Task StaffUpdateAPart(PartStaffUpdateModel model,int accountId);
         Task UpdateAPart(int id,PartAdminUpdateModel model);
         Task RestoreAPartSave(int id, int accountId);
+       Task<byte[]> GetPartImportTemplate();
     }
 }

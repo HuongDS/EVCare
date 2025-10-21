@@ -216,6 +216,61 @@ namespace Application.Services
             return await _partRepository.GetAllParts(model);
         }
 
+        public async Task<byte[]> GetPartImportTemplate() {
+            using var wb = new XLWorkbook();
+            var ws = wb.AddWorksheet("Parts");
+            string[] headers = {
+                "Name","CategoryName","Description","Price",
+                "ReplacementPrice","Stock"
+                };
+            for(int i=0;i<headers.Length;i++)
+            {
+                ws.Cell(1, i + 1).Value = headers[i];
+            }
+            ws.Cell(2, 1).Value = "Front Brake Pad A12";
+            ws.Cell(2, 2).Value = "Brake System";
+            ws.Cell(2, 3).Value = "High-performance ceramic pad";
+            ws.Cell(2, 4).Value = 650000;
+            ws.Cell(2, 5).Value = 120000;
+            ws.Cell(2, 6).Value = 25;
+          
+
+            ws.Range("A1:H1").Style.Font.Bold = true;
+            ws.Columns().AdjustToContents();
+
+            var readme = wb.AddWorksheet("README");
+            int rr = 1;
+            readme.Cell(rr++, 1).Value = "HƯỚNG DẪN NHẬP PARTS (EVCare)";
+            readme.Cell(rr++, 1).Value = "• Name: bắt buộc, phải UNIQUE trong file và không trùng với dữ liệu đã có (nếu import ở chế độ insertOnly).";
+            readme.Cell(rr++, 1).Value = "• CategoryName: phải chọn từ danh sách có sẵn và chưa bị xóa. Hệ thống KHÔNG tự tạo category mới từ file import.";
+            readme.Cell(rr++, 1).Value = "• Description: mô tả tự do (tùy chọn).";
+            readme.Cell(rr++, 1).Value = "• Price, ReplacementPrice: số thập phân không âm.";
+            readme.Cell(rr++, 1).Value = "• Stock: số nguyên không âm.";
+            readme.Cell(rr++, 1).Value = "• Dòng ví dụ có sẵn ở sheet Parts (hàng 2). Hãy xóa dòng ví dụ khi import thật.";
+
+            readme.Column(1).AdjustToContents();
+
+            var category = wb.AddWorksheet("Categories");
+            category.Cell(1, 1).Value = "Categories in System";
+            var categories =  await _partCategoryRepository.GetAllAsync();
+            int r = 2;
+            category.Cell(r, 1).Value = "Name";
+            category.Cell(r, 1).Style.Font.Bold = true;
+            category.Cell(r,2).Value = "IsDelete";
+            category.Cell(r, 2).Style.Font.Bold = true;
+            foreach (var c in categories)
+            {
+                category.Cell(++r, 1).Value = c.Name;
+                category.Cell(r, 2).Value = (c.Deleted_At != DateTime.MinValue);
+            }
+            category.Range("A1:A1").Style.Font.Bold = true;
+            category.Columns().AdjustToContents();
+            using var ms = new MemoryStream();
+            wb.SaveAs(ms);
+            var bytes = ms.ToArray();
+            return bytes;
+        }
+
         public async Task RestoreAPart(int id, int accountId) {
             var part = await _partRepository.GetByIdAsync(id);
             if(part == null)
@@ -291,5 +346,7 @@ namespace Application.Services
             _mapper.Map(model, part);
             await _partRepository.UpdateAsync(part);
         }
+
+      
     }
 }
