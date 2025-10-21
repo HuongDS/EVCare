@@ -88,5 +88,12 @@ namespace DataAccess.Repositories
             part.Stock = stock - quantity;
             await UpdateAsync(part);
         }
+
+        public async Task<IEnumerable<int>> GetPartIdsByCategoryId(int id) {
+            return await _dbContext.Parts
+                .Where(x => x.CategoryId == id)
+                .Select(x => x.Id)
+                .ToListAsync();
+        }
     }
 }

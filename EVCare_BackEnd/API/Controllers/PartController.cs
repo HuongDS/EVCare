@@ -127,17 +127,45 @@ namespace API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> DeleteAPart(int id)
         {
             try
             {
-                await _partService.DeleteAPart(id);
+                var accountId = (int)HttpContext.Items["AccountId"];
+                await _partService.DeleteAPart(id,accountId);
                 return Ok(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.OK,
                     message = Message.PART_DELETE_SUCCESSFULLY,
                 });
 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
+
+        [HttpPut("{id}/restore")]
+        [Authorize(Roles ="Admin")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+        public async Task<IActionResult> RestorePart(int id)
+        {
+            try
+            {
+                var accountId = (int)HttpContext.Items["AccountId"];
+                await _partService.RestoreAPartSave(id, accountId);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = "Restore part successfully",
+                });
             }
             catch (Exception ex)
             {

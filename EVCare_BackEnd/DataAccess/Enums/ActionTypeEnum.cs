@@ -8,6 +8,7 @@ namespace DataAccess.Enums {
     public enum ActionTypeEnum {
         Create,
         Update,
-        Delete
+        Delete,
+        Restore
     }
 }
