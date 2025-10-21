@@ -1,4 +1,5 @@
-﻿using API.Filters;
+﻿using System.Threading.Tasks;
+using API.Filters;
 using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
@@ -19,6 +20,28 @@ namespace API.Controllers
         {
             _partService = partService;
         }
+
+        [HttpGet("template")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetPartImportTemplate()
+        {
+            try
+            {
+                var content = await _partService.GetPartImportTemplate();
+                var fileName = "Part_Import_Template.xlsx";
+                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
+
+
         [HttpGet]
         [Authorize(Roles = "Technician, Staff,Admin")]
         public async Task<IActionResult> GetAllParts([FromQuery] PartQueryDto model)
