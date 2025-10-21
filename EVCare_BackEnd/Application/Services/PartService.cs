@@ -74,7 +74,7 @@ namespace Application.Services
 
     
 
-public async Task<byte[]> ExportPartAsync()
+        public async Task<byte[]> ExportPartAsync()
     {
         var parts = await _partRepository.GetAllWithCategory();
 
@@ -160,12 +160,45 @@ public async Task<byte[]> ExportPartAsync()
 
 
 
-    public async Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
+        public async Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
         {
             return await _partRepository.GetAllParts(model);
         }
 
-        public async Task UpdateAPart(int id, PartStaffUpdateModel model)
+        public async Task StaffUpdateAPart(PartStaffUpdateModel model,int accountId) {
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                var part = await _partRepository.GetByIdAsync(model.Id);
+                if(part == null)
+                {
+                    throw new Exception("Part not found");
+                }
+                if (part.Deleted_At != DateTime.MinValue)
+                {
+                    throw new Exception("Part has been deleted");
+                }
+                var account = await _accountRepository.GetByIdAsync(accountId);
+                var partHistory = new PartHistory
+                {
+                   PartId = part.Id,
+                   OldQuantity = part.Stock,
+                   NewQuantity = model.Stock,
+                   OldUnitPrice = part.Price,
+                   NewUnitPrice = model.UnitPrice,
+                   OldReplacePrice = part.ReplacementPrice,
+                   NewReplacePrice = part.ReplacementPrice,
+                   ActionType = DataAccess.Enums.ActionTypeEnum.Update,
+                   ChangeDate = DateTime.Now,
+                   EmployeeName = account.First_Name + " " + account.Last_Name
+
+                };
+                _mapper.Map(model, part);
+                await _partRepository.UpdateAsync(part);
+                await _partHistoryRepository.AddAsync(partHistory);
+            });
+        }
+
+        public async Task UpdateAPart(int id, PartAdminUpdateModel model)
         {
             var part = await _partRepository.GetByIdAsync(id);
             if(part.Deleted_At!=DateTime.MinValue)

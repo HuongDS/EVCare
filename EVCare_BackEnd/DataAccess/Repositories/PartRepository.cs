@@ -32,6 +32,10 @@ namespace DataAccess.Repositories
                     .SetProperty(p => p.Deleted_At, DateTime.Now)
                 );
         }
+        public override  Task<Part> UpdateAsync(Part entity) {
+             _dbContext.Parts.Update(entity);
+            return Task.FromResult(entity);
+        }
 
         public Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
         {
