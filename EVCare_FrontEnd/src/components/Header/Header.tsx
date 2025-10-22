@@ -65,7 +65,7 @@ export default function Header() {
         <Link to="/" className="active">
           Home
         </Link>
-        <Link to="/service">Service</Link>
+        <Link to="/service">Services</Link>
         <Link to="/about">About</Link>
         <Link to="/policy">Policies</Link>
         <Link to="/contact">Contact</Link>
