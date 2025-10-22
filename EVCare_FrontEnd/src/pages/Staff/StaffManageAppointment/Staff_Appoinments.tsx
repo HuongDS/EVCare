@@ -65,7 +65,7 @@ export default function Staff_Appoinments() {
   const { data: appointments, isLoading } = useGetAllAppointments({
     ...((searchValue && { customerName: searchValue }) || {}), //chỉ gửi customer name nếu nó k rỗng
     status: sortBy,
-    sortField: "AppointmentDate",
+    sortField: "Appointment_Date",
     ...((beginTime && { beginTime: beginTime }) || {}),
     ...((endTime && { endTime: endTime }) || {}),
     sortOrder: sortOrder,

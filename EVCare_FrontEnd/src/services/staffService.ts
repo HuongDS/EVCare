@@ -12,6 +12,7 @@ import type {
 } from "../models/PartModel/PartModel";
 import axios from "axios";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
+import dayjs from "dayjs";
 
 interface GetPartCategoryParams {
   pageSize?: number;
@@ -87,7 +88,7 @@ export const useExportInventoryToExcel = () => {
 
         const link = document.createElement("a");
         link.href = url;
-        link.download = "Inventory.xlsx";
+        link.download = `Inventory_${dayjs().format("DD-MM-YYYY")}.xlsx`;
         document.body.appendChild(link);
         link.click();
         link.remove();
