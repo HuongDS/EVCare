@@ -17,6 +17,7 @@ using DataAccess.Interfaces;
 using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Services
 {
@@ -208,8 +209,9 @@ namespace Application.Services
         return ms.ToArray();
     }
 
-
-
+        public byte[] GeneratePartImportErrorFile(List<PartImportErrorModel> errors) {
+            throw new NotImplementedException();
+        }
 
         public async Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
         {
@@ -269,6 +271,10 @@ namespace Application.Services
             wb.SaveAs(ms);
             var bytes = ms.ToArray();
             return bytes;
+        }
+
+        public Task<PartImportResult> ImportPartAsync(IFormFile file, int accountId) {
+            throw new NotImplementedException();
         }
 
         public async Task RestoreAPart(int id, int accountId) {
