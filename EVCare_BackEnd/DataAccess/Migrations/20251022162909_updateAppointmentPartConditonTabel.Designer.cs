@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251022162909_updateAppointmentPartConditonTabel")]
+    partial class updateAppointmentPartConditonTabel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -271,11 +274,14 @@ namespace DataAccess.Migrations
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
+                    b.Property<int>("TechnicianId")
+                        .HasColumnType("int");
+
                     b.HasKey("PartId", "AppointmentId", "TechicianId");
 
                     b.HasIndex("AppointmentId");
 
-                    b.HasIndex("TechicianId");
+                    b.HasIndex("TechnicianId");
 
                     b.ToTable("AppointmentPartConditions");
                 });
@@ -1488,8 +1494,8 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("DataAccess.Entities.Technician", "Technician")
-                        .WithMany("AppointmentPartConditions")
-                        .HasForeignKey("TechicianId")
+                        .WithMany()
+                        .HasForeignKey("TechnicianId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1809,8 +1815,6 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
                 {
-                    b.Navigation("AppointmentPartConditions");
-
                     b.Navigation("OrderParts");
 
                     b.Navigation("TechnicianSkills");
