@@ -9,6 +9,8 @@ export const FooterWrapper = styled.footer`
   gap: 40px;
   font-family: "Outfit", sans-serif;
   border-top: 4px solid #00ad4e;
+  position: relative;
+  z-index: 2;
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 30px;
@@ -161,4 +163,6 @@ export const SubFooter = styled.div`
   font-family: "Outfit", sans-serif;
   font-size: 0.9rem;
   color: #64748b;
+  position: relative;
+  z-index: 2;
 `;
