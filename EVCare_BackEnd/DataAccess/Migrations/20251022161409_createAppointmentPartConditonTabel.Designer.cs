@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(EVCareDbContext))]
-    partial class EVCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251022161409_createAppointmentPartConditonTabel")]
+    partial class createAppointmentPartConditonTabel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -259,23 +262,26 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.AppointmentPartCondition", b =>
                 {
-                    b.Property<int>("PartId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TechicianId")
                         .HasColumnType("int");
 
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
-                    b.HasKey("PartId", "AppointmentId", "TechicianId");
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("AppointmentId");
 
-                    b.HasIndex("TechicianId");
+                    b.HasIndex("PartId");
 
                     b.ToTable("AppointmentPartConditions");
                 });
@@ -1487,17 +1493,9 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Entities.Technician", "Technician")
-                        .WithMany("AppointmentPartConditions")
-                        .HasForeignKey("TechicianId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Appointment");
 
                     b.Navigation("Part");
-
-                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.AppointmentService", b =>
@@ -1809,8 +1807,6 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
                 {
-                    b.Navigation("AppointmentPartConditions");
-
                     b.Navigation("OrderParts");
 
                     b.Navigation("TechnicianSkills");
