@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Part;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Interfaces
 {
@@ -19,6 +20,8 @@ namespace Application.Interfaces
         Task StaffUpdateAPart(PartStaffUpdateModel model,int accountId);
         Task UpdateAPart(int id,PartAdminUpdateModel model);
         Task RestoreAPartSave(int id, int accountId);
-       Task<byte[]> GetPartImportTemplate();
+        Task<byte[]> GetPartImportTemplate();
+        Task<PartImportResult> ImportPartAsync(IFormFile file, int accountId);
+        byte[] GeneratePartImportErrorFile(List<PartImportErrorModel> errors);
     }
 }

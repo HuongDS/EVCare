@@ -13,26 +13,21 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PartController : ControllerBase
-    {
+    public class PartController : ControllerBase {
         private readonly IPartService _partService;
-        public PartController(IPartService partService)
-        {
+        public PartController(IPartService partService) {
             _partService = partService;
         }
 
         [HttpGet("template")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetPartImportTemplate()
-        {
-            try
-            {
+        public async Task<IActionResult> GetPartImportTemplate() {
+            try {
                 var content = await _partService.GetPartImportTemplate();
                 var fileName = "Part_Import_Template.xlsx";
                 return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -44,10 +39,8 @@ namespace API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Technician, Staff,Admin")]
-        public async Task<IActionResult> GetAllParts([FromQuery] PartQueryDto model)
-        {
-            try
-            {
+        public async Task<IActionResult> GetAllParts([FromQuery] PartQueryDto model) {
+            try {
                 var data = await _partService.GetAllParts(model);
                 return Ok(new ResponseDto<PageResultDto<PartViewModel>>
                 {
@@ -57,8 +50,7 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
 
                 return BadRequest(new ResponseDto<object>
                 {
@@ -73,12 +65,10 @@ namespace API.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> CreatePart(PartCreateModel model)
-        {
-            try
-            {
+        public async Task<IActionResult> CreatePart(PartCreateModel model) {
+            try {
                 var accountId = (int)HttpContext.Items["AccountId"];
-                var data = await _partService.CreateAPart(model,accountId);
+                var data = await _partService.CreateAPart(model, accountId);
                 return Ok(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.CREATED,
@@ -86,8 +76,7 @@ namespace API.Controllers
                     data = data
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
@@ -99,10 +88,8 @@ namespace API.Controllers
 
         [HttpPut()]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdatePart([FromQuery] int id, [FromBody] PartAdminUpdateModel model)
-        {
-            try
-            {
+        public async Task<IActionResult> UpdatePart([FromQuery] int id, [FromBody] PartAdminUpdateModel model) {
+            try {
                 await _partService.UpdateAPart(id, model);
                 return Ok(new ResponseDto<int>
                 {
@@ -111,8 +98,7 @@ namespace API.Controllers
 
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
@@ -125,20 +111,17 @@ namespace API.Controllers
         [HttpPut("staff")]
         [Authorize(Roles = "Staff")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> StaffUpdatePart([FromBody] PartStaffUpdateModel model)
-        {
-            try
-            {
+        public async Task<IActionResult> StaffUpdatePart([FromBody] PartStaffUpdateModel model) {
+            try {
                 var accountId = (int)HttpContext.Items["AccountId"];
-                await _partService.StaffUpdateAPart(model,accountId);
+                await _partService.StaffUpdateAPart(model, accountId);
                 return Ok(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.OK,
                     message = Message.PART_UPDATE_SUCCESSFULLY,
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
@@ -151,12 +134,10 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> DeleteAPart(int id)
-        {
-            try
-            {
+        public async Task<IActionResult> DeleteAPart(int id) {
+            try {
                 var accountId = (int)HttpContext.Items["AccountId"];
-                await _partService.DeleteAPart(id,accountId);
+                await _partService.DeleteAPart(id, accountId);
                 return Ok(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.OK,
@@ -164,8 +145,7 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
@@ -176,12 +156,10 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}/restore")]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> RestorePart(int id)
-        {
-            try
-            {
+        public async Task<IActionResult> RestorePart(int id) {
+            try {
                 var accountId = (int)HttpContext.Items["AccountId"];
                 await _partService.RestoreAPartSave(id, accountId);
                 return Ok(new ResponseDto<int>
@@ -190,8 +168,7 @@ namespace API.Controllers
                     message = "Restore part successfully",
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
@@ -203,18 +180,44 @@ namespace API.Controllers
 
         [HttpGet("export")]
         [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> ExportParts()
-        {
-            try
-            {
+        public async Task<IActionResult> ExportParts() {
+            try {
                 var content = await _partService.ExportPartAsync();
 
                 var fileName = $"Parts_{DateOnly.FromDateTime(DateTime.Now)}.xlsx";
                 return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
 
             }
-            catch(Exception ex)
-            {
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("import")]
+        [Authorize(Roles = "Admin")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+        public async Task<IActionResult> ImportParts(IFormFile file) {
+            try {
+                var accountId = (int)HttpContext.Items["AccountId"];
+                var result = await _partService.ImportPartAsync(file, accountId);
+                if (result.HasError) {
+                   var fileContent =  _partService.GeneratePartImportErrorFile(result.Errors);
+                    var fileName = $"Part_Import_Errors_{DateOnly.FromDateTime(DateTime.Now)}.xlsx";
+                    return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                }
+                else {
+                    return Ok(new ResponseDto<object>
+                    {
+                        statusCode = HttpStatus.OK,
+                        message = "Import parts successfully"
+                    });
+                }
+            }
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
