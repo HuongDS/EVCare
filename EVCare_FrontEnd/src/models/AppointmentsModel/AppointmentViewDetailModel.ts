@@ -9,7 +9,7 @@ export type AppointmentViewDetailModel = {
   vehicleName: string;
   vehiclePlateNumber: string;
   customerName: string;
-  customerPhone: string;
+  phoneNumber: string;
   customerEmail: string;
   employeeName: string;
   orderId: number;
