@@ -1,29 +1,37 @@
+import React from "react";
+import styled from "styled-components";
 import Hero from "./sections/Hero";
 import WhyEVCare from "./sections/WhyEVCare";
 import MaintenanceBanner from "./sections/MaintenanceBanner";
 import AboutUs from "./sections/AboutUs";
-import Brands from "./sections/Brands";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "aos/dist/aos.css";
-import AOS from "aos";
-import { useEffect } from "react";
-export default function HomePage() {
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: "ease-out",
-      offset: 100,
-    });
-    AOS.refresh();
-  }, []);
+import StickySection from "./sections/StickySection";
+
+const HomePage: React.FC = () => {
   return (
-    <>
-      <Hero data-aos="fade-up" />
-      <WhyEVCare data-aos="fade-up" />
-      <MaintenanceBanner data-aos="fade-up" />
-      <AboutUs data-aos="fade-up" />
-      <Brands data-aos="fade-up" />
-    </>
+    <HomePageContainer>
+      <StickySection>
+        <Hero />
+      </StickySection>
+
+      <StickySection $bgColor="#F8F9FA">
+        <WhyEVCare />
+      </StickySection>
+
+      <StickySection $bgColor="#FFFFFF">
+        <AboutUs />
+      </StickySection>
+
+      <StickySection>
+        <MaintenanceBanner />
+      </StickySection>
+    </HomePageContainer>
   );
-}
+};
+
+export default HomePage;
+
+const HomePageContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 400vh;
+`;
