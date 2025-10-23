@@ -17,11 +17,12 @@ namespace DataAccess.Entities
         public decimal Price { get; set; }
         public decimal ReplacementPrice { get; set; }
         public int Stock { get; set; }
-        public string Image { get; set; }
+        public string? Image { get; set; }
         public DateTime Deleted_At { get; set; }
         public DateTime Create_At { get; set; }
         public DateTime Updated_At { get; set; }
         public ICollection<OrderPart> OrderParts { get; set; }
         public ICollection<PartHistory> PartHistories { get; set; }
+        public ICollection<AppointmentPartCondition> AppointmentPartConditions { get; set; }
     }
 }
