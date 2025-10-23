@@ -19,5 +19,6 @@ namespace DataAccess.Interfaces
         Task DeleteByCategoryId(int id);
         Task <IEnumerable<Part>> GetAllWithCategory();
         Task<IEnumerable<int>> GetPartIdsByCategoryId(int id);
+        Task<Part> GetByNameAsync(string name);
     }
 }

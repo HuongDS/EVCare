@@ -95,5 +95,9 @@ namespace DataAccess.Repositories
                 .Select(x => x.Id)
                 .ToListAsync();
         }
+
+        public async Task<Part> GetByNameAsync(string name) {
+            return await _dbContext.Parts.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
+        }
     }
 }

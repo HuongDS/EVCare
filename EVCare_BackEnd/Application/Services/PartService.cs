@@ -143,7 +143,7 @@ namespace Application.Services
         header.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
         header.Style.Fill.BackgroundColor = XLColor.LightGreen;
 
-        ws.Column(8).Width = 20; // Cột Image rộng hơn chút
+        ws.Column(8).Width = 20; 
         int row = 2;
 
         using var http = new HttpClient();
@@ -210,7 +210,33 @@ namespace Application.Services
     }
 
         public byte[] GeneratePartImportErrorFile(List<PartImportErrorModel> errors) {
-            throw new NotImplementedException();
+
+            using var workbook = new XLWorkbook();
+            var ws = workbook.Worksheets.Add("Parts");
+            string[] headers = {
+                "Name","CategoryName","Description","Price",
+                "ReplacementPrice","Stock","ErrorMessage"
+                };
+            for (int i = 0; i < headers.Length; i++) {
+                ws.Cell(1, i + 1).Value = headers[i];
+            }
+            int row = 2;
+            foreach (var error in errors) {
+                ws.Cell(row, 1).Value = error.Name;
+                ws.Cell(row, 2).Value = error.CategoryName;
+                ws.Cell(row, 3).Value = error.Description;
+                ws.Cell(row, 4).Value = error.Price;
+                ws.Cell(row, 5).Value = error.ReplacementPrice;
+                ws.Cell(row, 6).Value = error.Stock;
+                ws.Cell(row, 7).Value = error.ErrorMessage;
+                row++;
+            }
+            ws.Row(1).Style.Font.Bold = true;
+            ws.Columns().AdjustToContents();
+            using var ms = new MemoryStream();
+            workbook.SaveAs(ms);
+            return ms.ToArray();
+
         }
 
         public async Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
@@ -273,8 +299,76 @@ namespace Application.Services
             return bytes;
         }
 
-        public Task<PartImportResult> ImportPartAsync(IFormFile file, int accountId) {
-            throw new NotImplementedException();
+        public async Task<PartImportResult> ImportPartAsync(IFormFile file, int accountId) {
+            var result = new PartImportResult();
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+            using var workbook = new XLWorkbook(stream);
+            var worksheet = workbook.Worksheet("Parts");
+            var rows = worksheet.RowsUsed().Skip(1);
+            var rowIndex = 2;
+            foreach (var row in rows)
+            {
+                var errorModel = new PartImportErrorModel();
+                try
+                {
+                    var name = row.Cell(1).GetString().Trim();
+                    var categoryName = row.Cell(2).GetString().Trim();
+                    var description = row.Cell(3).GetString().Trim();
+                    var price = (decimal)row.Cell(4).GetDouble();
+                    var replacementPrice = (decimal)row.Cell(5).GetDouble();
+                    var stock = (int)row.Cell(6).GetDouble();
+                   
+                    errorModel.Errors = new List<string>();
+                    errorModel.Name = name;
+                    errorModel.CategoryName = categoryName;
+                    errorModel.Description = description;
+                    errorModel.Price = price.ToString();
+                    errorModel.ReplacementPrice = replacementPrice.ToString();
+                    errorModel.Stock = stock.ToString();
+
+                    if (stock <= 0)
+                        errorModel.Errors.Add("Stock must be greater than 0");
+                    if (price <= 0)
+                        errorModel.Errors.Add("Price must be greater than 0");
+                    if (replacementPrice <= 0)
+                        errorModel.Errors.Add("Replacement Price must be greater than 0");
+                    if (string.IsNullOrEmpty(name))
+                        errorModel.Errors.Add("Name is required");
+
+                    var category = await _partCategoryRepository.GetByNameAsync(categoryName);
+                    if (category == null || category.Deleted_At != DateTime.MinValue)
+                    {
+                        errorModel.Errors.Add("Category not found or has been deleted");
+                    }
+                    var existingPart = await _partRepository.GetByNameAsync(name);
+                    if(existingPart!= null)
+                    {
+                        errorModel.Errors.Add("Part name already exists");
+                    }
+                    var part = new PartCreateModel
+                    {
+                        Name = name,
+                        CategoryId = category.Id,
+                        Description = description,
+                        Price = price,
+                        ReplacementPrice = replacementPrice,
+                        Stock = stock,  
+                    };
+                    if (errorModel.Errors.Count > 0)
+                    {
+                        result.Errors.Add(errorModel);
+                        continue;
+                    }
+                    await CreateAPart(part, accountId);
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+                rowIndex++;
+            }
+            return result;
         }
 
         public async Task RestoreAPart(int id, int accountId) {
