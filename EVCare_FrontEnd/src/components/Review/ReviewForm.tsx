@@ -1,7 +1,30 @@
 import React, { useEffect, useState } from "react";
 import StarRating from "./StartRating";
 import type { ReviewCreateDto } from "../../models/Review/ReviewCreateDto.ts";
-import { ReviewWrapper } from "./Review.styled.tsx";
+import {
+  ReviewFormContainer,
+  ModalOverlay,
+  ModalHeader,
+  ModalTitle,
+  CloseButton,
+  InfoSection,
+  InfoGrid,
+  InfoItem,
+  InfoLabel,
+  InfoValue,
+  RatingSection,
+  RatingLabel,
+  RatingContainer,
+  RatingText,
+  FormSection,
+  FormLabel,
+  TextareaContainer, // Bao quanh Editor
+  CharCounter,
+  ButtonGroup,
+  SubmitButton,
+  CancelButton,
+} from "./Review.styled";
+
 import type { AppointmentViewDetailModel } from "../../models/AppointmentsModel/AppointmentViewDetailModel.ts";
 import { Editor } from "@tinymce/tinymce-react";
 
@@ -31,101 +54,100 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, onCancel, appointment
     setData(appointmentData);
   }, [appointmentData]);
 
+  const handleEditorChange = (content: string) => {
+    setReview(content);
+  };
+
   return (
-    <ReviewWrapper>
-      <form onSubmit={handleSubmit} className="review-form">
-        <div className="modal-header">
-          <h2 className="modal-title">Share Your Experience</h2>
-          <button type="button" className="close-btn" onClick={onCancel}>
-            ×
-          </button>
-        </div>
+    <ModalOverlay>
+      <ReviewFormContainer>
+        <form onSubmit={handleSubmit}>
+          <ModalHeader>
+            <ModalTitle>Share Your Experience</ModalTitle>
+            <CloseButton type="button" onClick={onCancel}>
+              ×
+            </CloseButton>
+          </ModalHeader>
 
-        <div className="info-section">
-          <div className="info-item">
-            <div className="info-label">Service Used</div>
-            {data?.services.map((item) => (
-              <div className="info-value" key={item.id}>
-                {item.name}
-              </div>
-            ))}
-          </div>
-        </div>
+          <InfoSection>
+            <InfoItem>
+              <InfoLabel>Service Used</InfoLabel>
+              {data?.services.map((item) => (
+                <InfoValue key={item.id}>{item.name}</InfoValue>
+              ))}
+            </InfoItem>
+          </InfoSection>
 
-        <div className="info-grid">
-          <div className="info-item">
-            <div className="info-label">Customer Name</div>
-            <div className="info-value">{data?.customerName}</div>
-          </div>
-          <div className="info-item">
-            <div className="info-label">Phone Number</div>
-            <div className="info-value">{data?.customerPhone ?? "default"}</div>
-          </div>
-        </div>
+          <InfoGrid>
+            <InfoItem>
+              <InfoLabel>Customer Name</InfoLabel>
+              <InfoValue>{data?.customerName}</InfoValue>
+            </InfoItem>
+            <InfoItem>
+              <InfoLabel>Phone Number</InfoLabel>
+              <InfoValue>{data?.phoneNumber ?? "N/A"}</InfoValue>
+            </InfoItem>
+          </InfoGrid>
 
-        <div className="rating-section">
-          <div className="rating-label">Rate Your Experience</div>
-          <div className="rating-container">
-            <StarRating rating={rating} onRate={setRating} />
-            <div className="rating-value">{rating ? `${rating}/5` : "—"}</div>
-          </div>
-          <div className="rating-text">{ratingTexts[rating]}</div>
-        </div>
+          <RatingSection>
+            <RatingLabel>Rate Your Experience</RatingLabel>
+            <RatingContainer>
+              <StarRating rating={rating} onRate={setRating} />
+              <div className="rating-value">{rating ? `${rating}/5` : "—"}</div>
+            </RatingContainer>
+            <RatingText>{ratingTexts[rating]}</RatingText>
+          </RatingSection>
 
-        <div className="form-section">
-          <label className="form-label">Your Feedback</label>
-          <div className="textarea-container">
-            {/*<textarea*/}
-            {/*    className="form-textarea"*/}
-            {/*    placeholder="Share your thoughts about the service quality, staff professionalism, and overall experience..."*/}
-            {/*    value={review}*/}
-            {/*    maxLength={500}*/}
-            {/*    onChange={(e) => setReview(e.target.value)}*/}
-            {/*    required*/}
-            {/*/>*/}
-            <Editor
-              apiKey={import.meta.env.VITE_TINY_KEY}
-              value={review}
-              init={{
-                height: 300,
-                menubar: false,
-                plugins: [
-                  "advlist",
-                  "autolink",
-                  "lists",
-                  "link",
-                  "charmap",
-                  "preview",
-                  "anchor",
-                  "searchreplace",
-                  "visualblocks",
-                  "code",
-                  "fullscreen",
-                  "insertdatetime",
-                  "table",
-                ],
-                toolbar:
-                  "undo redo | formatselect | " +
-                  "bold italic underline | bullist numlist outdent indent | " +
-                  "removeformat | help",
-                content_style: "body { font-family:Outfit,sans-serif; font-size:15px; line-height:1.6; }",
-              }}
-              onEditorChange={(newValue) => setReview(newValue)}
-            />
-            <span className="char-counter">{review.length}/500</span>
-          </div>
-        </div>
+          <FormSection>
+            <FormLabel>Your Feedback</FormLabel>
+            <TextareaContainer>
+              <Editor
+                apiKey={import.meta.env.VITE_TINY_KEY}
+                value={review}
+                init={{
+                  height: 300,
+                  menubar: false,
+                  plugins: [
+                    "advlist",
+                    "autolink",
+                    "lists",
+                    "link",
+                    "charmap",
+                    "preview",
+                    "anchor",
+                    "searchreplace",
+                    "visualblocks",
+                    "code",
+                    "fullscreen",
+                    "insertdatetime",
+                    "table",
+                  ],
+                  toolbar:
+                    "undo redo | formatselect | " +
+                    "bold italic underline | bullist numlist outdent indent | " +
+                    "removeformat | help",
+                  content_style:
+                    "body { font-family:'Outfit',sans-serif; font-size:15px; line-height:1.6; color: #334155; }",
+                  skin: "oxide",
+                  content_css: "default",
+                }}
+                onEditorChange={handleEditorChange} // Sử dụng hàm mới
+              />
+              <CharCounter>{review.length}/500</CharCounter>
+            </TextareaContainer>
+          </FormSection>
 
-        <div className="button-group">
-          <button type="submit" className="submit-btn" disabled={!(rating > 0 && review.trim().length > 0)}>
-            Submit Review
-          </button>
-          <button type="button" className="cancel-btn" onClick={onCancel}>
-            Cancel
-          </button>
-        </div>
-      </form>
-    </ReviewWrapper>
+          <ButtonGroup>
+            <SubmitButton type="submit" disabled={!(rating > 0 && review.trim().length > 0)}>
+              Submit Review
+            </SubmitButton>
+            <CancelButton type="button" onClick={onCancel}>
+              Cancel
+            </CancelButton>
+          </ButtonGroup>
+        </form>
+      </ReviewFormContainer>
+    </ModalOverlay>
   );
 };
 
