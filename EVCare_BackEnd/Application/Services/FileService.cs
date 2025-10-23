@@ -97,5 +97,9 @@ namespace Application.Service
            return results.ToList();
 
         }
+
+        public Task<string> UploadModel3DAsync(FileUploadModel fileUploadModel) {
+            throw new NotImplementedException();
+        }
     }
 }

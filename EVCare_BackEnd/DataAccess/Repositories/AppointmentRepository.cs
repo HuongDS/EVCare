@@ -606,5 +606,9 @@ namespace DataAccess.Repositories
                 && a.Appointment_Date <= endDate
                 && a.Status == status);
         }
+
+        public async Task<Appointment> GetByOrderIdAsync(int orderId) {
+            return await _dbSet.FirstOrDefaultAsync(a => a.OrderId == orderId);
+        }
     }
 }
