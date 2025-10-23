@@ -1,102 +1,78 @@
-import styled from "styled-components";
-import pic from "../../../../assets/User-check.png";
+"use client";
 
-const Container = styled.div`
-  font-family: "Outfit", sans-serif;
-  background-color: #e7f0e6;
-  margin: 0 5%;
-  text-align: center;
-  border-radius: 30px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 2rem 0;
+import type { Variants } from "framer-motion";
+import { FaBolt, FaTools, FaStethoscope } from "react-icons/fa";
+import {
+  Container,
+  Title,
+  CardList,
+  CardItem,
+  CardIcon,
+  CardCategory,
+  CardTitle,
+} from "./Style/WhyEVCare.styled";
 
-  @media (max-width: 768px) {
-    margin: 0 2%;
-    padding: 1rem 0;
-  }
-`;
+const listVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+};
 
-const Title = styled.h1`
-  font-size: clamp(2rem, 5vw, 3em);
-  font-weight: 800;
-  padding: 2%;
-  color: #00ad4e;
-`;
-
-const CardsWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-`;
-
-const Card = styled.div`
-  width: calc(33.33% - 10em);
-  background: #0039a6;
-  padding: 20px;
-  margin: 20px auto;
-  font-size: 1.1rem;
-  border-radius: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  color: white;
-  text-align: center;
-  max-height: 300px;
-  min-width: 250px;
-
-  @media (max-width: 768px) {
-    width: 80%;
-  }
-
-  p {
-    text-align: justify;
-  }
-`;
-
-const Icon = styled.img`
-  width: 50px;
-  height: 50px;
-  margin-bottom: 20px;
-`;
-
-const TitleCard = styled.h2`
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 15px;
-`;
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
 
 export default function WhyEVCare() {
+  const cards = [
+    {
+      category: "Diagnostics",
+      title: "High-Voltage Battery Check",
+      icon: <FaStethoscope />,
+    },
+    {
+      category: "Performance",
+      title: "Software & System Updates",
+      icon: <FaBolt />,
+    },
+    {
+      category: "Maintenance",
+      title: "Tire & Brake Service",
+      icon: <FaTools />,
+    },
+  ];
+
   return (
-    <Container data-aos="fade-up" data-aos-delay="150">
-      <Title>Why EVCare?</Title>
-      <CardsWrapper>
-        <Card>
-          <Icon src={pic} />
-          <TitleCard>Expert EV Technicians</TitleCard>
-          <p>
-            Certified specialists with deep knowledge of electric vehicles to
-            ensure reliable repairs and maintenance.
-          </p>
-        </Card>
+    <Container>
+      <Title>Why Smart EV Care Matters</Title>
 
-        <Card>
-          <Icon src={pic} />
-          <TitleCard>Genuine Parts & Inventory Control</TitleCard>
-          <p>
-            We use high-quality EV spare parts with optimized stock management
-            to keep your car running smoothly.
-          </p>
-        </Card>
-
-        <Card>
-          <Icon src={pic} />
-          <TitleCard>Clear Pricing & Digital Payments</TitleCard>
-          <p>
-            Get upfront quotes, track your expenses, and pay easily through
-            secure online methods.
-          </p>
-        </Card>
-      </CardsWrapper>
+      <CardList
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={listVariants}
+      >
+        {cards.map((card, index) => (
+          <CardItem key={index} variants={itemVariants}>
+            <CardIcon>{card.icon}</CardIcon>
+            <div>
+              <CardCategory>{card.category}</CardCategory>
+              <CardTitle>{card.title}</CardTitle>
+            </div>
+          </CardItem>
+        ))}
+      </CardList>
     </Container>
   );
 }
