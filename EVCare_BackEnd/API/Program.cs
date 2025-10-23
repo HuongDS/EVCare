@@ -104,6 +104,8 @@ builder.Services.AddScoped<IPartCategoryRepository, PartCategoryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<ITechnicianSkillRepository, TechnicianSkillRepository>();
+builder.Services.AddScoped<IPartHistoryRepository, PartHistoryRepository>();
+builder.Services.AddScoped<IAppointmentPartConditionRepository, AppointmentPartConditonRepository>();
 
 
 
@@ -138,6 +140,7 @@ builder.Services.AddHttpClient<IPayOSGateWay, PayOSGateWay>();
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<IRedisService, RedisService>();
 builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
+builder.Services.AddScoped<IAppointmentPartConditionService, AppointmentPartConditionService>();
 
 builder.Services.AddScoped<ITechnicianSkillService, TechnicianSkillService>();
 //builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
@@ -165,6 +168,7 @@ builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
 builder.Services.AddAutoMapper(typeof(AppointmentProfile));
 builder.Services.AddAutoMapper(typeof(AccountProfile));
 builder.Services.AddAutoMapper(typeof(PartCategoryProfile));
+builder.Services.AddAutoMapper(typeof(PartHistoryProfile));
 //builder.Services.AddAutoMapper(typeof(ServiceCenterProfile));
 
 //Action Filter
@@ -181,6 +185,7 @@ builder.Services.AddScoped<SetTechnicianIdFilter>();
 builder.Services.AddScoped<AuthorizeTechnicianDetail>();
 builder.Services.AddScoped<ValidateInvoiceTotalFilter>();
 builder.Services.AddScoped<CheckAuthorizationOfCustomerFilter>();
+builder.Services.AddScoped<AuthorizeCustomerAndStaffForOrder>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();

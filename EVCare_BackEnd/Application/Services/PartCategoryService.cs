@@ -17,12 +17,19 @@ namespace Application.Services
         private readonly IPartRepository _partRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public PartCategoryService(IPartCategoryRepository partCategoryRepository,IMapper mapper,IUnitOfWork unitOfWork,IPartRepository partRepository)
+        private readonly IPartService _partService;
+        public PartCategoryService(
+            IPartCategoryRepository partCategoryRepository,
+            IMapper mapper,IUnitOfWork unitOfWork,IPartRepository partRepository
+            ,IPartService partService
+            )
         {
             _partCategoryRepository = partCategoryRepository;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _partRepository = partRepository;
+            _partService = partService;
+
         }
 
         public async Task<int> CreateCategory(PartCategoryCreateModel model)
@@ -31,7 +38,7 @@ namespace Application.Services
             return (await _partCategoryRepository.AddAsync(entity)).Id;
         }
 
-        public async Task DeleteCategory(int id)
+        public async Task DeleteCategory(int id,int accountId)
         {
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
@@ -40,7 +47,11 @@ namespace Application.Services
                 {
                     throw new Exception("Category not found");
                 }
-                await _partRepository.DeleteByCategoryId(id);
+                var ids = await _partRepository.GetPartIdsByCategoryId(id);
+                foreach (var partId in ids)
+                {
+                    await _partService.DetelePart(partId, accountId);
+                }
                 await _partCategoryRepository.Delete(id);
             });
            
@@ -49,6 +60,24 @@ namespace Application.Services
         public async Task<PageResultDto<PartCategoryViewModel>> GetCategories(CategoryQueryDto model)
         {
             return await _partCategoryRepository.GetCategories(model);
+        }
+
+        public async Task RestoreCategory(int id, int accountId) {
+            await _unitOfWork.ExecuteInTransactionAsync( async () =>
+            {
+                var partCategory = await _partCategoryRepository.GetByIdAsync(id);
+                if (partCategory == null || partCategory.Deleted_At == DateTime.MinValue)
+                {
+                    throw new Exception("Category not found");
+                }
+                partCategory.Deleted_At = DateTime.MinValue;
+                var ids = await _partRepository.GetPartIdsByCategoryId(id);
+                foreach(var partId in ids)
+                {
+                    await _partService.RestoreAPart(partId, accountId);
+                }
+                await _partCategoryRepository.UpdateAsync(partCategory);
+            });
         }
     }
 }

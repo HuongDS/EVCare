@@ -79,5 +79,42 @@ namespace API.Controllers
             
            
         }
-    }
+
+        [HttpPost("model3d")]
+        public async Task<IActionResult> UploadModel3D(IFormFile file) { 
+           
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest(new
+                    {
+                        statusCode = 400,
+                        message = "No file uploaded",
+                        data = (string?)null
+                    });
+                }
+                var fileUploadModel = new FileUploadModel
+                {
+                    FileName = file.FileName,
+                    ContentType = file.ContentType,
+                    FileStream = file.OpenReadStream(),
+                    FolderName = "3dmodels"
+                };
+                var fileUrl = await _fileService.UploadModel3DAsync(fileUploadModel);
+                return Ok(new
+                {
+                    statusCode = 200,
+                    message = "File uploaded successfully",
+                    data = fileUrl
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { statusCode = 500, message = e.Message });
+            }
+
+        }
+
+     }
 }
