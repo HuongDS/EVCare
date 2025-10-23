@@ -1,12 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { FiUser, FiFileText, FiServer } from "react-icons/fi";
 import HeaderBar from "./HeaderBar";
 import RankBadge from "./RankBadge";
 import PersonalInfoForm from "./InforForm";
 import SpendingSection from "./SpendingSection";
 import VehiclesSection from "./VehicleSection";
+import InvoiceSection from "./InvoiceSection";
+import { ContainerWrapper } from "./UserProfile.styled";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
 import type { UserProfile } from "../../../models/User/UserViewModel";
-import { ContainerWrapper } from "./UserProfile.styled";
 import { getAccountInformation, updateAccount } from "../../../services/accountService";
 import { getCustomerId } from "../../../services/customerServices";
 import { getUser } from "../../../token/tokenStore";
@@ -16,7 +18,6 @@ import { CustomerRankEnum, RoleEnum } from "../../../models/enums";
 import type { AccountUpdateDto } from "../../../models/Accounts/AccountUpdateDto";
 import type { CustomerViewDto } from "../../../models/CustomerModels/CustomerViewDto";
 import type { AccountViewModel } from "../../../models/Accounts/accountViewModel";
-import InvoiceSection from "./InvoiceSection";
 import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
 import { getInvoices } from "../../../services/invoicesService";
 import type { User } from "../../../models/AuthModel/authModel";
@@ -24,9 +25,12 @@ import { createVehicle, deleteVehicle, getVehicleByCustomerId } from "../../../s
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 
+type ProfileTab = "info" | "vehicles" | "invoices";
+
 function UserProfileComponent() {
+  const [activeTab, setActiveTab] = useState<ProfileTab>("info");
+
   const [vehicles, setVehicles] = useState<VehicleViewDto[]>([]);
-  const profileTitle = useMemo(() => "Personal Information", []);
   const [profileData, setProfileData] = useState<AccountViewModel>();
   const [cusProfile, setCusProfile] = useState<CustomerViewDto>();
   const [totalSpending, setTotalSpending] = useState<number>(0);
@@ -133,57 +137,87 @@ function UserProfileComponent() {
   return (
     <>
       {isLoading ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "15px",
-          }}
-        >
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "15px" }}>
           <SpinnerComponent />
         </div>
       ) : (
         <ContainerWrapper>
-          <div className="container">
-            <div className="header">
-              <HeaderBar />
-              <div className="logo">EVCare</div>
-            </div>
+          <div className="header">
+            <HeaderBar />
+            <div className="logo">EVCare</div>
+          </div>
 
-            <div className="profile-card">
-              <div className="profile-header">
-                <h1 className="profile-title">{profileTitle}</h1>
-                {profileData?.role !== RoleEnum.CUSTOMER ? (
-                  <></>
-                ) : (
+          <div className="container">
+            <div className="sidebar">
+              <div className="sidebar-info-card">
+                <img className="avatar-placeholder" src="" alt={profileData?.first_Name} />
+
+                <h2>
+                  {profileData?.first_Name} {profileData?.last_Name}
+                </h2>
+                <p>{profileData?.email}</p>
+                {profileData?.role === RoleEnum.CUSTOMER && (
                   <RankBadge rank={cusProfile?.rank || CustomerRankEnum.REGULAR} />
                 )}
               </div>
 
-              <PersonalInfoForm
-                defaultValues={{
-                  firstName: profileData?.first_Name || "",
-                  lastName: profileData?.last_Name || "",
-                  phone: profileData?.phone || "",
-                  email: profileData?.email || "",
-                }}
-                onSave={handleSaveUser}
-              />
-              {user?.role == RoleEnum.CUSTOMER ? <SpendingSection amount={totalSpending} /> : <></>}
+              <nav className="sidebar-nav">
+                <button
+                  className={`sidebar-nav-btn ${activeTab === "info" ? "active" : ""}`}
+                  onClick={() => setActiveTab("info")}
+                >
+                  <FiUser /> General
+                </button>
+                {user?.role === RoleEnum.CUSTOMER && (
+                  <>
+                    <button
+                      className={`sidebar-nav-btn ${activeTab === "vehicles" ? "active" : ""}`}
+                      onClick={() => setActiveTab("vehicles")}
+                    >
+                      <FiServer /> My Vehicles
+                    </button>
+                    <button
+                      className={`sidebar-nav-btn ${activeTab === "invoices" ? "active" : ""}`}
+                      onClick={() => setActiveTab("invoices")}
+                    >
+                      <FiFileText /> Recent Invoices
+                    </button>
+                  </>
+                )}
+              </nav>
             </div>
-            {user?.role == RoleEnum.CUSTOMER ? (
-              <>
+
+            <div className="content-area">
+              {activeTab === "info" && (
+                <div className="profile-card">
+                  <div className="profile-header">
+                    <h1 className="profile-title">Personal Information</h1>
+                  </div>
+                  <PersonalInfoForm
+                    defaultValues={{
+                      firstName: profileData?.first_Name || "",
+                      lastName: profileData?.last_Name || "",
+                      phone: profileData?.phone || "",
+                      email: profileData?.email || "",
+                    }}
+                    onSave={handleSaveUser}
+                  />
+                  {user?.role === RoleEnum.CUSTOMER && <SpendingSection amount={totalSpending} />}
+                </div>
+              )}
+
+              {activeTab === "vehicles" && user?.role === RoleEnum.CUSTOMER && (
                 <div className="profile-card vehicles-section">
                   <VehiclesSection vehicles={vehicles} onAdd={handleAddVehicle} onDelete={handleDeleteVehicle} />
                 </div>
+              )}
 
+              {activeTab === "invoices" && user?.role === RoleEnum.CUSTOMER && (
                 <div className="profile-card invoices-section">
-                  <InvoiceSection invoices={invoices} />
+                  <InvoiceSection invoices={invoices.slice(0, 10)} />
                 </div>
-              </>
-            ) : (
-              <></>
-            )}
+              )}
+            </div>
           </div>
         </ContainerWrapper>
       )}
