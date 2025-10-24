@@ -30,12 +30,18 @@ import {
   PartQuantity,
   PartPrices,
   PartPriceLine,
+  TechnicianTable,
+  TableRow,
+  TableHeader,
+  TableCell,
+  Avatar,
 } from "./AppointmentDetail.styled";
 import NameBoxComponent from "../NameBox";
 import type { AppointmentViewDetailModel } from "../../../../models/AppointmentsModel/AppointmentViewDetailModel";
 import dayjs from "dayjs";
 import type { PartsDetailDto } from "../../../../models/OrderModel/ViewOrderModel";
 import { useGetOrderDetail } from "../../../../services/orderServiceApi";
+import { useGetTechniciansByOrderId } from "../../../../services/technicianService";
 
 interface Props {
   onClose: () => void;
@@ -53,7 +59,7 @@ const formatCurrency = (value: number) => {
 
 export default function AppointmentDetail({ onClose, open, appointmentId, data }: Props) {
   const { data: order } = useGetOrderDetail(data.orderId);
-  // const [technicians, setTechnicians] = useState<EmployeeViewModel[]>([]);
+  const { data: technicians } = useGetTechniciansByOrderId(data.orderId);
 
   if (!open) return;
 
@@ -100,8 +106,6 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
               </Row>
             </Section>
 
-            {/* 5. SECTION TECHNICIAN (Đọc từ 'technicians' state) */}
-
             <Section>
               <Title>Service</Title>
               <ServiceList>
@@ -115,7 +119,7 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
 
             <Section>
               <Title>Order Details</Title>
-              {!order ? (
+              {!order || order.data?.parts.length == 0 ? (
                 <WaitingMessage>Please wait for the technician to inspect your vehicle.</WaitingMessage>
               ) : (
                 <>
@@ -158,6 +162,32 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
                 </>
               )}
             </Section>
+
+            {order && order.data?.parts.length != 0 && technicians && (technicians.data?.length ?? 0) > 0 && (
+              <Section>
+                <Title>Technicians</Title>
+                <TechnicianTable>
+                  <thead>
+                    <TableRow>
+                      <TableHeader>Avatar</TableHeader>
+                      <TableHeader>Name</TableHeader>
+                      <TableHeader>Experience</TableHeader>
+                    </TableRow>
+                  </thead>
+                  <tbody>
+                    {technicians.data?.map((tech) => (
+                      <TableRow key={tech.id}>
+                        <TableCell>
+                          <Avatar src={tech.avatar || "/default-avatar.png"} alt={tech.fullName} />
+                        </TableCell>
+                        <TableCell>{tech.fullName}</TableCell>
+                        <TableCell>{tech.expYears ?? 0} years</TableCell>
+                      </TableRow>
+                    ))}
+                  </tbody>
+                </TechnicianTable>
+              </Section>
+            )}
           </ModalContent>
         </OrderModal>
       </Wrapper>
