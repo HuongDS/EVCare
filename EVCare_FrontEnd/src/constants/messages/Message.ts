@@ -28,6 +28,7 @@ export const ERROR_MESSAGE = {
   FAILED_TO_BANNED_ACCOUNT: "Failed to ban this account",
   FAILED_TO_ADD_EMPLOYEE: "Failed to add employee",
   OLD_PASSWORD_INCORRECT: "Old password is incorrect.",
+  FAILED_TO_GET_TECHNICIANS: "Failed to get technicians by orderId",
 };
 
 export const MSG_TITLE = {
@@ -68,8 +69,7 @@ export const LIST_SERVICES_MESSAGE = {
 
 //List of appointment
 export const LIST_APPOINTMENTS_MESSAGE = {
-  EMPTY_PENDING: (status: string) =>
-    `There are currently no ${status} appointments`,
+  EMPTY_PENDING: (status: string) => `There are currently no ${status} appointments`,
   NO_APPOINTMENT_FOUND: "No appointments found for: ",
 };
 
