@@ -377,3 +377,173 @@ export const ModalContent = styled.div`
     background: rgba(0, 0, 0, 0.5);
   }
 `;
+
+export const TechnicianTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 14px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+`;
+
+export const TableHeader = styled.th`
+  background-color: #f9fafb;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+`;
+
+export const TableRow = styled.tr`
+  border-bottom: 1px solid #e5e7eb;
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const TableCell = styled.td`
+  padding: 12px 16px;
+  vertical-align: middle;
+  color: #1f2937;
+`;
+
+export const Avatar = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+export const WaitingMessage = styled.div`
+  font-size: 16px;
+  font-style: italic;
+  color: #6b7280;
+  text-align: center;
+  padding: 30px 20px;
+  background: #f9fafb;
+  border-radius: 8px;
+`;
+
+export const PartList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding: 5px 10px 5px 5px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+`;
+
+export const PartItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    border-color: #00ad4e;
+  }
+`;
+
+export const PartImage = styled.img`
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #eee;
+  flex-shrink: 0;
+`;
+
+export const PartInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+`;
+
+export const PartName = styled.span`
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const PartPriceLine = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+
+  & > span {
+    font-weight: 400;
+    color: #6b7280;
+    margin-right: 4px;
+  }
+`;
+
+export const PartQuantity = styled.span`
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  min-width: 50px;
+  text-align: center;
+  flex-shrink: 0;
+`;
+
+export const PartPrices = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; // Căn phải
+  min-width: 120px; // Đặt chiều rộng tối thiểu
+  flex-shrink: 0;
+`;
+
+export const OrderSummary = styled.div`
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed #d1d5db;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const SummaryLine = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+  color: #374151;
+
+  & > span:first-child {
+    font-weight: 500;
+    color: #4b5563;
+  }
+
+  & > span:last-child {
+    font-weight: 600;
+  }
+
+  & > strong {
+    font-size: 18px;
+    font-weight: 700;
+    color: #00ad4e;
+  }
+`;
