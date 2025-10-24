@@ -17,8 +17,8 @@ namespace DataAccess.Dtos.Appointment
         public string VehicleName { get; set; }
         public string VehiclePlateNumber { get; set; }
         public string CustomerName { get; set; }
-        public string CustomerPhone { get; set; }
-        public string ? CustomerEmail { get; set; }
+        public string PhoneNumber { get; set; }
+        public string? CustomerEmail { get; set; }
         public string? EmployeeName { get; set; }
         public int? OrderId { get; set; }
         public List<string> ImagesUrls { get; set; } = new();
