@@ -12,6 +12,7 @@ namespace DataAccess.Interfaces
     public interface IPartCategoryRepository : IGenericRepository<PartCategory>
     {
         Task Delete(int id);
+        Task<PartCategory> GetByNameAsync(string categoryName);
         Task<PageResultDto<PartCategoryViewModel>> GetCategories(CategoryQueryDto model);
     }
 }

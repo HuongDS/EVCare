@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Enums;
+using DataAccess.Interfaces;
 
 namespace DataAccess.Entities
 {
-    public class PartHistory
+    public class PartHistory : IEntity
     {
         public int Id { get; set; }
         public int PartId { get; set; }
@@ -17,8 +19,8 @@ namespace DataAccess.Entities
         public decimal NewUnitPrice { get; set; }
         public decimal OldReplacePrice { get; set; }
         public decimal NewReplacePrice { get; set; }
-
-        public int EmployeeId { get; set; }
+        public ActionTypeEnum ActionType { get; set; }
+        public string EmployeeName { get; set; }
         public DateTime ChangeDate { get; set; }
     }
 }
