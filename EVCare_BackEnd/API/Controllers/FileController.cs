@@ -80,6 +80,9 @@ namespace API.Controllers
            
         }
 
+
+        [DisableRequestSizeLimit]
+        [RequestFormLimits(MultipartBodyLengthLimit = 512 * 1024 * 1024)]
         [HttpPost("model3d")]
         public async Task<IActionResult> UploadModel3D(IFormFile file) { 
            
