@@ -7,6 +7,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ProviderLib } from "./components/ui/provider.jsx";
 import * as Sentry from "@sentry/browser";
 import { stopAdminDashboardConnection } from "./signalr/adminConnection.ts";
+import { stopStaffDashboardConnection } from "./signalr/staffConnection.ts";
+import { stopChatConnection } from "./signalr/chatConnection.ts";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -27,6 +29,8 @@ Sentry.init({
   tracesSampleRate: import.meta.env.VITE_APP_ENV === "production" ? 0.2 : 1.0,
 });
 
-window.addEventListener("beforeunload", () => {
-  stopAdminDashboardConnection();
+window.addEventListener("beforeunload", async () => {
+  await stopAdminDashboardConnection();
+  await stopStaffDashboardConnection();
+  await stopChatConnection();
 });

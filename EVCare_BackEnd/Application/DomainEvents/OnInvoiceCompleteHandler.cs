@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using API.Hubs;
+    using Application.Hubs;
     using Application.Interfaces;
     using DataAccess.Dtos.MongoDb_Message;
     using DataAccess.Dtos.Others;
@@ -11,25 +12,33 @@
 
     public class OnInvoiceCompleteHandler
     {
-        private readonly IHubContext<AdminDashboardHub> _hub;
+        private readonly IHubContext<AdminDashboardHub> _adminHub;
 
         private readonly IAdminDashboardServices _adminDashboardServices;
+        private readonly IHubContext<StaffDashboardHub> _staffHub;
 
         public OnInvoiceCompleteHandler(IHubContext<AdminDashboardHub> hub,
-             IAdminDashboardServices adminDashboardServices)
+             IAdminDashboardServices adminDashboardServices,
+             IHubContext<StaffDashboardHub> staffHub)
         {
-            _hub = hub;
+            _adminHub = hub;
             _adminDashboardServices = adminDashboardServices;
+            _staffHub = staffHub;
         }
 
         public async Task HandleAsync()
         {
             var today = DateTime.Today;
             var performance = await _adminDashboardServices.GetPerformanceAsync(today, today);
-            await _hub.Clients.All.SendAsync("AdminDashboardUpdate", new
+            await _adminHub.Clients.All.SendAsync("AdminDashboardUpdate", new
             {
                 Type = "InvoiceComplete",
                 Data = performance
+            });
+            await _staffHub.Clients.All.SendAsync("StaffDashboardUpdate", new
+            {
+                Type = "InvoiceComplete",
+                Data = "Successfully completed an invoice."
             });
         }
     }
