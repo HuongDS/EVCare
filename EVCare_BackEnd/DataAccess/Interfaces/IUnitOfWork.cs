@@ -13,5 +13,7 @@ namespace DataAccess.Interfaces
         //Task RollbackAsync();
         //Task<int> SaveChangesAsync();
         Task ExecuteInTransactionAsync(Func<Task> operation);
+      
+        Task SaveChangesAsync();
     }
 }

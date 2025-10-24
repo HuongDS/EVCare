@@ -25,6 +25,11 @@ namespace DataAccess.Repositories
                 .ExecuteUpdateAsync(x => x.SetProperty(p => p.Deleted_At, p => DateTime.Now));
         }
 
+        public async Task<PartCategory> GetByNameAsync(string categoryName) {
+            return await _dbContext.PartCategories
+                .FirstOrDefaultAsync(x => x.Name.ToLower() == categoryName.ToLower());
+        }
+
         public async Task<PageResultDto<PartCategoryViewModel>> GetCategories(CategoryQueryDto model)
         {
             var query =  _dbContext.PartCategories.AsNoTracking()

@@ -251,7 +251,33 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("VehicleId");
 
+                    b.HasIndex("OrderId", "Appointment_Date")
+                        .HasDatabaseName("IX_Appointments_OrderId_AppointmentDate");
+
                     b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.AppointmentPartCondition", b =>
+                {
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TechicianId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.HasKey("PartId", "AppointmentId", "TechicianId");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("TechicianId");
+
+                    b.ToTable("AppointmentPartConditions");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.AppointmentService", b =>
@@ -490,7 +516,8 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppointmentId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("IX_Orders_AppointmentId");
 
                     b.ToTable("Orders");
                 });
@@ -546,7 +573,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -873,11 +899,15 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ActionType")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("ChangeDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<string>("EmployeeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NewQuantity")
                         .HasColumnType("int");
@@ -1288,7 +1318,8 @@ namespace DataAccess.Migrations
 
                     b.HasKey("TechnicianId", "OrderId");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("IX_TechnicianWorkingSessions_OrderId");
 
                     b.HasIndex("TechnicianId", "Status")
                         .HasDatabaseName("IX_TechnicianWorkingSessions_TechnicianId_Status");
@@ -1443,6 +1474,33 @@ namespace DataAccess.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.AppointmentPartCondition", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Appointment", "Appointment")
+                        .WithMany("AppointmentPartConditions")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccess.Entities.Part", "Part")
+                        .WithMany("AppointmentPartConditions")
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccess.Entities.Technician", "Technician")
+                        .WithMany("AppointmentPartConditions")
+                        .HasForeignKey("TechicianId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Part");
+
+                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.AppointmentService", b =>
@@ -1692,6 +1750,8 @@ namespace DataAccess.Migrations
 
                     b.Navigation("AppointmentImages");
 
+                    b.Navigation("AppointmentPartConditions");
+
                     b.Navigation("AppointmentServices");
 
                     b.Navigation("Order");
@@ -1728,6 +1788,8 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.Part", b =>
                 {
+                    b.Navigation("AppointmentPartConditions");
+
                     b.Navigation("OrderParts");
 
                     b.Navigation("PartHistories");
@@ -1750,6 +1812,8 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
                 {
+                    b.Navigation("AppointmentPartConditions");
+
                     b.Navigation("OrderParts");
 
                     b.Navigation("TechnicianSkills");
