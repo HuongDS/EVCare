@@ -11,6 +11,7 @@ namespace Application.Interfaces
     public interface ITechnicianService
     {
         Task<TechnicianViewModel> GetTechnicianDetail(int technicianId);
+        Task<IEnumerable<TechnicianCusViewModel>> GetTechniciansByOrderId(int orderId);
 
         //Task<IEnumerable<>>
         Task<PageResultDto<TechnicianViewModel>> GetTechnicianToday(TechnicianQueryDto model);

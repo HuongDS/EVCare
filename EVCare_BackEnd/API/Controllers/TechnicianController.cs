@@ -20,7 +20,7 @@ namespace API.Controllers
             _technicianService = technicianService;
         }
         [HttpGet("get-technician-today")]
-        [Authorize(Roles ="Staff")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> GetTechnicianToday([FromQuery] TechnicianQueryDto model)
         {
             try
@@ -50,7 +50,7 @@ namespace API.Controllers
         }
 
         [HttpGet("detail/{technicianId}")]
-        [Authorize(Roles ="Staff,Admin,Technician")]
+        [Authorize(Roles = "Staff,Admin,Technician")]
         [ServiceFilter(typeof(AuthorizeTechnicianDetail))]
         public async Task<IActionResult> GetTechnicianDeatil(int technicianId)
         {
@@ -64,8 +64,9 @@ namespace API.Controllers
                     message = Message.GET_TECHNICIAN_SUCCESSFULLY
 
                 });
-                
-            }catch(Exception ex)
+
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
@@ -73,6 +74,30 @@ namespace API.Controllers
                     message = ex.Message,
                 });
 
+            }
+        }
+
+        [HttpGet("technicians-by-orderId/{orderId}")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> GetTechniciansByOrderId(int orderId)
+        {
+            try
+            {
+                var data = await _technicianService.GetTechniciansByOrderId(orderId);
+                return Ok(new ResponseDto<IEnumerable<TechnicianCusViewModel>>
+                {
+                    data = data,
+                    statusCode = HttpStatus.OK,
+                    message = Message.GET_TECHNICIAN_SUCCESSFULLY
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                });
             }
         }
     }
