@@ -123,7 +123,7 @@ const ServiceList = () => {
   return (
     <ReactLenis root options={{ lerp: 0.08 }}>
       <ServiceListContainer>
-        <HeaderSection data-aos="fade-down">
+        <HeaderSection>
           <ServiceLabel>OUR SERVICES</ServiceLabel>
           <MainTitle>Maintenance Your Vehicle</MainTitle>
           {isLoading ? (
@@ -134,13 +134,9 @@ const ServiceList = () => {
             </BookButton>
           )}
         </HeaderSection>
-
-        <div data-aos="fade-up">
-          <ServiceCarousel />
-        </div>
-
+        <ServiceCarousel />
         <Container>
-          <SortSection data-aos="fade-up" id="service-list-start">
+          <SortSection id="service-list-start">
             <ButtonGroup>
               <SortLabel>Sort by:</SortLabel>
               <SortButton active={sortBy === "Name"} onClick={() => handleSortChange("Name")}>
@@ -221,7 +217,6 @@ const ServiceList = () => {
             </div>
           )}
         </Container>
-
         <StickyBookButton
           onClick={handleOpenBookingForm}
           initial={{ y: 100, opacity: 0 }}
@@ -232,7 +227,6 @@ const ServiceList = () => {
         >
           Book Now <FiArrowRight />
         </StickyBookButton>
-
         <BookingForm
           loading={loadingForm}
           setLoading={setLoadingForm}
