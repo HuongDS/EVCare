@@ -14,5 +14,5 @@ export type EmployeeViewModel = {
   avatar?: string;
   technicianId?: number;
   expYear?: number;
-  Skills: ServiceViewFormModel[];
+  skills: ServiceViewFormModel[];
 };
