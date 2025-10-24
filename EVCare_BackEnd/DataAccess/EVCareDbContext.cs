@@ -29,6 +29,7 @@ namespace DataAccess
         public DbSet<Technician> Technicians { get; set; }
         public DbSet<AppointmentPartCondition> AppointmentPartConditions{ get; set; }
         public DbSet<PartHistory>  PartHistories { get; set; }
+        public DbSet<VehiclePartCompatibility> VehiclePartCompatibilities { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Alert> Alerts { get; set; }
         public DbSet<Appointmentimage> AppointmentImages { get; set; }
@@ -73,6 +74,7 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new InvoiceConfiguration());
             modelBuilder.ApplyConfiguration(new PartHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new AppointmentPartConditionConfiguration());
+            modelBuilder.ApplyConfiguration(new VehiclePartCompatibilityConfiguration());
 
         }
         public async Task<int> SaveChangesAsync()
