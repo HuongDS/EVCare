@@ -16,5 +16,6 @@ namespace DataAccess.Interfaces
 
         Task<int> GetTechnicianIdByAccountId(int accountId);
         Task<TechnicianViewModel> GetTechnicianDetai(int technicianId);
+        Task<IEnumerable<TechnicianCusViewModel>> GetTechniciansByOrderId(int orderId);
     }
 }
