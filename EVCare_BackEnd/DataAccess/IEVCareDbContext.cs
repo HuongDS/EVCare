@@ -21,6 +21,7 @@ namespace DataAccess
         {
             get; set;
         }
+        public DbSet<VehiclePartCompatibility> VehiclePartCompatibilities { get; set; }
         public DbSet<AppointmentPartCondition> AppointmentPartConditions { get; set; }
         public DbSet<PartHistory> PartHistories { get; set; }
         public DbSet<Technician> Technicians { get; set; }
