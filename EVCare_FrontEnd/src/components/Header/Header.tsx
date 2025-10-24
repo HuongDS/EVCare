@@ -1,7 +1,6 @@
 import logo from "../../assets/EVCare.png";
 import { useEffect, useState } from "react"; // (NEW) Đã thêm `useState`
 import { Link, useNavigate } from "react-router";
-import Authentication from "../../pages/Shared/Auth/Authentication";
 import { Navbar, Logo, Menu, Buttons } from "./Header.styled";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../states/store";
@@ -96,7 +95,10 @@ export default function Header() {
         </div>
       ) : (
         <Buttons>
-          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
+          <button
+            className="btn btn-fill"
+            onClick={() => dispatch(openLogin())}
+          >
             Get Started
           </button>
         </Buttons>
@@ -122,8 +124,6 @@ export default function Header() {
           )}
         </Buttons>
       ) : undefined}
-
-      <Authentication />
     </Navbar>
   );
 }
