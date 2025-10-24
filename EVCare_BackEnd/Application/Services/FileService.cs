@@ -162,12 +162,11 @@ namespace Application.Service
                 Key = key,
                 InputStream = uploadStream,
                 ContentType = contentType,
-                UseChunkEncoding = false,           // <-- TẮT CHUNKED
-                AutoCloseStream = false             // controller/service tự quản lý dispose
+                UseChunkEncoding = false,          
+                AutoCloseStream = false            
             };
 
             if (uploadStream.CanSeek) {
-                // Thiết lập Content-Length để SDK không dùng streaming-chunked
                 put.Headers.ContentLength = uploadStream.Length;
             }
 
