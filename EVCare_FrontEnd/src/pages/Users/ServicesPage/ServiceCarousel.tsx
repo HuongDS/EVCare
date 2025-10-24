@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { useGetAllCategory } from "../../../services/serviceServicesApi";
 import type { ServiceCategoryViewModel } from "../../../models/ServicesModel/ServiceCategoryViewModel";
 import { glassEffect } from "../../../components/styles/mixins";
+import { useEffect, useRef } from "react";
+import type { CarouselRef } from "antd/es/carousel";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 const Container = styled.div`
   .container {
@@ -97,7 +100,17 @@ const ServiceName = styled.h3`
 `;
 
 const ServiceCarousel = () => {
-  const { data } = useGetAllCategory();
+  const { data, isLoading } = useGetAllCategory();
+  const carouselRef = useRef<CarouselRef>(null);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      carouselRef.current?.goTo(0);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+  if (isLoading || !data?.data?.length) {
+    return <SpinnerComponent />;
+  }
   return (
     <Container>
       <Overlay />
