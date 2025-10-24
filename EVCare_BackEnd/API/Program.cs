@@ -26,6 +26,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Azure.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -201,7 +202,10 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateVehivleModelValidator
 builder.Services.AddValidatorsFromAssemblyContaining<AppointmentCustomerCreateModelValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<BlockedDatePostModelValidator>();
 
-
+builder.WebHost.ConfigureKestrel(o => { o.Limits.MaxRequestBodySize = null; }); 
+builder.Services.Configure<FormOptions>(o => {
+    o.MultipartBodyLengthLimit = 1_073_741_824; // 1GB
+});
 
 // Add Cors
 //builder.Services.AddCors(options =>
@@ -303,7 +307,10 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
+
 builder.Services.AddAuthorization();
+
 
 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
