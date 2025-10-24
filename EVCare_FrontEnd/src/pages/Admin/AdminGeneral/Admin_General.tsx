@@ -7,12 +7,6 @@ import { useAlert } from "../../../context/useAlert.ts";
 import { MSG_TITLE } from "../../../constants/messages/Message.ts";
 import { getInvoicesWithPagination } from "../../../services/invoicesService.ts";
 import HTTP_STATUS from "../../../constants/Code/HttpStatusCode.ts";
-// import {
-//   countAppointmentsInMonth,
-//   countAppointmentsWithStatusInMonth,
-//   countCustomersInMonth,
-// } from "../../../services/appointmentServiceApi.ts";
-// import { AppointmentStatusEnum } from "../../../models/enums/AppointmentStatusEnum.tsx";
 import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel.tsx";
 import SpinnerComponent from "../../../components/SpinnerComponent.tsx";
 import LazyPerformanceChart from "./LazyPerformanceChart.tsx";
@@ -22,6 +16,13 @@ export default function Admin_General() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { showAlert } = useAlert();
+
+  function getCurrentMonthYear() {
+    const now = new Date();
+    const month = now.toLocaleString("default", { month: "long" });
+    const year = now.getFullYear();
+    return `${month} ${year}`;
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,6 +55,10 @@ export default function Admin_General() {
     </div>
   ) : (
     <AdminGeneralStyled>
+      <div className="stats-header">
+        <h2>Monthly Overview</h2>
+        <p>Statistics for {getCurrentMonthYear()}</p>
+      </div>
       <StatsGrid></StatsGrid>
       <LazyPerformanceChart></LazyPerformanceChart>
       <InvoicesTable listInvoices={listInvoices}></InvoicesTable>
