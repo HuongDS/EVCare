@@ -23,6 +23,8 @@ namespace DataAccess.Repositories
         public async Task<PageResultDto<EmployeeViewModel>> GetAllEmployeesAsync(EmployeeQueryDto model)
         {
             var query = _dbContext.Employees.AsNoTracking()
+                .Include(x=>x.Account)
+                .Include(x=>x.Technician)
                 .Select(x => new EmployeeViewModel
                 {
                     AccountId = x.AccountId,
