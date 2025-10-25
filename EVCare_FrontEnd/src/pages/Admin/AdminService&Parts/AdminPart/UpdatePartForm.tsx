@@ -31,7 +31,7 @@ export const UpdatePartForm = ({
   const [formData, setFormData] = useState<PartDetailDto>({
     id: part.id,
     name: part.name,
-    description: part.description,
+    description: part.description || "",
     price: part.price,
     replacementPrice: part.replacementPrice,
     quantity: part.quantity,
@@ -52,7 +52,7 @@ export const UpdatePartForm = ({
       setFormData((prev) => ({
         ...prev,
         [name]:
-          name === "price" || name === "replacementPrice" || name === "stock" || name === "categoryId"
+          name === "price" || name === "replacementPrice" || name === "quantity" || name === "categoryId"
             ? Number(value)
             : value,
       }));
@@ -64,7 +64,7 @@ export const UpdatePartForm = ({
   };
   const handleFileRemove = () => {
     setNewImageUrl(part.imageUrl);
-  }; // Reset về ảnh gốc
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,7 +176,7 @@ export const UpdatePartForm = ({
             <StyledLabel htmlFor="update-stock">Inventory quantity</StyledLabel>
             <StyledInput
               id="update-stock"
-              name="stock"
+              name="quantity"
               type="number"
               value={formData.quantity}
               onChange={handleInputChange}
@@ -188,8 +188,6 @@ export const UpdatePartForm = ({
 
         <div>
           <InputGroup>
-            <StyledLabel>Parts Image (Current Image)</StyledLabel>
-            <UploadImage handleFileSubmit={handleFileSubmit} handleFileRemove={handleFileRemove} imgQuantity={1} />
             <StyledLabel>Upload new photo (if you want to change)</StyledLabel>
             <DraggerWrapper>
               <UploadImage handleFileSubmit={handleFileSubmit} handleFileRemove={handleFileRemove} imgQuantity={1} />
