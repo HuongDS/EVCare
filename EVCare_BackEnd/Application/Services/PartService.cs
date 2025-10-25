@@ -18,6 +18,7 @@ using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Identity.Client;
 
 namespace Application.Services
 {
@@ -425,7 +426,7 @@ namespace Application.Services
                    NewUnitPrice = model.UnitPrice,
                    OldReplacePrice = part.ReplacementPrice,
                    NewReplacePrice = part.ReplacementPrice,
-                   ActionType = DataAccess.Enums.ActionTypeEnum.Delete,
+                   ActionType = DataAccess.Enums.ActionTypeEnum.Update,
                    ChangeDate = DateTime.Now,
                    EmployeeName = account.First_Name + " " + account.Last_Name
 
@@ -436,16 +437,35 @@ namespace Application.Services
             });
         }
 
-        public async Task UpdateAPart(int id, PartAdminUpdateModel model)
+        public async Task UpdateAPart(int id, PartAdminUpdateModel model,int accountId)
         {
-            var part = await _partRepository.GetByIdAsync(id);
-            if(part.Deleted_At!=DateTime.MinValue)
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
-                throw new Exception("Part has been deleted");
-            }
-            _mapper.Map(model, part);
-            await _partRepository.UpdateAsync(part);
-            await _partRepository.SaveChangesAsync();
+                var part = await _partRepository.GetByIdAsync(id);
+                if (part.Deleted_At != DateTime.MinValue) {
+                    throw new Exception("Part has been deleted");
+                }
+                _mapper.Map(model, part);
+                await _partRepository.UpdateAsync(part);
+                var account = await _accountRepository.GetByIdAsync(accountId);
+                var partHistory = new PartHistory
+                {
+                    PartId = part.Id,
+                    OldQuantity = part.Stock,
+                    NewQuantity = model.Stock,
+                    OldUnitPrice = part.Price,
+                    NewUnitPrice = model.Price,
+                    OldReplacePrice = part.ReplacementPrice,
+                    NewReplacePrice = part.ReplacementPrice,
+                    ActionType = DataAccess.Enums.ActionTypeEnum.Update,
+                    ChangeDate = DateTime.Now,
+                    EmployeeName = account.First_Name + " " + account.Last_Name
+
+                };
+                await _partHistoryRepository.AddAsync(partHistory);
+
+            });
+           
         }
 
       
