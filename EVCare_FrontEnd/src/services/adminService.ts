@@ -64,7 +64,8 @@ export async function getAllEmployee(
 
 export async function addEmployee(data: EmployeeRegisterDto) {
   try {
-    await api.post("/api/Auth/register-for-employee", data);
+    const response = await api.post<ResponseDto<number>>("/api/Auth/register-for-employee", data);
+    return response.data;
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {

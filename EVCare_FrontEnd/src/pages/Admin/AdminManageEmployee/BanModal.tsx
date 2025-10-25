@@ -1,4 +1,16 @@
 import React from "react";
+import { AnimatePresence } from "framer-motion";
+import {
+  ModalBackdrop,
+  ModalContainer,
+  ModalHeader,
+  ModalTitle,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  ModalButton,
+} from "./Admin_ManageEmployee.styled";
+import { FaExclamationTriangle, FaTimes } from "react-icons/fa";
 
 interface Props {
   isOpen: boolean;
@@ -8,31 +20,44 @@ interface Props {
 }
 
 const BanModal: React.FC<Props> = ({ isOpen, employeeName, onClose, onConfirm }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="modal active" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3 className="modal-title">Confirm Ban Employee</h3>
-          <button className="close-btn" onClick={onClose}>
-            ×
-          </button>
-        </div>
-        <div className="modal-body">
-          <p>Are you sure you want to ban this employee? They will no longer be able to access the system.</p>
-          <p style={{ marginTop: 10, fontWeight: 600 }}>{employeeName}</p>
-        </div>
-        <div className="modal-buttons">
-          <button className="action-btn cancel-modal-btn" onClick={onClose}>
-            Cancel
-          </button>
-          <button className="action-btn confirm-btn" onClick={onConfirm}>
-            Ban Employee
-          </button>
-        </div>
-      </div>
-    </div>
+    <AnimatePresence>
+      {isOpen && (
+        <ModalBackdrop initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+          <ModalContainer
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 50, opacity: 0 }}
+            transition={{ type: "spring", damping: 30, stiffness: 500 }}
+          >
+            <ModalHeader>
+              <ModalTitle>
+                <FaExclamationTriangle />
+                Confirm ban account
+              </ModalTitle>
+              <ModalCloseButton onClick={onClose}>
+                <FaTimes />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <p>
+                Are you sure you want to lock the employee's account
+                <strong> {employeeName || "here"}</strong>?
+              </p>
+              <p>They will not be able to log into the system.</p>
+            </ModalBody>
+            <ModalFooter>
+              <ModalButton $isConfirm={false} onClick={onClose}>
+                Cancel
+              </ModalButton>
+              <ModalButton $isConfirm={true} onClick={onConfirm}>
+                Confirm
+              </ModalButton>
+            </ModalFooter>
+          </ModalContainer>
+        </ModalBackdrop>
+      )}
+    </AnimatePresence>
   );
 };
 

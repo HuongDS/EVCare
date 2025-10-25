@@ -1,36 +1,44 @@
 import { Link } from "react-router";
 import logo from "../../assets/EVCare.png";
-import { FooterWrapper, Brand, Links, Contact } from "./Footer.styled";
+import { FooterWrapper, Brand, Links, Contact, SubFooter } from "./Footer.styled";
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <FooterWrapper>
-      <Brand>
-        <img src={logo} alt="EVCare logo" />
-      </Brand>
+    <>
+      <FooterWrapper>
+        <Brand>
+          <img src={logo} alt="EVCare logo" />
+          <p>Chuyên cung cấp dịch vụ bảo trì và chăm sóc xe điện EV với công nghệ hàng đầu.</p>
+        </Brand>
 
-      <Links>
-        <h4>Links</h4>
-        <Link to="/">Home</Link>
-        <Link to="/service">Service</Link>
-        <Link to="/about">About us</Link>
-      </Links>
+        <Links>
+          <h4>Company</h4>
+          <Link to="/">Home</Link>
+          <Link to="/service">Service</Link>
+          <Link to="/about">About us</Link>
+          <Link to="/policy">Policies</Link>
+        </Links>
 
-      <Contact>
-        <h4>Contact</h4>
-        <div className="item">
-          <i className="bi bi-facebook"></i>
-          EVcare VietNam
-        </div>
-        <div className="item">
-          <i className="bi bi-envelope"></i>
-          evcare@gmail.com
-        </div>
-        <div className="item">
-          <i className="bi bi-telephone"></i>
-          (+84) 0123.456.789
-        </div>
-      </Contact>
-    </FooterWrapper>
+        <Contact>
+          <h4>Contact Info</h4>
+          <div className="item">
+            <i className="bi bi-facebook"></i>
+            <span>EVcare VietNam</span>
+          </div>
+          <div className="item">
+            <i className="bi bi-envelope"></i>
+            <span>evcare@gmail.com</span>
+          </div>
+          <div className="item">
+            <i className="bi bi-telephone"></i>
+            <span>(+84) 0123.456.789</span>
+          </div>
+        </Contact>
+      </FooterWrapper>
+
+      <SubFooter>© {currentYear} EVCare. All rights reserved.</SubFooter>
+    </>
   );
 }

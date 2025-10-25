@@ -42,6 +42,8 @@ import { LICENSE_PLATE_REGEX } from "../../../constants/regexs/LicensePlateRegex
 import { ERROR_MESSAGE, MSG_TITLE } from "../../../constants/messages/Message";
 import { LENGTH } from "../../../constants/Code/Constants";
 import { useNotification } from "../../../context/useNotification";
+import AppointmentPolicySection from "./AppointmentPolicySection";
+import { Checkbox } from "@mui/material";
 
 interface Props {
   show: boolean;
@@ -69,6 +71,8 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
   const [appointmentDate, setAppointmentDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [urls, setUrls] = useState<string[]>([]);
+  const [checkbox, setCheckBox] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   const notification = useNotification();
 
@@ -220,7 +224,6 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
       setTimeSelected(undefined);
       setSelectedValue(0);
       setIsAddNew(true);
-      setUrls([]);
     }
   }, [
     selectedValue,
@@ -245,6 +248,11 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
 
   const handleFileSubmit = useCallback((url: string) => {
     setUrls((prev) => [...prev, url]);
+  }, []);
+
+  const handleSetVisible = useCallback(() => {
+    setVisible((prev) => !prev);
+    setCheckBox(false);
   }, []);
 
   useEffect(() => {
@@ -380,11 +388,25 @@ function BookingFormComponent({ show, handleClose, setLoading, loading }: Props)
           </SubSection>
         </RightBody>
       </BookingFormBody>
+
+      <div
+        style={{
+          display: "flex",
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: "15px",
+        }}
+      >
+        {visible ? <></> : <Checkbox color="success" onChange={() => setCheckBox((prev) => !prev)} />}
+        <AppointmentPolicySection visible={visible} handleSetVisible={handleSetVisible} />
+      </div>
+
       {isLoading ? (
         <SpinnerComponent />
       ) : (
         <BookingFormButton>
-          <button type="button" onClick={handleSubmit}>
+          <button disabled={!checkbox} type="button" onClick={handleSubmit}>
             SEND
           </button>
         </BookingFormButton>

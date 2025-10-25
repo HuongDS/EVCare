@@ -393,7 +393,7 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("CCCD")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Deleted_At")
                         .HasColumnType("datetime2");
@@ -410,6 +410,9 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId")
+                        .IsUnique();
+
+                    b.HasIndex("CCCD")
                         .IsUnique();
 
                     b.ToTable("Employees");

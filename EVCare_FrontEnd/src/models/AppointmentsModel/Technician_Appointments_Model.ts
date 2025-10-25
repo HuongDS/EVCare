@@ -39,7 +39,7 @@ export type TechnicianModel<T> = {
   id: number;
   fullName: string;
   phone: string;
-  expYears: 8;
+  expYears: number;
   rating: null;
   status: string;
   skills: T[];
@@ -47,6 +47,7 @@ export type TechnicianModel<T> = {
 };
 
 export type GetTechnicianParams = {
+  FullName?: string;
   Status?: string;
   Skills?: number[];
   PageSize?: number;

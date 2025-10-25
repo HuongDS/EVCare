@@ -1,7 +1,6 @@
 import logo from "../../assets/EVCare.png";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; // (NEW) Đã thêm `useState`
 import { Link, useNavigate } from "react-router";
-import Authentication from "../../pages/Shared/Auth/Authentication";
 import { Navbar, Logo, Menu, Buttons } from "./Header.styled";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../states/store";
@@ -14,6 +13,8 @@ import { openLogin } from "../../states/uiSlice";
 import { handleError } from "../../utils/errorHandler";
 import DropdownMenu from "./DropdownMenu";
 import { stopAdminDashboardConnection } from "../../signalr/adminConnection";
+import { stopStaffDashboardConnection } from "../../signalr/staffConnection";
+import { stopChatConnection } from "../../signalr/chatConnection";
 
 export default function Header() {
   // const [showAuth, setShowAuth] = useState(false);
@@ -24,6 +25,24 @@ export default function Header() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 750);
   const dispatch = useDispatch<AppDispatch>();
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 750);
     window.addEventListener("resize", handleResize);
@@ -32,12 +51,6 @@ export default function Header() {
       setTongle(true);
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     setShowAuth(false);
-  //   }
-  // }, [isAuthenticated]);
 
   const handleLogout = async () => {
     const response = await logout();
@@ -50,11 +63,14 @@ export default function Header() {
     }
     deleteToken();
     dispatch(logoutRedux());
-    stopAdminDashboardConnection();
+    await stopAdminDashboardConnection();
+    await stopStaffDashboardConnection();
+    await stopChatConnection();
     navigate("/");
   };
+
   return (
-    <Navbar>
+    <Navbar $isScrolled={isScrolled}>
       <Logo>
         <Link to="/">
           <img src={logo} alt="EVCare logo" />
@@ -62,11 +78,10 @@ export default function Header() {
       </Logo>
 
       <Menu>
-        <Link to="/" className="active">
-          Home
-        </Link>
+        <Link to="/">Home</Link>
         <Link to="/service">Service</Link>
         <Link to="/about">About</Link>
+        <Link to="/policy">Policies</Link>
         <Link to="/contact">Contact</Link>
         <Link to="/review">Reviews</Link>
       </Menu>
@@ -109,8 +124,6 @@ export default function Header() {
           )}
         </Buttons>
       ) : undefined}
-
-      <Authentication />
     </Navbar>
   );
 }

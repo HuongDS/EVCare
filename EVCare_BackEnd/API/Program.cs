@@ -389,6 +389,7 @@ app.UseAzureSignalR(routes =>
 {
     routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
     routes.MapHub<ChatHub>("/hubs/chat");
+    routes.MapHub<StaffDashboardHub>("/hubs/staffDashboard");
 });
 //app.UseEndpoints(endpoints =>
 //{

@@ -14,10 +14,34 @@ import {
   Title,
   TitleID,
   Wrapper,
+  // TechnicianTable,
+  // TableHeader,
+  // TableRow,
+  // TableCell,
+  // Avatar,
+  WaitingMessage,
+  PartList,
+  PartItem,
+  PartImage,
+  PartName,
+  OrderSummary,
+  SummaryLine,
+  PartInfo,
+  PartQuantity,
+  PartPrices,
+  PartPriceLine,
+  TechnicianTable,
+  TableRow,
+  TableHeader,
+  TableCell,
+  Avatar,
 } from "./AppointmentDetail.styled";
 import NameBoxComponent from "../NameBox";
 import type { AppointmentViewDetailModel } from "../../../../models/AppointmentsModel/AppointmentViewDetailModel";
 import dayjs from "dayjs";
+import type { PartsDetailDto } from "../../../../models/OrderModel/ViewOrderModel";
+import { useGetOrderDetail } from "../../../../services/orderServiceApi";
+import { useGetTechniciansByOrderId } from "../../../../services/technicianService";
 
 interface Props {
   onClose: () => void;
@@ -26,15 +50,30 @@ interface Props {
   data: AppointmentViewDetailModel;
 }
 
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
+};
+
 export default function AppointmentDetail({ onClose, open, appointmentId, data }: Props) {
+  const { data: order } = useGetOrderDetail(data.orderId);
+  const { data: technicians } = useGetTechniciansByOrderId(data.orderId);
+
   if (!open) return;
+
+  const subtotal =
+    order?.data?.parts.reduce(
+      (acc: number, part: PartsDetailDto) => acc + (part.price + part.replacementPrice) * part.quantity,
+      0
+    ) ?? 0;
 
   return (
     <DetailWrapper>
       <Wrapper $isOpen={open}>
         <Backdrop $isOpen={open} onClick={onClose} />
         <OrderModal $isOpen={open} onClick={(e) => e.stopPropagation()}>
-          {/* Header */}
           <Row
             style={{
               justifyContent: "space-between",
@@ -47,26 +86,22 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
               Status: <StatusBadge status={data?.status || ""}>{data?.status}</StatusBadge>
             </Status>
           </Row>
+
           <ModalContent>
-            {/* Customer + Staff Info */}
             <Section>
               <Title>Information</Title>
               <Row>
                 <NameBoxComponent label="Customer's Name" name={data.customerName} />
-
                 <NameBoxComponent label="Vehicle Model" name={data.vehicleName} />
               </Row>
               <Row>
-                <NameBoxComponent label="Phone" name={data.customerPhone ?? "default"} />
+                <NameBoxComponent label="Phone" name={data.phoneNumber ?? "default"} />
                 <NameBoxComponent label="Date" name={dayjs(data.appointmentDate).format("DD/MM/YYYY")} />
               </Row>
               <Row>
                 <NameBoxComponent label="Service Staff" name={data.employeeName} />
-                {/* <NameBoxComponent label="Technical Staff" name={staffs[1].name} /> */}
               </Row>
-
               <Row>
-                {/* <NameBoxComponent label="Location" name={customer.location} /> */}
                 <NoteBox readOnly value={data.note} placeholder="Note" />
               </Row>
             </Section>
@@ -76,12 +111,83 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
               <ServiceList>
                 {data?.services.map((s) => (
                   <Row key={s.id}>
-                    <ServiceItem>• {s.name}</ServiceItem>
+                    <ServiceItem> {s.name}</ServiceItem>
                   </Row>
                 ))}
               </ServiceList>
-              {/* <TotalRow>Total: {total.toLocaleString("vi-VN")}VNĐ</TotalRow> */}
             </Section>
+
+            <Section>
+              <Title>Order Details</Title>
+              {!order || order.data?.parts.length == 0 ? (
+                <WaitingMessage>Please wait for the technician to inspect your vehicle.</WaitingMessage>
+              ) : (
+                <>
+                  <PartList>
+                    {order.data?.parts.map((part) => (
+                      <PartItem key={part.id}>
+                        <PartInfo>
+                          <PartImage src={part.imageUrl} alt={part.name} />
+                          <PartName title={part.name}>{part.name}</PartName>
+                        </PartInfo>
+
+                        <PartQuantity>x{part.quantity}</PartQuantity>
+
+                        <PartPrices>
+                          <PartPriceLine>
+                            <span>Unit:</span> {formatCurrency(part.price)}
+                          </PartPriceLine>
+                          <PartPriceLine>
+                            <span>Install:</span> {formatCurrency(part.replacementPrice)}
+                          </PartPriceLine>
+                        </PartPrices>
+                      </PartItem>
+                    ))}
+                  </PartList>
+
+                  <OrderSummary>
+                    <SummaryLine>
+                      <span>Subtotal</span>
+                      <span>{formatCurrency(subtotal)}</span>
+                    </SummaryLine>
+                    <SummaryLine>
+                      <span>VAT ({order.data?.vat ?? 0}%)</span>
+                      <span>{formatCurrency((subtotal * (order.data?.vat ?? 0)) / 100)}</span>
+                    </SummaryLine>
+                    <SummaryLine>
+                      <strong>Total Price</strong>
+                      <strong>{formatCurrency(order.data?.price ?? 0)}</strong>
+                    </SummaryLine>
+                  </OrderSummary>
+                </>
+              )}
+            </Section>
+
+            {order && order.data?.parts.length != 0 && technicians && (technicians.data?.length ?? 0) > 0 && (
+              <Section>
+                <Title>Technicians</Title>
+                <TechnicianTable>
+                  <thead>
+                    <TableRow>
+                      <TableHeader>Avatar</TableHeader>
+                      <TableHeader>Name</TableHeader>
+                      <TableHeader>Experience</TableHeader>
+                    </TableRow>
+                  </thead>
+                  <tbody>
+                    {technicians.data?.map((tech) => (
+                      <TableRow key={tech.id}>
+                        <TableCell>
+                          <Avatar src={tech.avatar || "/default-avatar.png"} alt={tech.fullName} />
+                        </TableCell>
+                        <TableCell>{tech.fullName}</TableCell>
+                        <TableCell>{tech.expYears ?? 0} years</TableCell>
+                      </TableRow>
+                    ))}
+                  </tbody>
+                </TechnicianTable>
+              </Section>
+            )}
           </ModalContent>
         </OrderModal>
       </Wrapper>

@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAccountInformation } from "../../services/accountService";
-import { getCenterInformation, getBlockedDate } from "../../services/serviceCenterService";
+import {
+  getCenterInformation,
+  getBlockedDate,
+} from "../../services/serviceCenterService";
 import { sendApplication } from "../../services/sendApplicationApi";
 import { getDateOff } from "../../services/getApplicationApi";
 import type {
@@ -10,25 +13,41 @@ import type {
   ResponseDto,
 } from "../../models/ApplicationModel/ApplicationModels";
 import type { AccountViewModel } from "../../models/Accounts/accountViewModel";
-import { FormContainer, Title, Field, Label, Input, Grid, ErrorText, SuccessText } from "./ApplicationForm.styled";
+import {
+  FormContainer,
+  Title,
+  Field,
+  Label,
+  Input,
+  Grid,
+  ErrorText,
+  SuccessText,
+} from "./ApplicationForm.styled";
 import dayjs from "dayjs";
 import ButtonAction from "../Button/ReviewButton";
 import DatePicker from "./DatePickerLazyPerformance";
 import { Editor } from "@tinymce/tinymce-react";
+import { useNotification } from "../../context/useNotification";
+
+// ✅ Thêm interface props ở đây
+interface ApplicationFormProps {
+  onSuccess?: (data: ApplicationResponseDTO) => void;
+  onError?: (message: string) => void;
+}
 
 export default function ApplicationForm({
   onSuccess,
   onError,
-}: {
-  onSuccess?: (data: ApplicationResponseDTO) => void;
-  onError?: (message: string) => void;
-}) {
+}: ApplicationFormProps) {
   const queryClient = useQueryClient();
+  const notification = useNotification();
 
   const [dateOff, setDateOff] = useState("");
   const [reason, setReason] = useState("");
   const [dateMessage, setDateMessage] = useState<string | null>(null);
-  const [localStatus, setLocalStatus] = useState<"idle" | "pending" | "success" | "error">("idle");
+  const [localStatus, setLocalStatus] = useState<
+    "idle" | "pending" | "success" | "error"
+  >("idle");
 
   const { data: accountData, isLoading: accountLoading } = useQuery({
     queryKey: ["accountInfo"],
@@ -53,24 +72,39 @@ export default function ApplicationForm({
     onSuccess: (res: ResponseDto<ApplicationResponseDTO | null>) => {
       if (res.statusCode === 200 && res.data) {
         setLocalStatus("success");
-        onSuccess?.(res.data);
+        notification.success({
+          message: "Application Sent",
+          description:
+            "Your leave application has been submitted successfully!",
+        });
         queryClient.invalidateQueries({ queryKey: ["myApplications"] });
+        onSuccess?.(res.data); // ✅ gọi callback thành công
         setTimeout(() => resetForm(), 1500);
       } else {
         setLocalStatus("error");
-        const message = res.message || "Failed to send application";
-        onError?.(message);
+        notification.error({
+          message: "Send Failed",
+          description: res.message || "Failed to send application.",
+        });
+        onError?.(res.message || "Failed to send application."); // ✅ gọi callback lỗi
       }
     },
     onError: (error: unknown) => {
       console.error("❌ Mutation error:", error);
       setLocalStatus("error");
-      onError?.("Failed to send application");
+      notification.error({
+        message: "Network Error",
+        description: "Failed to send application. Please try again later.",
+      });
+      onError?.("Network error");
     },
   });
 
   const account: AccountViewModel | null = accountData?.data ?? null;
-  const blockedDates: string[] = blockedDatesData?.data?.map((b) => dayjs(b.dateTime).format("YYYY-MM-DD")) ?? [];
+  const blockedDates: string[] =
+    blockedDatesData?.data?.map((b) =>
+      dayjs(b.dateTime).format("YYYY-MM-DD")
+    ) ?? [];
   const userDateOffs: string[] = userDateOffData?.data ?? [];
   const center = centerData?.data;
 
@@ -78,23 +112,36 @@ export default function ApplicationForm({
     const selectedDate = new Date(selected);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const diffDays = Math.floor((selectedDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
+    const diffDays = Math.floor(
+      (selectedDate.getTime() - today.getTime()) / (1000 * 3600 * 24)
+    );
 
     if (selectedDate < today) return "Cannot select a past date.";
     if (diffDays < 2) return "You must apply at least 2 days in advance.";
     if (diffDays > 31) return "You cannot apply more than 1 month ahead.";
-    if (blockedDates.includes(selected)) return "This date is blocked (center closed).";
-    if (userDateOffs.includes(selected)) return "You have already requested leave on this date.";
+    if (blockedDates.includes(selected))
+      return "This date is blocked (center closed).";
+    if (userDateOffs.includes(selected))
+      return "You have already requested leave on this date.";
 
     if (center) {
       const dayOfWeek = selectedDate.toLocaleDateString("en-US", {
         weekday: "long",
       });
-      const workDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const workDays = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
       const startIndex = workDays.indexOf(center.workStartDay);
       const endIndex = workDays.indexOf(center.workEndDay);
       const allowedDays = workDays.slice(startIndex, endIndex + 1);
-      if (!allowedDays.includes(dayOfWeek)) return "This date is outside of working days.";
+      if (!allowedDays.includes(dayOfWeek))
+        return "This date is outside of working days.";
     }
 
     return null;
@@ -108,7 +155,10 @@ export default function ApplicationForm({
     if (msg) {
       setDateMessage(msg);
       setLocalStatus("error");
-      onError?.(msg);
+      notification.warning({
+        message: "Invalid Date",
+        description: msg,
+      });
       return;
     }
 
@@ -171,7 +221,7 @@ export default function ApplicationForm({
           blockedDates={blockedDates}
           userDateOffs={userDateOffs}
           center={center}
-          error={dateMessage} // truyền lỗi vào DatePicker
+          error={dateMessage}
         />
         {dateMessage && <ErrorText>{dateMessage}</ErrorText>}
       </Field>
@@ -203,7 +253,8 @@ export default function ApplicationForm({
               "undo redo | formatselect | " +
               "bold italic underline | bullist numlist outdent indent | " +
               "removeformat | help",
-            content_style: "body { font-family:Outfit,sans-serif; font-size:15px; line-height:1.6; }",
+            content_style:
+              "body { font-family:Outfit,sans-serif; font-size:15px; line-height:1.6; }",
           }}
           onEditorChange={(newValue) => setReason(newValue)}
         />
@@ -234,8 +285,12 @@ export default function ApplicationForm({
         />
       </div>
 
-      {localStatus === "success" && <SuccessText>Leave application submitted successfully!</SuccessText>}
-      {localStatus === "error" && <ErrorText>Failed to send. Please try again.</ErrorText>}
+      {localStatus === "success" && (
+        <SuccessText>Leave application submitted successfully!</SuccessText>
+      )}
+      {localStatus === "error" && (
+        <ErrorText>Failed to send. Please try again.</ErrorText>
+      )}
     </FormContainer>
   );
 }

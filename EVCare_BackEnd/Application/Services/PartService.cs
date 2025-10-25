@@ -31,8 +31,9 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         public PartService(
-            IPartRepository partRepository,IPartCategoryRepository partCategoryRepository, IMapper mapper
-            , IPartHistoryRepository partHistoryRepository, IAccountRepository accountRepository,IUnitOfWork unitOfWork) {
+            IPartRepository partRepository, IPartCategoryRepository partCategoryRepository, IMapper mapper
+            , IPartHistoryRepository partHistoryRepository, IAccountRepository accountRepository, IUnitOfWork unitOfWork)
+        {
             _partRepository = partRepository;
             _partCategoryRepository = partCategoryRepository;
             _mapper = mapper;
@@ -41,13 +42,14 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<int> CreateAPart(PartCreateModel model,int accountId)
+        public async Task<int> CreateAPart(PartCreateModel model, int accountId)
         {
             int id = 0;
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var category = await _partCategoryRepository.GetByIdAsync(model.CategoryId);
-                if (category == null) {
+                if (category == null)
+                {
                     throw new Exception("Category not found");
                 }
                 var part = _mapper.Map<DataAccess.Entities.Part>(model);
@@ -61,49 +63,51 @@ namespace Application.Services
                 id = part.Id;
             });
             return id;
-           
+
         }
 
-        public async Task DeleteAPart(int id,int accountId)
+        public async Task DeleteAPart(int id, int accountId)
         {
 
-           await _unitOfWork.ExecuteInTransactionAsync(async () =>
-            {
-                var part = await _partRepository.GetByIdAsync(id);
-                if(part == null)
-                {
-                    throw new Exception("Part not found");
-                }
-                if (part.Deleted_At != DateTime.MinValue)
-                {
-                    throw new Exception("Part has been deleted");
-                }
-                part.Deleted_At = DateTime.Now;
-                await _partRepository.UpdateAsync(part);
-                var account = await _accountRepository.GetByIdAsync(accountId);
-                var partHistory = new PartHistory
-                {
-                    PartId = part.Id,
-                    OldQuantity = part.Stock,
-                    NewQuantity = part.Stock,
-                    OldUnitPrice = part.Price,
-                    NewUnitPrice = part.Price,
-                    OldReplacePrice = part.ReplacementPrice,
-                    NewReplacePrice = part.ReplacementPrice,
-                    ActionType = DataAccess.Enums.ActionTypeEnum.Delete,
-                    ChangeDate = DateTime.Now,
-                    EmployeeName = account.First_Name + " " + account.Last_Name
-                };
-                await _partHistoryRepository.AddAsync(partHistory);
-            });
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+             {
+                 var part = await _partRepository.GetByIdAsync(id);
+                 if (part == null)
+                 {
+                     throw new Exception("Part not found");
+                 }
+                 if (part.Deleted_At != DateTime.MinValue)
+                 {
+                     throw new Exception("Part has been deleted");
+                 }
+                 part.Deleted_At = DateTime.Now;
+                 await _partRepository.UpdateAsync(part);
+                 var account = await _accountRepository.GetByIdAsync(accountId);
+                 var partHistory = new PartHistory
+                 {
+                     PartId = part.Id,
+                     OldQuantity = part.Stock,
+                     NewQuantity = part.Stock,
+                     OldUnitPrice = part.Price,
+                     NewUnitPrice = part.Price,
+                     OldReplacePrice = part.ReplacementPrice,
+                     NewReplacePrice = part.ReplacementPrice,
+                     ActionType = DataAccess.Enums.ActionTypeEnum.Delete,
+                     ChangeDate = DateTime.Now,
+                     EmployeeName = account.First_Name + " " + account.Last_Name
+                 };
+                 await _partHistoryRepository.AddAsync(partHistory);
+             });
         }
-        public async Task DetelePart(int id,int accountId)
+        public async Task DetelePart(int id, int accountId)
         {
             var part = await _partRepository.GetByIdAsync(id);
-            if (part == null) {
+            if (part == null)
+            {
                 throw new Exception("Part not found");
             }
-            if (part.Deleted_At != DateTime.MinValue) {
+            if (part.Deleted_At != DateTime.MinValue)
+            {
                 throw new Exception("Part has been deleted");
             }
             part.Deleted_At = DateTime.Now;
@@ -128,42 +132,42 @@ namespace Application.Services
 
 
         public async Task<byte[]> ExportPartAsync()
-    {
-        var parts = await _partRepository.GetAllWithCategory();
-
-        using var workbook = new XLWorkbook();
-        var ws = workbook.Worksheets.Add("Parts");
-
-        // ===== Header =====
-        string[] headers = { "Id", "Name", "Category", "Description", "Price", "Stock", "ReplacementPrice", "Image", "IsDeleted" };
-        for (int i = 0; i < headers.Length; i++)
-            ws.Cell(1, i + 1).Value = headers[i];
-
-        var header = ws.Range("A1:I1");
-        header.Style.Font.Bold = true;
-        header.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-        header.Style.Fill.BackgroundColor = XLColor.LightGreen;
-
-        ws.Column(8).Width = 20; 
-        int row = 2;
-
-        using var http = new HttpClient();
-
-        foreach (var part in parts)
         {
-            ws.Cell(row, 1).Value = part.Id;
-            ws.Cell(row, 2).Value = part.Name;
-            ws.Cell(row, 3).Value = part.Category?.Name;
-            ws.Cell(row, 4).Value = part.Description;
-            ws.Cell(row, 5).Value = part.Price;
-            ws.Cell(row, 6).Value = part.Stock;
-            ws.Cell(row, 7).Value = part.ReplacementPrice;
-            ws.Cell(row, 9).Value = (part.Deleted_At != DateTime.MinValue);
+            var parts = await _partRepository.GetAllWithCategory();
 
-            if (!string.IsNullOrEmpty(part.Image) && part.Image.StartsWith("http"))
+            using var workbook = new XLWorkbook();
+            var ws = workbook.Worksheets.Add("Parts");
+
+            // ===== Header =====
+            string[] headers = { "Id", "Name", "Category", "Description", "Price", "Stock", "ReplacementPrice", "Image", "IsDeleted" };
+            for (int i = 0; i < headers.Length; i++)
+                ws.Cell(1, i + 1).Value = headers[i];
+
+            var header = ws.Range("A1:I1");
+            header.Style.Font.Bold = true;
+            header.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            header.Style.Fill.BackgroundColor = XLColor.LightGreen;
+
+            ws.Column(8).Width = 20;
+            int row = 2;
+
+            using var http = new HttpClient();
+
+            foreach (var part in parts)
             {
-                try
+                ws.Cell(row, 1).Value = part.Id;
+                ws.Cell(row, 2).Value = part.Name;
+                ws.Cell(row, 3).Value = part.Category?.Name;
+                ws.Cell(row, 4).Value = part.Description;
+                ws.Cell(row, 5).Value = part.Price;
+                ws.Cell(row, 6).Value = part.Stock;
+                ws.Cell(row, 7).Value = part.ReplacementPrice;
+                ws.Cell(row, 9).Value = (part.Deleted_At != DateTime.MinValue);
+
+                if (!string.IsNullOrEmpty(part.Image) && part.Image.StartsWith("http"))
                 {
+                    try
+                    {
                         var imgBytes = await http.GetByteArrayAsync(part.Image);
                         using var imgStream = new MemoryStream(imgBytes);
                         var picture = ws.AddPicture(imgStream).MoveTo(ws.Cell(row, 8));
@@ -173,28 +177,28 @@ namespace Application.Services
                         double maxHeight = 60.0;
                         double scale = Math.Min(maxWidth / originalWidth, maxHeight / originalHeight);
                         picture.Scale(scale);
-                        var cellWidth = ws.Column(8).Width * 7;   
+                        var cellWidth = ws.Column(8).Width * 7;
                         var cellHeight = ws.Row(row).Height * 0.75;
 
                         double xOffset = Math.Max(0, (cellWidth - picture.Width) / 2);
                         double yOffset = Math.Max(0, (cellHeight - picture.Height) / 2);
 
-                        picture.MoveTo(ws.Cell(row,8), (int)xOffset, (int)yOffset);
+                        picture.MoveTo(ws.Cell(row, 8), (int)xOffset, (int)yOffset);
                         ws.Row(row).Height = 45;
                         ws.Column(8).Width = 20;
                     }
-                catch
-                {
-                    ws.Cell(row, 8).Value = "Image load failed";
+                    catch
+                    {
+                        ws.Cell(row, 8).Value = "Image load failed";
+                    }
                 }
-            }
-            else
-            {
-                ws.Cell(row, 8).Value = "No image";
-            }
+                else
+                {
+                    ws.Cell(row, 8).Value = "No image";
+                }
 
-            row++;
-        }
+                row++;
+            }
 
 
             ws.Columns("A:G").AdjustToContents();
@@ -205,12 +209,13 @@ namespace Application.Services
             ws.RangeUsed().Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             ws.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
-        using var ms = new MemoryStream();
-        workbook.SaveAs(ms);
-        return ms.ToArray();
-    }
+            using var ms = new MemoryStream();
+            workbook.SaveAs(ms);
+            return ms.ToArray();
+        }
 
-        public byte[] GeneratePartImportErrorFile(List<PartImportErrorModel> errors) {
+        public byte[] GeneratePartImportErrorFile(List<PartImportErrorModel> errors)
+        {
 
             using var workbook = new XLWorkbook();
             var ws = workbook.Worksheets.Add("Parts");
@@ -218,11 +223,13 @@ namespace Application.Services
                 "Name","CategoryName","Description","Price",
                 "ReplacementPrice","Stock","ErrorMessage"
                 };
-            for (int i = 0; i < headers.Length; i++) {
+            for (int i = 0; i < headers.Length; i++)
+            {
                 ws.Cell(1, i + 1).Value = headers[i];
             }
             int row = 2;
-            foreach (var error in errors) {
+            foreach (var error in errors)
+            {
                 ws.Cell(row, 1).Value = error.Name;
                 ws.Cell(row, 2).Value = error.CategoryName;
                 ws.Cell(row, 3).Value = error.Description;
@@ -245,14 +252,15 @@ namespace Application.Services
             return await _partRepository.GetAllParts(model);
         }
 
-        public async Task<byte[]> GetPartImportTemplate() {
+        public async Task<byte[]> GetPartImportTemplate()
+        {
             using var wb = new XLWorkbook();
             var ws = wb.AddWorksheet("Parts");
             string[] headers = {
                 "Name","CategoryName","Description","Price",
                 "ReplacementPrice","Stock"
                 };
-            for(int i=0;i<headers.Length;i++)
+            for (int i = 0; i < headers.Length; i++)
             {
                 ws.Cell(1, i + 1).Value = headers[i];
             }
@@ -262,7 +270,7 @@ namespace Application.Services
             ws.Cell(2, 4).Value = 650000;
             ws.Cell(2, 5).Value = 120000;
             ws.Cell(2, 6).Value = 25;
-          
+
 
             ws.Range("A1:H1").Style.Font.Bold = true;
             ws.Columns().AdjustToContents();
@@ -281,11 +289,11 @@ namespace Application.Services
 
             var category = wb.AddWorksheet("Categories");
             category.Cell(1, 1).Value = "Categories in System";
-            var categories =  await _partCategoryRepository.GetAllAsync();
+            var categories = await _partCategoryRepository.GetAllAsync();
             int r = 2;
             category.Cell(r, 1).Value = "Name";
             category.Cell(r, 1).Style.Font.Bold = true;
-            category.Cell(r,2).Value = "IsDelete";
+            category.Cell(r, 2).Value = "IsDelete";
             category.Cell(r, 2).Style.Font.Bold = true;
             foreach (var c in categories)
             {
@@ -300,7 +308,8 @@ namespace Application.Services
             return bytes;
         }
 
-        public async Task<PartImportResult> ImportPartAsync(IFormFile file, int accountId) {
+        public async Task<PartImportResult> ImportPartAsync(IFormFile file, int accountId)
+        {
             var result = new PartImportResult();
             using var stream = new MemoryStream();
             await file.CopyToAsync(stream);
@@ -319,7 +328,7 @@ namespace Application.Services
                     var price = (decimal)row.Cell(4).GetDouble();
                     var replacementPrice = (decimal)row.Cell(5).GetDouble();
                     var stock = (int)row.Cell(6).GetDouble();
-                   
+
                     errorModel.Errors = new List<string>();
                     errorModel.Name = name;
                     errorModel.CategoryName = categoryName;
@@ -343,7 +352,7 @@ namespace Application.Services
                         errorModel.Errors.Add("Category not found or has been deleted");
                     }
                     var existingPart = await _partRepository.GetByNameAsync(name);
-                    if(existingPart!= null)
+                    if (existingPart != null)
                     {
                         errorModel.Errors.Add("Part name already exists");
                     }
@@ -354,7 +363,7 @@ namespace Application.Services
                         Description = description,
                         Price = price,
                         ReplacementPrice = replacementPrice,
-                        Stock = stock,  
+                        Stock = stock,
                     };
                     if (errorModel.Errors.Count > 0)
                     {
@@ -365,16 +374,17 @@ namespace Application.Services
                 }
                 catch (Exception ex)
                 {
-                    
+
                 }
                 rowIndex++;
             }
             return result;
         }
 
-        public async Task RestoreAPart(int id, int accountId) {
+        public async Task RestoreAPart(int id, int accountId)
+        {
             var part = await _partRepository.GetByIdAsync(id);
-            if(part == null)
+            if (part == null)
             {
                 throw new Exception("Part not found");
             }
@@ -397,18 +407,20 @@ namespace Application.Services
             await _partHistoryRepository.AddAsync(partHistory);
         }
 
-        public async Task RestoreAPartSave(int id, int accountId) {
+        public async Task RestoreAPartSave(int id, int accountId)
+        {
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 await RestoreAPart(id, accountId);
             });
         }
 
-        public async Task StaffUpdateAPart(PartStaffUpdateModel model,int accountId) {
+        public async Task StaffUpdateAPart(PartStaffUpdateModel model, int accountId)
+        {
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var part = await _partRepository.GetByIdAsync(model.Id);
-                if(part == null)
+                if (part == null)
                 {
                     throw new Exception("Part not found");
                 }
@@ -419,6 +431,7 @@ namespace Application.Services
                 var account = await _accountRepository.GetByIdAsync(accountId);
                 var partHistory = new PartHistory
                 {
+
                    PartId = part.Id,
                    OldQuantity = part.Stock,
                    NewQuantity = model.Stock,
@@ -430,6 +443,7 @@ namespace Application.Services
                    ChangeDate = DateTime.Now,
                    EmployeeName = account.First_Name + " " + account.Last_Name
 
+
                 };
                 _mapper.Map(model, part);
                 await _partRepository.UpdateAsync(part);
@@ -439,6 +453,7 @@ namespace Application.Services
 
         public async Task UpdateAPart(int id, PartAdminUpdateModel model,int accountId)
         {
+
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var part = await _partRepository.GetByIdAsync(id);
@@ -466,8 +481,9 @@ namespace Application.Services
 
             });
            
+
         }
 
-      
+
     }
 }

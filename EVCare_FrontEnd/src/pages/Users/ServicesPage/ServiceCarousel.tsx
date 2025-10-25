@@ -1,8 +1,11 @@
-import banner from "../../../assets/banner.png";
 import { Carousel, Card } from "antd";
 import styled from "styled-components";
 import { useGetAllCategory } from "../../../services/serviceServicesApi";
 import type { ServiceCategoryViewModel } from "../../../models/ServicesModel/ServiceCategoryViewModel";
+import { glassEffect } from "../../../components/styles/mixins";
+import { useEffect, useRef } from "react";
+import type { CarouselRef } from "antd/es/carousel";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 const Container = styled.div`
   .container {
@@ -12,23 +15,8 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
   overflow: hidden;
   margin-bottom: 2%;
-`;
-
-const BackgroundImage = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url(${banner});
-  background-size: cover;
-  background-position: center;
-  filter: blur(15px);
-  transform: scale(1.1);
-  z-index: 0;
 `;
 
 const Overlay = styled.div`
@@ -37,7 +25,6 @@ const Overlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
   z-index: 1;
 `;
 
@@ -46,15 +33,6 @@ const Content = styled.div`
   z-index: 2;
   width: 100%;
   max-width: 1200px;
-`;
-
-const Title = styled.h1`
-  text-align: center;
-  color: white;
-  font-size: clamp(28px, 5vw, 48px);
-  margin-bottom: 40px;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
 const StyledCarousel = styled(Carousel)`
@@ -69,8 +47,8 @@ const StyledCarousel = styled(Carousel)`
     transform: scale(1);
     z-index: 2;
     h3 {
-      color: #00ad4e;
-      text-shadow: 1px 1px #989898, 1px 1px #6c6666;
+      color: rgba(219, 251, 213, 0.85);
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
     }
   }
 
@@ -90,11 +68,10 @@ const CardWrapper = styled.div`
 `;
 
 const StyledCard = styled(Card)`
-  background: rgba(255, 255, 255, 0.95) !important;
+  ${glassEffect}
   backdrop-filter: blur(10px);
   border-radius: 16px !important;
   border: none !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
   height: 150px;
   display: flex;
   flex-direction: column;
@@ -102,11 +79,6 @@ const StyledCard = styled(Card)`
   justify-content: center;
   transition: all 0.3s ease !important;
   margin: 0 auto;
-
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
-  }
 
   .ant-card-body {
     width: 100%;
@@ -120,23 +92,29 @@ const StyledCard = styled(Card)`
 
 const ServiceName = styled.h3`
   font-family: "Outfit", sans-serif;
-  font-size: clamp(20px, 3vw, 24px);
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 800;
   color: #333;
   text-align: center;
   margin: 0;
 `;
 
 const ServiceCarousel = () => {
-  const { data } = useGetAllCategory();
+  const { data, isLoading } = useGetAllCategory();
+  const carouselRef = useRef<CarouselRef>(null);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      carouselRef.current?.goTo(0);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+  if (isLoading || !data?.data?.length) {
+    return <SpinnerComponent />;
+  }
   return (
     <Container>
-      <BackgroundImage />
       <Overlay />
-
       <Content>
-        <Title>Our Service Categories</Title>
-
         <StyledCarousel
           autoplay
           autoplaySpeed={1500}

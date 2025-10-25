@@ -30,7 +30,7 @@ namespace DataAccess.Repositories
                     Email = x.Account.Email,
                     PhoneNumber = x.Account.Phone,
                     Address = x.Address,
-                    Vehicles = x.Vehicles.Select(v => new Dtos.Vehicle.VehicleViewModel
+                    Vehicles = x.Vehicles.Where(x => x.Deleted_At == DateTime.MinValue).Select(v => new Dtos.Vehicle.VehicleViewModel
                     {
                         CategoryName = v.Category.Name,
                         LicensePlate = v.LicensePlate,

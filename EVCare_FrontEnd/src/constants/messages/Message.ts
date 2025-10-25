@@ -28,6 +28,9 @@ export const ERROR_MESSAGE = {
   FAILED_TO_BANNED_ACCOUNT: "Failed to ban this account",
   FAILED_TO_ADD_EMPLOYEE: "Failed to add employee",
   OLD_PASSWORD_INCORRECT: "Old password is incorrect.",
+  FAILED_TO_GET_TECHNICIANS: "Failed to get technicians by orderId",
+  FAILED_TO_UPDATE_PART: "Failed to update Part!",
+  FAILED_TO_DELETE_PART: "Failed while deleting Part",
 };
 
 export const MSG_TITLE = {
@@ -74,4 +77,7 @@ export const LIST_APPOINTMENTS_MESSAGE = {
 
 export const APPOINTMENT_MESSAGE = {
   APPOINTMENT_DOES_NOT_EXIST: "Appointment does not exist!",
+  APPOINTMENT_CHECKIN_SUCCESS: "Appointment is checked in successfully",
+  APPOINTMENT_CANCEL_SUCCESS: "Appointment is cancelled successfully",
+  APPOINTMENT_CANCEL_FAIL: "Failed to cancel this appointment",
 };
