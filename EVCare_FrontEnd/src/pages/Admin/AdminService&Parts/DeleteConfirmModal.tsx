@@ -1,25 +1,25 @@
 import React from "react";
 import { AnimatePresence } from "framer-motion";
+import { FaExclamationTriangle, FaTimes } from "react-icons/fa";
 import {
   ModalBackdrop,
+  ModalBody,
+  ModalButton,
+  ModalCloseButton,
   ModalContainer,
+  ModalFooter,
   ModalHeader,
   ModalTitle,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  ModalButton,
-} from "./Admin_ManageEmployee.styled";
-import { FaExclamationTriangle, FaTimes } from "react-icons/fa";
+} from "./DeleteConfirmModal.style";
 
 interface Props {
   isOpen: boolean;
-  employeeName?: string;
+  partName?: string;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-const BanModal: React.FC<Props> = ({ isOpen, employeeName, onClose, onConfirm }) => {
+const DeleteConfirmationModal: React.FC<Props> = ({ isOpen, partName, onClose, onConfirm }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -29,11 +29,12 @@ const BanModal: React.FC<Props> = ({ isOpen, employeeName, onClose, onConfirm })
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
             transition={{ type: "spring", damping: 30, stiffness: 500 }}
+            onClick={(e) => e.stopPropagation()}
           >
             <ModalHeader>
               <ModalTitle>
                 <FaExclamationTriangle />
-                Confirm ban account
+                Confirm Delete Spare Part
               </ModalTitle>
               <ModalCloseButton onClick={onClose}>
                 <FaTimes />
@@ -41,10 +42,10 @@ const BanModal: React.FC<Props> = ({ isOpen, employeeName, onClose, onConfirm })
             </ModalHeader>
             <ModalBody>
               <p>
-                Are you sure you want to lock the employee's account
-                <strong> {employeeName || "here"}</strong>?
+                Are you sure you want to delete the widget
+                <strong> {partName || "here"}</strong>?
               </p>
-              <p>They will not be able to log into the system.</p>
+              <p>This action will permanently remove the product from the system.</p>
             </ModalBody>
             <ModalFooter>
               <ModalButton $isConfirm={false} onClick={onClose}>
@@ -61,4 +62,4 @@ const BanModal: React.FC<Props> = ({ isOpen, employeeName, onClose, onConfirm })
   );
 };
 
-export default BanModal;
+export default DeleteConfirmationModal;
