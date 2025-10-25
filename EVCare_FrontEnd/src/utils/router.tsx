@@ -39,6 +39,7 @@ import AddEmployee from "../pages/Admin/AdminManageEmployee/AdminAddEmployee/Add
 import { ChatPage } from "../pages/Customer/Chat/ChatPage.tsx";
 import PolicyPage from "../pages/Users/PolicyPage/Policy.tsx";
 import Admin_Part from "../pages/Admin/AdminService&Parts/AdminPart/Admin_Part.tsx";
+import Admin_Service from "../pages/Admin/AdminService&Parts/AdminService/Admin_Service.tsx";
 
 const router = createBrowserRouter([
   {
@@ -113,6 +114,7 @@ const router = createBrowserRouter([
       { path: "manage-employees", element: <Admin_Manage_Employee /> },
       { path: "add-employee", element: <AddEmployee /> },
       { path: "manage-parts", element: <Admin_Part /> },
+      { path: "manage-services", element: <Admin_Service /> },
     ],
   },
   // STAFF ROUTES

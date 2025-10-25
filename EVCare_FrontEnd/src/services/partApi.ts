@@ -54,9 +54,10 @@ export async function createPart(data: NewPartDto) {
 
 export async function updatePart(id: number, data: PartDetailDto) {
   try {
-    await api.put("/api/Part", {
-      id,
-      data,
+    await api.put("/api/Part", data, {
+      params: {
+        id: id,
+      },
     });
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -67,9 +68,9 @@ export async function updatePart(id: number, data: PartDetailDto) {
   }
 }
 
-export async function deletePart(data: PartDetailDto) {
+export async function deletePart(data: number) {
   try {
-    await api.put("/api/Part", data);
+    await api.delete(`/api/Part/${data}`);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errMsg = error.response?.data.message || error.message;
