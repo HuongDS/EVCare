@@ -29,6 +29,8 @@ export const ERROR_MESSAGE = {
   FAILED_TO_ADD_EMPLOYEE: "Failed to add employee",
   OLD_PASSWORD_INCORRECT: "Old password is incorrect.",
   FAILED_TO_GET_TECHNICIANS: "Failed to get technicians by orderId",
+  FAILED_TO_UPDATE_PART: "Failed to update Part!",
+  FAILED_TO_DELETE_PART: "Failed while deleting Part",
 };
 
 export const MSG_TITLE = {

@@ -84,7 +84,7 @@ export default function Admin_Customer_Vehicle() {
           <Instruction>Manage all your customers. Click on a customer's row to see their vehicle details.</Instruction>
         </Header>
 
-        <SearchBar search={search} onSearchChange={setSearch} />
+        <SearchBar search={search} onSearchChange={setSearch} placeHolder="Search by name, email, or phone number..." />
 
         <CustomerTable customers={data} onBanCustomer={handleBan} />
 
