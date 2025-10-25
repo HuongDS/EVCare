@@ -10,5 +10,6 @@ namespace Application.Interfaces
     public interface IVehicleCategoryService
     {
         Task<IEnumerable<VehicleCategoryViewModel>> GetAllActiveCategoriesAsync();
+        Task<VehicleCategoryViewPartModel> GetCategoryDetailAsync(int id);
     }
 }

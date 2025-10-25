@@ -457,6 +457,7 @@ namespace Application.Services
             }
             part = _mapper.Map(model, part);
             await _partRepository.UpdateAsync(part);
+            await _partRepository.SaveChangesAsync();
         }
 
 

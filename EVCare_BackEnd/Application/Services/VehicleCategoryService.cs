@@ -26,5 +26,8 @@ namespace Application.Services
 
         }
 
+        public Task<VehicleCategoryViewPartModel> GetCategoryDetailAsync(int id) {
+            throw new NotImplementedException();
+        }
     }
 }
