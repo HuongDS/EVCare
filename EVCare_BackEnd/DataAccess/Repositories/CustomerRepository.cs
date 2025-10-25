@@ -21,6 +21,7 @@ namespace DataAccess.Repositories
         public async Task<PageResultDto<CustomerViewModel>> GetAllCustomers(CustomerQueryDto model)
         {
             var query = _dbContext.Customers.AsNoTracking()
+                .Include(x=>x.Account)
                 .Select(x => new CustomerViewModel
                 {
                     AccountId = x.AccountId,
