@@ -20,26 +20,27 @@ namespace DataAccess.Repositories
 
         public async Task<PageResultDto<ApplicationAdminViewDto>> GetAllApplicationsAsync(ApplicationQueryDto model)
         {
-            var query =  _dbContext.Applications.AsNoTracking()
+            var query = _dbContext.Applications.AsNoTracking()
                 .Select(a => new ApplicationAdminViewDto
                 {
                     Id = a.Id,
                     CreatedAt = a.Create_At,
                     DateOff = a.DateOff,
-                    EmployeeName = a.Employee.Account.First_Name +" " + a.Employee.Account.Last_Name,
+                    EmployeeName = a.Employee.Account.First_Name + " " + a.Employee.Account.Last_Name,
                     Reason = a.Reason,
                     Status = a.Status,
-                    Note = a.Note
+                    Note = a.Note,
+                    EmployeeId = a.EmployeeId
 
                 })
-                .Where(x=>DateOnly.FromDateTime(x.DateOff)>=model.FromDate && DateOnly.FromDateTime(x.DateOff)<=model.ToDate);
+                .Where(x => DateOnly.FromDateTime(x.DateOff) >= model.FromDate && DateOnly.FromDateTime(x.DateOff) <= model.ToDate);
 
             if (model.Status.HasValue) query = query.Where(a => a.Status == model.Status);
-            if(!string.IsNullOrEmpty(model.Keyword))
+            if (!string.IsNullOrEmpty(model.Keyword))
             {
                 query = query.Where(a => a.EmployeeName.Contains(model.Keyword));
             }
-           
+
             query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
 
@@ -58,12 +59,12 @@ namespace DataAccess.Repositories
                 .Select(a => new ApplicationViewDto
                 {
                     createdAt = a.Create_At,
-                    dateOff = a.DateOff,   
+                    dateOff = a.DateOff,
                     Status = a.Status,
                     note = a.Note,
                     reason = a.Reason,
                 });
-            if(model.Status.HasValue)
+            if (model.Status.HasValue)
             {
                 query = query.Where(a => a.Status == model.Status);
             }
@@ -91,7 +92,7 @@ namespace DataAccess.Repositories
         public async Task<List<DateOnly>> GetDateoff(int employeeId)
         {
             return await _dbContext.Applications.AsNoTracking()
-                .Where(a => a.EmployeeId == employeeId && DateTime.Now<=a.DateOff)
+                .Where(a => a.EmployeeId == employeeId && DateTime.Now <= a.DateOff)
                 .Select(a => DateOnly.FromDateTime(a.DateOff))
                 .ToListAsync();
         }

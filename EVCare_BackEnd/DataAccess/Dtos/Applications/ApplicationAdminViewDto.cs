@@ -11,15 +11,16 @@ namespace DataAccess.Dtos.Applications
     {
         public int Id
         {
-        get; set;
+            get; set;
         }
 
         public string EmployeeName { get; set; }
         public DateTime DateOff { get; set; }
         public string Reason { get; set; }
-        public  ApplicationStatusEnum Status { get; set; }  
-        
+        public ApplicationStatusEnum Status { get; set; }
+
         public string Note { get; set; }
         public DateTime CreatedAt { get; set; }
+        public int EmployeeId { get; set; }
     }
 }
