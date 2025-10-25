@@ -13,6 +13,8 @@ using Application.Infrastructures;
 using Application.Interfaces;
 using Application.Parttern;
 using Azure;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Core;
 using DataAccess.Dtos.Accounts;
 using DataAccess.Dtos.Customers;
 using DataAccess.Dtos.Employees;
@@ -77,6 +79,10 @@ namespace Application.Services
         {
             var checkEmailExist = await _accountRepository.GetAccountByEmail(data.email);
             var checkPhoneExist = await _accountRepository.GetAccountByPhoneAsync(data.phone);
+            if (checkEmailExist.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
+            }
             if (checkEmailExist != null)
             {
                 throw new Exception(Message.EMAIL_EXISTS);
@@ -120,7 +126,7 @@ namespace Application.Services
                 throw new Exception(ex.Message);
             }
             var hashPassword = BCrypt.Net.BCrypt.HashPassword(data.password);
-            var newAccount = new Account
+            var newAccount = new DataAccess.Entities.Account
             {
                 Email = data.email,
                 Phone = data.phone,
@@ -148,9 +154,36 @@ namespace Application.Services
             };
             await _customerRepository.AddAsync(newCustomer);
         }
-        public async Task RegisterEmployeeOrTechnicianAsync(EmployeeRegisterDto data)
+        public async Task<int> RegisterEmployeeOrTechnicianAsync(EmployeeRegisterDto data)
         {
-            var newAccount = new Account
+            var checkEmailExist = await _accountRepository.GetAccountByEmail(data.accountInfo.email);
+            var checkPhoneExist = await _accountRepository.GetAccountByPhoneAsync(data.accountInfo.phone);
+            if (checkEmailExist.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
+            }
+            if (checkEmailExist != null)
+            {
+                throw new Exception(Message.EMAIL_EXISTS);
+            }
+            if (checkPhoneExist != null)
+            {
+                throw new Exception(Message.PHONE_EXISTS);
+            }
+            if (!Regex.IsMatch(data.accountInfo.email, RegexPartterns.EMAIL_PATTERN))
+            {
+                throw new Exception(Message.INVALID_EMAIL);
+            }
+            if (!Regex.IsMatch(data.accountInfo.phone, RegexPartterns.PHONE_NUMBER_PATTERN))
+            {
+                throw new Exception(Message.INVALID_PHONE);
+            }
+            if (!Regex.IsMatch(data.accountInfo.password, RegexPartterns.PASSWORD_PATTERN))
+            {
+                throw new Exception(Message.WEAK_PASSWORD);
+            }
+            var newIdReturned = 0;
+            var newAccount = new DataAccess.Entities.Account
             {
                 Email = data.accountInfo.email,
                 Phone = data.accountInfo.phone,
@@ -172,7 +205,8 @@ namespace Application.Services
                 Updated_At = DateTime.UtcNow,
                 Avatar = data.avatar,
             };
-            await _employeeRepository.AddAsync(newEmployee);
+            var tmp = await _employeeRepository.AddAsync(newEmployee);
+            newIdReturned = tmp.Id;
             if (data.role == RoleEnum.Technician)
             {
                 var employee = await _employeeRepository.GetEmployeeByAccountId(newAccount.Id);
@@ -182,9 +216,12 @@ namespace Application.Services
                     ExpYear = data.expYear,
                     Created_At = DateTime.UtcNow,
                 };
-                await _technicianRepository.AddAsync(newTechnician);
+                var tmp02 = await _technicianRepository.AddAsync(newTechnician);
+                newIdReturned = tmp02.Id;
+                tmp.TechnicianId = newIdReturned;
+                await _employeeRepository.UpdateAsync(tmp);
             };
-
+            return newIdReturned;
         }
         public async Task<ResponseDto<LoginResponseDto>> LoginAsync(LoginRequestDto data, HttpContext context)
         {
@@ -193,16 +230,14 @@ namespace Application.Services
             {
                 throw new Exception(Message.ACCOUNT_NOT_FOUND);
             }
-
-            if (!BCrypt.Net.BCrypt.Verify(data.password, account.Hash_Password))
-            {
-                throw new Exception(Message.LOGIN_FAILED);
-            }
             if (account.Deleted_At != DateTime.MinValue)
             {
                 throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
             }
-
+            if (!BCrypt.Net.BCrypt.Verify(data.password, account.Hash_Password))
+            {
+                throw new Exception(Message.LOGIN_FAILED);
+            }
             return await GenerateTokenAsync(account, new ResponseDto<LoginResponseDto>(), context);
         }
         public async Task<ResponseDto<LoginResponseDto>> LoginGoogleAsync(string idToken, HttpContext context)
@@ -218,11 +253,15 @@ namespace Application.Services
             var last_name = payload.FamilyName;
 
             var account = await _accountRepository.GetAccountByEmail(email);
+            if (account.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
+            }
             if (account is null)
             {
                 var defaultPassword = _configuration["DefaultPassword:Google"] ?? "12345678@sa";
                 var hashPassword = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
-                var newAccount = new Account
+                var newAccount = new DataAccess.Entities.Account
                 {
                     Email = email,
                     Hash_Password = hashPassword,
@@ -243,7 +282,7 @@ namespace Application.Services
             return await GenerateTokenAsync(account, new ResponseDto<LoginResponseDto>(), context);
 
         }
-        public async Task<ResponseDto<LoginResponseDto>> GenerateTokenAsync(Account account, ResponseDto<LoginResponseDto> response, HttpContext context)
+        public async Task<ResponseDto<LoginResponseDto>> GenerateTokenAsync(DataAccess.Entities.Account account, ResponseDto<LoginResponseDto> response, HttpContext context)
         {
             await _refreshTokenRepository.RevokeAllAsyncByAccountId(account.Id);
 
@@ -318,7 +357,10 @@ namespace Application.Services
             {
                 throw new Exception(Message.ACCOUNT_NOT_FOUND);
             }
-
+            if (account.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
+            }
             refreshToken.IsRevoked = true;
             var newRefresh = _tokenServices.GenerateRefreshToken();
             var newRefreshHash = _tokenServices.HashToken(newRefresh);
@@ -357,6 +399,10 @@ namespace Application.Services
             if (account is null)
             {
                 throw new Exception(Message.ACCOUNT_NOT_FOUND);
+            }
+            if (account.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
             }
             if (!Regex.IsMatch(data.newPassword, RegexPartterns.PASSWORD_PATTERN))
             {

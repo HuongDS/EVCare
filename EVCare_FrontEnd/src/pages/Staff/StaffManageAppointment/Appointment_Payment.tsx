@@ -212,7 +212,6 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
             {paymentMethod === "PayOs" && (
               <QRSection>
                 {isPending ? <SpinnerComponent /> : <iframe src={qrcode} />}
-                {/* <CountdownTimer onTimeUp={handleGetQRCode} /> */}
                 <QRInfo>
                   <p>Scan QR code to complete payment</p>
                   <AmountTag>Amount: {formatCurrency(calculateTotal())}</AmountTag>

@@ -123,7 +123,7 @@ namespace DataAccess.Repositories
                     AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone,
-                    
+
                 }).Where(x => x.CustomerName.Contains(customername));
 
             return await PaginationHelper.PaginationAsync(query, payload, pageindex);
@@ -149,7 +149,7 @@ namespace DataAccess.Repositories
                     VehiclePlateNumber = a.Vehicle.LicensePlate,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     CustomerEmail = a.Customer.Account.Email,
-                    CustomerPhone = a.Customer.Account.Phone,
+                    PhoneNumber = a.Customer.Account.Phone,
                     EmployeeName = a.Employee != null
                         ? a.Employee.Account.First_Name + " " + a.Employee.Account.Last_Name
                         : null,
@@ -304,7 +304,6 @@ namespace DataAccess.Repositories
 
         //}
         public async Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model) {
-
             var baseQuery = _dbSet
                 .AsNoTracking()
                 .Include(a=>a.Customer).ThenInclude(a=>a.Account)
@@ -383,14 +382,14 @@ namespace DataAccess.Repositories
                 })
                 .ToListAsync();
 
-          
+
             var orderedAppointments = appointmentIds
                 .Select(id => appointments.FirstOrDefault(a => a.Id == id))
                 .Where(a => a != null)
     
                 .ToList();
 
-          
+
             return new PageResultDto<AppointmentViewModel>(
                 orderedAppointments,
                 pagedResult.TotalItems,
@@ -530,12 +529,12 @@ namespace DataAccess.Repositories
         }
         public async Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model)
         {
-            var query =  _dbContext.Appointments.AsNoTracking()
+            var query = _dbContext.Appointments.AsNoTracking()
                 .Where(x => x.Status == AppointmentStatusEnum.InProgress)
                 .Select(x => new AppointmentInProgressUnderstaffedViewModel
                 {
                     AppointmentDate = x.Appointment_Date,
-                    CustomerName = x.Customer.Account.First_Name+" " + x.Customer.Account.First_Name,
+                    CustomerName = x.Customer.Account.First_Name + " " + x.Customer.Account.First_Name,
                     CustomerPhone = x.Customer.Account.Phone,
                     Id = x.Id,
                     CustomerEmail = x.Customer.Account.Email,
@@ -546,7 +545,7 @@ namespace DataAccess.Repositories
                     }).ToList(),
                     VehicleName = x.Vehicle.Category.Name,
                     VehiclePlateNumber = x.Vehicle.LicensePlate,
-                    Technicians= x.Order.TechnicianWorkingSessions
+                    Technicians = x.Order.TechnicianWorkingSessions
                                 .Select(t => new TechnicianViewModel
                                 {
                                     Id = t.TechnicianId,
@@ -554,7 +553,7 @@ namespace DataAccess.Repositories
                                     FullName = t.Technician.Employee.Account.First_Name + " " + t.Technician.Employee.Account.Last_Name,
                                     Phone = t.Technician.Employee.Account.Phone,
                                     Skills = t.Technician.TechnicianSkills
-                                                .Select(ts =>new ServiceViewFormModel
+                                                .Select(ts => new ServiceViewFormModel
                                                 {
                                                     Id = ts.ServiceId,
                                                     Name = ts.Service.Name
@@ -564,12 +563,12 @@ namespace DataAccess.Repositories
                                 }).ToList()
 
                 })
-                .Where(x=>x.Technicians.Any(x=>x.Status == EmployeeStatusEnum.OnLeave))
+                .Where(x => x.Technicians.Any(x => x.Status == EmployeeStatusEnum.OnLeave))
                 .ApplySorting(model.SortField, model.SortOrder)
                 ;
-           return await PaginationHelper.PaginationAsync(query,model.PageSize.Value,model.PageIndex.Value);
-          }
-          
+            return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+        }
+
         public async Task<int> CountAppointmentsInMonth(int year, int month)
         {
             var startDate = new DateTime(year, month, 1);
@@ -588,9 +587,9 @@ namespace DataAccess.Repositories
             var endDate = startDate.AddMonths(1);
             return await _dbContext
             .Appointments
-            .Where(a => a.Status != AppointmentStatusEnum.Pending 
+            .Where(a => a.Status != AppointmentStatusEnum.Pending
             && a.Status != AppointmentStatusEnum.Canceled
-            && a.Appointment_Date >= startDate 
+            && a.Appointment_Date >= startDate
             && a.Appointment_Date <= endDate)
             .GroupBy(a => a.CustomerId)
             .CountAsync();

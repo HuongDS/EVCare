@@ -25,8 +25,8 @@ namespace DataAccess.Repositories
         {
             //var vnTime = DateTime.UtcNow.AddHours(7);
 
-            await _dbContext.Accounts.Where(x=>x.Id == accountId)
-                .ExecuteUpdateAsync(x=>x.SetProperty(p=>p.Deleted_At, p=>DateTime.UtcNow));
+            await _dbContext.Accounts.Where(x => x.Id == accountId)
+                .ExecuteUpdateAsync(x => x.SetProperty(p => p.Deleted_At, p => DateTime.UtcNow));
         }
 
         public async Task<Account?> GetAccountByEmail(string email)
@@ -36,7 +36,7 @@ namespace DataAccess.Repositories
         }
         public async Task<Account?> GetAccountByPhoneAsync(string phone)
         {
-            var entity = await _dbSet.FirstOrDefaultAsync(e => e.Phone.Equals(phone));
+            var entity = await _dbSet.FirstOrDefaultAsync(e => e.Phone.Equals(phone) && e.Deleted_At == DateTime.MinValue);
             return entity;
         }
     }

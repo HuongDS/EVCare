@@ -3,19 +3,11 @@ import { handleError } from "../utils/errorHandler";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import { api } from "../api/api";
 import type { ResponseDto } from "../models/AuthModel/authModel";
-import type { PageResultDto } from "../models/PageResult/PageResultDto";
 import type { EmployeeSkillCategoryViewModel } from "../models/Employee/EmployeeSkillCategoryViewModel";
 
-export async function getTechnicianCategories(search: string) {
+export async function getTechnicianCategories() {
   try {
-    const response = await api.get<ResponseDto<PageResultDto<EmployeeSkillCategoryViewModel>>>(
-      "/api/TechnicianCategory",
-      {
-        params: {
-          search: search,
-        },
-      }
-    );
+    const response = await api.get<ResponseDto<EmployeeSkillCategoryViewModel[]>>("/api/ServiceCategory");
     return response.data;
   } catch (error) {
     handleError(error);

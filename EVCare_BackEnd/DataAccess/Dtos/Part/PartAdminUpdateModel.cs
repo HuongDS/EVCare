@@ -33,7 +33,7 @@ namespace DataAccess.Dtos.Part
             get;
             set;
         }
-        public string Image
+        public string ImageUrl
         {
             get;
             set;

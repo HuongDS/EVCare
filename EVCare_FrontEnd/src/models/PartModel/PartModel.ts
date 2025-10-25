@@ -1,0 +1,25 @@
+export type PartDetailDto = {
+  id: number;
+  name: string;
+  quantity: number;
+  description: string;
+  replacementPrice: number;
+  price: number;
+  categoryId: number;
+  isDeleted: boolean;
+  imageUrl: string;
+};
+
+export type GetPartParams = {
+  partName?: string;
+  categoryId?: number;
+  pageSize?: number;
+  pageIndex?: number;
+};
+
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+  isDeleted: boolean;
+}

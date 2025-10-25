@@ -14,7 +14,6 @@ import {
   ShoppingOutlined,
   SolutionOutlined,
   TeamOutlined,
-  UserAddOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -22,6 +21,7 @@ import { deleteToken, logout } from "../../services/authService";
 import { useNavigate } from "react-router";
 import { useAppDispatch } from "../../states/store";
 import { logoutRedux } from "../../states/authSlice";
+import { ToolCase } from "lucide-react";
 
 interface MenuItem {
   key: string;
@@ -68,9 +68,9 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "6",
-      icon: <UserAddOutlined />,
-      label: "Add Employee",
-      route: "/admin/add-employee",
+      icon: <ToolCase />,
+      label: "Manage Parts",
+      route: "/admin/manage-parts",
     },
     {
       key: "7",

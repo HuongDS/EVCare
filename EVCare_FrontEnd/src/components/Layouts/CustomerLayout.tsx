@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import styled from "styled-components";
+import Authentication from "../../pages/Shared/Auth/Authentication";
 
 const Container = styled.div`
   display: flex;
@@ -15,6 +16,7 @@ export default function Layout() {
   return (
     <Container>
       <Header />
+      <Authentication />
       <Main>
         <Outlet />
       </Main>
