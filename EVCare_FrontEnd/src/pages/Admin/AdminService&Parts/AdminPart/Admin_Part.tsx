@@ -87,7 +87,12 @@ export default function Admin_Part() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const partsData = await getAllParts02({ PartName: search.trim(), PageSize: pageSize, PageIndex: pageIndex });
+        let partsData = null;
+        if (search.trim().length > 0) {
+          partsData = await getAllParts02({ PartName: search.trim(), PageSize: pageSize, PageIndex: pageIndex });
+        } else {
+          partsData = await getAllParts02({ PageSize: pageSize, PageIndex: pageIndex });
+        }
         setParts(partsData.items);
         setTotalPages(partsData.totalPages);
         setTotalItems(partsData.totalItems);
@@ -147,6 +152,9 @@ export default function Admin_Part() {
     }
     try {
       const payload: NewPartDto = { ...newPart, image: imageUrl };
+      if (payload.price === 0 || payload.replacementPrice === 0 || payload.stock === 0) {
+        throw new Error("Price, Replacement Price or Stock must be greater than 0 when you adding !");
+      }
       const response = await createPart(payload);
       setParts((prev) => [
         ...prev,
@@ -154,7 +162,7 @@ export default function Admin_Part() {
           id: response.data,
           name: payload.name,
           quantity: payload.stock,
-          description: payload.description,
+          description: payload.description ?? "",
           replacementPrice: payload.replacementPrice,
           price: payload.price,
           categoryId: payload.categoryId,
@@ -181,7 +189,7 @@ export default function Admin_Part() {
     } catch (error) {
       notification.error({
         message: "Add Part",
-        description: "Failed to add product.",
+        description: (error as Error).message,
       });
     }
   };
@@ -200,7 +208,7 @@ export default function Admin_Part() {
     setDeleteModal({ isOpen: false });
 
     try {
-      await deletePart(partToDelete);
+      await deletePart(partToDelete.id);
       setParts((prev) => prev.filter((p) => p.id !== partToDelete.id));
       notification.info({
         message: "Delete Part",
@@ -221,6 +229,9 @@ export default function Admin_Part() {
 
   const handleUpdateSubmit = async (id: number, payload: PartDetailDto) => {
     try {
+      if (payload.price === 0 || payload.replacementPrice === 0 || payload.quantity === 0) {
+        throw new Error("Price, Replacement Price or Quantity must be greater than 0 when you updating !");
+      }
       await updatePart(id, payload);
       notification.success({ message: "Update Part", description: "Update successfully!" });
       setParts((prevParts) =>
@@ -296,7 +307,7 @@ export default function Admin_Part() {
                       </Tr>
                     </thead>
                     <tbody>
-                      {!isLoading ? (
+                      {isLoading ? (
                         <Tr>
                           <Td colSpan={7}>
                             <EmptyState>
@@ -316,14 +327,12 @@ export default function Admin_Part() {
                             <Td>{part.replacementPrice.toLocaleString("vi-VN")} VND</Td>
                             <Td>{part.quantity}</Td>
                             <Td>
-                              <div>
-                                <ActionButton onClick={() => handleDelete(part)}>
-                                  <FaTrash /> Delete
-                                </ActionButton>
-                                <ActionButton onClick={() => handleSelectForUpdate(part)}>
-                                  <FaPencilAlt /> Edit
-                                </ActionButton>
-                              </div>
+                              <ActionButton onClick={() => handleDelete(part)}>
+                                <FaTrash />
+                              </ActionButton>
+                              <ActionButton onClick={() => handleSelectForUpdate(part)}>
+                                <FaPencilAlt />
+                              </ActionButton>
                             </Td>
                           </Tr>
                         ))
@@ -521,7 +530,7 @@ export default function Admin_Part() {
       />
       <DeleteConfirmationModal
         isOpen={deleteModal.isOpen}
-        partName={deleteModal.part?.name}
+        itemName={deleteModal.part?.name || ""}
         onClose={() => setDeleteModal({ isOpen: false })}
         onConfirm={confirmDelete}
       />
