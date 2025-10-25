@@ -21,6 +21,7 @@ import { deleteToken, logout } from "../../services/authService";
 import { useNavigate } from "react-router";
 import { useAppDispatch } from "../../states/store";
 import { logoutRedux } from "../../states/authSlice";
+import { ToolCase } from "lucide-react";
 
 interface MenuItem {
   key: string;
@@ -64,6 +65,12 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       icon: <QuestionCircleOutlined size={20} />,
       label: "Help & Information",
       route: "/admin/help",
+    },
+    {
+      key: "6",
+      icon: <ToolCase />,
+      label: "Manage Parts",
+      route: "/admin/manage-parts",
     },
     {
       key: "7",
@@ -175,9 +182,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
   useEffect(() => {
     const currentPath = window.location.pathname;
-    const foundKey = menuByRole[role].find(
-      (item) => item.route === currentPath
-    )?.key;
+    const foundKey = menuByRole[role].find((item) => item.route === currentPath)?.key;
 
     if (foundKey) {
       setSelectedKey([foundKey]);

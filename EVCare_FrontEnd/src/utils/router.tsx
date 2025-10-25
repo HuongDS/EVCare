@@ -38,6 +38,7 @@ import Admin_Manage_Employee from "../pages/Admin/AdminManageEmployee/Admin_Mana
 import AddEmployee from "../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee.tsx";
 import { ChatPage } from "../pages/Customer/Chat/ChatPage.tsx";
 import PolicyPage from "../pages/Users/PolicyPage/Policy.tsx";
+import Admin_Part from "../pages/Admin/AdminService&Parts/AdminPart/Admin_Part.tsx";
 
 const router = createBrowserRouter([
   {
@@ -78,14 +79,7 @@ const router = createBrowserRouter([
       {
         path: "account-information",
         element: (
-          <ProtectedRoute
-            allowedRoles={[
-              RoleEnum.CUSTOMER,
-              RoleEnum.ADMIN,
-              RoleEnum.TECHNICIAN,
-              RoleEnum.STAFF,
-            ]}
-          >
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER, RoleEnum.ADMIN, RoleEnum.TECHNICIAN, RoleEnum.STAFF]}>
             <UserProfilePage />
           </ProtectedRoute>
         ),
@@ -118,6 +112,7 @@ const router = createBrowserRouter([
       },
       { path: "manage-employees", element: <Admin_Manage_Employee /> },
       { path: "add-employee", element: <AddEmployee /> },
+      { path: "manage-parts", element: <Admin_Part /> },
     ],
   },
   // STAFF ROUTES
