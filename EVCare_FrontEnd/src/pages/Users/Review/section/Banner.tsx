@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import TextType from "../../../../components/TextType/TextType";
+import TextType from "../../../../components/TextAnimation/TextType";
 
 const BannerWrapper = styled.section`
   font-family: "Outfit", sans-serif;

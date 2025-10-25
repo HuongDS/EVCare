@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Amazon.S3;
+using Amazon.S3.Model;
 using Application.IService;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using DataAccess.Dtos.File;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Service
@@ -14,6 +17,9 @@ namespace Application.Service
     public class FileService : IFileService
     {
         private readonly Cloudinary _cloudinary;
+        private readonly IAmazonS3 _s3;
+        private readonly string _bucket;
+        private readonly string _publicBase;
 
         public FileService(IConfiguration config)
         {
@@ -22,7 +28,17 @@ namespace Application.Service
                 config["Cloudinary:ApiKey"],
                 config["Cloudinary:ApiSecret"]
             );
+
             _cloudinary = new Cloudinary(account);
+            var accountId = config["R2:AccountId"]!;
+            var serviceUrl = config["R2:ServiceUrl"] ?? $"https://{accountId}.r2.cloudflarestorage.com";
+            var accessKey = config["R2:AccessKeyId"]!;
+            var secretKey = config["R2:SecretAccessKey"]!;
+            _bucket = config["R2:Bucket"]!;
+            _publicBase = config["R2:PublicBaseUrl"]!.TrimEnd('/');
+
+            var s3cfg = new AmazonS3Config { ServiceURL = serviceUrl, ForcePathStyle = true };
+            _s3 = new AmazonS3Client(accessKey, secretKey, s3cfg);
         }
 
         public async Task<string> UploadImageAsync(FileUploadModel file  )
@@ -96,6 +112,68 @@ namespace Application.Service
            var results = await Task.WhenAll(uploadTasks);
            return results.ToList();
 
+        }
+        private static string GetMime(string ext) => ext.ToLowerInvariant() switch
+        {
+            ".glb" => "model/gltf-binary",
+            ".gltf" => "model/gltf+json",
+            ".stl" => "model/stl",
+            ".obj" => "text/plain",
+            _ => "application/octet-stream"
+        };
+        public async Task<string> UploadModel3DAsync(FileUploadModel fileUploadModel) {
+            if (fileUploadModel == null)
+                throw new ArgumentNullException(nameof(fileUploadModel));
+            if (string.IsNullOrWhiteSpace(fileUploadModel.FileName))
+                throw new Exception("Missing FileName.");
+            if (fileUploadModel.FileStream == null || !fileUploadModel.FileStream.CanRead)
+                throw new Exception("Invalid FileStream.");
+
+            var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        { ".glb", ".gltf", ".usdz", ".fbx", ".obj" };
+            var extension = Path.GetExtension(fileUploadModel.FileName);
+            if (string.IsNullOrWhiteSpace(extension) || !allowed.Contains(extension))
+                throw new Exception("File type is not allowed");
+
+            var folder = string.IsNullOrWhiteSpace(fileUploadModel.FolderName)
+                ? "3d" : fileUploadModel.FolderName.Trim().Trim('/');
+            var key = $"{folder}/{Guid.NewGuid():N}{extension.ToLowerInvariant()}";
+
+            var contentType = !string.IsNullOrWhiteSpace(fileUploadModel.ContentType)
+                ? fileUploadModel.ContentType
+                : GetMime(extension);
+
+            // --- Quan trọng: chuẩn bị stream có Content-Length ---
+            Stream uploadStream = fileUploadModel.FileStream;
+            if (uploadStream.CanSeek) {
+                uploadStream.Position = 0;
+            }
+            else {
+                // Buffer để có Length (tránh streaming-chunked)
+                var ms = new MemoryStream();
+                await fileUploadModel.FileStream.CopyToAsync(ms);
+                ms.Position = 0;
+                uploadStream = ms;
+            }
+
+            var put = new PutObjectRequest
+            {
+                BucketName = _bucket,
+                Key = key,
+                InputStream = uploadStream,
+                ContentType = contentType,
+                UseChunkEncoding = false,          
+                AutoCloseStream = false            
+            };
+
+            if (uploadStream.CanSeek) {
+                put.Headers.ContentLength = uploadStream.Length;
+            }
+
+            await _s3.PutObjectAsync(put);
+
+            var displayUrl = $"{_publicBase.TrimEnd('/')}/{key}";
+            return displayUrl;
         }
     }
 }

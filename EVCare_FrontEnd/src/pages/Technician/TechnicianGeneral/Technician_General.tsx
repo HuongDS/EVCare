@@ -60,7 +60,6 @@ export default function Technician_General() {
     if (tab === "ADDING_PART") {
       setActiveStatus(TechnicianWorkingSessionEnum.ADDING_PART);
       fetchAppointments(TechnicianWorkingSessionEnum.ADDING_PART);
-      // clear location.state sau khi xử lý
       navigate(location.pathname, { replace: true, state: {} });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
