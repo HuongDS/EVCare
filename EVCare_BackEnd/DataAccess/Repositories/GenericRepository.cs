@@ -67,5 +67,9 @@ namespace DataAccess.Repositories
                 throw new Exception($"Entity with id = {id} is not found.");
             }
         }
+
+        public async Task SaveChangesAsync() {
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
