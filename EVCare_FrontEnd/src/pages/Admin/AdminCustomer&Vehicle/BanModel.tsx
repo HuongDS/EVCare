@@ -1,43 +1,67 @@
 import React from "react";
+import { AnimatePresence } from "framer-motion";
+import {
+  ModalBackdrop,
+  ModalContainer,
+  ModalHeader,
+  ModalTitle,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  ModalButton,
+} from "./Admin_Customer_Vehicle.styled";
+import { FaExclamationTriangle, FaTimes } from "react-icons/fa";
 
 interface BanModalProps {
   visible: boolean;
   userName?: string;
+  isBanned?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
-const BanModal: React.FC<BanModalProps> = ({ visible, userName, onCancel, onConfirm }) => {
-  if (!visible) return null;
+const BanModal: React.FC<BanModalProps> = ({ visible, userName, isBanned, onCancel, onConfirm }) => {
+  if (isBanned) return null;
 
   return (
-    <div className={`modal ${visible ? "active" : ""}`} onClick={onCancel}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3 className="modal-title">Confirm Ban User</h3>
-          <button className="close-btn" onClick={onCancel}>
-            ×
-          </button>
-        </div>
-        <div className="modal-body">
-          <p>
-            Are you sure you want to ban this user? They will no longer be able to access their account or make
-            appointments.
-          </p>
-          <p style={{ marginTop: 10 }}>
-            <strong>{userName}</strong>
-          </p>
-        </div>
-        <div className="modal-buttons">
-          <button className="action-btn cancel-modal-btn" onClick={onCancel}>
-            Cancel
-          </button>
-          <button className="action-btn confirm-btn" onClick={onConfirm}>
-            Ban User
-          </button>
-        </div>
-      </div>
-    </div>
+    <AnimatePresence>
+      {visible && (
+        <ModalBackdrop initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onCancel}>
+          <ModalContainer
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 50, opacity: 0 }}
+            transition={{ type: "spring", damping: 30, stiffness: 500 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ModalHeader>
+              <ModalTitle>
+                <FaExclamationTriangle />
+                Confirm Ban User
+              </ModalTitle>
+              <ModalCloseButton onClick={onCancel}>
+                <FaTimes />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <p>
+                Are you sure you want to ban user
+                <strong> {userName || "this"}</strong>?
+              </p>
+              <p>They will no longer be able to access their account or make appointments.</p>
+            </ModalBody>
+            <ModalFooter>
+              <ModalButton $isConfirm={false} onClick={onCancel}>
+                Cancel
+              </ModalButton>
+              <ModalButton $isConfirm={true} onClick={onConfirm}>
+                Confirm
+              </ModalButton>
+            </ModalFooter>
+          </ModalContainer>
+        </ModalBackdrop>
+      )}
+    </AnimatePresence>
   );
 };
 

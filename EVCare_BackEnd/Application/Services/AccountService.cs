@@ -39,6 +39,10 @@ namespace Application.Services
 
                 throw new Exception(Message.ACCOUNT_NOT_FOUND);
             }
+            if (account.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
+            }
             var data = _mapper.Map<AccountViewModel>(account);
             return data;
         }
@@ -48,6 +52,10 @@ namespace Application.Services
             if (account is null)
             {
                 throw new Exception(Message.ACCOUNT_NOT_FOUND);
+            }
+            if (account.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
             }
             if (data.firstName.Length == 0 || data.lastName.Length == 0)
             {
@@ -76,6 +84,10 @@ namespace Application.Services
             if (account is null)
             {
                 throw new Exception(Message.ACCOUNT_NOT_FOUND);
+            }
+            if (account.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
             }
             if (!Regex.IsMatch(data.newPassword, RegexPartterns.PASSWORD_PATTERN))
             {
