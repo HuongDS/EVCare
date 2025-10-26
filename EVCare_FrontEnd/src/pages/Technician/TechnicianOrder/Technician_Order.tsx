@@ -8,16 +8,15 @@ import ProductCard from "../Technician_Component/ProductCard";
 import ProductModal from "../Technician_Component/ProductModal";
 import CartModal from "../Technician_Component/CartModal";
 import SearchBar from "../Technician_Component/SearchBar";
-import ImageSkeleton from "../Technician_Component/ImageSkeleton";
 
-import { getAllParts } from "../../../services/partApi";
 import { updateOrderParts } from "../../../services/updateOrderPartApi";
+import { getAllParts } from "../../../services/partApi";
 import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
+import { updateAppointmentPartCondition } from "../../../services/appointmentPartCondition";
 
-import type {
-  OrderPartsResponseDto,
-  UpdateOrderPartDto,
-} from "../../../models/OrderPartModel/Order_Parts_Model";
+import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
+import type { DamageLevelEnum } from "../../../models/enums/DamageLevelEnum";
+import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 
 import {
   PageContainer,
@@ -40,20 +39,6 @@ interface TechnicianOrderProps {
   selectedCategory?: string;
 }
 
-// API trả về parts trong appointment
-interface PartItem {
-  id: number;
-  name: string;
-  price: number;
-  imageUrl: string;
-  quantity: number;
-}
-
-interface AppointmentItem {
-  orderId: number;
-  parts: PartItem[];
-}
-
 export default function TechnicianOrder({
   orderId: propOrderId,
   onPartsUpdated,
@@ -64,9 +49,10 @@ export default function TechnicianOrder({
   const notification = useNotification();
   const stateOrderId = (location.state as { orderId: number })?.orderId;
 
-  const [currentOrderId, setCurrentOrderId] = useState<number | null>(
+  const [currentOrderId] = useState<number | null>(
     propOrderId ?? stateOrderId ?? null
   );
+  const [appointmentId, setAppointmentId] = useState<number | null>(null);
 
   const [open, setOpen] = useState(false);
   const [selectedPart, setSelectedPart] =
@@ -84,87 +70,63 @@ export default function TechnicianOrder({
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isSending, setIsSending] = useState(false);
+
   const pageSize = LENGTH.VIEW_PARTCARD_MAX;
 
+  /** Fetch parts + appointment together */
   useEffect(() => {
-    if (propOrderId) setCurrentOrderId(propOrderId);
-  }, [propOrderId]);
-
-  useEffect(() => {
-    if (stateOrderId) setCurrentOrderId(stateOrderId);
-  }, [stateOrderId]);
-
-  /** Lấy tất cả parts */
-  const fetchParts = useCallback(async () => {
-    try {
+    const fetchData = async () => {
+      if (!currentOrderId) return;
       setIsLoading(true);
-      const data = await getAllParts({ pageIndex: 1, pageSize: 1000 });
-      setAllParts(data.items);
-    } catch (err) {
-      console.error("Failed to fetch parts", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      try {
+        // Fetch all parts
+        const partsRes = await getAllParts({ pageIndex: 1, pageSize: 1000 });
+        setAllParts(partsRes.items ?? []);
 
-  useEffect(() => {
-    fetchParts();
-  }, [fetchParts]);
+        // Fetch technician appointment
+        const appointmentRes = await getTechnicianAppointments({
+          Status: "AddingPart",
+        });
+        const appointment = appointmentRes.items?.find(
+          (a: TechnicianAppointmentsDto) => a.orderId === currentOrderId
+        );
+        if (!appointment) return;
 
-  /** Lấy parts đã có trong order */
-  const fetchExistingOrderParts = useCallback(async () => {
-    if (!currentOrderId) return;
-    try {
-      const res = await getTechnicianAppointments({ Status: "AddingPart" });
+        setAppointmentId(appointment.id);
 
-      // ✅ Nếu API không trả về items
-      if (!res.items || res.items.length === 0) {
-        setCart([]);
-        return;
-      }
-
-      const appointment = res.items.find(
-        (a: AppointmentItem) => a.orderId === currentOrderId
-      );
-
-      if (appointment?.parts) {
-        const mappedCart = appointment.parts.map((p) => ({
-          part: {
-            id: p.id,
-            name: p.name,
-            price: p.price,
-            imageUrl: p.imageUrl,
+        const mappedCart =
+          appointment.parts?.map((p) => ({
+            part: {
+              id: p.id,
+              name: p.name,
+              price: p.price,
+              imageUrl: p.imageUrl,
+              quantity: p.quantity,
+              categoryId: 0,
+              isDeleted: false,
+            } as OrderPartsResponseDto,
             quantity: p.quantity,
-            categoryId: 0,
-            isDeleted: false,
-          } as OrderPartsResponseDto,
-          quantity: p.quantity,
-        }));
-
+          })) ?? [];
         setCart(mappedCart);
-      } else {
-        setCart([]);
+      } catch (err) {
+        console.error("Failed to fetch parts or appointment", err);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      console.error("Failed to load existing order parts", err);
-      setCart([]);
-    }
+    };
+
+    fetchData();
   }, [currentOrderId]);
 
-  useEffect(() => {
-    if (currentOrderId) fetchExistingOrderParts();
-  }, [currentOrderId, fetchExistingOrderParts]);
-
+  /** Update display parts for search & pagination */
   const updateDisplayParts = useCallback(() => {
     const query = searchQuery.trim().toLowerCase();
-
     const filtered = allParts.filter(
       (p) =>
-        p.quantity > 0 &&
         (query === "" || p.name.toLowerCase().includes(query)) &&
         (selectedCategory ? p.categoryId === Number(selectedCategory) : true)
     );
-
     setTotalPages(Math.ceil(filtered.length / pageSize));
     const start = (page - 1) * pageSize;
     setDisplayParts(filtered.slice(start, start + pageSize));
@@ -174,7 +136,7 @@ export default function TechnicianOrder({
     updateDisplayParts();
   }, [updateDisplayParts]);
 
-  /** Thêm part vào giỏ */
+  /** Cart handlers */
   const handleAddToCart = (part: OrderPartsResponseDto, quantity: number) => {
     setCart((prev) => {
       const exist = prev.find((item) => item.part.id === part.id);
@@ -190,38 +152,39 @@ export default function TechnicianOrder({
     setCartOpen(true);
   };
 
-  /** Xoá part khỏi giỏ */
   const handleRemoveFromCart = (partId: number) => {
     setCart((prev) => prev.filter((item) => item.part.id !== partId));
   };
-  const [isSending, setIsSending] = useState(false);
-  /** Gửi giỏ lên server */
-  const handleSendCart = async () => {
-    if (!currentOrderId || isSending) return;
 
+  const handleSendCart = async (
+    damageLevels: Record<number, DamageLevelEnum>
+  ) => {
+    if (!currentOrderId || !appointmentId || isSending) return;
     setIsSending(true);
-    const payload: UpdateOrderPartDto = {
-      orderId: currentOrderId,
-      parts: cart.map((c) => ({ id: c.part.id, quantity: c.quantity })),
-    };
-
     try {
-      await updateOrderParts(payload);
-      onPartsUpdated?.(currentOrderId);
+      await updateOrderParts({
+        orderId: currentOrderId,
+        parts: cart.map((c) => ({ id: c.part.id, quantity: c.quantity })),
+      });
+      await updateAppointmentPartCondition({
+        appointmentId,
+        partDamageLevels: Object.entries(damageLevels).map(([id, level]) => ({
+          partId: Number(id),
+          levelEnum: level,
+        })),
+      });
       notification.success({
         message: "Update Successful",
-        description: "Order parts updated successfully!",
+        description: "Parts and damage levels updated successfully!",
       });
-
-      // Đóng modal
+      onPartsUpdated?.(currentOrderId);
       setCartOpen(false);
-
       navigate("/technician", { state: { tab: "ADDING_PART" } });
     } catch (err) {
       console.error(err);
       notification.error({
         message: "Update Failed",
-        description: "Failed to update order parts. Please try again.",
+        description: "Failed to update parts or damage levels.",
       });
     } finally {
       setIsSending(false);
@@ -261,24 +224,32 @@ export default function TechnicianOrder({
           action={() => setCartOpen(true)}
         />
       </TitleContainer>
+
       <ContentWrapper>
         <CardWrapper>
-          {isLoading
-            ? Array.from({ length: pageSize }).map((_, idx) => (
-                <div key={idx} style={{ width: "200px", margin: "0.5rem" }}>
-                  <ImageSkeleton alt="loading" height={150} />
-                </div>
-              ))
-            : displayParts.map((part) => (
-                <ProductCard
-                  key={part.id}
-                  part={part}
-                  onClick={() => {
-                    setSelectedPart(part);
-                    setOpen(true);
-                  }}
-                />
-              ))}
+          {isLoading ? (
+            Array.from({ length: pageSize }).map((_, idx) => (
+              <ProductCard key={idx} isSkeleton />
+            ))
+          ) : displayParts.length > 0 ? (
+            displayParts.map((part) => (
+              <ProductCard
+                key={part.id}
+                part={part}
+                onClick={() => {
+                  if (part.isDeleted || part.quantity <= 0) return;
+                  setSelectedPart(part);
+                  setOpen(true);
+                }}
+              />
+            ))
+          ) : (
+            <div
+              style={{ width: "100%", textAlign: "center", padding: "2rem" }}
+            >
+              No parts found.
+            </div>
+          )}
         </CardWrapper>
 
         <PaginationContainer>
