@@ -59,5 +59,10 @@ namespace Application.Services
         {
             return await _employeeRepository.GetAllEmployeesAsync(query);
         }
+
+        public async Task<EmployeeViewModel> GetEmployeeInformation(int employeeId)
+        {
+            return await _employeeRepository.GetEmployeeInformation(employeeId);
+        }
     }
 }

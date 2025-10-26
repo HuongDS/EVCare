@@ -23,8 +23,8 @@ namespace DataAccess.Repositories
         public async Task<PageResultDto<EmployeeViewModel>> GetAllEmployeesAsync(EmployeeQueryDto model)
         {
             var query = _dbContext.Employees.AsNoTracking()
-                .Include(x=>x.Account)
-                .Include(x=>x.Technician)
+                .Include(x => x.Account)
+                .Include(x => x.Technician)
                 .Select(x => new EmployeeViewModel
                 {
                     AccountId = x.AccountId,
@@ -46,7 +46,7 @@ namespace DataAccess.Repositories
                             Name = ts.Service.Name,
                         }).ToList() : new List<ServiceViewFormModel>()
                 });
-            if(!string.IsNullOrEmpty(model.Keyword))
+            if (!string.IsNullOrEmpty(model.Keyword))
             {
                 var keyword = model.Keyword.Trim().ToLower();
                 query = query.Where(x => x.FullName.ToLower().Contains(keyword)
@@ -54,11 +54,11 @@ namespace DataAccess.Repositories
                 || x.Phone.ToLower().Contains(keyword)
                 || x.CCCD.ToLower().Contains(keyword));
             }
-            if(model.Role != null)
+            if (model.Role != null)
             {
                 query = query.Where(x => x.Role == model.Role);
             }
-            if(model.Status != null)
+            if (model.Status != null)
             {
                 query = query.Where(x => x.Status == model.Status);
             }
@@ -99,8 +99,41 @@ namespace DataAccess.Repositories
 
         public async Task MarkBusyForTechnician(IEnumerable<int> technicianIds)
         {
-            await _dbContext.Employees.Where(x=>technicianIds.Contains(x.TechnicianId.Value))
+            await _dbContext.Employees.Where(x => technicianIds.Contains(x.TechnicianId.Value))
                 .ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Busy));
+        }
+
+        public async Task<EmployeeViewModel> GetEmployeeInformation(int employeeId)
+        {
+            var employee = await _dbContext.Employees
+                .Include(x => x.Account)
+                .Include(x => x.Technician)
+                .ThenInclude(t => t.TechnicianSkills)
+                .ThenInclude(ts => ts.Service)
+                .Where(x => x.Id == employeeId)
+                .Select(x => new EmployeeViewModel
+                {
+                    AccountId = x.AccountId,
+                    EmployeeId = x.Id,
+                    FullName = x.Account.First_Name + " " + x.Account.Last_Name,
+                    Email = x.Account.Email,
+                    Phone = x.Account.Phone,
+                    CCCD = x.CCCD,
+                    Role = x.Account.Role,
+                    Status = x.Status,
+                    Avatar = x.Avatar,
+                    IsBanned = x.Account.Deleted_At != DateTime.MinValue,
+                    TechnicianId = x.TechnicianId,
+                    ExpYear = x.Technician.ExpYear,
+                    Skills = x.Technician != null ? x.Technician.TechnicianSkills
+                        .Select(ts => new ServiceViewFormModel
+                        {
+                            Id = ts.Service.Id,
+                            Name = ts.Service.Name,
+                        }).ToList() : new List<ServiceViewFormModel>()
+                })
+                .FirstOrDefaultAsync();
+            return employee;
         }
     }
 }
