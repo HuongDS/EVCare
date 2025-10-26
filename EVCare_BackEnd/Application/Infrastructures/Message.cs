@@ -162,5 +162,6 @@ namespace Application.Infrastructures
 
         public static string APPLICATION_UPDATE_SUCCESS = "Application updated successfully";
 
+        public static string VEHICLE_GET_SUCCESS  = "Get vehicle successfully";
     }
 }
