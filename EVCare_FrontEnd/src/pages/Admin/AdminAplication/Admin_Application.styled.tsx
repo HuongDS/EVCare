@@ -29,15 +29,15 @@ export const GlassContainer = styled.div`
 
 export const PageWrapper = styled.div`
   width: 100%;
-  min-height: calc(100vh - 80px); /* Giả sử 80px là chiều cao navbar */
+  min-height: calc(100vh - 80px);
   padding: 32px;
   background: linear-gradient(135deg, #f0f9f4 0%, #e6f7f0 100%);
-  box-sizing: border-box; /* Thêm để padding không bị lỗi */
+  box-sizing: border-box;
 `;
 
 export const Subtitle = styled.p`
   margin: 0;
-  font-size: 1rem; /* 16px */
+  font-size: 1rem;
   color: #555;
 `;
 
@@ -46,7 +46,7 @@ export const ContentWrapper = styled.main`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 24px; /* Khoảng cách giữa Header và Bảng */
+  gap: 24px;
 `;
 
 export const Header = styled.header`
@@ -263,8 +263,6 @@ export const StatusBadge = styled.span<StatusBadgeProps>`
   }}
 `;
 
-// --- Nút chung ---
-
 const BaseButton = styled.button`
   padding: 0.6rem 1.2rem;
   border: none;
@@ -293,7 +291,7 @@ export const ViewButton = styled(BaseButton)`
 `;
 
 export const ApproveButton = styled(BaseButton)`
-  background: linear-gradient(90deg, #00ad4e, #00c95e); /* Hardcoded primaryGradient */
+  background: linear-gradient(90deg, #00ad4e, #00c95e);
   color: #fff;
 
   &:hover {
@@ -304,17 +302,15 @@ export const ApproveButton = styled(BaseButton)`
 `;
 
 export const DenyButton = styled(BaseButton)`
-  background: #fef2f2; /* Hardcoded statusRejectedBg */
-  color: #dc2626; /* Hardcoded statusRejectedText */
-  border: 1px solid #fecaca; /* Hardcoded statusRejectedBorder */
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 
   &:hover {
     background: #dc2626;
     color: #fff;
   }
 `;
-
-// --- Modal (LeaveDetailModal) ---
 
 export const ModalBackdrop = styled.div`
   position: fixed;
@@ -327,7 +323,7 @@ export const ModalBackdrop = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: ${fadeIn} 0.3s ease; /* Dùng keyframe đã định nghĩa */
+  animation: ${fadeIn} 0.3s ease;
 `;
 
 // Kế thừa style từ GlassContainer
@@ -337,7 +333,7 @@ export const ModalContent = styled(GlassContainer)`
   max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
-  animation: ${scaleIn} 0.3s ease; /* Dùng keyframe đã định nghĩa */
+  animation: ${scaleIn} 0.3s ease;
 `;
 
 export const ModalCloseButton = styled.button`
@@ -347,12 +343,12 @@ export const ModalCloseButton = styled.button`
   background: transparent;
   border: none;
   font-size: 2rem;
-  color: #555; /* Hardcoded textLight */
+  color: #555;
   cursor: pointer;
   transition: color 0.2s;
 
   &:hover {
-    color: #222; /* Hardcoded textDark */
+    color: #222;
   }
 `;
 
@@ -362,7 +358,6 @@ export const ModalBody = styled.div`
   gap: 2rem;
 
   @media (max-width: 768px) {
-    // Responsive
     flex-direction: column;
   }
 `;
@@ -391,7 +386,7 @@ export const EmployeeInfo = styled(ModalColumn)`
 
   p {
     font-size: 0.95rem;
-    color: #555; /* Hardcoded textLight */
+    color: #555;
     margin: 0.3rem 0;
   }
 `;
@@ -421,7 +416,7 @@ export const ReasonBox = styled.div<{ $isNote?: boolean }>`
   max-height: 600px;
   overflow-y: auto;
   white-space: pre-wrap;
-  color: ${({ $isNote }) => ($isNote ? "#555" : "#222")}; /* Hardcoded */
+  color: ${({ $isNote }) => ($isNote ? "#555" : "#222")};
   font-style: ${({ $isNote }) => ($isNote ? "italic" : "normal")};
 `;
 
@@ -443,7 +438,7 @@ export const NoteTextarea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #00ad4e; /* Hardcoded primary */
+    border-color: #00ad4e;
     box-shadow: 0 0 0 2px rgba(0, 173, 78, 0.2);
   }
 `;
