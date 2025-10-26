@@ -15,5 +15,6 @@ namespace Application.Interfaces
         Task<(int, int)> CheckSlotsAsync();
         Task<PageResultDto<EmployeeViewModel>> GetAllEmployeesAsync(EmployeeQueryDto query);
         Task<int> GetEmployeeIdByAccountId(int accountId);
+        Task<EmployeeViewModel> GetEmployeeInformation(int employeeId);
     }
 }
