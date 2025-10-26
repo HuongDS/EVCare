@@ -14,12 +14,13 @@ import {
 
 interface Props {
   isOpen: boolean;
-  partName?: string;
+  itemType?: string;
   onClose: () => void;
   onConfirm: () => void;
+  itemName: string;
 }
 
-const DeleteConfirmationModal: React.FC<Props> = ({ isOpen, partName, onClose, onConfirm }) => {
+const DeleteConfirmationModal: React.FC<Props> = ({ isOpen, onClose, onConfirm, itemType, itemName }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -34,7 +35,7 @@ const DeleteConfirmationModal: React.FC<Props> = ({ isOpen, partName, onClose, o
             <ModalHeader>
               <ModalTitle>
                 <FaExclamationTriangle />
-                Confirm Delete Spare Part
+                Confirm Delete {itemType == undefined ? "" : itemType.charAt(0).toUpperCase() + itemType.slice(1)}
               </ModalTitle>
               <ModalCloseButton onClick={onClose}>
                 <FaTimes />
@@ -42,8 +43,8 @@ const DeleteConfirmationModal: React.FC<Props> = ({ isOpen, partName, onClose, o
             </ModalHeader>
             <ModalBody>
               <p>
-                Are you sure you want to delete the widget
-                <strong> {partName || "here"}</strong>?
+                Are you sure you want to delete the {itemType}
+                <strong> {itemName || "this item"}</strong>?
               </p>
               <p>This action will permanently remove the product from the system.</p>
             </ModalBody>
