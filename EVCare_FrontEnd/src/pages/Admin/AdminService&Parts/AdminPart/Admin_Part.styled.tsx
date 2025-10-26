@@ -231,18 +231,27 @@ export const DraggerWrapper = styled.div`
 
 export const TableWrapper = styled(motion.div)`
   width: 100%;
+
   border-radius: 16px;
+
   overflow: hidden;
+
   background: rgba(255, 255, 255, 0.7);
+
   backdrop-filter: blur(12px);
+
   -webkit-backdrop-filter: blur(12px);
+
   border: 1px solid rgba(255, 255, 255, 0.3);
+
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 `;
 
 export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
+  /* THÊM: Cho phép đặt độ rộng cột */
+  table-layout: fixed;
 `;
 
 export const Th = styled.th`
@@ -254,6 +263,25 @@ export const Th = styled.th`
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 2px solid rgba(0, 173, 78, 0.2);
+
+  &:nth-child(1) {
+    width: 10%;
+  &:nth-child(2) {
+    width: 25%;
+  &:nth-child(3) {
+    width: 15%;
+  &:nth-child(4) {
+    width: 15%;
+  &:nth-child(5) {
+    width: 15%;
+  &:nth-child(6) {
+    width: 10%;
+  &:nth-child(7) {
+    width: 10%;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const Tr = styled.tr`
@@ -273,6 +301,16 @@ export const Td = styled.td`
   vertical-align: middle;
   font-size: 0.95rem;
   color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:last-child {
+    display: flex;
+    gap: 8px;
+    overflow: visible;
+    white-space: normal;
+  }
 `;
 
 export const PartImage = styled.img`

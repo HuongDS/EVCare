@@ -6,6 +6,7 @@ import {
   ApartmentOutlined,
   CalendarOutlined,
   ClockCircleOutlined,
+  ContainerOutlined,
   HomeOutlined,
   InboxOutlined,
   LineChartOutlined,
@@ -14,6 +15,7 @@ import {
   ShoppingOutlined,
   SolutionOutlined,
   TeamOutlined,
+  ToolOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -21,7 +23,6 @@ import { deleteToken, logout } from "../../services/authService";
 import { useNavigate } from "react-router";
 import { useAppDispatch } from "../../states/store";
 import { logoutRedux } from "../../states/authSlice";
-import { ToolCase } from "lucide-react";
 
 interface MenuItem {
   key: string;
@@ -68,12 +69,18 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "6",
-      icon: <ToolCase />,
+      icon: <ToolOutlined />,
       label: "Manage Parts",
       route: "/admin/manage-parts",
     },
     {
       key: "7",
+      icon: <ContainerOutlined />,
+      label: "Manage Services",
+      route: "/admin/manage-services",
+    },
+    {
+      key: "8",
       icon: <LogoutOutlined />,
       label: "Logout",
       action: () => logout,
