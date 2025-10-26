@@ -75,3 +75,17 @@ export async function addEmployee(data: EmployeeRegisterDto) {
     throw new Error(ERROR_MESSAGE.FAILED_TO_ADD_EMPLOYEE);
   }
 }
+
+export async function getEmployeeById(data: number) {
+  try {
+    const response = await api.get<ResponseDto<EmployeeViewModel>>("/api/Employee/admin-get-employee-id", {
+      params: {
+        employeeId: data,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+}

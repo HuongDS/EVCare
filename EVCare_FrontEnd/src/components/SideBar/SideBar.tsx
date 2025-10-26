@@ -7,6 +7,7 @@ import {
   CalendarOutlined,
   ClockCircleOutlined,
   ContainerOutlined,
+  FileTextOutlined,
   HomeOutlined,
   InboxOutlined,
   LineChartOutlined,
@@ -81,6 +82,12 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "8",
+      icon: <FileTextOutlined />,
+      label: "Applications",
+      route: "/admin/applications",
+    },
+    {
+      key: "9",
       icon: <LogoutOutlined />,
       label: "Logout",
       action: () => logout,
