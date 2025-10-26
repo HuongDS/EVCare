@@ -11,7 +11,7 @@ namespace DataAccess.Dtos.VehicleCategory {
         public string Name { get; set; }
         public string? Model3DUrl { get; set; }
 
-        public IEnumerable<string>PartCategoryNames { get; set; }
+        public IEnumerable<PartCategoryViewFormModel>PartCategoryNames { get; set; }
 
     }
 }
