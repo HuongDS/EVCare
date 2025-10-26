@@ -12,8 +12,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.Services
 {
-    public class AppointmentService : IAppointmentService
-    {
+    public class AppointmentService : IAppointmentService {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IServiceCenterRepository _serviceCenterRepository;
         private readonly IMapper _mapper;
@@ -297,6 +296,10 @@ namespace Application.Services
         public async Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model)
         {
            return await _appointmentRepository.GetUnderstaffedInProgressAsync(model);
+        }
+
+        public Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId) {
+            throw new NotImplementedException();
         }
     }
 }
