@@ -39,6 +39,7 @@ namespace DataAccess.Repositories
         public async Task<PageResultDto<ServiceCategoryViewDto>> GetSrvicecategoryViewDto(ServiceCategoryQueryDto model) {
             var query =_dbContext.ServiceCategories
                  .Where(x => x.Name.Contains(model.Name ?? string.Empty))
+                 .Where(x => model.IsActive == null || (model.IsActive == true ? x.Deleted_At == DateTime.MinValue : x.Deleted_At != DateTime.MinValue))
                  .Select(sc => new ServiceCategoryViewDto
                  {
                      Id = sc.Id,

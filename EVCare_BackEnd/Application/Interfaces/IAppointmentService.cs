@@ -35,6 +35,6 @@ namespace Application.Interfaces
         Task<int> CountAppointmentsInMonths(int year, int month);
         Task<int> CountCustomersInMonths(int year, int month);
         Task<int> CountAppointmentsInMonthsWithStatus(int year, int month, AppointmentStatusEnum status);
-
+        Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId);
     }
 }
