@@ -14,16 +14,30 @@ namespace Application.Service
     public class ServiceService : IServiceService
     {
         private readonly IServiceRepository _serviceRepository;
+        private readonly IServiceCategoryRepository _serviceCategoryRepository;
         private readonly IMapper _mapper;
-        public ServiceService(IServiceRepository serviceRepository, IMapper mapper)
+        public ServiceService(IServiceRepository serviceRepository, IMapper mapper,IServiceCategoryRepository serviceCategoryRepository)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
-          
+            _serviceCategoryRepository = serviceCategoryRepository;
+
         }
 
         public async Task<int> AddAService(ServicePostModel model)
         {
+
+            var category = await _serviceCategoryRepository.GetByIdAsync(model.ServiceCategoryId);
+
+            if (category == null)
+            {
+                throw new Exception("Service Category not found");
+            }
+            if(category.Deleted_At!=DateTime.MinValue)
+            {
+                throw new Exception("Service Category is inactive");
+            }
+
             var data = _mapper.Map<DataAccess.Entities.Service>(model);
 
             var entity = await _serviceRepository.AddAsync(data);
@@ -72,6 +86,14 @@ namespace Application.Service
 
         public async Task<DataAccess.Entities.Service> UpdateAService(ServicePutModel model)
         {
+            var category = await _serviceCategoryRepository.GetByIdAsync(model.ServiceCategoryId);
+
+            if (category == null) {
+                throw new Exception("Service Category not found");
+            }
+            if (category.Deleted_At != DateTime.MinValue) {
+                throw new Exception("Service Category is inactive");
+            }
             var entity = await _serviceRepository.GetByIdAsync(model.Id);
             if (entity == null)
             {

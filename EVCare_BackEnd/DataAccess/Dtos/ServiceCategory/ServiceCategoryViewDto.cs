@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Dtos.Service
-{
-    public class ServicePostModel
-    {
+namespace DataAccess.Dtos.ServiceCategory {
+    public class ServiceCategoryViewDto {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public decimal Duration { get; set; }
-        public int ServiceCategoryId { get; set; }
+        public bool IsActive { get; set; }
     }
 }
