@@ -16,7 +16,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize(Roles = "Staff")]
+    // [Authorize(Roles = "Staff")]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeServices _employeeServices;
@@ -70,9 +70,9 @@ namespace API.Controllers
                 data = null
             });
         }
-        
+
         [HttpPost("assign-technicians")]
-        [Authorize(Roles ="Staff")]
+        [Authorize(Roles = "Staff")]
 
         public async Task<IActionResult> AssignTechniciansToOrder(AssignTechniciansModel model)
         {
@@ -91,10 +91,10 @@ namespace API.Controllers
 
                 await _technicianWorkingSessionService.AddTechnicianToOrder(model);
                 return Ok(new ResponseDto<object>
-                        {
-                            statusCode = HttpStatus.CREATED,
-                            message = Message.ADD_TECHNICIAN_SUCCESSFULLY,
-                        }
+                {
+                    statusCode = HttpStatus.CREATED,
+                    message = Message.ADD_TECHNICIAN_SUCCESSFULLY,
+                }
                 );
 
 
@@ -136,9 +136,9 @@ namespace API.Controllers
         }
 
         [HttpGet("get-employee-id")]
-        [Authorize(Roles ="Staff,Technician")]
+        [Authorize(Roles = "Staff,Technician")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-         public async Task<IActionResult> GetEmployeeId()
+        public async Task<IActionResult> GetEmployeeId()
         {
             try
             {
@@ -150,10 +150,11 @@ namespace API.Controllers
                     message = "Get employee id sucessfully",
                     statusCode = HttpStatus.OK
                 });
-                
-                 
 
-            }catch(Exception ex)
+
+
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
@@ -172,6 +173,30 @@ namespace API.Controllers
             {
                 var employees = await _employeeServices.GetAllEmployeesAsync(query);
                 return Ok(new ResponseDto<PageResultDto<EmployeeViewModel>>
+                {
+                    data = employees,
+                    message = Message.EMPLOYEE_GET_SUCCESSFULLY,
+                    statusCode = HttpStatus.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST
+                });
+            }
+        }
+
+        [HttpGet("admin-get-employee-id")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllEmployees([FromQuery] int employeeId)
+        {
+            try
+            {
+                var employees = await _employeeServices.GetEmployeeInformation(employeeId);
+                return Ok(new ResponseDto<EmployeeViewModel>
                 {
                     data = employees,
                     message = Message.EMPLOYEE_GET_SUCCESSFULLY,
