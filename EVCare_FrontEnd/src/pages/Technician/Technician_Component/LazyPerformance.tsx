@@ -6,12 +6,6 @@ export function LazyPerformance<P extends Record<string, unknown>>(
 ) {
   const LazyComponent = lazy(importFn);
 
-  if (typeof window !== "undefined") {
-    setTimeout(() => {
-      importFn().catch(() => {});
-    }, 2000);
-  }
-
   return (props: P) => (
     <Suspense fallback={<LoadingOverlay />}>
       <LazyComponent {...props} />

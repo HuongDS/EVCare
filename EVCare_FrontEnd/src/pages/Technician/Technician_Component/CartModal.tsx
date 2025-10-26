@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Box, Modal, Fade, Backdrop, IconButton } from "@mui/material";
 import {
   CartContainer,
@@ -20,7 +21,11 @@ import {
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
-
+import {
+  DamageLevelEnum,
+  DamageLevelLabels,
+  damageColorMap,
+} from "../../../models/enums/DamageLevelEnum";
 import ButtonAction from "../../../components/Button/ReviewButton";
 
 interface CartModalProps {
@@ -29,8 +34,8 @@ interface CartModalProps {
   cart: { part: OrderPartsResponseDto; quantity: number }[];
   onQuantityChange: (partId: number, newQty: number) => void;
   onRemove: (partId: number) => void;
-  onSend: () => void;
-  loading: boolean; // ✅
+  onSend: (damageLevels: Record<number, DamageLevelEnum>) => void;
+  loading: boolean;
 }
 
 const boxStyle = {
@@ -57,6 +62,20 @@ export default function CartModal({
   onSend,
   loading,
 }: CartModalProps) {
+  const [damageLevels, setDamageLevels] = useState<
+    Record<number, DamageLevelEnum>
+  >({});
+
+  // Initialize damageLevels when cart changes
+  useEffect(() => {
+    const initLevels: Record<number, DamageLevelEnum> = {};
+    cart.forEach(({ part }) => {
+      initLevels[part.id] =
+        damageLevels[part.id] ?? DamageLevelEnum.NotAssessed;
+    });
+    setDamageLevels(initLevels);
+  }, [cart]);
+
   const total = cart.reduce(
     (sum, item) => sum + (item.part.price ?? 0) * item.quantity,
     0
@@ -87,6 +106,7 @@ export default function CartModal({
 
                   <ItemRight>
                     <QuantityControl>
+                      {/* Button giảm */}
                       <IconButton
                         size="small"
                         onClick={() =>
@@ -96,36 +116,61 @@ export default function CartModal({
                         sx={{
                           border: "1px solid #ccc",
                           borderRadius: "4px",
-                          width: "32px",
-                          height: "32px",
+                          width: "28px",
+                          height: "28px",
                         }}
                       >
                         –
                       </IconButton>
+
                       <QuantityNumber>{quantity}</QuantityNumber>
+
+                      {/* Button tăng */}
                       <IconButton
                         size="small"
-                        onClick={() =>
-                          onQuantityChange(
-                            part.id,
-                            Math.min(
-                              quantity + 1,
-                              part.quantity ?? quantity + 1
-                            )
-                          )
-                        }
-                        disabled={quantity >= (part.quantity ?? 1)}
+                        onClick={() => onQuantityChange(part.id, quantity + 1)}
                         sx={{
                           border: "1px solid #ccc",
                           borderRadius: "4px",
-                          width: "32px",
-                          height: "32px",
+                          width: "28px",
+                          height: "28px",
                         }}
                       >
                         +
                       </IconButton>
+
+                      {/* Damage dropdown */}
+                      <select
+                        value={damageLevels[part.id]}
+                        onChange={(e) =>
+                          setDamageLevels((prev) => ({
+                            ...prev,
+                            [part.id]: Number(e.target.value),
+                          }))
+                        }
+                        style={{
+                          marginLeft: "8px",
+                          fontSize: "12px",
+                          padding: "2px 4px",
+                          borderRadius: "6px",
+                          border: "1px solid #ccc",
+                          backgroundColor:
+                            damageColorMap[damageLevels[part.id]],
+                          color: "white",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {Object.entries(DamageLevelLabels).map(
+                          ([key, label]) => (
+                            <option key={key} value={key}>
+                              {label}
+                            </option>
+                          )
+                        )}
+                      </select>
                     </QuantityControl>
 
+                    {/* Remove */}
                     <IconButton
                       color="error"
                       onClick={() => onRemove(part.id)}
@@ -161,14 +206,14 @@ export default function CartModal({
               <div
                 style={{
                   opacity: loading ? 0.6 : 1,
-                  pointerEvents: loading ? "none" : "auto", // ✅ chặn spam
+                  pointerEvents: loading ? "none" : "auto",
                 }}
               >
                 <ButtonAction
                   text={loading ? "Sending..." : "Send"}
                   color="white"
                   backgroundColor={loading ? "#999" : "#00AD4E"}
-                  action={onSend}
+                  action={() => onSend(damageLevels)}
                 />
               </div>
             </CheckoutBox>

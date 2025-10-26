@@ -1,6 +1,10 @@
 import axios from "axios";
 import { api } from "../api/api";
-import type { ResponseDto, PageModel, OrderPartsResponseDto } from "../models/OrderPartModel/Order_Parts_Model";
+import type {
+  ResponseDto,
+  PageModel,
+  OrderPartsResponseDto,
+} from "../models/OrderPartModel/Order_Parts_Model";
 import type { NewPartDto } from "../models/PartModel/NewPartDto";
 import { handleError } from "../utils/errorHandler";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
@@ -14,7 +18,9 @@ export async function getAllParts(params?: {
   pageIndex?: number;
 }) {
   try {
-    const response = await api.get<ResponseDto<PageModel<OrderPartsResponseDto>>>("/api/Part", {
+    const response = await api.get<
+      ResponseDto<PageModel<OrderPartsResponseDto>>
+    >("/api/Part", {
       params,
     });
 
@@ -81,7 +87,9 @@ export async function deletePart(data: PartDetailDto) {
 
 export async function getPartCategories() {
   try {
-    const response = await api.get<ResponseDto<PageResultDto<Category>>>("/api/PartCategory");
+    const response = await api.get<ResponseDto<PageResultDto<Category>>>(
+      "/api/PartCategory"
+    );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -92,9 +100,16 @@ export async function getPartCategories() {
   }
 }
 
-export async function getAllParts02(params?: { PartName?: string; PageSize?: number; PageIndex?: number }) {
+export async function getAllParts02(params?: {
+  PartName?: string;
+  PageSize?: number;
+  PageIndex?: number;
+}) {
   try {
-    const response = await api.get<ResponseDto<PageModel<PartDetailDto>>>("/api/Part", { params });
+    const response = await api.get<ResponseDto<PageModel<PartDetailDto>>>(
+      "/api/Part",
+      { params }
+    );
 
     return (
       response.data.data ?? {
