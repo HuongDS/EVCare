@@ -298,8 +298,8 @@ namespace Application.Services
            return await _appointmentRepository.GetUnderstaffedInProgressAsync(model);
         }
 
-        public Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId) {
-            throw new NotImplementedException();
+        public async Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId) {
+            return await _appointmentRepository.GetVehicleByAppointmentId(appointmentId);
         }
     }
 }
