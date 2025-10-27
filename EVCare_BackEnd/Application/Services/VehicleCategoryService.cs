@@ -49,6 +49,18 @@ namespace Application.Services
             return id;
         }
 
+        public async Task DeleteCategoryAsync(int id) {
+            var category = await _vehicleCategoryRepository.GetByIdAsync(id);
+            if (category == null || category.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception("Vehicle category not found");
+            }
+            category.Deleted_At = DateTime.UtcNow;
+            await _vehicleCategoryRepository.UpdateAsync(category);
+
+        }
+
+
         public async Task<IEnumerable<VehicleCategoryViewModel>> GetAllActiveCategoriesAsync()
         {
             var categories = await _vehicleCategoryRepository.GetActiveCategoriesAsync();
@@ -65,6 +77,16 @@ namespace Application.Services
             }
 
             return await _vehicleCategoryRepository.GetCategoryDetailAsync(id);
+        }
+
+        public async Task UnbannedVehicleCategoryAsync(int id) {
+            var category = await _vehicleCategoryRepository.GetByIdAsync(id);
+            if (category == null || category.Deleted_At == DateTime.MinValue)
+            {
+                throw new Exception("Vehicle category not found or not banned");
+            }
+            category.Deleted_At = DateTime.MinValue;
+            await _vehicleCategoryRepository.UpdateAsync(category);
         }
 
         public async Task UpdateCategoryAsync(int id, VehicleCategoryCreateModel model) {

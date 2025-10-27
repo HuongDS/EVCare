@@ -66,7 +66,7 @@ namespace API.Controllers
                 return Ok(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.CREATED,
-                    message =  Message.VEHICLE_CATEGORY_CREATE_SUCCESSFULLY,
+                    message = Message.VEHICLE_CATEGORY_CREATE_SUCCESSFULLY,
                     data = createdCategory
                 });
             }
@@ -80,8 +80,8 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles ="Admin")]
-        public async Task<IActionResult> UpdateCategory([FromQuery]int id,VehicleCategoryCreateModel model) {
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateCategory([FromQuery] int id, VehicleCategoryCreateModel model) {
             try {
 
                 await _vehicleCategoryService.UpdateCategoryAsync(id, model);
@@ -103,8 +103,46 @@ namespace API.Controllers
         }
 
 
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteCategory(int id) {
+            try {
+                await _vehicleCategoryService.DeleteCategoryAsync(id);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.NO_CONTENT,
+                    message = Message.VEHICLE_CATEGORY_DELETE_SUCCESSFULLY,
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
 
 
+        }
 
+        [HttpPut("unbanned-vehicleCategory/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UnbannedVehicleCategory(int id) {
+            try {
+                await _vehicleCategoryService.UnbannedVehicleCategoryAsync(id);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.VEHICLE_CATEGORY_UNBANNED_SUCCESSFULLY,
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
     }
 }
