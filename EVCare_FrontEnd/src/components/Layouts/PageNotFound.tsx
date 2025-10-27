@@ -50,9 +50,10 @@ const BottomHalf = styled(Half)`
 `;
 
 const CarWrapper = styled.div`
-  position: fixed; /* tính theo viewport */
+  position: absolute;
+  top: 32%;
   left: 0;
-  bottom: 38%;
+  transform: translateY(-50%);
   opacity: 0;
   pointer-events: none;
   z-index: 50;
@@ -61,15 +62,22 @@ const CarWrapper = styled.div`
 const Subtitle = styled.h2`
   color: #1f2937;
   font-size: 2rem;
-  margin-bottom: 15px;
+  margin-top: 3rem;
+  position: absolute;
+  top: 27.5%;
+  left: 0;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  opacity: 0;
 `;
 
 const Description = styled.p`
   color: #6b7280;
   max-width: 500px;
-  margin: 0 auto 30px auto;
+  margin-top: 150px;
   line-height: 1.6;
   font-size: 1.1rem;
+  text-align: center;
 `;
 
 const BackButton = styled.button`
@@ -93,40 +101,42 @@ const BackButton = styled.button`
 
 const PageNotFound: React.FC = () => {
   const carRef = useRef<HTMLDivElement>(null);
+  const subtitleRef = useRef<HTMLHeadingElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const car = carRef.current;
+    const subtitle = subtitleRef.current;
     const top = topRef.current;
     const bottom = bottomRef.current;
     const wrapper = wrapperRef.current;
-    if (!car || !top || !bottom || !wrapper) return;
+    if (!car || !subtitle || !top || !bottom || !wrapper) return;
 
-    const updateAnimation = () => {
+    const animate = () => {
       const wrapperRect = wrapper.getBoundingClientRect();
       const splitZoneStart = wrapperRect.left - 5;
       const splitZoneEnd = wrapperRect.right + 5;
       const screenWidth = window.innerWidth;
       const carWidth = car.offsetWidth;
+      const textWidth = subtitle.offsetWidth;
 
-      gsap.killTweensOf(car);
-      gsap.set(car, { x: -carWidth - 150, opacity: 0 });
+      gsap.killTweensOf([car, subtitle]);
+      gsap.set([car, subtitle], { opacity: 0 });
 
       const tl = gsap.timeline({
         repeat: -1,
         defaults: { ease: "none" },
-        repeatDelay: 0.6,
+        repeatDelay: 0.5,
       });
 
-      tl.to(car, {
-        opacity: 1,
-        duration: 0.3,
-      })
-        .to(car, {
-          x: screenWidth + carWidth + 150,
-          duration: 5,
+      // Xe và chữ cùng xuất hiện và di chuyển song song
+      tl.set(car, { x: -carWidth - 150, opacity: 1 })
+        .set(subtitle, { x: -carWidth - textWidth - 170, opacity: 1 }) // chữ nằm sau đít xe
+        .to([car, subtitle], {
+          x: `+=${screenWidth + carWidth + textWidth + 400}`,
+          duration: 6,
           onUpdate: () => {
             const carRect = car.getBoundingClientRect();
             const carFront = carRect.left + carRect.width;
@@ -141,18 +151,12 @@ const PageNotFound: React.FC = () => {
             }
           },
         })
-        .to(car, {
-          opacity: 0,
-          duration: 0.3,
-          onComplete: () => {
-            gsap.set(car, { x: -carWidth - 150 });
-          },
-        });
+        .to([car, subtitle], { opacity: 0, duration: 0.3 });
     };
 
-    updateAnimation();
-    window.addEventListener("resize", updateAnimation);
-    return () => window.removeEventListener("resize", updateAnimation);
+    animate();
+    window.addEventListener("resize", animate);
+    return () => window.removeEventListener("resize", animate);
   }, []);
 
   const handleGoBack = () => window.history.back();
@@ -168,7 +172,8 @@ const PageNotFound: React.FC = () => {
         <Car size={90} color={MAIN_GREEN} />
       </CarWrapper>
 
-      <Subtitle>Page Not Found</Subtitle>
+      <Subtitle ref={subtitleRef}>Page Not Found</Subtitle>
+
       <Description>
         Oops! Có vẻ bạn đã đi lạc. Hãy quay lại tuyến đường chính của EV Care
         nhé!
