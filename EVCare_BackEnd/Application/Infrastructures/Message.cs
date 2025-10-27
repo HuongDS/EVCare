@@ -169,5 +169,7 @@ namespace Application.Infrastructures
         public static string VEHICLE_CATEGORY_CREATE_SUCCESSFULLY  = "Create vehicle category successfully";
 
         public static string VEHICLE_CATEGORY_UPDATE_SUCCESSFULLY = "Update vehicle category successfully";
+
+        public static string PART_Category_UPDATE_SUCCESSFULLY = "Update part category successfully";
     }
 }
