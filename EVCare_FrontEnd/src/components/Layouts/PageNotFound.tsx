@@ -23,7 +23,7 @@ const PageContainer = styled.div`
 const NumberWrapper = styled.div`
   position: relative;
   display: inline-block;
-  margin-bottom: 60px;
+  margin-bottom: 80px;
   width: 100%;
   max-width: 800px;
   height: 18rem;
@@ -42,7 +42,7 @@ const Half = styled.div`
 `;
 
 const TopHalf = styled(Half)`
-  clip-path: inset(0 0 49.9% 0);
+  clip-path: inset(0 0 49.5% 0);
 `;
 
 const BottomHalf = styled(Half)`
@@ -51,7 +51,7 @@ const BottomHalf = styled(Half)`
 
 const CarWrapper = styled.div`
   position: absolute;
-  top: 32%;
+  top: 31.5%;
   left: 0;
   transform: translateY(-50%);
   opacity: 0;
@@ -60,11 +60,10 @@ const CarWrapper = styled.div`
 `;
 
 const Subtitle = styled.h2`
-  color: #1f2937;
+  color: #16a34a;
   font-size: 2rem;
-  margin-top: 3rem;
   position: absolute;
-  top: 27.5%;
+  top: 31.5%;
   left: 0;
   white-space: nowrap;
   transform: translateY(-50%);
@@ -72,11 +71,10 @@ const Subtitle = styled.h2`
 `;
 
 const Description = styled.p`
-  color: #6b7280;
-  max-width: 500px;
-  margin-top: 150px;
-  line-height: 1.6;
-  font-size: 1.1rem;
+  color: #374151;
+  max-width: 540px;
+  line-height: 1.7;
+  font-size: 2rem;
   text-align: center;
 `;
 
@@ -87,15 +85,17 @@ const BackButton = styled.button`
   background: ${MAIN_GREEN};
   color: white;
   padding: 14px 28px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
-  font-size: 18px;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  margin-top: 2rem;
 
   &:hover {
     background: ${LIGHT_GREEN};
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 198, 94, 0.25);
   }
 `;
 
@@ -131,9 +131,8 @@ const PageNotFound: React.FC = () => {
         repeatDelay: 0.5,
       });
 
-      // Xe và chữ cùng xuất hiện và di chuyển song song
       tl.set(car, { x: -carWidth - 150, opacity: 1 })
-        .set(subtitle, { x: -carWidth - textWidth - 170, opacity: 1 }) // chữ nằm sau đít xe
+        .set(subtitle, { x: -carWidth - textWidth - 170, opacity: 1 })
         .to([car, subtitle], {
           x: `+=${screenWidth + carWidth + textWidth + 400}`,
           duration: 6,
@@ -175,8 +174,8 @@ const PageNotFound: React.FC = () => {
       <Subtitle ref={subtitleRef}>Page Not Found</Subtitle>
 
       <Description>
-        Oops! Có vẻ bạn đã đi lạc. Hãy quay lại tuyến đường chính của EV Care
-        nhé!
+        Oops! Looks like this road doesn’t exist. Let’s get you back on track to
+        the main route.
       </Description>
 
       <BackButton onClick={handleGoBack}>
