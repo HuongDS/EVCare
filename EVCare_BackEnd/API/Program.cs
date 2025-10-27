@@ -107,6 +107,7 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<ITechnicianSkillRepository, TechnicianSkillRepository>();
 builder.Services.AddScoped<IPartHistoryRepository, PartHistoryRepository>();
 builder.Services.AddScoped<IAppointmentPartConditionRepository, AppointmentPartConditonRepository>();
+builder.Services.AddScoped<IVehiclePartCompatibilityRepository, VehiclePartCompatibilityRepository>();
 
 
 
