@@ -109,17 +109,25 @@ const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, service
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (formData.serviceCategoryId === 0) {
-      notification.warning({
-        message: "Warning",
-        description: "Please select a service category.",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
     try {
+      if (formData.serviceCategoryId === 0) {
+        throw new Error("Please select a service category.");
+      }
+
+      if (formData.name.trim().length <= 0) {
+        throw new Error("Please input a service name category.");
+      }
+
+      if (formData.description.trim().length <= 0) {
+        throw new Error("Please input a service description.");
+      }
+
+      if (formData.duration <= 0) {
+        throw new Error("Please input a valid service duration.");
+      }
+
+      setIsSubmitting(true);
+
       let response = null;
       if (isUpdateMode && serviceToEdit) {
         const payload: Service = { id: serviceToEdit.id, ...formData, isDeleted: false };
