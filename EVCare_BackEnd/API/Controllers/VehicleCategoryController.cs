@@ -81,7 +81,7 @@ namespace API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateCategory([FromQuery] int id, VehicleCategoryCreateModel model) {
+        public async Task<IActionResult> UpdateCategory(int id, VehicleCategoryCreateModel model) {
             try {
 
                 await _vehicleCategoryService.UpdateCategoryAsync(id, model);
