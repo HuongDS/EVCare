@@ -1,140 +1,109 @@
-import styled from "styled-components";
-export const Navbar = styled.header`
-  height: 100px;
-  padding: 0 20px;
+import styled, { css, keyframes } from "styled-components";
+
+const fadeInDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+export const Navbar = styled.header<{ $isScrolled: boolean }>`
+  transition: all 0.4s ease-in-out;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 85px;
+  padding: 0 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-family: "Outfit", sans-serif;
-  background: linear-gradient(to bottom, #ebffe7, #f9fff8);
+  background: rgba(235, 255, 231, 0.85); /* Nền xanh mờ */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  animation: ${fadeInDown} 0.6s ease-out;
+
+  ${({ $isScrolled }) =>
+    $isScrolled &&
+    css`
+      height: 70px;
+      top: 10px;
+      width: 90%;
+      max-width: 1400px;
+      margin: 0 auto;
+      border-radius: 50px;
+      background: rgba(235, 255, 231, 0.95);
+      border: 1px solid rgba(0, 173, 78, 0.2);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    `}
+
+  @media (max-width: 750px) {
+    height: 70px;
+    padding: 0 15px;
+    ${({ $isScrolled }) =>
+      $isScrolled &&
+      css`
+        top: 5px;
+        height: 65px;
+        width: 90%;
+        border-radius: 15px;
+      `}
+  }
 `;
 
 export const Logo = styled.div`
-  width: 200px;
+  width: 180px;
   display: flex;
   align-items: center;
+  transition: transform 0.3s ease;
+
   img {
     width: 100%;
     object-fit: cover;
   }
-`;
 
-export const SearchBar = styled.div`
-  display: flex;
-  align-items: center;
-  border: 1px solid #ddd;
-  padding: 0 3px;
-  border-radius: 20px;
-  overflow: hidden;
-  max-width: 350px;
-  width: 100%;
-
-  input {
-    flex: 1;
-    border: none;
-    padding: 8px 12px;
-    font-size: 14px;
-    min-width: 0;
-
-    &:focus {
-      outline: none;
-    }
+  &:hover {
+    transform: scale(1.05);
   }
 
-  button {
-    flex-shrink: 0;
-    background-color: #4caf50;
-    border: none;
-    color: white;
-    padding: 4px 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-
-    i {
-      font-size: 16px;
-    }
-
-    &:hover {
-      background-color: #45a049;
-    }
-  }
-
-  @media (min-width: 750px) and (max-width: 900px) {
-    max-width: 200px;
-
-    input {
-      padding: 8px 3px;
-      font-size: 12px;
-    }
-
-    button {
-      i {
-        font-size: 14px;
-      }
-    }
-  }
   @media (max-width: 750px) {
-    max-width: 200px;
-
-    input {
-      padding: 8px 3px;
-      font-size: 12px;
-    }
-
-    button {
-      i {
-        font-size: 10px;
-      }
-    }
+    width: 150px;
   }
 `;
 
 export const Menu = styled.nav`
-  width: 40%;
   display: flex;
-  justify-content: space-between;
-  font-size: 1.2rem;
-  margin-right: 8%;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 1rem;
+
   a {
     position: relative;
     text-decoration: none;
-    font-weight: bold;
-    color: #2f2f2f;
-    transition: color 0.2s;
-    padding-bottom: 4px;
-    &::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      height: 2px;
-      width: 0;
-      background: #00ad4e;
-      transform: translateX(-50%) scaleX(0);
-      transform-origin: center;
-      transition: transform 0.3s ease;
+    font-weight: 600;
+    color: #2d3748;
+    padding: 8px 16px;
+    border-radius: 99px;
+    transition: all 0.25s ease-out;
+
+    &:hover {
+      color: #00ad4e;
+      background-color: #e6f7ee;
+      transform: scale(1.05);
     }
-
-    &:hover::after {
-      width: 100%;
-      transform: translateX(-50%) scaleX(1);
-    }
-  }
-
-  a:hover {
-    color: black;
-  }
-
-  .active {
-    color: black;
   }
 
   @media (min-width: 750px) and (max-width: 900px) {
-    width: 80%;
-    font-size: 16px;
+    gap: 1rem;
+    font-size: 0.95rem;
   }
   @media (max-width: 750px) {
     display: none;
@@ -144,28 +113,56 @@ export const Menu = styled.nav`
 export const Buttons = styled.div`
   display: flex;
   justify-content: flex-end;
-
-  .btn {
-    width: max-content;
-    height: fit-content;
-    border-radius: 15px;
-    border: 0.5px solid #ccc;
-    font-family: "Outfit", sans-serif;
-    font-size: 14px;
-    font-weight: bold;
-  }
+  align-items: center;
+  gap: 10px;
 
   .btn-fill {
-    background-color: #00ad4e;
+    background: linear-gradient(135deg, #00c656 0%, #00ad4e 100%);
     color: white;
+    font-family: "Outfit", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 173, 78, 0.25);
+    transition: all 0.3s ease-out;
+
+    &:hover {
+      background: linear-gradient(135deg, #00b850 0%, #009a46 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 173, 78, 0.4);
+    }
   }
 
-  .btn-fill:hover {
-    background-color: #1877f2;
+  #dropdown-item-button {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #00ad4e !important;
+    font-size: 2rem;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &::after {
+      display: none;
+    }
+
+    &:hover,
+    &:focus,
+    &:active {
+      background: #e6f7ee !important;
+      border-radius: 8px;
+    }
   }
+
   @media (max-width: 750px) {
-    .btn {
-      font-size: 12px;
+    .btn-fill {
+      font-size: 14px;
+      padding: 8px 16px;
     }
   }
 `;

@@ -29,9 +29,12 @@ namespace DataAccess.Configuration
                     .WithMany(e => e.Appointments)
                     .HasForeignKey(a => a.EmployeeId)
                     .OnDelete(DeleteBehavior.Restrict);
-
+            builder.HasIndex(a => a.Status)
+                    .HasDatabaseName("IX_Appointments_Status");
+            builder.HasIndex(a => a.Appointment_Date)
+                 .HasDatabaseName("IX_Appointments_AppointmentDate");
         }
 
-    
+
     }
 }

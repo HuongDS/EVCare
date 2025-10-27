@@ -76,7 +76,7 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
               <ServiceList>
                 {data?.services.map((s) => (
                   <Row key={s.id}>
-                    <ServiceItem>• {s.name}</ServiceItem>
+                    <ServiceItem> {s.name}</ServiceItem>
                   </Row>
                 ))}
               </ServiceList>

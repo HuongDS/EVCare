@@ -14,7 +14,6 @@ import {
   ServiceWrapper,
 } from "./AppointmentHistoryCard.styled";
 import dayjs from "dayjs";
-import { List } from "antd";
 import type { AppointmentViewDetailModel } from "../../../../models/AppointmentsModel/AppointmentViewDetailModel";
 import SpinnerComponent from "../../../../components/SpinnerComponent";
 import { useEffect, useState } from "react";
@@ -22,6 +21,8 @@ import { AppointmentStatusEnum } from "../../../../models/enums";
 import { ReviewWrapper } from "../../../../components/Review/Review.styled.tsx";
 // import ReviewModal from "../../../../components/Review/ReviewModal.tsx";
 import LazyReviewModal from "../../../../components/Review/LazyReviewModal.tsx";
+import type { CardData } from "../../../../models/Pics/CardData.ts";
+import { LazyReviewPicsSection } from "./LazyReviewPicsSection.tsx";
 
 interface props {
   data: AppointmentViewDetailModel;
@@ -38,6 +39,7 @@ export default function AppointmentHistoryCard({
 }: props) {
   const [isDisplayReviewButton, setIsDisplayReviewButton] = useState(false);
   const [isOpenReviewForm, setIsOpenReviewForm] = useState(false);
+  const [pics, setPics] = useState<CardData[]>([]);
 
   const onOpen = () => {
     setIsOpenReviewForm(true);
@@ -55,7 +57,8 @@ export default function AppointmentHistoryCard({
     if (data.status === AppointmentStatusEnum.DONE) {
       setIsDisplayReviewButton(true);
     }
-  }, [data.status]);
+    if (data.appointmentImages.length > 1) setPics(data.appointmentImages.map((p, i) => ({ id: i, url: p })));
+  }, [data.status, data.appointmentImages]);
 
   return (
     <Container>
@@ -78,14 +81,16 @@ export default function AppointmentHistoryCard({
       <ContentWrapper>
         <CustomerInformation>
           <ImageWrapper>
-            <img src={data.appointmentImages ? data.appointmentImages[0] : Car} alt="" />
+            {pics.length > 1 ? (
+              <LazyReviewPicsSection data={pics} />
+            ) : (
+              <img src={data.appointmentImages ? data.appointmentImages[0] : Car} alt="" />
+            )}
           </ImageWrapper>
           <ServiceWrapper>
-            <List>
-              {data?.services?.map((s) => (
-                <ListItem key={s.id}>{s.name}</ListItem>
-              ))}
-            </List>
+            {data?.services?.map((s) => (
+              <ListItem key={s.id}>{s.name}</ListItem>
+            ))}
           </ServiceWrapper>
         </CustomerInformation>
         <ButtonStyle>
