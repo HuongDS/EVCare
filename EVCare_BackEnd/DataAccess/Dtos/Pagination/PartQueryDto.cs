@@ -8,8 +8,8 @@ namespace DataAccess.Dtos.Pagination
 {
     public class PartQueryDto : BaseQueryDto
     {
-        public string PartName { get; set; } = string.Empty;
-        public int? CategoryId { get; set; }
+        public string? PartName { get; set; } = string.Empty;
+        public List<int>? CategoryIds { get; set; }
 
     }
 }

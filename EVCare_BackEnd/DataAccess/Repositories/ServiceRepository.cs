@@ -60,12 +60,13 @@ namespace DataAccess.Repositories
                     Id = x.Id,
                     IsDeleted = false,
                     Name = x.Name,
+                    ServiceCategoryId = x.ServiceCategoryId
                 });
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
                  
         }
 
-      
+        
     }
 }

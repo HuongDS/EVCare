@@ -1,6 +1,9 @@
-﻿using Application.Infrastructures;
+﻿using Application.Dtos;
+using Application.Infrastructures;
 using Application.Interfaces;
+using DataAccess.Dtos.VehicleCategory;
 using DocumentFormat.OpenXml.Presentation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,5 +57,49 @@ namespace API.Controllers
             }
 
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateCategory(VehicleCategoryCreateModel model) {
+            try {
+                var createdCategory = await _vehicleCategoryService.CreateCategoryAsync(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.CREATED,
+                    message =  Message.VEHICLE_CATEGORY_CREATE_SUCCESSFULLY,
+                    data = createdCategory
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateCategory([FromQuery]int id,VehicleCategoryCreateModel model) {
+            try {
+
+                await _vehicleCategoryService.UpdateCategoryAsync(id, model);
+
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.VEHICLE_CATEGORY_UPDATE_SUCCESSFULLY,
+                    data = id
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
+
     }
 }
