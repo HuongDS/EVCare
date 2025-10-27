@@ -1,77 +1,48 @@
 import styled from "styled-components";
 import ScrollFloat from "../../../../components/TextAnimation/ScrollFloat";
+import CountUp from "../../../../components/TextAnimation/CountAnimation";
 
-const BehindServiceWrapper = styled.div`
+const BehindServiceWrapper = styled.section`
   font-family: "Outfit", sans-serif;
-  padding: 5vw 0;
-  text-align: center;
+  padding: 6vw 0;
+  background: linear-gradient(180deg, #f6fff9 0%, #eef9f1 100%);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
   align-items: center;
-  gap: 3vw;
-
-  @media (max-width: 390px) {
-    padding: 3vw 0;
-    gap: 2vw;
-  }
-`;
-
-const DetailsNumberWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  height: auto;
-
-  @media (max-width: 768px) {
-    align-items: start;
-    text-align: center;
-    flex-direction: row;
-    gap: 2rem;
-  }
-
-  @media (max-width: 390px) {
-    gap: 1.5rem;
-  }
-
-  @media (max-width: 375px) {
-    gap: 1rem;
-  }
-`;
-
-const DetailsNumber = styled.p`
-  font-size: clamp(2.3rem, 8vw, 7rem);
-  font-weight: 1000;
-`;
-
-const DetailsDescription = styled.p`
-  font-size: clamp(1rem, 2vw, 2.5rem);
-  font-weight: 700;
-  margin-top: 0;
-  color: #0039a6;
+  gap: 5vw;
+  overflow: hidden;
 `;
 
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 50%;
+  max-width: 45%;
+  text-align: center;
 
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     max-width: 85%;
   }
 `;
 
 const Title = styled.h1`
   color: #16a34a;
-  font-size: clamp(3rem, 5vw, 4rem);
+  font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 800;
+  margin-bottom: 1.5rem;
 `;
 
 const Content = styled.p`
-  font-size: clamp(1rem, 2vw, 2.5rem);
-  margin-bottom: 20px;
+  font-size: clamp(1rem, 2vw, 1.8rem);
+  line-height: 1.7;
+  color: #1e293b;
   text-align: justify;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 1.5rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 100, 0, 0.05);
+  backdrop-filter: blur(8px);
 `;
 
 const Highlight = styled.span`
@@ -79,23 +50,52 @@ const Highlight = styled.span`
   font-weight: 700;
 `;
 
-const DetailWrapper = styled.div`
+const DetailsNumberWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: start;
-  text-align: center;
+  gap: 2.5rem;
+  justify-content: center;
+  align-items: flex-start;
 
-  @media (max-width: 768px) {
-    width: 100%;
-    margin-bottom: 2rem;
-    margin-left: 1rem;
+  @media (max-width: 992px) {
     align-items: center;
+    text-align: center;
+  }
+`;
+
+const DetailItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
   }
 
-  @media (max-width: 375px) {
-    margin-bottom: 1.6rem;
+  @media (max-width: 992px) {
     align-items: center;
+    text-align: center;
   }
+`;
+
+const DetailsNumber = styled.p`
+  font-size: clamp(2.5rem, 6vw, 6rem);
+  font-weight: 1000;
+  background: linear-gradient(135deg, #00a651, #16a34a, #0039a6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0px 4px 10px rgba(22, 163, 74, 0.25);
+  margin: 0;
+  line-height: 1;
+`;
+
+const DetailsDescription = styled.p`
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 700;
+  color: #0039a6;
+  margin-top: 0.5rem;
 `;
 
 export default function BehindService() {
@@ -125,20 +125,28 @@ export default function BehindService() {
       </ContentWrapper>
 
       <DetailsNumberWrapper>
-        <DetailWrapper data-aos="zoom-in-left" data-aos-delay="200">
-          <DetailsNumber>5000+</DetailsNumber>
+        <DetailItem data-aos="zoom-in-left" data-aos-delay="200">
+          <DetailsNumber>
+            <CountUp to={5000} duration={2} />+
+          </DetailsNumber>
           <DetailsDescription>EVs successfully maintained</DetailsDescription>
-        </DetailWrapper>
-        <DetailWrapper data-aos="zoom-in-left" data-aos-delay="250">
-          <DetailsNumber>50+</DetailsNumber>
+        </DetailItem>
+
+        <DetailItem data-aos="zoom-in-left" data-aos-delay="250">
+          <DetailsNumber>
+            <CountUp to={50} duration={2} />+
+          </DetailsNumber>
           <DetailsDescription>
             Certified and skilled technicians
           </DetailsDescription>
-        </DetailWrapper>
-        <DetailWrapper data-aos="zoom-in-left" data-aos-delay="300">
-          <DetailsNumber>10</DetailsNumber>
+        </DetailItem>
+
+        <DetailItem data-aos="zoom-in-left" data-aos-delay="300">
+          <DetailsNumber>
+            <CountUp to={10} duration={2} />+
+          </DetailsNumber>
           <DetailsDescription>Years of trusted experience</DetailsDescription>
-        </DetailWrapper>
+        </DetailItem>
       </DetailsNumberWrapper>
     </BehindServiceWrapper>
   );
