@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class PartRepository : GenericCategoryRepository<Part>, IPartRepository
+    public class PartRepository : GenericRepository<Part>, IPartRepository
     {
         public PartRepository(EVCareDbContext dbContext) : base(dbContext)
         {
@@ -21,13 +21,20 @@ namespace DataAccess.Repositories
         {
             return await _dbSet.AnyAsync(x => x.Id == partId);
         }
-
+        public override async Task<Part> AddAsync(Part entity) {
+            await _dbContext.Parts.AddAsync(entity);
+            return entity;
+        }
         public async Task DeleteByCategoryId(int id)
         {
            await _dbContext.Parts.Where(x=>x.CategoryId == id)
                 .ExecuteUpdateAsync(setters => setters
                     .SetProperty(p => p.Deleted_At, DateTime.Now)
                 );
+        }
+        public override  Task<Part> UpdateAsync(Part entity) {
+             _dbContext.Parts.Update(entity);
+            return Task.FromResult(entity);
         }
 
         public Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model)
@@ -80,6 +87,17 @@ namespace DataAccess.Repositories
             }
             part.Stock = stock - quantity;
             await UpdateAsync(part);
+        }
+
+        public async Task<IEnumerable<int>> GetPartIdsByCategoryId(int id) {
+            return await _dbContext.Parts
+                .Where(x => x.CategoryId == id)
+                .Select(x => x.Id)
+                .ToListAsync();
+        }
+
+        public async Task<Part> GetByNameAsync(string name) {
+            return await _dbContext.Parts.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
         }
     }
 }

@@ -21,6 +21,7 @@ namespace DataAccess.Repositories
         public async Task<PageResultDto<CustomerViewModel>> GetAllCustomers(CustomerQueryDto model)
         {
             var query = _dbContext.Customers.AsNoTracking()
+                .Include(x=>x.Account)
                 .Select(x => new CustomerViewModel
                 {
                     AccountId = x.AccountId,
@@ -29,7 +30,7 @@ namespace DataAccess.Repositories
                     Email = x.Account.Email,
                     PhoneNumber = x.Account.Phone,
                     Address = x.Address,
-                    Vehicles = x.Vehicles.Select(v => new Dtos.Vehicle.VehicleViewModel
+                    Vehicles = x.Vehicles.Where(x => x.Deleted_At == DateTime.MinValue).Select(v => new Dtos.Vehicle.VehicleViewModel
                     {
                         CategoryName = v.Category.Name,
                         LicensePlate = v.LicensePlate,

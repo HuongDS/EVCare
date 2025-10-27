@@ -14,5 +14,6 @@ namespace DataAccess.Interfaces
         Task<T> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetWithPaginationAsync(int payload, int payindex);
         Task<T> UpdateAsync(T entity);
+        Task SaveChangesAsync();
     }
 }

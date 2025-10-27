@@ -1,453 +1,462 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+import { motion } from "framer-motion";
+import { EmployeeStatusEnum, RoleEnum } from "../../../models/enums";
 
-export const AdminManageEmployeeWrapper = styled.div`
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  body {
-    font-family: "Outfit", sans-serif;
-    background: #f1f1f1;
-    display: flex;
-    min-height: 100vh;
-  }
-  .nav-menu {
-    list-style: none;
-  }
-  .nav-item {
-    padding: 12px 30px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #666;
-    font-size: 15px;
-    font-weight: 500;
-  }
-  .nav-item:hover {
-    background: #f9f9f9;
-    color: #333;
-  }
-  .nav-item.active {
-    background: #f0f9f4;
-    color: #00ad4e;
-    border-left: 3px solid #00ad4e;
-  }
-  .nav-icon {
-    font-size: 20px;
-    width: 24px;
-  }
-  .nav-section {
-    margin-top: 20px;
-  }
-  .nav-submenu {
-    list-style: none;
-    padding-left: 66px;
-  }
-  .nav-submenu .nav-item {
-    padding: 8px 0;
-    font-size: 14px;
-  }
-  .main-content {
-    flex: 1;
-    padding: 30px;
-  }
-  .page-title {
-    font-size: 28px;
-    font-weight: 600;
-    color: #333;
-  }
-  .user-section {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  .notification-icon {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    background: #fff;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: 1px solid #e0e0e0;
-  }
-  .notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 18px;
-    height: 18px;
-    background: #ff4757;
-    border-radius: 50%;
-    font-size: 10px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-  }
-  .user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #00ad4e;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    cursor: pointer;
-  }
+export const PageWrapper = styled.div`
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  padding: 32px;
+  background: linear-gradient(135deg, #f0f9f4 0%, #e6f7f0 100%);
+`;
+
+export const ContentWrapper = styled.main`
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   .filter-bar {
-    margin-bottom: 25px;
     display: flex;
-    gap: 15px;
+    gap: 16px;
     flex-wrap: wrap;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
   }
+
+  .search-input,
+  .filter-select {
+    font-family: "Outfit", sans-serif;
+    font-size: 1rem;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.7);
+    color: #1f2937;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #00ad4e;
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 0 0 3px rgba(0, 173, 78, 0.2);
+    }
+  }
+
   .search-input {
     flex: 1;
     min-width: 300px;
-    padding: 12px 20px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-family: "Outfit", sans-serif;
-    font-size: 15px;
-    transition: all 0.2s ease;
   }
-  .search-input:focus {
-    outline: none;
-    border-color: #00ad4e;
-    box-shadow: 0 0 0 3px rgba(0, 173, 78, 0.1);
-  }
+
   .filter-select {
-    padding: 12px 20px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-family: "Outfit", sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    color: #666;
-    background: #fff;
+    min-width: 180px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 150px;
   }
-  .filter-select:focus {
-    outline: none;
-    border-color: #00ad4e;
+
+  .main-content {
+    padding: 0;
   }
+  .page-wrapper {
+    width: 100%;
+  }
+
   .add-employee-btn {
     padding: 12px 24px;
     background: #00ad4e;
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-family: "Outfit", sans-serif;
-    font-size: 15px;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+    margin-left: auto;
   }
+
   .add-employee-btn:hover {
     background: #008f3f;
   }
-  .employees-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 20px;
+`;
+
+export const Header = styled.header`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 24px;
+  // border-bottom: none;
+  margin-bottom: 24px;
+`;
+
+export const Title = styled.h1`
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  background: linear-gradient(90deg, #00c656 0%, #00ad4e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+`;
+
+export const Instruction = styled.p`
+  font-size: 1rem;
+  color: #374151;
+  margin: 0;
+`;
+
+export const EmployeesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
+`;
+
+export const CardWrapper = styled.div<{ $isBanned: boolean }>`
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: ${({ $isBanned }) => ($isBanned ? 0.6 : 1)};
+  filter: ${({ $isBanned }) => ($isBanned ? "grayscale(80%)" : "none")};
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.12);
   }
-  .employee-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-  }
-  .employee-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    border-color: #00ad4e;
-  }
-  .employee-header {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f1f1f1;
-  }
-  .employee-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #e0e0e0;
-    flex-shrink: 0;
-  }
-  .employee-basic-info {
-    flex: 1;
-  }
-  .employee-name-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-  .employee-name {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-  }
-  .role-badge {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-  .role-staff {
-    background: #e3f2fd;
-    color: #1976d2;
-  }
-  .role-technician {
-    background: #f3e5f5;
-    color: #7b1fa2;
-  }
-  .banned-badge {
-    background: #ff4757;
-    color: #fff;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-top: 8px;
-  }
-  .status-available {
-    background: #e8f5e9;
-    color: #2e7d32;
-  }
-  .status-busy {
-    background: #fff3e0;
-    color: #e65100;
-  }
-  .status-onleave {
-    background: #fce4ec;
-    color: #c2185b;
-  }
+`;
+
+export const header = styled.div`
+  display: flex;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 173, 78, 0.1);
+  margin-bottom: 16px;
+`;
+
+export const Avatar = styled.img`
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #fff;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+`;
+
+export const Info = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  text-align: center;
+`;
+
+export const NameRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+`;
+
+export const Name = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+`;
+
+export const RoleBadge = styled.span<{ $role: RoleEnum }>`
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: ${({ $role }) => ($role === RoleEnum.TECHNICIAN ? "rgba(0, 173, 78, 0.15)" : "#e0f2fe")};
+  color: ${({ $role }) => ($role === RoleEnum.TECHNICIAN ? "#065f46" : "#0c4a6e")};
+`;
+
+export const BannedBadge = styled.span`
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: #f3f4f6;
+  color: #6b7280;
+`;
+
+export const StatusBadge = styled.div<{ $status: EmployeeStatusEnum }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: fit-content;
+  margin-top: 4px;
   .status-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
     background: currentColor;
   }
-  .employee-details {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-  .detail-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    color: #666;
-    padding: 8px;
-    background: #f9f9f9;
-    border-radius: 6px;
-  }
-  .detail-icon {
-    font-size: 16px;
-    color: #00ad4e;
-  }
-  .technician-extra {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #f1f1f1;
-  }
-  .extra-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: #999;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  .experience-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: #f3e5f5;
-    color: #7b1fa2;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 10px;
-  }
-  .skills-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .skill-tag {
-    padding: 5px 10px;
-    background: #e0e0e0;
-    color: #666;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-  .employee-actions {
-    display: flex;
-    justify-content: flex-end;
-  }
-  .action-btn {
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-family: "Outfit", sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-  }
-  .ban-btn {
-    background: #fff;
-    color: #ff4757;
-    border: 2px solid #ff4757;
-  }
-  .ban-btn:hover {
-    background: #ff4757;
-    color: #fff;
-  }
-  .empty-state {
-    text-align: center;
-    padding: 60px;
-    color: #999;
-    font-size: 16px;
-    grid-column: 1 / -1;
-  } /* Modal Styles */
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-  }
-  .modal.active {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .modal-content {
-    background: #fff;
-    border-radius: 12px;
-    padding: 35px;
-    max-width: 500px;
-    width: 90%;
-  }
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-  }
-  .modal-title {
-    font-size: 22px;
-    font-weight: 600;
-    color: #333;
-  }
-  .close-btn {
-    background: none;
-    border: none;
-    font-size: 28px;
-    color: #999;
-    cursor: pointer;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-  }
-  .close-btn:hover {
-    background: #f5f5f5;
-    color: #333;
-  }
-  .modal-body {
-    margin-bottom: 30px;
-    color: #666;
-    line-height: 1.6;
-    font-size: 15px;
-  }
-  .modal-buttons {
-    display: flex;
-    gap: 12px;
-  }
-  .modal-btn {
-    flex: 1;
-    padding: 14px;
-    border-radius: 8px;
-    font-family: "Outfit", sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-  }
-  .confirm-btn {
-    background: #ff4757;
-    color: #fff;
-  }
-  .confirm-btn:hover {
-    background: #e84252;
-  }
-  .cancel-modal-btn {
-    background: #fff;
-    color: #666;
-    border: 2px solid #e0e0e0;
-  }
-  .cancel-modal-btn:hover {
-    background: #f5f5f5;
-  }
-  @media (max-width: 1200px) {
-    .employees-grid {
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+
+  ${({ $status }) => {
+    switch ($status) {
+      case EmployeeStatusEnum.Available:
+        return `background: #dcfce7; color: #166534;`;
+      case EmployeeStatusEnum.Busy:
+        return `background: #fffbeb; color: #b45309;`;
+      case EmployeeStatusEnum.OnLeave:
+        return `background: #f3f4f6; color: #6b7280;`;
+      default:
+        return `background: #f3f4f6; color: #6b7280;`;
     }
+  }}
+`;
+
+export const DetailsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 0 16px;
+`;
+
+export const DetailItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.95rem;
+  color: #374151;
+`;
+
+export const DetailIcon = styled.div`
+  font-size: 1.1rem;
+  color: #00ad4e;
+  width: 24px;
+  text-align: center;
+`;
+
+export const TechSection = styled.div`
+  margin-top: 16px;
+  padding-top: 124px;
+  padding: 0 16px;
+`;
+
+export const SectionTitle = styled.h4`
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 16px 0;
+`;
+
+export const ExperienceBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(0, 173, 78, 0.1);
+  color: #064e3b;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+`;
+
+export const SkillsList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-height: 90px;
+  overflow-y: auto;
+  padding-right: 8px;
+  &::-webkit-scrollbar {
+    width: 6px;
   }
-  @media (max-width: 768px) {
-    .sidebar {
-      transform: translateX(-100%);
-    }
-    .main-content {
-      margin-left: 0;
-    }
-    .employees-grid {
-      grid-template-columns: 1fr;
-    }
-    .filter-bar {
-      flex-direction: column;
-    }
-    .search-input {
-      min-width: 100%;
-    }
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
   }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
+  }
+`;
+
+export const SkillTag = styled.span`
+  padding: 6px 14px;
+  background: #e5e7eb;
+  color: #4b5563;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+`;
+
+export const Actions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 24px;
+`;
+
+export const ActionButton = styled.button`
+  padding: 10px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    background: #f9fafb;
+    color: #374151;
+  }
+`;
+
+export const EmptyState = styled.div`
+  text-align: center;
+  padding: 60px;
+  color: #6b7280;
+  font-size: 1rem;
+  grid-column: 1 / -1;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+export const ModalBackdrop = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  animation: ${fadeIn} 0.3s ease;
+`;
+
+export const ModalContainer = styled(motion.div)`
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+`;
+
+export const ModalHeader = styled.div`
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const ModalTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #c2410c;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const ModalCloseButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    color: #1f2937;
+  }
+`;
+
+export const ModalBody = styled.div`
+  padding: 24px;
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.6;
+
+  p {
+    margin: 0 0 12px 0;
+  }
+  strong {
+    color: #1f2937;
+    font-weight: 700;
+  }
+`;
+
+export const ModalFooter = styled.div`
+  padding: 20px 24px;
+  background: rgba(0, 0, 0, 0.03);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+`;
+
+export const ModalButton = styled.button<{ $isConfirm: boolean }>`
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ${({ $isConfirm }) =>
+    $isConfirm
+      ? `
+    background: #dc2626; color: white;
+    &:hover { background: #b91c1c; }
+  `
+      : `
+    background: #fff; color: #374151;
+    border: 1px solid #d1d5db;
+    &:hover { background: #f9fafb; }
+  `}
 `;

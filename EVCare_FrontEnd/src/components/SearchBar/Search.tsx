@@ -1,17 +1,16 @@
 import styled from "styled-components";
+// (Các import khác nếu có)
 
 interface handleSearchProps {
   handleSearchValue: (v: string) => void;
   placeholder?: string;
   searchValue?: string;
 }
-const SearchBar = ({
-  handleSearchValue,
-  placeholder,
-  searchValue,
-}: handleSearchProps) => {
+
+const SearchBar = ({ handleSearchValue, placeholder, searchValue }: handleSearchProps) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleSearchValue(event.target.value.trim());
+    // Bạn nên bỏ .trim() ở đây để user có thể gõ space
+    handleSearchValue(event.target.value);
   };
   return (
     <StyledWrapper>
@@ -47,41 +46,45 @@ const StyledWrapper = styled.div`
   .input {
     font-family: "Outfit", sans-serif;
     width: 100%;
-    height: 40px;
-    padding-left: 2.5rem;
-    box-shadow: 0 0 0 1.5px #4caf50, 0 0 25px -17px #4caf50;
-    border: 0;
+    height: 44px;
+    padding-left: 2.75rem;
+
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    background-color: white;
+    color: #ffffff;
+
     outline: none;
-    color: black;
     transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
     cursor: text;
     z-index: 0;
   }
 
   .input::placeholder {
-    color: #bdbecb;
+    color: rgba(255, 255, 255, 0.5);
   }
 
   .input:hover {
-    box-shadow: 0 0 0 2.5px #4caf50, 0px 0px 25px -15px #4caf50;
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 
   .input:active {
-    transform: scale(0.95);
+    transform: scale(0.98);
   }
 
   .input:focus {
-    box-shadow: 0 0 0 2.5px #4caf50;
+    background: rgba(0, 0, 0, 0.25);
+    border-color: #00ad4e;
+    box-shadow: 0 0 15px rgba(0, 173, 78, 0.4);
   }
 
   .search-icon {
     position: absolute;
     left: 1rem;
-    fill: #bdbecb;
-    width: 1rem;
-    height: 1rem;
+    fill: rgba(255, 255, 255, 0.6);
+    width: 1.15rem;
+    height: 1.15rem;
     pointer-events: none;
     z-index: 1;
   }

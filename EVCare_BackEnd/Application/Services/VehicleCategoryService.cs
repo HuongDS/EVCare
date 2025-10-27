@@ -26,5 +26,15 @@ namespace Application.Services
 
         }
 
+        public async Task<VehicleCategoryViewPartModel> GetCategoryDetailAsync(int id) {
+
+            var vehicle = await _vehicleCategoryRepository.GetByIdAsync(id);
+            if (vehicle == null || vehicle.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception("Vehicle category not found");
+            }
+
+            return await _vehicleCategoryRepository.GetCategoryDetailAsync(id);
+        }
     }
 }

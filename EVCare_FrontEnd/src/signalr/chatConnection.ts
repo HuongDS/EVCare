@@ -17,3 +17,9 @@ export function getChatConnection() {
   }
   return connection;
 }
+
+export async function stopChatConnection() {
+  if (connection && connection.state === signalR.HubConnectionState.Connected) {
+    await connection.stop();
+  }
+}

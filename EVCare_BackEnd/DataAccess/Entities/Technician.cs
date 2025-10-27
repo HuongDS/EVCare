@@ -17,6 +17,7 @@ namespace DataAccess.Entities
         public ICollection<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }
         public ICollection<TechnicianSkill> TechnicianSkills { get; set; }
         public ICollection<OrderPart> OrderParts { get; set; }
+        public ICollection<AppointmentPartCondition> AppointmentPartConditions { get; set; }
         public DateTime Created_At { get; set; }
 
     }

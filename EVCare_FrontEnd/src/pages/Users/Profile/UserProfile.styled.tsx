@@ -1,16 +1,139 @@
 import styled from "styled-components";
 
 export const ContainerWrapper = styled.div`
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  &::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+    filter: blur(10px) brightness(1.1);
+    transform: scale(1.02);
+  }
+
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Outfit", sans-serif;
   }
+
   .container {
     max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
-    padding: 20px;
+    display: grid;
+    grid-template-columns: 3fr 7fr;
+    gap: 24px;
+
+    @media (max-width: 992px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .sidebar-info-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    text-align: center;
+
+    .avatar-placeholder {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      margin: 0 auto 15px;
+      border: 2px solid rgba(255, 255, 255, 1);
+    }
+    h2 {
+      color: #333;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    p {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      word-break: break-all;
+    }
+  }
+
+  .sidebar-nav {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sidebar-nav-btn {
+    background: transparent;
+    color: #495057;
+    border: 1px solid transparent;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-family: "Outfit", sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    svg {
+      font-size: 1.2rem;
+      color: #6c757d;
+      transition: all 0.3s ease;
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: #212529;
+    }
+
+    &.active {
+      background: #00ad4e;
+      color: #fff;
+      border-color: #00ad4e;
+      box-shadow: 0 4px 15px rgba(0, 173, 78, 0.2);
+
+      svg {
+        color: #fff;
+      }
+    }
+  }
+
+  .content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
   }
 
   .header {
@@ -19,6 +142,9 @@ export const ContainerWrapper = styled.div`
     gap: 20px;
     margin-bottom: 30px;
     animation: slideDown 0.6s ease-out;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto 30px;
   }
 
   .back-btn {
@@ -49,11 +175,12 @@ export const ContainerWrapper = styled.div`
   }
 
   .profile-card {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 1);
     border-radius: 20px;
     padding: 40px;
-    margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     animation: fadeInUp 0.6s ease-out;
   }
 
@@ -66,7 +193,7 @@ export const ContainerWrapper = styled.div`
   .profile-title {
     font-size: 28px;
     font-weight: 700;
-    color: #333;
+    color: #333; /* Chữ màu tối */
   }
 
   .rank-badge {
@@ -107,19 +234,23 @@ export const ContainerWrapper = styled.div`
     color: #666;
     margin-bottom: 8px;
   }
+
   .info-field input {
     width: 100%;
     padding: 14px;
-    border: 2px solid #f1f1f1;
     border-radius: 12px;
     font-family: "Outfit", sans-serif;
     font-size: 16px;
     transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid #ddd;
+    color: #333;
   }
   .info-field input:focus {
     outline: none;
     border-color: #00ad4e;
     box-shadow: 0 0 0 3px rgba(0, 173, 78, 0.1);
+    background: rgba(255, 255, 255, 0.8);
   }
   .info-field input:disabled {
     background: #f9f9f9;
@@ -145,6 +276,7 @@ export const ContainerWrapper = styled.div`
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 173, 78, 0.3);
   }
+
   .cancel-btn {
     background: #fff;
     color: #666;
@@ -200,15 +332,14 @@ export const ContainerWrapper = styled.div`
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     gap: 20px;
     padding: 20px;
-    background: #f9f9f9;
+    background: rgba(255, 255, 255, 0.5); /* Kính trắng mờ */
     border-radius: 12px;
     border-left: 4px solid #00ad4e;
     transition: all 0.3s ease;
     align-items: center;
   }
-
   .invoice-item:hover {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.8);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     transform: translateX(5px);
   }
@@ -247,22 +378,18 @@ export const ContainerWrapper = styled.div`
     text-transform: uppercase;
     display: inline-block;
   }
-
   .status-pending {
     background: #fff3cd;
     color: #856404;
   }
-
   .status-completed {
     background: #d4edda;
     color: #155724;
   }
-
   .status-failed {
     background: #f8d7da;
     color: #721c24;
   }
-
   .status-refunded {
     background: #d1ecf1;
     color: #0c5460;
@@ -319,7 +446,7 @@ export const ContainerWrapper = styled.div`
   }
 
   .vehicle-card {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.5);
     border-radius: 16px;
     padding: 20px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
@@ -329,6 +456,7 @@ export const ContainerWrapper = styled.div`
   .vehicle-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.8);
   }
 
   .vehicle-image {
@@ -395,6 +523,7 @@ export const ContainerWrapper = styled.div`
 
   .modal-content {
     background: #fff;
+    border: 1px solid #ddd;
     border-radius: 20px;
     padding: 40px;
     max-width: 500px;
@@ -420,6 +549,7 @@ export const ContainerWrapper = styled.div`
     color: #666;
     margin-bottom: 8px;
   }
+
   .form-group select,
   .form-group input {
     width: 100%;
@@ -429,6 +559,8 @@ export const ContainerWrapper = styled.div`
     font-family: "Outfit", sans-serif;
     font-size: 16px;
     transition: all 0.3s ease;
+    background: #f9f9f9;
+    color: #333;
   }
   .form-group select:focus,
   .form-group input:focus {
@@ -444,6 +576,7 @@ export const ContainerWrapper = styled.div`
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    color: #666;
   }
   .image-upload:hover {
     background: rgba(0, 173, 78, 0.05);
@@ -525,6 +658,11 @@ export const ContainerWrapper = styled.div`
     }
   }
 
+  @media (max-width: 992px) {
+    .container {
+      grid-template-columns: 1fr;
+    }
+  }
   @media (max-width: 768px) {
     .profile-card {
       padding: 25px;
@@ -536,7 +674,6 @@ export const ContainerWrapper = styled.div`
       grid-template-columns: 1fr;
     }
   }
-
   @media (max-width: 768px) {
     .invoice-item {
       grid-template-columns: 1fr;

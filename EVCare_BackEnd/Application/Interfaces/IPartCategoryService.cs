@@ -12,8 +12,8 @@ namespace Application.Interfaces
     public interface IPartCategoryService
     {
         Task<int> CreateCategory(PartCategoryCreateModel model);
-        Task DeleteCategory(int id);
+        Task DeleteCategory(int id, int accountId);
         public Task<PageResultDto<PartCategoryViewModel>> GetCategories(CategoryQueryDto model);
-       
+        Task RestoreCategory(int id, int accountId);
     }
 }
