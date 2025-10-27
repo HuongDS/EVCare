@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import ScrollFloat from "../../../../components/TextAnimation/ScrollFloat";
 
 const BehindServiceWrapper = styled.div`
   font-family: "Outfit", sans-serif;
@@ -62,7 +63,8 @@ const ContentWrapper = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: clamp(3rem, 6vw, 5rem);
+  color: #16a34a;
+  font-size: clamp(3rem, 5vw, 4rem);
   font-weight: 800;
 `;
 
@@ -99,9 +101,19 @@ const DetailWrapper = styled.div`
 export default function BehindService() {
   return (
     <BehindServiceWrapper data-aos="fade-up">
-      <ContentWrapper data-aos="fade-up" data-aos-delay="200">
-        <Title>Behind Service</Title>
-        <Content>
+      <ContentWrapper>
+        <Title>
+          <ScrollFloat
+            animationDuration={1}
+            ease="back.inOut(2)"
+            scrollStart="center bottom+=50%"
+            scrollEnd="bottom bottom-=40%"
+            stagger={0.05}
+          >
+            Behind Service
+          </ScrollFloat>
+        </Title>
+        <Content data-aos="zoom-in-right" data-aos-delay="100">
           Behind every smart maintenance service is a{" "}
           <Highlight>passionate and highly skilled team</Highlight>. With years
           of experience in developing solutions for the EV industry, we combine{" "}
@@ -112,18 +124,18 @@ export default function BehindService() {
         </Content>
       </ContentWrapper>
 
-      <DetailsNumberWrapper data-aos="fade-up" data-aos-delay="400">
-        <DetailWrapper>
+      <DetailsNumberWrapper>
+        <DetailWrapper data-aos="zoom-in-left" data-aos-delay="200">
           <DetailsNumber>5000+</DetailsNumber>
           <DetailsDescription>EVs successfully maintained</DetailsDescription>
         </DetailWrapper>
-        <DetailWrapper>
+        <DetailWrapper data-aos="zoom-in-left" data-aos-delay="250">
           <DetailsNumber>50+</DetailsNumber>
           <DetailsDescription>
             Certified and skilled technicians
           </DetailsDescription>
         </DetailWrapper>
-        <DetailWrapper>
+        <DetailWrapper data-aos="zoom-in-left" data-aos-delay="300">
           <DetailsNumber>10</DetailsNumber>
           <DetailsDescription>Years of trusted experience</DetailsDescription>
         </DetailWrapper>

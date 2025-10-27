@@ -2,7 +2,7 @@
 import React from "react";
 
 import { type Variants } from "framer-motion";
-import carImage from "../../../../assets/VinFastCarV2.webp";
+import carImage from "../../../../assets/byd-atto3.png";
 import TextType from "../../../../components/TextAnimation/TextType";
 import TrueFocus from "../../../../components/TextAnimation/TextFocus";
 import {
