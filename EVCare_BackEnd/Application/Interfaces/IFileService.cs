@@ -11,5 +11,6 @@ namespace Application.IService
     {
         public Task<string> UploadImageAsync(FileUploadModel file);
         public Task<List<FileUploadResult>> UploadImagesAsync(List<FileUploadModel> fileUploadModels);
+        Task<string> UploadModel3DAsync(FileUploadModel fileUploadModel);
     }
 }

@@ -1,18 +1,18 @@
-import { AdminCustomerVehicleWrapper } from "./Admin_Customer_Vehicle.styled";
+import { PageWrapper, ContentWrapper, Header, Title, Instruction } from "./Admin_Customer_Vehicle.styled";
 import { useState, useEffect } from "react";
 import SearchBar from "../AdminCustomer&Vehicle/SearchBar";
-import UserCard from "../AdminCustomer&Vehicle/CustomerAndVehicleCard";
 import BanModal from "../AdminCustomer&Vehicle/BanModel";
 import type { FullCustomerInfor } from "../../../models/CustomerModels/FullCustomerInfor";
 import { banAccount, getAllCustomerInformation } from "../../../services/adminService";
 import { ERROR_MESSAGE, MSG_TITLE } from "../../../constants/messages/Message";
 import { useNotification } from "../../../context/useNotification";
 import { Pagination } from "../../../components/Paginations/Pagination";
+import CustomerTable from "./CustomerTable";
 
 export default function Admin_Customer_Vehicle() {
   const [data, setData] = useState<FullCustomerInfor[]>([]);
   const [search, setSearch] = useState("");
-  const [banModal, setBanModal] = useState<{ visible: boolean; id?: number }>({ visible: false });
+  const [banModal, setBanModal] = useState<{ visible: boolean; user?: FullCustomerInfor }>({ visible: false });
   const [pageSize, setPageSize] = useState(6);
   const [pageIndex, setPageIndex] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -20,13 +20,19 @@ export default function Admin_Customer_Vehicle() {
 
   const notification = useNotification();
 
-  const handleBan = (id: number) => setBanModal({ visible: true, id });
+  const handleBan = (user: FullCustomerInfor) => {
+    setBanModal({ visible: true, user: user });
+  };
+
   const handleConfirmBan = async () => {
-    if (banModal.id) {
-      // setUsers((prev) => prev.map((u) => (u.id === banModal.id ? { ...u, banned: true } : u)));
+    if (banModal.user) {
+      const accountId = banModal.user.accountId;
       setBanModal({ visible: false });
       try {
-        await banAccount(banModal.id);
+        await banAccount(accountId);
+
+        setData((prevData) => prevData.map((u) => (u.accountId === accountId ? { ...u, banned: true } : u)));
+
         notification.warning({
           message: MSG_TITLE.BAN_ACCOUNT,
           description: "Banned successfully",
@@ -71,33 +77,33 @@ export default function Admin_Customer_Vehicle() {
   }, [search]);
 
   return (
-    <AdminCustomerVehicleWrapper>
-      <div className="layout">
-        <main className="main-content">
-          <SearchBar search={search} onSearchChange={setSearch} />
-          <div className="users-grid">
-            {data.length ? (
-              data.map((u) => <UserCard setOpenBanModal={setBanModal} key={u.accountId} user={u} onBan={handleBan} />)
-            ) : (
-              <div className="empty-state">No users found</div>
-            )}
-          </div>
-        </main>
+    <PageWrapper>
+      <ContentWrapper>
+        <Header>
+          <Title>Customer Management</Title>
+          <Instruction>Manage all your customers. Click on a customer's row to see their vehicle details.</Instruction>
+        </Header>
 
-        <BanModal
-          visible={banModal.visible}
-          userName={data.find((u) => u.accountId === banModal.id)?.customerName}
-          onCancel={() => setBanModal({ visible: false })}
-          onConfirm={handleConfirmBan}
+        <SearchBar search={search} onSearchChange={setSearch} placeHolder="Search by name, email, or phone number..." />
+
+        <CustomerTable customers={data} onBanCustomer={handleBan} />
+
+        <Pagination
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          totalPage={totalPages}
+          onPageChange={onPageChange}
         />
-      </div>
-      <Pagination
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-        totalItems={totalItems}
-        totalPage={totalPages}
-        onPageChange={onPageChange}
+      </ContentWrapper>
+
+      <BanModal
+        visible={banModal.visible}
+        userName={banModal.user?.customerName}
+        isBanned={banModal.user?.banned}
+        onCancel={() => setBanModal({ visible: false })}
+        onConfirm={handleConfirmBan}
       />
-    </AdminCustomerVehicleWrapper>
+    </PageWrapper>
   );
 }

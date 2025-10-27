@@ -28,7 +28,7 @@ namespace API.Controllers
         }
 
         [HttpGet("replenishment-gemini")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Get([FromQuery] AIQueryDto model)
         {
             try

@@ -9,8 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DataAccess.Repositories
 {
-    public class UnitOfWork : IUnitOfWork
-    {
+    public class UnitOfWork : IUnitOfWork {
         private readonly EVCareDbContext _dbContext;
         private IDbContextTransaction _transaction;
 
@@ -59,6 +58,12 @@ namespace DataAccess.Repositories
                     throw;
                 }
             });
+        }
+
+     
+
+        public async Task SaveChangesAsync() {
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
