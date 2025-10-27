@@ -45,7 +45,7 @@ namespace API.Controllers
 
         [HttpGet("admin")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAllForAdmin([FromQuery]ServiceCategoryQueryDto model) {
+        public async Task<IActionResult> GetAllForAdmin([FromQuery] ServiceCategoryQueryDto model) {
             try {
                 var data = await _serviceCategoryService.GetSrvicecategoryViewDto(model);
                 return Ok(new ResponseDto<PageResultDto<ServiceCategoryViewDto>>
@@ -64,8 +64,11 @@ namespace API.Controllers
             }
         }
 
-        
+        //[HttpPost]
 
 
-       }
+
+
+
+    }
 }
