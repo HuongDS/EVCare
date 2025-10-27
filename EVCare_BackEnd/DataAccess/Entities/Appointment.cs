@@ -30,5 +30,6 @@ namespace DataAccess.Entities
         public ICollection<AppointmentService> AppointmentServices { get; set; }
         public ICollection<Alert> Alerts { get; set; }
         public ICollection<Appointmentimage> AppointmentImages { get; set; }
+        public ICollection<AppointmentPartCondition> AppointmentPartConditions { get; set; }
     }
 }

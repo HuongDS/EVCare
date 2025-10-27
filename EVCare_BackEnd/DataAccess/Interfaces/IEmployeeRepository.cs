@@ -14,6 +14,7 @@ namespace DataAccess.Interfaces
         Task<PageResultDto<EmployeeViewModel>> GetAllEmployeesAsync(EmployeeQueryDto query);
         Task<Employee> GetEmployeeByAccountId(int userId);
         Task<Employee> GetEmployeeByTechnicianId(int technicianId);
+        Task<EmployeeViewModel> GetEmployeeInformation(int employeeId);
         Task MarkAvaliableAllEmployees();
         Task MarkBusyForTechnician(IEnumerable<int> technicianIds);
         Task MarkBusyForTechnician();

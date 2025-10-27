@@ -1,15 +1,15 @@
+// File: Authentication.styled.tsx
 import styled from "styled-components";
 import { Modal, Form } from "react-bootstrap";
 
 export const StyledModal = styled(Modal)`
-  .modal-dialog {
-    max-width: 60%;
-    height: 90vh;
+  z-index: 1050 !important;
 
-    @media (max-width: 1045px) {
-      max-width: 95%;
-      height: auto;
-    }
+  .modal-dialog {
+    max-width: 900px;
+    width: 90%;
+    max-height: 700px;
+    height: 90%;
   }
 
   .modal-content {
@@ -19,9 +19,15 @@ export const StyledModal = styled(Modal)`
     border-radius: 12px;
     overflow: hidden;
     flex-direction: row;
+    position: relative;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 
     @media (max-width: 1045px) {
       flex-direction: column;
+      height: auto;
+      max-height: 90vh;
+      overflow-y: auto;
     }
   }
 `;
@@ -67,6 +73,7 @@ export const FormContainer = styled(Modal.Body)<{ $isSignUp: boolean }>`
   justify-content: center;
   z-index: 2;
   transition: right 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #fff; /* Đảm bảo phần form cũng có nền trắng */
 
   @media (max-width: 1045px) {
     position: relative;
@@ -126,7 +133,6 @@ export const Divider = styled.div`
     border: none;
     height: 1px;
     background: rgba(0, 0, 0, 0.1);
-    margin: 0;
   }
 
   span {

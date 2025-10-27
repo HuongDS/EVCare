@@ -34,7 +34,7 @@ namespace DataAccess.Repositories
                 .Where(x => x.Id == technicianId)
                 .Include(x => x.Employee).ThenInclude(x => x.Account)
                 .Include(x => x.TechnicianSkills).ThenInclude(x => x.Service)
-                .Include(x=>x.TechnicianWorkingSessions)
+                .Include(x => x.TechnicianWorkingSessions)
                 .Select(x => new TechnicianViewModel
                 {
                     ExpYears = x.ExpYear,
@@ -53,9 +53,9 @@ namespace DataAccess.Repositories
 
         public async Task<int> GetTechnicianIdByAccountId(int accountId)
         {
-            var data = await _dbSet.Include(x=>x.Employee).ThenInclude(X=>X.Account)
-                .AsNoTracking().Where(x=>x.Employee.Account.Id == accountId).FirstOrDefaultAsync();
-            if(data == null)
+            var data = await _dbSet.Include(x => x.Employee).ThenInclude(X => X.Account)
+                .AsNoTracking().Where(x => x.Employee.Account.Id == accountId).FirstOrDefaultAsync();
+            if (data == null)
             {
                 throw new Exception("Souce not found");
             }
@@ -85,15 +85,31 @@ namespace DataAccess.Repositories
                     Status = x.Employee.Status
 
                 })
-                .Where(x=>x.Status == model.Status);
+                .Where(x => x.Status == model.Status);
             if (model.Skills != null) query = query.Where(x => x.Skills.Any(s => model.Skills.Contains(s.Id)));
-            if(!string.IsNullOrEmpty(model.FullName))
+            if (!string.IsNullOrEmpty(model.FullName))
             {
                 query = query.Where(x => (x.FullName).ToLower().Contains(model.FullName.ToLower()));
             }
-            query = query.ApplySorting(model.SortField,model.SortOrder);
-            
-            return await PaginationHelper.PaginationAsync(query,model.PageSize.Value,model.PageIndex.Value);
+            query = query.ApplySorting(model.SortField, model.SortOrder);
+
+            return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+        }
+
+        public async Task<IEnumerable<TechnicianCusViewModel>> GetTechniciansByOrderId(int orderId)
+        {
+            var data = await _dbContext.TechnicianWorkingSessions
+                .Where(x => x.OrderId == orderId)
+                .Include(x => x.Technician).ThenInclude(x => x.Employee).ThenInclude(x => x.Account)
+                .Select(x => new TechnicianCusViewModel
+                {
+                    Id = x.Technician.Id,
+                    FullName = x.Technician.Employee.Account.First_Name + " " + x.Technician.Employee.Account.Last_Name,
+                    Avatar = x.Technician.Employee.Avatar,
+                    ExpYears = x.Technician.ExpYear
+                })
+                .ToListAsync();
+            return data;
         }
     }
 }

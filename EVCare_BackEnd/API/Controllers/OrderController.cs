@@ -125,7 +125,10 @@ namespace API.Controllers
             }
         }
         [HttpGet("get-order-detail/{orderId}")]
-        [Authorize(Roles ="Staff")]
+        [Authorize(Roles ="Staff,Customer")]
+        [ServiceFilter(typeof(SetCustomerIdFilter))]
+        [ServiceFilter(typeof(AuthorizeCustomerAndStaffForOrder))]
+
         public async Task<IActionResult> GetOrderDetail(int orderId)
         {
             try
