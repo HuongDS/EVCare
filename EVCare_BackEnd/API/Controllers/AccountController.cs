@@ -159,5 +159,30 @@ namespace API.Controllers
                 });
             }
         }
+
+        [HttpPut("unbanned-account/{accountId}")]
+        [Authorize(Roles = "Admin")] 
+        public async Task<IActionResult> UnbannedAccount(int accountId)
+        {
+            try
+            {
+                var response = await _accountService.UnbannedAccount(accountId);
+                return Ok(new ResponseDto<int>
+                {
+                    data = response,
+                    statusCode = HttpStatus.OK,
+                    message = Message.UNBANNED_ACCOUNT_SUCCESS
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
     }
 }

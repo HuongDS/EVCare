@@ -14,6 +14,8 @@ namespace Application.Mappings
         public VehicleCategoryProfile()
         {
             CreateMap<VehiclesCategory, VehicleCategoryViewModel>();
+            CreateMap<VehicleCategoryCreateModel, VehiclesCategory>();
+                
         }
     }
 }

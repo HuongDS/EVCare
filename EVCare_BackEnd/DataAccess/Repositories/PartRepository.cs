@@ -52,7 +52,7 @@ namespace DataAccess.Repositories
                      ImageUrl = x.Image,
                      ReplacementPrice = x.ReplacementPrice
                 });
-            if (model.CategoryId.HasValue) query = query.Where(x => x.CategoryId == model.CategoryId.Value);
+            if (model.CategoryIds!=null) query = query.Where(x=>model.CategoryIds.Contains(x.CategoryId));
 
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);

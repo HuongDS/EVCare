@@ -19,6 +19,10 @@ namespace DataAccess.Repositories
         {
             return  await _dbSet.Where(vc=>vc.Deleted_At==DateTime.MinValue).AsNoTracking().ToListAsync();
         }
+        public override async Task<VehiclesCategory> AddAsync(VehiclesCategory entity) {
+            await _dbContext.AddAsync(entity);
+            return entity;
+        }
 
         public async Task<VehicleCategoryViewPartModel> GetCategoryDetailAsync(int id) {
             return await _dbSet
