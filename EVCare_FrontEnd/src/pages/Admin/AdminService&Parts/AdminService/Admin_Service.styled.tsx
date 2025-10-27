@@ -305,7 +305,10 @@ export const ModalFooter = styled.div`
   gap: 12px;
 `;
 
-export const ModalButton = styled.button<{ $isConfirm: boolean; $isDeleteModal?: boolean }>`
+export const ModalButton = styled.button<{
+  $isConfirm: boolean;
+  $isDeleteModal?: boolean;
+}>`
   padding: 10px 20px;
   font-size: 0.9rem;
   font-weight: 600;
@@ -347,6 +350,7 @@ export const InputGroup = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  position: relative;
 `;
 
 export const StyledLabel = styled.label`
@@ -385,6 +389,16 @@ export const StyledTextArea = styled.textarea`
   ${commonInputStyles}
   resize: vertical;
   min-height: 100px;
+`;
+
+export const StyledSelect = styled.select`
+  ${commonInputStyles}
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem; // Thêm không gian cho mũi tên
 `;
 
 export const GenerateButton = styled.button`
@@ -433,4 +447,19 @@ export const LoadingSpinner = styled.div`
   border-top-color: currentColor;
   border-radius: 50%;
   animation: ${spin} 0.6s linear infinite;
+`;
+
+export const GeneratingOverlay = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  color: #00ad4e;
+  font-size: 1.5rem;
 `;

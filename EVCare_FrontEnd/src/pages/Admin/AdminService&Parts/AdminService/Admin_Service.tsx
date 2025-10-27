@@ -26,14 +26,11 @@ import DeleteConfirmationModal from "../DeleteConfirmModal";
 import SearchBar from "../../AdminCustomer&Vehicle/SearchBar";
 import type { Service } from "../../../../models/ServicesModel/ServiceViewModel";
 import {
-  createService,
   deleteService,
-  getAllServices,
+  getAllServiceCategories,
   getAllServicesWithPagination,
-  updateService,
 } from "../../../../services/serviceServicesApi";
-import type { ServiceCreateDto } from "../../../../models/ServicesModel/ServiceCreateDto";
-import type { ServiceCategoryViewModel } from "../../../../models/ServicesModel/ServiceCategoryViewModel";
+import type { ServiceCategoryAdminDto } from "../../../../models/ServicesModel/ServiceCategoryAdminDto";
 
 export default function Admin_Service() {
   const [services, setServices] = useState<Service[]>([]);
@@ -47,7 +44,7 @@ export default function Admin_Service() {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [serviceToEdit, setServiceToEdit] = useState<Service | null>(null);
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; service?: Service }>({ isOpen: false });
-  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryViewModel[]>([]);
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryAdminDto[]>([]);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -78,6 +75,7 @@ export default function Admin_Service() {
 
   useEffect(() => {
     fetchData();
+    fetchServiceCategories();
   }, [fetchData]);
 
   const handleSearch = (searchValue: string) => {
@@ -97,8 +95,8 @@ export default function Admin_Service() {
   const fetchServiceCategories = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await getAllServices();
-      setServiceCategories(response?.data || []);
+      const response = await getAllServiceCategories();
+      setServiceCategories(response?.data?.items || []);
     } catch (error) {
       notification.error({ message: "Error", description: "Could not load services categories" });
     }
@@ -108,12 +106,10 @@ export default function Admin_Service() {
   const handleOpenEditModal = (service: Service) => {
     setServiceToEdit(service);
     setIsFormModalOpen(true);
-    fetchServiceCategories();
   };
 
   const handleOpenDeleteModal = (service: Service) => {
     setDeleteModal({ isOpen: true, service: service });
-    fetchServiceCategories();
   };
 
   const handleCloseFormModal = () => {
@@ -133,7 +129,7 @@ export default function Admin_Service() {
     setDeleteModal({ isOpen: false });
 
     try {
-      await deleteService(serviceToDelete.id);
+      await deleteService({ serviceId: serviceToDelete.id });
       notification.success({ message: "Success", description: "Service marked as deleted." });
       setServices((prev) => prev.map((s) => (s.id === serviceToDelete.id ? { ...s, isDeleted: true } : s)));
     } catch (error) {
@@ -142,35 +138,35 @@ export default function Admin_Service() {
     }
   };
 
-  const handleCreateService = async (data: ServiceCreateDto) => {
-    try {
-      const response = await createService(data);
-      notification.success({
-        message: "Add Service",
-        description: response.message,
-      });
-    } catch (error) {
-      notification.error({
-        message: "Add Service",
-        description: (error as Error).message,
-      });
-    }
-  };
+  // const handleCreateService = async (data: ServiceCreateDto) => {
+  //   try {
+  //     const response = await createService(data);
+  //     notification.success({
+  //       message: "Add Service",
+  //       description: response.message,
+  //     });
+  //   } catch (error) {
+  //     notification.error({
+  //       message: "Add Service",
+  //       description: (error as Error).message,
+  //     });
+  //   }
+  // };
 
-  const handleUpdateService = async (data: Service) => {
-    try {
-      const response = await updateService(data);
-      notification.success({
-        message: "Update Service",
-        description: response.message,
-      });
-    } catch (error) {
-      notification.error({
-        message: "Update Service",
-        description: (error as Error).message,
-      });
-    }
-  };
+  // const handleUpdateService = async (data: Service) => {
+  //   try {
+  //     const response = await updateService(data);
+  //     notification.success({
+  //       message: "Update Service",
+  //       description: response.message,
+  //     });
+  //   } catch (error) {
+  //     notification.error({
+  //       message: "Update Service",
+  //       description: (error as Error).message,
+  //     });
+  //   }
+  // };
 
   return (
     <PageWrapper>
@@ -255,8 +251,7 @@ export default function Admin_Service() {
             onClose={handleCloseFormModal}
             onSuccess={handleFormSuccess}
             serviceToEdit={serviceToEdit}
-            addApiFn={handleCreateService}
-            updateApiFn={handleUpdateService}
+            serviceCategories={serviceCategories}
           />
         )}
       </AnimatePresence>
