@@ -6,6 +6,6 @@ export type FullCustomerInfor = {
   email: string;
   phoneNumber: string;
   address: string;
-  banned: false;
+  banned: boolean;
   vehicles: VehicleViewDto[];
 };

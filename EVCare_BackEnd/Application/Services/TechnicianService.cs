@@ -27,5 +27,9 @@ namespace Application.Services
         {
             return await _technicianRepository.GetTechniciansAsync(model);
         }
+        public async Task<IEnumerable<TechnicianCusViewModel>> GetTechniciansByOrderId(int orderId)
+        {
+            return await _technicianRepository.GetTechniciansByOrderId(orderId);
+        }
     }
 }

@@ -1,7 +1,6 @@
 import logo from "../../assets/EVCare.png";
 import { useEffect, useState } from "react"; // (NEW) Đã thêm `useState`
 import { Link, useNavigate } from "react-router";
-import Authentication from "../../pages/Shared/Auth/Authentication";
 import { Navbar, Logo, Menu, Buttons } from "./Header.styled";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../states/store";
@@ -14,6 +13,8 @@ import { openLogin } from "../../states/uiSlice";
 import { handleError } from "../../utils/errorHandler";
 import DropdownMenu from "./DropdownMenu";
 import { stopAdminDashboardConnection } from "../../signalr/adminConnection";
+import { stopStaffDashboardConnection } from "../../signalr/staffConnection";
+import { stopChatConnection } from "../../signalr/chatConnection";
 
 export default function Header() {
   // const [showAuth, setShowAuth] = useState(false);
@@ -62,7 +63,9 @@ export default function Header() {
     }
     deleteToken();
     dispatch(logoutRedux());
-    stopAdminDashboardConnection();
+    await stopAdminDashboardConnection();
+    await stopStaffDashboardConnection();
+    await stopChatConnection();
     navigate("/");
   };
 
@@ -121,8 +124,6 @@ export default function Header() {
           )}
         </Buttons>
       ) : undefined}
-
-      <Authentication />
     </Navbar>
   );
 }

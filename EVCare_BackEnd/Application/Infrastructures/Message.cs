@@ -136,7 +136,7 @@ namespace Application.Infrastructures
 
         public static string DELETE_ACCOUNT_SUCCESS = "Delete Account successfully";
 
-        public static string? ACCOUNT_HAS_BEEN_DISABLED = "Account has been disabled.";
+        public static string? ACCOUNT_HAS_BEEN_DISABLED = "Account has been banned.";
 
         public static string EMPLOYEE_GET_SUCCESSFULLY = "Get employee successfully";
 
@@ -162,5 +162,6 @@ namespace Application.Infrastructures
 
         public static string APPLICATION_UPDATE_SUCCESS = "Application updated successfully";
 
+        public static string VEHICLE_GET_SUCCESS  = "Get vehicle successfully";
     }
 }

@@ -2,11 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Part;
 using DataAccess.Dtos.Payment;
 using DataAccess.Dtos.Service;
 using DataAccess.Dtos.Technician;
@@ -122,7 +124,7 @@ namespace DataAccess.Repositories
                     AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone,
-                    
+
                 }).Where(x => x.CustomerName.Contains(customername));
 
             return await PaginationHelper.PaginationAsync(query, payload, pageindex);
@@ -148,7 +150,7 @@ namespace DataAccess.Repositories
                     VehiclePlateNumber = a.Vehicle.LicensePlate,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     CustomerEmail = a.Customer.Account.Email,
-                    CustomerPhone = a.Customer.Account.Phone,
+                    PhoneNumber = a.Customer.Account.Phone,
                     EmployeeName = a.Employee != null
                         ? a.Employee.Account.First_Name + " " + a.Employee.Account.Last_Name
                         : null,
@@ -303,9 +305,9 @@ namespace DataAccess.Repositories
 
         //}
         public async Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model) {
-        
             var baseQuery = _dbSet
                 .AsNoTracking()
+                .Include(a=>a.Customer).ThenInclude(a=>a.Account)
                 .Where(a =>
                     (string.IsNullOrEmpty(model.CustomerName)
                         || (a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name)
@@ -313,42 +315,38 @@ namespace DataAccess.Repositories
                     && (!model.Status.HasValue || a.Status == model.Status.Value)
                     && (!model.BeginTime.HasValue || DateOnly.FromDateTime(a.Appointment_Date) >= model.BeginTime.Value)
                     && (!model.EndTime.HasValue || DateOnly.FromDateTime(a.Appointment_Date) <= model.EndTime.Value)
-                )
-                .Select(a => new
-                {
-                    a.Id,
-                    a.Appointment_Date,
-                    a.Status,
-                    CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name
-                });
-
-         
-            baseQuery = baseQuery.ApplySorting(model.SortField, model.SortOrder);
-
-            var pagedResult = await PaginationHelper.PaginationAsync(baseQuery, model.PageSize.Value, model.PageIndex.Value);
+                );
+               baseQuery = baseQuery.ApplySorting(model.SortField, model.SortOrder);
+            var pagedResult = await PaginationHelper.PaginationAsync(
+                                              baseQuery.Select(a => new
+                                              {
+                                                  a.Id
+                                              }),
+                                              model.PageSize.Value,
+                                              model.PageIndex.Value
+                                                );
             if (!pagedResult.Items.Any())
                 return new PageResultDto<AppointmentViewModel>(new List<AppointmentViewModel>(), 0, model.PageSize.Value, model.PageIndex.Value);
 
             var appointmentIds = pagedResult.Items.Select(x => x.Id).ToList();
-
-         
             var appointments = await _dbSet
                 .AsNoTracking()
-                .Where(a => appointmentIds.Contains(a.Id))
-                .Include(a => a.Vehicle).ThenInclude(v => v.Category)
-                .Include(a => a.AppointmentServices).ThenInclude(s => s.Service)
-                .Include(a => a.AppointmentImages)
+                 .Include(a => a.Vehicle)
                 .Include(a => a.Customer).ThenInclude(c => c.Account)
+                .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
+                .Include(a => a.AppointmentImages)
                 .Include(a => a.Order)
-                    .ThenInclude(o => o.TechnicianWorkingSessions)
+                    .ThenInclude(order => order.TechnicianWorkingSessions)
                         .ThenInclude(tws => tws.Technician)
                             .ThenInclude(t => t.Employee)
                                 .ThenInclude(e => e.Account)
+  
                 .Include(a => a.Order)
-                    .ThenInclude(o => o.TechnicianWorkingSessions)
+                    .ThenInclude(order => order.TechnicianWorkingSessions)
                         .ThenInclude(tws => tws.Technician)
                             .ThenInclude(t => t.TechnicianSkills)
                                 .ThenInclude(ts => ts.Service)
+                .Where(a => appointmentIds.Contains(a.Id))
                 .Select(a => new AppointmentViewModel
                 {
                     Id = a.Id,
@@ -385,13 +383,14 @@ namespace DataAccess.Repositories
                 })
                 .ToListAsync();
 
-          
+
             var orderedAppointments = appointmentIds
                 .Select(id => appointments.FirstOrDefault(a => a.Id == id))
                 .Where(a => a != null)
+    
                 .ToList();
 
-          
+
             return new PageResultDto<AppointmentViewModel>(
                 orderedAppointments,
                 pagedResult.TotalItems,
@@ -404,71 +403,80 @@ namespace DataAccess.Repositories
         {
             var start = model.BeginTime?.ToDateTime(TimeOnly.MinValue);
             var end = model.EndTime?.ToDateTime(TimeOnly.MaxValue);
-
-           
-            var baseQuery = _dbContext.TechnicianWorkingSessions
+            var query = _dbContext.TechnicianWorkingSessions
                 .AsNoTracking()
-                .Where(s =>
-                    s.TechnicianId == technicianId &&
-                    (!start.HasValue || s.Order.Appointment.Appointment_Date >= start.Value) &&
-                    (!end.HasValue || s.Order.Appointment.Appointment_Date <= end.Value)
-                );
+                .Include(t=>t.Order).ThenInclude(o=>o.Appointment)
+                .Where(tws => tws.TechnicianId == technicianId
+                    && (!model.Status.HasValue || tws.Status == model.Status.Value)
+                    && (!start.HasValue || tws.Order.Appointment.Appointment_Date >= start.Value)
+                    && (!end.HasValue || tws.Order.Appointment.Appointment_Date <= end.Value)
+                    && (!model.Status.HasValue || tws.Status == model.Status.Value)
+                ).Select(x => new
+                {
+                    x.OrderId,
+                    x.Order.Appointment.Appointment_Date
+                });
 
-            if (model.Status.HasValue) {
-                if (model.Status == TechnicianWorkingSessionEnum.Completed) {
-                    baseQuery = baseQuery.Where(s => s.Status == TechnicianWorkingSessionEnum.Completed);
-                }
-                else {
-                    baseQuery = baseQuery
-                        .Where(s => s.Status == model.Status.Value)
-                        .OrderByDescending(s => s.Order.Appointment.Appointment_Date) 
-                        .Take(1);
-                }
-            }
-            var projected = baseQuery.Select(s => new AppointmentTechnicianViewModel
-            {
-                Id = s.Order.Appointment.Id,
-                AppointmentDate = s.Order.Appointment.Appointment_Date,
-                Status = s.Status,
-                OrderId = s.OrderId,
+            query = query.ApplySorting(model.SortField, model.SortOrder);
+            var pagedResult = await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+            if (!pagedResult.Items.Any())
+                return new PageResultDto<AppointmentTechnicianViewModel>(new List<AppointmentTechnicianViewModel>(), 0, model.PageSize.Value, model.PageIndex.Value);
+            var orderIds = pagedResult.Items.Select(x => x.OrderId).ToList();
+            var appointments = await _dbContext.Appointments
+                .AsNoTracking()
+                
+                .Where(a => orderIds.Contains(a.OrderId.Value))
+                 .Include(a => a.Vehicle)
+                    .ThenInclude(v => v.Category)
+                .Include(a => a.Customer)
+                    .ThenInclude(c => c.Account)
+                .Include(a => a.AppointmentServices)
+                    .ThenInclude(asv => asv.Service)
+                .Include(a => a.AppointmentImages)
+                .Include(a => a.Order)
+                    .ThenInclude(o => o.OrderParts)
+                        .ThenInclude(op => op.Part)
+                .Include(a => a.Order)
+                    .ThenInclude(o => o.TechnicianWorkingSessions)
+                        .ThenInclude(tws => tws.Technician)
+                            .ThenInclude(t => t.Employee)
+                                .ThenInclude(e => e.Account)
+                .Include(a => a.Order)
+                    .ThenInclude(o => o.TechnicianWorkingSessions)
+                        .ThenInclude(tws => tws.Technician)
+                            .ThenInclude(t => t.TechnicianSkills)
+                                .ThenInclude(ts => ts.Service)
+                .Select(a => new AppointmentTechnicianViewModel
+                {
+                    Id = a.Id,
+                    AppointmentDate = a.Appointment_Date,
+                    VehicleModel = a.Vehicle.Category.Name,
+                    LicensePlate = a.Vehicle.LicensePlate,
+                    CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
+                    PhoneNumber = a.Customer.Account.Phone,
+                    Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
+                    OrderId = a.OrderId,
+                    Parts = a.Order.OrderParts.Select(op => new PartTechnicianViewModel
+                    {
+                        Name = op.Part.Name,
+                        Quantity = op.Quantity,
+                        ImageUrl = op.Part.Image,
+                        Price = op.Price,
+                        ReplacementPrice = op.ReplacementPrice,
+                        Stock = op.Part.Stock,
+                        Id = op.PartId,
 
-                CustomerName = s.Order.Appointment.Customer.Account.Last_Name + " " +
-                      s.Order.Appointment.Customer.Account.First_Name,
-                PhoneNumber = s.Order.Appointment.Customer.Account.Phone,
-                LicensePlate = s.Order.Appointment.Vehicle.LicensePlate,
-                VehicleModel = s.Order.Appointment.Vehicle.Category.Name,
+                    }).ToList(),
+                    Status = a.Order.TechnicianWorkingSessions
+                                .FirstOrDefault(tws => tws.TechnicianId == technicianId).Status,
+                    AppointmentImages = a.AppointmentImages.Select(img => img.Image)
+                })
+                .ToListAsync();
 
-                Services = s.Order.Appointment.AppointmentServices
-           .Select(asv => asv.Service.Name)
-           .ToList(),
-
-                Parts = s.Order.OrderParts
-           .Where(op => op.TechnicianId == s.TechnicianId)
-           .Select(op => new DataAccess.Dtos.Part.PartTechnicianViewModel
-           {
-               Id = op.PartId,
-               Name = op.Part.Name,
-               Quantity = op.Quantity,
-               ImageUrl = op.Part.Image,
-               Price = op.Price,
-               TechnicianId = op.TechnicianId
-           }).ToList(),
-
-                AppointmentImages = s.Order.Appointment.AppointmentImages
-           .Select(ai => ai.Image)
-           .ToList()
-            });
-
-            projected = projected.ApplySorting(model.SortField, model.SortOrder);
-
-            return await PaginationHelper.PaginationAsync(
-                projected,
-                model.PageSize ?? 10,
-                model.PageIndex ?? 1
-            );
-
-
-
+            var orderedAppointments = orderIds.Select(id=> appointments.FirstOrDefault(a => a.OrderId == id))
+                .Where(a => a != null)
+                .ToList();
+            return new PageResultDto<AppointmentTechnicianViewModel>(orderedAppointments, pagedResult.TotalItems, model.PageSize.Value, model.PageIndex.Value);
 
 
         }
@@ -522,12 +530,12 @@ namespace DataAccess.Repositories
         }
         public async Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model)
         {
-            var query =  _dbContext.Appointments.AsNoTracking()
+            var query = _dbContext.Appointments.AsNoTracking()
                 .Where(x => x.Status == AppointmentStatusEnum.InProgress)
                 .Select(x => new AppointmentInProgressUnderstaffedViewModel
                 {
                     AppointmentDate = x.Appointment_Date,
-                    CustomerName = x.Customer.Account.First_Name+" " + x.Customer.Account.First_Name,
+                    CustomerName = x.Customer.Account.First_Name + " " + x.Customer.Account.First_Name,
                     CustomerPhone = x.Customer.Account.Phone,
                     Id = x.Id,
                     CustomerEmail = x.Customer.Account.Email,
@@ -538,7 +546,7 @@ namespace DataAccess.Repositories
                     }).ToList(),
                     VehicleName = x.Vehicle.Category.Name,
                     VehiclePlateNumber = x.Vehicle.LicensePlate,
-                    Technicians= x.Order.TechnicianWorkingSessions
+                    Technicians = x.Order.TechnicianWorkingSessions
                                 .Select(t => new TechnicianViewModel
                                 {
                                     Id = t.TechnicianId,
@@ -546,7 +554,7 @@ namespace DataAccess.Repositories
                                     FullName = t.Technician.Employee.Account.First_Name + " " + t.Technician.Employee.Account.Last_Name,
                                     Phone = t.Technician.Employee.Account.Phone,
                                     Skills = t.Technician.TechnicianSkills
-                                                .Select(ts =>new ServiceViewFormModel
+                                                .Select(ts => new ServiceViewFormModel
                                                 {
                                                     Id = ts.ServiceId,
                                                     Name = ts.Service.Name
@@ -556,12 +564,12 @@ namespace DataAccess.Repositories
                                 }).ToList()
 
                 })
-                .Where(x=>x.Technicians.Any(x=>x.Status == EmployeeStatusEnum.OnLeave))
+                .Where(x => x.Technicians.Any(x => x.Status == EmployeeStatusEnum.OnLeave))
                 .ApplySorting(model.SortField, model.SortOrder)
                 ;
-           return await PaginationHelper.PaginationAsync(query,model.PageSize.Value,model.PageIndex.Value);
-          }
-          
+            return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+        }
+
         public async Task<int> CountAppointmentsInMonth(int year, int month)
         {
             var startDate = new DateTime(year, month, 1);
@@ -580,9 +588,9 @@ namespace DataAccess.Repositories
             var endDate = startDate.AddMonths(1);
             return await _dbContext
             .Appointments
-            .Where(a => a.Status != AppointmentStatusEnum.Pending 
+            .Where(a => a.Status != AppointmentStatusEnum.Pending
             && a.Status != AppointmentStatusEnum.Canceled
-            && a.Appointment_Date >= startDate 
+            && a.Appointment_Date >= startDate
             && a.Appointment_Date <= endDate)
             .GroupBy(a => a.CustomerId)
             .CountAsync();
@@ -597,6 +605,36 @@ namespace DataAccess.Repositories
                 .CountAsync(a => a.Appointment_Date >= startDate
                 && a.Appointment_Date <= endDate
                 && a.Status == status);
+        }
+
+        public async Task<Appointment> GetByOrderIdAsync(int orderId) {
+            return await _dbSet.FirstOrDefaultAsync(a => a.OrderId == orderId);
+        }
+
+        public async Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId) {
+            var parts = await _dbContext.AppointmentPartConditions
+                .AsNoTracking()
+                .Where(apc => apc.AppointmentId == appointmentId)
+                .Include(apc=>apc.Part)
+                .Select(apc => new DamagedPartViewModel
+                {
+                     DamageLevel = apc.Level,
+                        Id = apc.PartId,
+                        PartCategoryId = apc.Part.CategoryId,
+                        PartName = apc.Part.Name
+                }).ToListAsync();
+
+            return await _dbSet.Where(x => x.Id == appointmentId)
+                .Include(x => x.Vehicle)
+                .Include(x=>x.AppointmentPartConditions)
+                .Select(x => new AppointmentVehicleViewModel
+                {
+                    Id = x.Id,
+                    VehicleCategoryId = x.Vehicle.CategoryId,
+                    DamagedPartViewModels = parts
+                    
+
+                }).FirstOrDefaultAsync();
         }
     }
 }

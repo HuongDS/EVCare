@@ -1,30 +1,41 @@
+import React, { Suspense, lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import AdminLayout from "../pages/Admin/AdminComponents/AdminLayout";
-import StaffLayout from "../components/Layouts/StaffLayout";
-import HomePage from "../pages/Users/HomePage/HomePage";
-import ServiceList from "../pages/Users/ServicesPage/ServiceList";
-import AboutUs from "../pages/Users/AboutUs/AboutUs";
-import ContactUs from "../pages/Users/Contact/ContactUs";
-// import OrderDetail from "../pages/Customer/OrderHistory/AppointmentDetail/AppointmentDetail";
-import Rating from "../pages/Customer/OrderHistory/Rating/Rating";
-import Test from "../components/Test";
-import PageNotFound from "../components/Layouts/PageNotFound";
-import Staff_Inventory from "../pages/Staff/StaffManageInventory/Staff_Inventory";
-import Staff_General from "../pages/Staff/StaffGeneralPage/Staff_General";
-import Manage_Technicians from "../pages/Staff/StaffManageTechnicians/Manage_Technicians";
-import Manage_Customer from "../pages/Staff/StaffManageCustomer/Manage_Customer";
-import Staff_Appoinments from "../pages/Staff/StaffManageAppointment/Staff_Appoinments";
-import Layout from "../components/Layouts/CustomerLayout";
-
-import { TechnicianDefaultLayout } from "../pages/Technician/Technician_Component/TechnicianLayout";
-import OrderList from "../pages/Customer/OrderHistory/Appointment/AppointmentList";
+import SpinnerComponent from "../components/SpinnerComponent";
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
 import { RoleEnum } from "../models/enums";
-import TechnicianOrderLayout from "../pages/Technician/Technician_Component/Technician_OrderLayout";
-import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
-import UserProfilePage from "../pages/Users/Profile/UserProfilePage";
-
-import Admin_General from "../pages/Admin/AdminGeneral/Admin_General.tsx";
+const Layout = lazy(() => import("../components/Layouts/CustomerLayout"));
+const AdminLayout = lazy(() => import("../pages/Admin/AdminComponents/AdminLayout"));
+const StaffLayout = lazy(() => import("../components/Layouts/StaffLayout"));
+const TechnicianDefaultLayout = lazy(() => import("../pages/Technician/Technician_Component/TechnicianLayout"));
+const TechnicianOrderLayout = lazy(() => import("../pages/Technician/Technician_Component/Technician_OrderLayout"));
+const HomePage = lazy(() => import("../pages/Users/HomePage/HomePage"));
+const ServiceList = lazy(() => import("../pages/Users/ServicesPage/ServiceList"));
+const AboutUs = lazy(() => import("../pages/Users/AboutUs/AboutUs"));
+const ContactUs = lazy(() => import("../pages/Users/Contact/ContactUs"));
+const OrderList = lazy(() => import("../pages/Customer/OrderHistory/Appointment/AppointmentList"));
+const Rating = lazy(() => import("../pages/Customer/OrderHistory/Rating/Rating"));
+const Test = lazy(() => import("../components/Test"));
+const PageNotFound = lazy(() => import("../components/Layouts/PageNotFound"));
+const UserProfilePage = lazy(() => import("../pages/Users/Profile/UserProfilePage"));
+const Review = lazy(() => import("../pages/Users/Review/Review"));
+const PolicyPage = lazy(() => import("../pages/Users/PolicyPage/Policy"));
+const ChatPage = lazy(() => import("../pages/Customer/Chat/ChatPage").then((module) => ({ default: module.ChatPage })));
+const Admin_Applications = lazy(() =>
+  import("../pages/Admin/AdminAplication/Admin_Applications").then((module) => ({
+    default: module.Admin_Applications,
+  }))
+);
+const Admin_General = lazy(() => import("../pages/Admin/AdminGeneral/Admin_General"));
+const Admin_Customer_Vehicle = lazy(() => import("../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle"));
+const Admin_Manage_Employee = lazy(() => import("../pages/Admin/AdminManageEmployee/Admin_ManageEmployee"));
+const AddEmployee = lazy(() => import("../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee"));
+const Admin_Part = lazy(() => import("../pages/Admin/AdminService&Parts/AdminPart/Admin_Part"));
+const Admin_Service = lazy(() => import("../pages/Admin/AdminService&Parts/AdminService/Admin_Service"));
+const Staff_Inventory = lazy(() => import("../pages/Staff/StaffManageInventory/Staff_Inventory"));
+const Staff_General = lazy(() => import("../pages/Staff/StaffGeneralPage/Staff_General"));
+const Manage_Technicians = lazy(() => import("../pages/Staff/StaffManageTechnicians/Manage_Technicians"));
+const Manage_Customer = lazy(() => import("../pages/Staff/StaffManageCustomer/Manage_Customer"));
+const Staff_Appoinments = lazy(() => import("../pages/Staff/StaffManageAppointment/Staff_Appoinments"));
 import {
   LazyOrder,
   LazyHistory,
@@ -32,71 +43,124 @@ import {
   LazyGeneral,
   LazyApplication,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
-import Admin_Customer_Vehicle from "../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle.tsx";
-import Review from "../pages/Users/Review/Review.tsx";
-import Admin_Manage_Employee from "../pages/Admin/AdminManageEmployee/Admin_ManageEmployee.tsx";
-import AddEmployee from "../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee.tsx";
-import { ChatPage } from "../pages/Customer/Chat/ChatPage.tsx";
-import PolicyPage from "../pages/Users/PolicyPage/Policy.tsx";
+import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
+
+const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return <Suspense fallback={<SpinnerComponent />}>{children}</Suspense>;
+};
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <SuspenseWrapper>
+        <Layout />
+      </SuspenseWrapper>
+    ),
     children: [
-      { index: true, element: <HomePage /> },
+      {
+        index: true,
+        element: (
+          <SuspenseWrapper>
+            <HomePage />
+          </SuspenseWrapper>
+        ),
+      },
       {
         path: "service",
-        element: <ServiceList />,
+        element: (
+          <SuspenseWrapper>
+            <ServiceList />
+          </SuspenseWrapper>
+        ),
       },
-      { path: "about", element: <AboutUs /> },
-      { path: "policy", element: <PolicyPage /> },
+      {
+        path: "about",
+        element: (
+          <SuspenseWrapper>
+            <AboutUs />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "policy",
+        element: (
+          <SuspenseWrapper>
+            <PolicyPage />
+          </SuspenseWrapper>
+        ),
+      },
       {
         path: "contact",
-        element: <ContactUs />,
+        element: (
+          <SuspenseWrapper>
+            <ContactUs />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: "review",
-        element: <Review />,
+        element: (
+          <SuspenseWrapper>
+            <Review />
+          </SuspenseWrapper>
+        ),
       },
       // CUSTOMER ROUTES
       {
         path: "appointmentHistory",
         element: (
           <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
-            <OrderList />
+            <SuspenseWrapper>
+              <OrderList />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
         children: [
           {
             path: "appointmentDetail",
-            element: <AppointmentList />,
+            element: (
+              <SuspenseWrapper>
+                <AppointmentList />
+              </SuspenseWrapper>
+            ),
           },
-          { path: "rating", element: <Rating /> },
+          {
+            path: "rating",
+            element: (
+              <SuspenseWrapper>
+                <Rating />
+              </SuspenseWrapper>
+            ),
+          },
         ],
       },
       {
         path: "account-information",
         element: (
-          <ProtectedRoute
-            allowedRoles={[
-              RoleEnum.CUSTOMER,
-              RoleEnum.ADMIN,
-              RoleEnum.TECHNICIAN,
-              RoleEnum.STAFF,
-            ]}
-          >
-            <UserProfilePage />
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER, RoleEnum.ADMIN, RoleEnum.TECHNICIAN, RoleEnum.STAFF]}>
+            <SuspenseWrapper>
+              <UserProfilePage />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },
 
-      { path: "test", element: <Test /> },
+      {
+        path: "test",
+        element: (
+          <SuspenseWrapper>
+            <Test />
+          </SuspenseWrapper>
+        ),
+      },
       {
         path: "chat-with-staff",
         element: (
           <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
-            <ChatPage />
+            <SuspenseWrapper>
+              <ChatPage />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },
@@ -107,17 +171,68 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.ADMIN]}>
-        <AdminLayout />
+        <SuspenseWrapper>
+          <AdminLayout />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
     children: [
-      { path: "general", element: <Admin_General /> },
+      {
+        path: "general",
+        element: (
+          <SuspenseWrapper>
+            <Admin_General />
+          </SuspenseWrapper>
+        ),
+      },
       {
         path: "manage-customers-and-vehicles",
-        element: <Admin_Customer_Vehicle />,
+        element: (
+          <SuspenseWrapper>
+            <Admin_Customer_Vehicle />
+          </SuspenseWrapper>
+        ),
       },
-      { path: "manage-employees", element: <Admin_Manage_Employee /> },
-      { path: "add-employee", element: <AddEmployee /> },
+      {
+        path: "manage-employees",
+        element: (
+          <SuspenseWrapper>
+            <Admin_Manage_Employee />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "add-employee",
+        element: (
+          <SuspenseWrapper>
+            <AddEmployee />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "manage-parts",
+        element: (
+          <SuspenseWrapper>
+            <Admin_Part />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "manage-services",
+        element: (
+          <SuspenseWrapper>
+            <Admin_Service />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "applications",
+        element: (
+          <SuspenseWrapper>
+            <Admin_Applications />
+          </SuspenseWrapper>
+        ),
+      },
     ],
   },
   // STAFF ROUTES
@@ -125,17 +240,61 @@ const router = createBrowserRouter([
     path: "/staff",
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.STAFF]}>
-        <StaffLayout />
+        <SuspenseWrapper>
+          <StaffLayout />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
     children: [
       { index: true, element: <Navigate to="general" replace /> },
-      { path: "general", element: <Staff_General /> },
-      { path: "inventory", element: <Staff_Inventory /> },
-      { path: "technicians", element: <Manage_Technicians /> },
-      { path: "customers", element: <Manage_Customer /> },
-      { path: "appointments", element: <Staff_Appoinments /> },
-      { path: "chat-with-customer", element: <ChatPage /> },
+      {
+        path: "general",
+        element: (
+          <SuspenseWrapper>
+            <Staff_General />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "inventory",
+        element: (
+          <SuspenseWrapper>
+            <Staff_Inventory />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "technicians",
+        element: (
+          <SuspenseWrapper>
+            <Manage_Technicians />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "customers",
+        element: (
+          <SuspenseWrapper>
+            <Manage_Customer />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "appointments",
+        element: (
+          <SuspenseWrapper>
+            <Staff_Appoinments />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "chat-with-customer",
+        element: (
+          <SuspenseWrapper>
+            <ChatPage />
+          </SuspenseWrapper>
+        ),
+      },
     ],
   },
   // TECHINICIAN ROUTES
@@ -143,7 +302,9 @@ const router = createBrowserRouter([
     path: "/technician",
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
-        <TechnicianDefaultLayout />
+        <SuspenseWrapper>
+          <TechnicianDefaultLayout />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
     children: [
@@ -157,14 +318,30 @@ const router = createBrowserRouter([
     path: "/technician/order",
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
-        <TechnicianOrderLayout />
+        <SuspenseWrapper>
+          <TechnicianOrderLayout />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
     children: [{ path: "", element: <LazyOrder /> }],
   },
   // Test route
-  { path: "/test", element: <Test /> },
-  { path: "/*", element: <PageNotFound /> },
+  {
+    path: "/test",
+    element: (
+      <SuspenseWrapper>
+        <Test />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: "/*",
+    element: (
+      <SuspenseWrapper>
+        <PageNotFound />
+      </SuspenseWrapper>
+    ),
+  },
 ]);
 
 export default router;

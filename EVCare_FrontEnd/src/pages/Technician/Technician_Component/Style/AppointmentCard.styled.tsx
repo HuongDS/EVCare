@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { TechnicianWorkingSessionEnum } from "../../../../models/enums/TechnicianWorkingSessionEnum";
+import { DamageLevelEnum } from "../../../../models/enums/DamageLevelEnum";
 
 const statusColors: Record<TechnicianWorkingSessionEnum, string> = {
   [TechnicianWorkingSessionEnum.PENDING]: "#ff9800",
@@ -8,6 +9,14 @@ const statusColors: Record<TechnicianWorkingSessionEnum, string> = {
   [TechnicianWorkingSessionEnum.INPROGRESS]: "#9c27b0",
   [TechnicianWorkingSessionEnum.COMPLETED]: "#4caf50",
   [TechnicianWorkingSessionEnum.CANCELED]: "#f44336",
+};
+
+const damageColors: Record<DamageLevelEnum, string> = {
+  [DamageLevelEnum.NotAssessed]: "#9E9E9E",
+  [DamageLevelEnum.Minor]: "#00AD4E",
+  [DamageLevelEnum.Moderate]: "#FFC107",
+  [DamageLevelEnum.Severe]: "#FF7043",
+  [DamageLevelEnum.Critical]: "#E53935",
 };
 
 /* 🟢 Dùng transient prop: $status */
@@ -29,6 +38,24 @@ export const AppointmentStatus = styled.div<{
   @media (max-width: 480px) {
     font-size: 0.85em;
     padding: 4px 10px;
+  }
+`;
+
+export const DamageLevelBadge = styled.div<{ $level: DamageLevelEnum }>`
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-weight: 600;
+  background-color: ${({ $level }) => damageColors[$level]}20;
+  color: ${({ $level }) => damageColors[$level]};
+  border: 1px solid ${({ $level }) => damageColors[$level]};
+  margin-left: 6px;
+  text-transform: capitalize;
+
+  @media (max-width: 480px) {
+    font-size: 0.8em;
+    padding: 3px 8px;
   }
 `;
 

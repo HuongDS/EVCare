@@ -11,5 +11,6 @@ namespace DataAccess.Dtos.Service
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Duration { get; set; }
+        public int ServiceCategoryId { get; set; }
     }
 }
