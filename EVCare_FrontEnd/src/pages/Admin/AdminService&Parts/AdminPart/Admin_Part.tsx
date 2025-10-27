@@ -146,11 +146,32 @@ export default function Admin_Part() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!imageUrl) {
-      notification.error({ message: "Add Part", description: "Please upload an image." });
-      return;
-    }
     try {
+      if (!imageUrl) {
+        notification.error({ message: "Add Part", description: "Please upload an image." });
+        return;
+      }
+
+      if (newPart.name.trim().length <= 0) {
+        throw new Error("Please input a part name.");
+      }
+
+      if (newPart.description.trim().length <= 0) {
+        throw new Error("Please input a part description.");
+      }
+
+      if (newPart.price <= 0) {
+        throw new Error("Please input a valid part price.");
+      }
+
+      if (newPart.replacementPrice <= 0) {
+        throw new Error("Please input a valid part replacementPrice.");
+      }
+
+      if (newPart.stock <= 0) {
+        throw new Error("Please input a valid part stock.");
+      }
+
       const payload: NewPartDto = { ...newPart, image: imageUrl };
       if (payload.price === 0 || payload.replacementPrice === 0 || payload.stock === 0) {
         throw new Error("Price, Replacement Price or Stock must be greater than 0 when you adding !");
