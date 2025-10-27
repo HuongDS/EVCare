@@ -10,8 +10,10 @@ namespace Application.Interfaces
     public interface IVehicleCategoryService
     {
         Task<int> CreateCategoryAsync(VehicleCategoryCreateModel model);
+        Task DeleteCategoryAsync(int id);
         Task<IEnumerable<VehicleCategoryViewModel>> GetAllActiveCategoriesAsync();
         Task<VehicleCategoryViewPartModel> GetCategoryDetailAsync(int id);
+        Task UnbannedVehicleCategoryAsync(int id);
         Task UpdateCategoryAsync(int id, VehicleCategoryCreateModel model);
     }
 }
