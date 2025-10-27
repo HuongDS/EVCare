@@ -56,13 +56,6 @@ export default function PartCategoryAdmin() {
     setActiveSubTab("view");
   };
 
-  const handleEditSuccess = () => {
-    notification.success({ message: "Edit Part Category", description: "Part Category has been updated." });
-    fetchData();
-    setIsEditModalOpen(false);
-    setItemToEdit(null);
-  };
-
   const handleOpenEditModal = (category: Category) => {
     setItemToEdit(category);
     setIsEditModalOpen(true);

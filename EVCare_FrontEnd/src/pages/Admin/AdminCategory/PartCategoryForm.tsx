@@ -31,10 +31,10 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || formData.name.trim().length <= 0) {
-      throw new Error("Please enter a category name.");
+      throw new Error("Please enter a part category name.");
     }
     if (!formData.description || formData.description.trim().length <= 0) {
-      throw new Error("Please enter a category description.");
+      throw new Error("Please enter a part category description.");
     }
     setIsSubmitting(true);
     try {

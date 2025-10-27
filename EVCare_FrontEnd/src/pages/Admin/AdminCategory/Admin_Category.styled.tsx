@@ -74,24 +74,35 @@ export const PageWrapper = styled.div`
   width: 100%;
   min-height: 100vh;
   padding: 2rem;
-  background-color: #f8f9fa;
+  background: linear-gradient(135deg, #f0f9f4 0%, #e6f7f0 100%);
+  box-sizing: border-box;
 `;
 
 export const Header = styled.header`
   margin-bottom: 1.5rem;
+  padding: 20px 24px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
 `;
 
 export const Title = styled.h1`
   font-size: 2.25rem;
   font-weight: 700;
-  color: #065f46;
-  margin: 0;
+  margin: 0 0 8px 0;
+  background: linear-gradient(90deg, #00c656 0%, #00ad4e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 `;
 
 export const Instruction = styled.p`
+  margin: 0;
   font-size: 1rem;
-  color: #4b5563;
-  margin-top: 0.25rem;
+  color: #555;
 `;
 
 export const MainTabContainer = styled.div`
@@ -176,11 +187,11 @@ export const TabContent = styled(motion.div)`
   padding: 1.5rem 2rem;
 `;
 
-export const TableWrapper = styled.div`
-  overflow-x: auto;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-`;
+// export const TableWrapper = styled.div`
+//   overflow-x: auto;
+//   border: 1px solid #e5e7eb;
+//   border-radius: 8px;
+// `;
 
 export const StyledTable = styled.table`
   width: 100%;
@@ -374,4 +385,128 @@ export const MultiSelectWrapper = styled.div`
     font-size: 0.85rem;
     font-weight: 500;
   }
+`;
+
+export const TableWrapper = styled.div<{ $maxWidth?: string }>`
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin: 0px auto;
+  ${({ $maxWidth }) =>
+    $maxWidth &&
+    css`
+      max-width: ${$maxWidth};
+    `}
+`;
+
+export const InstructionText = styled.p`
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #6b7280;
+  margin: -8px 0 8px 0;
+`;
+
+export const PillSelectorWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fdfdfd;
+  max-height: 200px;
+  overflow-y: auto;
+`;
+
+export const PillButton = styled.button<{ $isSelected: boolean }>`
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  border: 1px solid;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  ${({ $isSelected }) =>
+    $isSelected
+      ? css`
+          background: #dcfce7; // EVCare green light
+          color: #065f46; // EVCare green dark
+          border-color: #00ad4e;
+        `
+      : css`
+          background: #f3f4f6;
+          color: #4b5563;
+          border-color: #e5e7eb;
+
+          &:hover {
+            background: #e5e7eb;
+            border-color: #d1d5db;
+          }
+        `}
+`;
+
+export const LinkInputWrapper = styled.div`
+  position: relative;
+  display: flex;
+  width: 100%;
+
+  input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    flex-grow: 1;
+    z-index: 1;
+
+    &:focus {
+      z-index: 2;
+    }
+  }
+
+  button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0 1.25rem;
+    background: #e5e7eb;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 2;
+
+    &:hover {
+      background: #d1d5db;
+    }
+
+    &.processed {
+      background: #dcfce7;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+`;
+
+export const LoadingOverlay = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(2px);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  color: #00ad4e;
+  font-size: 1.5rem;
 `;
