@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import ScrollFloat from "../../../../components/TextAnimation/ScrollFloat";
 
 const WhyChooseUsWrapper = styled.div`
   font-family: "Outfit", sans-serif;
@@ -12,6 +13,7 @@ const WhyChooseUsWrapper = styled.div`
 const Title = styled.h1`
   font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 800;
+  color: #16a34a;
 `;
 
 const Content = styled.div`
@@ -79,7 +81,17 @@ const CardContent = styled.div`
 export default function WhyChooseUs() {
   return (
     <WhyChooseUsWrapper data-aos="fade-up">
-      <Title>Why Choose Us</Title>
+      <Title>
+        <ScrollFloat
+          animationDuration={1}
+          ease="back.inOut(2)"
+          scrollStart="center bottom+=50%"
+          scrollEnd="bottom bottom-=40%"
+          stagger={0.05}
+        >
+          Why Choose Us
+        </ScrollFloat>
+      </Title>
       <Content>
         With the rapid growth of the EV industry, proper and timely maintenance
         is essential to ensure safety and extend the lifespan of vehicles.

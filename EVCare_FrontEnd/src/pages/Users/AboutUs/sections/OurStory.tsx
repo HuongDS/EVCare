@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import ourStoryImg from "../../../../assets/OurStoryImg.jpg";
+import ScrollFloat from "../../../../components/TextAnimation/ScrollFloat";
 
 const OurVisionWrapper = styled.div`
   font-family: "Outfit", sans-serif;
@@ -12,6 +13,7 @@ const OurVisionWrapper = styled.div`
 `;
 
 const Title = styled.h1`
+  color: #16a34a;
   font-size: clamp(2.5rem, 6vw, 5rem);
   font-weight: 800;
   text-align: center;
@@ -45,9 +47,19 @@ export default function OurStory() {
   return (
     <OurVisionWrapper data-aos="fade-up">
       <Image src={ourStoryImg} />
-      <Content data-aos="fade-up" data-aos-delay="200">
-        <Title>Our Story</Title>
-        <Story>
+      <Content>
+        <Title>
+          <ScrollFloat
+            animationDuration={1}
+            ease="back.inOut(2)"
+            scrollStart="center bottom+=50%"
+            scrollEnd="bottom bottom-=40%"
+            stagger={0.05}
+          >
+            Our Story
+          </ScrollFloat>
+        </Title>
+        <Story data-aos="fade-up" data-aos-delay="200">
           <Highlight>EV Care</Highlight> was founded to deliver smart and modern
           maintenance solutions for the fast-growing EV industry. We provide a{" "}
           <Highlight>transparent system</Highlight> that{" "}
