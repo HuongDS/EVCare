@@ -27,7 +27,7 @@ namespace DataAccess.Repositories
                 { 
                     Name = sc.Name,
                     Services = sc.Services
-                    .Where(s=>s.Deleted_At==DateTime.MinValue)
+                    .Where(s=>s.Deleted_At == null)
                     .Select(s => new ServiceViewFormModel
                     {
                         Id = s.Id,

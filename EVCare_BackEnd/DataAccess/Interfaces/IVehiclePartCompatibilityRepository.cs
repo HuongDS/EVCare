@@ -8,5 +8,6 @@ using DataAccess.Entities;
 namespace DataAccess.Interfaces {
     public interface IVehiclePartCompatibilityRepository {
         Task AddRangeAsync(IEnumerable<VehiclePartCompatibility> enumerable);
+        Task DeleteAsyncByPartCategoryId(int id);
     }
 }

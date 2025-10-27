@@ -79,7 +79,8 @@ namespace API.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> UpdateCategory([FromQuery]int id,VehicleCategoryCreateModel model) {
             try {
 
@@ -100,6 +101,10 @@ namespace API.Controllers
                 });
             }
         }
+
+
+
+
 
     }
 }
