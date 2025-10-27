@@ -67,8 +67,27 @@ namespace Application.Services
             return await _vehicleCategoryRepository.GetCategoryDetailAsync(id);
         }
 
-        public Task UpdateCategoryAsync(int id, VehicleCategoryCreateModel model) {
-            throw new NotImplementedException();
+        public async Task UpdateCategoryAsync(int id, VehicleCategoryCreateModel model) {
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                var category = await _vehicleCategoryRepository.GetByIdAsync(id);
+                if (category == null || category.Deleted_At != DateTime.MinValue)
+                {
+                    throw new Exception("Vehicle category not found");
+                }
+                _mapper.Map(model, category);
+                await _vehiclePartCompatibilityRepository.DeleteAsyncByPartCategoryId(id);
+                if (model.PartCategoryIds != null && model.PartCategoryIds.Length > 0)
+                {
+                    await _vehiclePartCompatibilityRepository.AddRangeAsync(model.PartCategoryIds.Select(partCategoryId => new DataAccess.Entities.VehiclePartCompatibility
+                    {
+                        Vehicle = category,
+                        PartCategoryId = partCategoryId
+                    }));
+                }
+
+
+            });
         }
     }
 }
