@@ -15,5 +15,6 @@ namespace Application.Interfaces
         Task DeleteCategory(int id, int accountId);
         public Task<PageResultDto<PartCategoryViewModel>> GetCategories(CategoryQueryDto model);
         Task RestoreCategory(int id, int accountId);
+        Task<int> UpdateCategory(PartCategoryCreateModel model, int id);
     }
 }
