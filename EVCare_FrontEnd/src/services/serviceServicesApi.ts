@@ -8,6 +8,7 @@ import axios from "axios";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import type { Service } from "../models/ServicesModel/ServiceViewModel";
 import type { PageResultDto } from "../models/PageResult/PageResultDto";
+import type { ServiceCategoryAdminDto } from "../models/ServicesModel/ServiceCategoryAdminDto";
 
 /**
  * [CUSTOMER, STAFF, ADMIN] get all service category
@@ -43,13 +44,12 @@ export async function createService(data: ServiceCreateDto) {
   }
 }
 
-export async function deleteService(data: number) {
+export async function deleteService(params: { serviceId: number }) {
   try {
-    await api.delete("/api/Service", {
-      params: {
-        id: data,
-      },
+    const response = await api.delete("/api/Service", {
+      params: params,
     });
+    return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errMsg = error.response?.data.message || error.message;
@@ -81,6 +81,15 @@ export async function getAllServicesWithPagination(params: {
     const response = await api.get<ResponseDto<PageResultDto<Service>>>("/api/Service", {
       params: params,
     });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function getAllServiceCategories() {
+  try {
+    const response = await api.get<ResponseDto<PageResultDto<ServiceCategoryAdminDto>>>("/api/ServiceCategory/admin");
     return response.data;
   } catch (error) {
     handleError(error);
