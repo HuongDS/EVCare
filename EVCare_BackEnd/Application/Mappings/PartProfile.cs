@@ -14,7 +14,9 @@ namespace Application.Mappings
         public PartProfile()
         {
             CreateMap<PartViewModel, Part>();
-            CreateMap<PartAdminUpdateModel, Part>();
+            CreateMap<PartAdminUpdateModel, Part>()
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.ImageUrl));
+                ;
             CreateMap<PartCreateModel, Part>();
             CreateMap<PartStaffUpdateModel, Part>();
         }

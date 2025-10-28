@@ -18,7 +18,7 @@ namespace Application.Interfaces
         Task<byte[]> ExportPartAsync();
         Task<PageResultDto<PartViewModel>> GetAllParts(PartQueryDto model);
         Task StaffUpdateAPart(PartStaffUpdateModel model,int accountId);
-        Task UpdateAPart(int id,PartAdminUpdateModel model);
+        Task UpdateAPart(int id,PartAdminUpdateModel model,int accountId);
         Task RestoreAPartSave(int id, int accountId);
         Task<byte[]> GetPartImportTemplate();
         Task<PartImportResult> ImportPartAsync(IFormFile file, int accountId);

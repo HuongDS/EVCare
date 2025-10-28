@@ -33,6 +33,7 @@ namespace DataAccess.Repositories
         public async Task<PageResultDto<PartCategoryViewModel>> GetCategories(CategoryQueryDto model)
         {
             var query =  _dbContext.PartCategories.AsNoTracking()
+                
                 .Select(x => new PartCategoryViewModel
                 {
                     Id = x.Id,
@@ -40,7 +41,8 @@ namespace DataAccess.Repositories
                     Description = x.Description,
                     IsDeleted = x.Deleted_At != DateTime.MinValue
 
-                }).ApplySorting(model.SortField, model.SortOrder);
+                })
+                .ApplySorting(model.SortField, model.SortOrder);
 
             return await PaginationHelper.PaginationAsync(query,model.PageSize.Value, model.PageIndex.Value);
 

@@ -20,6 +20,12 @@ namespace DataAccess.Repositories
         {
         }
 
+        public async Task DeleteByServiceCategoryIdAsync(int id) {
+            await _dbSet
+                .Where(s => s.ServiceCategoryId == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.Deleted_At, DateTime.UtcNow));
+        }
+
         public async Task<PageResultDto<ServiceViewModel>> GetActiveServiceAndKeywordWithPagination(ServiceQueryDto model)
         {
             if (string.IsNullOrWhiteSpace(model.Keyword))
@@ -58,14 +64,15 @@ namespace DataAccess.Repositories
                     Description = x.Description,
                     Duration = x.Duration,
                     Id = x.Id,
-                    IsDeleted = false,
+                    IsDeleted = x.Deleted_At!= null,
                     Name = x.Name,
+                    ServiceCategoryId = x.ServiceCategoryId
                 });
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
                  
         }
 
-      
+        
     }
 }

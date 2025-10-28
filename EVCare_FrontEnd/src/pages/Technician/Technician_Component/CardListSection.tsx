@@ -1,11 +1,12 @@
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import type { TechnicianWorkingSessionEnum } from "../../../models/enums";
+import { TechnicianWorkingSessionEnum } from "../../../models/enums";
 import {
   AppointmentList,
   Watermark,
   ErrorMessage,
 } from "../TechnicianGeneral/Technician_General.styled";
 import AppointmentCard from "./AppointmentCard";
+import AppointmentCardProgress from "./AppointmentCardProgress";
 import LoadingOverlay from "./LoadingOverlay";
 
 export const CardListSection = ({
@@ -41,14 +42,30 @@ export const CardListSection = ({
 
   return (
     <AppointmentList className={fade ? "fade-out" : ""}>
-      {appointments.map((item) => (
-        <AppointmentCard
-          key={item.id}
-          data={item}
-          onStatusChange={onStatusChange}
-          onPartsUpdated={onPartsUpdated}
-        />
-      ))}
+      {appointments.map((item) => {
+        if (
+          item.status === TechnicianWorkingSessionEnum.COMPLETED ||
+          item.status === TechnicianWorkingSessionEnum.CANCELED
+        ) {
+          return (
+            <AppointmentCard
+              key={item.id}
+              data={item}
+              onStatusChange={onStatusChange}
+              onPartsUpdated={onPartsUpdated}
+            />
+          );
+        }
+
+        return (
+          <AppointmentCardProgress
+            key={item.id}
+            data={item}
+            onStatusChange={onStatusChange}
+            onPartsUpdated={onPartsUpdated}
+          />
+        );
+      })}
     </AppointmentList>
   );
 };

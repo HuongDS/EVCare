@@ -162,5 +162,24 @@ namespace Application.Infrastructures
 
         public static string APPLICATION_UPDATE_SUCCESS = "Application updated successfully";
 
+        public static string VEHICLE_GET_SUCCESS  = "Get vehicle successfully";
+
+        public static string UNBANNED_ACCOUNT_SUCCESS  = "Unbanned account successfully";
+
+        public static string VEHICLE_CATEGORY_CREATE_SUCCESSFULLY  = "Create vehicle category successfully";
+
+        public static string VEHICLE_CATEGORY_UPDATE_SUCCESSFULLY = "Update vehicle category successfully";
+
+        public static string PART_Category_UPDATE_SUCCESSFULLY = "Update part category successfully";
+
+        public static string VEHICLE_CATEGORY_DELETE_SUCCESSFULLY  = "Delete vehicle category successfully";
+
+        public static string VEHICLE_CATEGORY_UNBANNED_SUCCESSFULLY = "Unbanned vehicle category successfully";
+
+        public static string SERVICE_CATEGORY_CREATE_SUCCESSFULLY  = "Create service category successfully";
+
+        public static string SERVICE_CATEGORY_UPDATE_SUCCESSFULLY = "Update service category successfully";
+
+        public static string SERVICE_CATEGORY_DELETE_SUCCESSFULLY = "Delete service category successfully";
     }
 }

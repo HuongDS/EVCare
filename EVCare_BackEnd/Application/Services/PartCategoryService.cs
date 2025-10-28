@@ -79,5 +79,17 @@ namespace Application.Services
                 await _partCategoryRepository.UpdateAsync(partCategory);
             });
         }
+
+        public async Task<int> UpdateCategory(PartCategoryCreateModel model, int id) {
+            var partCategory = await _partCategoryRepository.GetByIdAsync(id);
+            if (partCategory == null || partCategory.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception("Category not found");
+            }
+            partCategory.Name = model.Name;
+            partCategory.Description = model.Description;
+            await _partCategoryRepository.UpdateAsync(partCategory);
+            return partCategory.Id;
+        }
     }
 }
