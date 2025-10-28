@@ -152,7 +152,7 @@ export default function Staff_Appoinments() {
             )
           ) : (
             <NOT_FOUND_ITEMS
-              icon="bi bi-exclamation-circle"
+              icon={<i className="bi bi-exclamation-circle" />}
               message={LIST_APPOINTMENTS_MESSAGE.EMPTY_PENDING(sortBy)}
             />
           )}

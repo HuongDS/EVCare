@@ -5,8 +5,9 @@ import type { TechnicianModel } from "../../../models/AppointmentsModel/Technici
 import type { TechnicianSkills } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import {
-  changeAppointmentStatus,
+  // changeAppointmentStatus,
   useAssignTechnician,
+  useChangeAppointmentStatus,
   useGetTechniciansToday,
 } from "../../../services/appointmentServiceApi";
 import { useAppDispatch } from "../../../states/store";
@@ -98,7 +99,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
   };
 
   //đổi trang thái appointment
-  const { mutateAsync: appointmentStatus } = changeAppointmentStatus();
+  const { mutateAsync: appointmentStatus } = useChangeAppointmentStatus();
   const handleChangeStep = async () => {
     setIsSuccessModalOpen(false);
     await appointmentStatus({
