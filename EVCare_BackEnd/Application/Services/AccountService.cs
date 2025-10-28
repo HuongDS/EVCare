@@ -47,8 +47,9 @@ namespace Application.Services
             return data;
         }
 
-        public async Task<int> UnbannedAccount(int accountId) {
-            var account = await  _accountRepository.GetByIdAsync(accountId);
+        public async Task<int> UnbannedAccount(int accountId)
+        {
+            var account = await _accountRepository.GetByIdAsync(accountId);
             if (account == null)
             {
                 throw new Exception(Message.ACCOUNT_NOT_FOUND);
@@ -80,7 +81,7 @@ namespace Application.Services
             var checkAccountExist = await _accountRepository.GetAccountByPhoneAsync(data.phone);
             if (checkAccountExist != null)
             {
-                throw new Exception(Message.PHONE_EXISTS);
+                if (checkAccountExist.Id != accountId) throw new Exception(Message.PHONE_EXISTS);
             }
             account.First_Name = data.firstName;
             account.Last_Name = data.lastName;
@@ -104,6 +105,10 @@ namespace Application.Services
             if (!Regex.IsMatch(data.newPassword, RegexPartterns.PASSWORD_PATTERN))
             {
                 throw new Exception(Message.WEAK_PASSWORD);
+            }
+            if (!BCrypt.Net.BCrypt.Verify(data.oldPassword, account.Hash_Password))
+            {
+                throw new Exception(Message.OLD_PASSWORD_INCORRECT);
             }
             account.Hash_Password = BCrypt.Net.BCrypt.HashPassword(data.newPassword);
             await _accountRepository.UpdateAsync(account);
