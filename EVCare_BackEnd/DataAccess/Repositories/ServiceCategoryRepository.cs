@@ -26,7 +26,9 @@ namespace DataAccess.Repositories
                 .Select(sc => new ServiceCategoryViewModel
                 { 
                     Name = sc.Name,
-                    Services = sc.Services.Select(s => new ServiceViewFormModel
+                    Services = sc.Services
+                    .Where(s=>s.Deleted_At == null)
+                    .Select(s => new ServiceViewFormModel
                     {
                         Id = s.Id,
                         Name = s.Name,

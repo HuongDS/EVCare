@@ -63,6 +63,28 @@ namespace API.Controllers
             }
         }
 
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateCategory([FromQuery]int id,PartCategoryCreateModel model) {
+            try {
+                var data = await _partCategoryService.UpdateCategory(model, id);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.PART_Category_UPDATE_SUCCESSFULLY,
+                    data = data
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
