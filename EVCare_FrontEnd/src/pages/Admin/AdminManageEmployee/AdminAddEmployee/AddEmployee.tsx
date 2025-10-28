@@ -40,6 +40,7 @@ const AddEmployee: React.FC = () => {
   const [addImage, setAddImage] = useState("");
   const [technicianId, setTechnicianId] = useState(0);
   const [isSubmit, setIsSubmit] = useState(false);
+  const [searchedSkillList, setSearchSkillList] = useState<EmployeeSkillCategoryViewModel[]>([]);
 
   const handleSubmit = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -128,6 +129,7 @@ const AddEmployee: React.FC = () => {
           throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
         }
         setSkillGroups(response.data ?? []);
+        setSearchSkillList(response.data ?? []);
       } catch (error) {
         notification.error({
           message: "Fetch Data",
@@ -137,7 +139,24 @@ const AddEmployee: React.FC = () => {
     };
     fetchData();
     setIsLoading(false);
-  }, [searchSkills]);
+  }, []);
+
+  useEffect(() => {
+    if (searchSkills.trim() === "") {
+      setSearchSkillList(skillGroups);
+      return;
+    }
+    const filteredList = skillGroups.map((group) => {
+      const filteredServices = group.services.filter((service) =>
+        service.name.toLocaleLowerCase().includes(searchSkills.toLocaleLowerCase().trim())
+      );
+      return {
+        ...group,
+        services: filteredServices,
+      };
+    });
+    setSearchSkillList(filteredList);
+  }, [searchSkills, skillGroups]);
 
   return isLoading ? (
     <div style={{ display: "flex", alignItems: "center", height: "100vh", justifyContent: "center" }}>
@@ -178,7 +197,7 @@ const AddEmployee: React.FC = () => {
                 handleChange={setExpYear}
                 selectedSkills={selectedSkills}
                 setSelectedSkills={handleSelectSkill}
-                skillGroups={skillGroups}
+                skillGroups={searchedSkillList}
                 setSearchSkills={setSearchSkills}
               />
 
