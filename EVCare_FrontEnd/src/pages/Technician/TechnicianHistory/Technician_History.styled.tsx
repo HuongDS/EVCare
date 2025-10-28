@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-/* 🎨 Màu sắc & responsive breakpoints */
 const COLORS = {
   primary: "#4caf50",
   grayDark: "#222",
@@ -14,7 +13,6 @@ const BREAKPOINTS = {
   mobile: "480px",
 };
 
-/* 📦 Wrapper tổng thể */
 export const AppointmentWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -28,7 +26,6 @@ export const AppointmentWrapper = styled.div`
   }
 `;
 
-/* 🏷️ Tiêu đề */
 export const TitleWrapper = styled.div`
   display: flex;
   justify-content: center;

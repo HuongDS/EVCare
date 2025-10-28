@@ -18,11 +18,7 @@ export default function Layout() {
       <Header />
       <Authentication />
       <Main>
-        <div id="smooth-wrapper">
-          <div id="smooth-content">
-            <Outlet />
-          </div>
-        </div>
+        <Outlet />
       </Main>
       <Footer />
     </Container>
