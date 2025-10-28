@@ -36,7 +36,6 @@ interface MenuItem {
   children?: MenuItem[];
 }
 
-// Menu mặc định theo role
 const menuByRole: Record<RoleEnum, MenuItem[]> = {
   [RoleEnum.ADMIN]: [
     {
@@ -57,30 +56,29 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
       label: "Manage Employees",
       route: "/admin/manage-employees",
     },
-
     {
       key: "4",
-      icon: <LineChartOutlined size={20} />,
-      label: "Finance & Reports",
-      route: "/admin/finance-reports",
-    },
-    {
-      key: "5",
-      icon: <QuestionCircleOutlined size={20} />,
-      label: "Help & Information",
-      route: "/admin/help",
-    },
-    {
-      key: "6",
       icon: <ToolOutlined />,
       label: "Manage Parts",
       route: "/admin/manage-parts",
     },
     {
-      key: "7",
+      key: "5",
       icon: <ContainerOutlined />,
       label: "Manage Services",
       route: "/admin/manage-services",
+    },
+    {
+      key: "6",
+      icon: <SettingOutlined />,
+      label: "Center Informations",
+      route: "/admin/center-information",
+    },
+    {
+      key: "7",
+      icon: <LineChartOutlined size={20} />,
+      label: "Finance & Reports",
+      route: "/admin/finance-reports",
     },
     {
       key: "8",
@@ -96,9 +94,9 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "10",
-      icon: <SettingOutlined />,
-      label: "Center Informations",
-      route: "/admin/center-information",
+      icon: <QuestionCircleOutlined size={20} />,
+      label: "Help & Information",
+      route: "/admin/help",
     },
     {
       key: "11",
