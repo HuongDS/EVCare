@@ -1,122 +1,187 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
-import { ArrowLeft, Home, Car } from "lucide-react";
+import { ArrowLeft, Car } from "lucide-react";
+import { gsap } from "gsap";
 
-// Styled Components
+const MAIN_GREEN = "#00AD4E";
+const LIGHT_GREEN = "#00C65E";
+
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e40af, #4338ca);
+  background: linear-gradient(180deg, #f8fff9 0%, #e8f8ee 100%);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-`;
-
-const Card = styled.div`
-  background: white;
-  border-radius: 12px;
-  padding: 40px;
+  font-family: "Outfit", sans-serif;
+  overflow: hidden;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  max-width: 500px;
-  width: 100%;
+  padding: 40px 20px;
+  position: relative;
 `;
 
-const Title = styled.h1`
-  font-size: 4rem;
-  color: #1e40af;
-  margin: 0 0 20px 0;
-  font-weight: bold;
+const NumberWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+  margin-bottom: 80px;
+  width: 100%;
+  max-width: 800px;
+  height: 18rem;
+`;
+
+const Half = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: ${MAIN_GREEN};
+  font-size: 18rem;
+  font-weight: 900;
+  letter-spacing: -10px;
+  line-height: 0.9;
+`;
+
+const TopHalf = styled(Half)`
+  clip-path: inset(0 0 49.5% 0);
+`;
+
+const BottomHalf = styled(Half)`
+  clip-path: inset(50% 0 0 0);
+`;
+
+const CarWrapper = styled.div`
+  position: absolute;
+  top: 31.5%;
+  left: 0;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 50;
 `;
 
 const Subtitle = styled.h2`
-  color: #374151;
-  margin: 0 0 15px 0;
-  font-size: 1.5rem;
+  color: #16a34a;
+  font-size: 2rem;
+  position: absolute;
+  top: 31.5%;
+  left: 0;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  opacity: 0;
 `;
 
 const Description = styled.p`
-  color: #6b7280;
-  margin: 0 0 30px 0;
-  line-height: 1.6;
+  color: #374151;
+  max-width: 540px;
+  line-height: 1.7;
+  font-size: 2rem;
+  text-align: center;
 `;
 
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  flex-wrap: wrap;
-`;
-
-const Button = styled.button<{ $primary?: boolean }>`
+const BackButton = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
-  border-radius: 8px;
+  background: ${MAIN_GREEN};
+  color: white;
+  padding: 14px 28px;
+  border-radius: 12px;
   border: none;
-  font-size: 16px;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: all 0.25s ease;
+  margin-top: 2rem;
 
-  ${(props) =>
-    props.$primary
-      ? `
-    background: #1e40af;
-    color: white;
-    
-    &:hover {
-      background: #1d4ed8;
-      transform: translateY(-1px);
-    }
-  `
-      : `
-    background: #f3f4f6;
-    color: #374151;
-    
-    &:hover {
-      background: #e5e7eb;
-      transform: translateY(-1px);
-    }
-  `}
-`;
-
-const CarIcon = styled(Car)`
-  color: #1e40af;
-  margin: 20px 0;
+  &:hover {
+    background: ${LIGHT_GREEN};
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 198, 94, 0.25);
+  }
 `;
 
 const PageNotFound: React.FC = () => {
-  const handleGoBack = () => {
-    window.history.back();
-  };
+  const carRef = useRef<HTMLDivElement>(null);
+  const subtitleRef = useRef<HTMLHeadingElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const handleGoHome = () => {
-    window.location.href = "/";
-  };
+  useEffect(() => {
+    const car = carRef.current;
+    const subtitle = subtitleRef.current;
+    const top = topRef.current;
+    const bottom = bottomRef.current;
+    const wrapper = wrapperRef.current;
+    if (!car || !subtitle || !top || !bottom || !wrapper) return;
+
+    const animate = () => {
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const splitZoneStart = wrapperRect.left - 5;
+      const splitZoneEnd = wrapperRect.right + 5;
+      const screenWidth = window.innerWidth;
+      const carWidth = car.offsetWidth;
+      const textWidth = subtitle.offsetWidth;
+
+      gsap.killTweensOf([car, subtitle]);
+      gsap.set([car, subtitle], { opacity: 0 });
+
+      const tl = gsap.timeline({
+        repeat: -1,
+        defaults: { ease: "none" },
+        repeatDelay: 0.5,
+      });
+
+      tl.set(car, { x: -carWidth - 150, opacity: 1 })
+        .set(subtitle, { x: -carWidth - textWidth - 170, opacity: 1 })
+        .to([car, subtitle], {
+          x: `+=${screenWidth + carWidth + textWidth + 400}`,
+          duration: 6,
+          onUpdate: () => {
+            const carRect = car.getBoundingClientRect();
+            const carFront = carRect.left + carRect.width;
+            const carBack = carRect.left;
+
+            if (carFront > splitZoneStart && carBack < splitZoneEnd) {
+              gsap.to(top, { y: -25, duration: 0.18, overwrite: "auto" });
+              gsap.to(bottom, { y: 35, duration: 0.18, overwrite: "auto" });
+            } else {
+              gsap.to(top, { y: 0, duration: 0.18, overwrite: "auto" });
+              gsap.to(bottom, { y: 0, duration: 0.18, overwrite: "auto" });
+            }
+          },
+        })
+        .to([car, subtitle], { opacity: 0, duration: 0.3 });
+    };
+
+    animate();
+    window.addEventListener("resize", animate);
+    return () => window.removeEventListener("resize", animate);
+  }, []);
+
+  const handleGoBack = () => window.history.back();
 
   return (
     <PageContainer>
-      <Card>
-        <Title>404</Title>
-        <CarIcon size={48} />
-        <Subtitle>Page Not Found</Subtitle>
-        <Description>
-          Sorry, we couldn't find the page you're looking for. Let's get you
-          back to our EV care services.
-        </Description>
-        <ButtonGroup>
-          <Button $primary onClick={handleGoHome}>
-            <Home size={18} />
-            Home
-          </Button>
-          <Button onClick={handleGoBack}>
-            <ArrowLeft size={18} />
-            Go Back
-          </Button>
-        </ButtonGroup>
-      </Card>
+      <NumberWrapper ref={wrapperRef}>
+        <TopHalf ref={topRef}>404</TopHalf>
+        <BottomHalf ref={bottomRef}>404</BottomHalf>
+      </NumberWrapper>
+
+      <CarWrapper ref={carRef}>
+        <Car size={90} color={MAIN_GREEN} />
+      </CarWrapper>
+
+      <Subtitle ref={subtitleRef}>Page Not Found</Subtitle>
+
+      <Description>
+        Oops! Looks like this road doesn’t exist. Let’s get you back on track to
+        the main route.
+      </Description>
+
+      <BackButton onClick={handleGoBack}>
+        <ArrowLeft size={20} />
+        Go Back
+      </BackButton>
     </PageContainer>
   );
 };
