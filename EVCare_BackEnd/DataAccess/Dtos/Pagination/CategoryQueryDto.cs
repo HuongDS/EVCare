@@ -8,5 +8,7 @@ namespace DataAccess.Dtos.Pagination
 {
     public class CategoryQueryDto : BaseQueryDto
     {
+        public string? CategoryName { get; set; } = string.Empty;
+        public bool? IsDelete { get; set; }
     }
 }
