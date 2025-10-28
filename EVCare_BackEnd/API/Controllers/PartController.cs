@@ -88,9 +88,11 @@ namespace API.Controllers
 
         [HttpPut()]
         [Authorize(Roles = "Admin")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> UpdatePart([FromQuery] int id, [FromBody] PartAdminUpdateModel model) {
             try {
-                await _partService.UpdateAPart(id, model);
+                var accountId = (int)HttpContext.Items["AccountId"];
+                await _partService.UpdateAPart(id, model,accountId);
                 return Ok(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.OK,

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Appointment;
@@ -608,6 +609,32 @@ namespace DataAccess.Repositories
 
         public async Task<Appointment> GetByOrderIdAsync(int orderId) {
             return await _dbSet.FirstOrDefaultAsync(a => a.OrderId == orderId);
+        }
+
+        public async Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId) {
+            var parts = await _dbContext.AppointmentPartConditions
+                .AsNoTracking()
+                .Where(apc => apc.AppointmentId == appointmentId)
+                .Include(apc=>apc.Part)
+                .Select(apc => new DamagedPartViewModel
+                {
+                     DamageLevel = apc.Level,
+                        Id = apc.PartId,
+                        PartCategoryId = apc.Part.CategoryId,
+                        PartName = apc.Part.Name
+                }).ToListAsync();
+
+            return await _dbSet.Where(x => x.Id == appointmentId)
+                .Include(x => x.Vehicle)
+                .Include(x=>x.AppointmentPartConditions)
+                .Select(x => new AppointmentVehicleViewModel
+                {
+                    Id = x.Id,
+                    VehicleCategoryId = x.Vehicle.CategoryId,
+                    DamagedPartViewModels = parts
+                    
+
+                }).FirstOrDefaultAsync();
         }
     }
 }

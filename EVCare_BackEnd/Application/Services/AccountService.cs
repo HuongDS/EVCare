@@ -46,6 +46,18 @@ namespace Application.Services
             var data = _mapper.Map<AccountViewModel>(account);
             return data;
         }
+
+        public async Task<int> UnbannedAccount(int accountId) {
+            var account = await  _accountRepository.GetByIdAsync(accountId);
+            if (account == null)
+            {
+                throw new Exception(Message.ACCOUNT_NOT_FOUND);
+            }
+            account.Deleted_At = DateTime.MinValue;
+            await _accountRepository.UpdateAsync(account);
+            return account.Id;
+        }
+
         public async Task<AccountViewModel> UpdateAccountByAccountID(AccountUpdateDto data, int accountId)
         {
             var account = await _accountRepository.GetByIdAsync(accountId);
