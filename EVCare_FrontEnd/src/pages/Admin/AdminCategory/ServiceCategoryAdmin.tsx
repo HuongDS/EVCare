@@ -10,38 +10,52 @@ import {
   Th,
   Tr,
   Td,
-  StatusBadge,
   ActionButton,
+  StatusBadge,
 } from "./Admin_Category.styled";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import type { Category } from "../../../models/PartModel/PartModel";
 import { useNotification } from "../../../context/useNotification";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import PartCategoryForm from "./PartCategoryForm";
 import CategoryEditModal from "./CategoryEditModal";
 import DeleteConfirmationModal from "../AdminService&Parts/DeleteConfirmModal";
-import { getPartCategories } from "../../../services/partApi";
-import { deletePartCategory } from "../../../services/partCategoryApi";
+import type { ServiceCategoryAdminDto } from "../../../models/ServicesModel/ServiceCategoryAdminDto";
+
+const mockApi = {
+  getServiceCategories: async (): Promise<ServiceCategoryAdminDto[]> => {
+    console.log("FETCH: Vehicle Categories");
+    await new Promise((r) => setTimeout(r, 500));
+    return [
+      { id: 1, name: "SUV", description: "Service 01", isActive: true },
+      { id: 2, name: "SEDAN", description: "Service 02", isActive: false },
+      { id: 3, name: "COUPE", description: "Service 03", isActive: true },
+    ];
+  },
+  deleteServiceCategory: async (id: number) => {
+    console.log("DELETE: Vehicle Category", id);
+    await new Promise((r) => setTimeout(r, 500));
+  },
+};
 
 type SubTab = "view" | "add";
 
-export default function PartCategoryAdmin() {
+export default function ServiceCategoryAdmin() {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>("view");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<ServiceCategoryAdminDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const notification = useNotification();
-  const [itemToEdit, setItemToEdit] = useState<Category | null>(null);
+  const [itemToEdit, setItemToEdit] = useState<ServiceCategoryAdminDto | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<Category | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<ServiceCategoryAdminDto | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await getPartCategories();
-      setCategories(data.data?.items ?? []);
+      const data = await mockApi.getServiceCategories();
+      setCategories(data);
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({ message: "Lỗi", description: "Không thể tải danh mục phụ tùng." });
     }
     setIsLoading(false);
   }, [notification]);
@@ -51,17 +65,17 @@ export default function PartCategoryAdmin() {
   }, [fetchData]);
 
   const handleAddSuccess = () => {
-    notification.success({ message: "Add Part Category", description: "Added new Part Category successful." });
+    notification.success({ message: "Thành công", description: "Đã thêm danh mục mới." });
     fetchData();
     setActiveSubTab("view");
   };
 
-  const handleOpenEditModal = (category: Category) => {
+  const handleOpenEditModal = (category: ServiceCategoryAdminDto) => {
     setItemToEdit(category);
     setIsEditModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (category: Category) => {
+  const handleOpenDeleteModal = (category: ServiceCategoryAdminDto) => {
     setItemToDelete(category);
     setIsDeleteModalOpen(true);
   };
@@ -69,10 +83,11 @@ export default function PartCategoryAdmin() {
   const confirmDelete = async () => {
     if (!itemToDelete) return;
     try {
-      await deletePartCategory(itemToDelete.id);
+      await mockApi.deleteServiceCategory(itemToDelete.id);
+      notification.success({ message: "Đã xóa", description: `Đã xóa danh mục ${itemToDelete.name}.` });
       fetchData();
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({ message: "Lỗi", description: (error as Error).message });
     }
     setIsDeleteModalOpen(false);
     setItemToDelete(null);
@@ -95,17 +110,17 @@ export default function PartCategoryAdmin() {
             </thead>
             <tbody>
               {categories.map((cat) => (
-                <Tr key={cat.id} $isDeleted={cat.isDeleted}>
+                <Tr key={cat.id}>
                   <Td>{cat.name}</Td>
                   <Td>{cat.description}</Td>
                   <Td>
-                    <StatusBadge $isActive={!cat.isDeleted}>{cat.isDeleted ? "Deleted" : "Active"}</StatusBadge>
+                    <StatusBadge $isActive={cat.isActive}>{cat.isActive ? "Active" : "Deleted"}</StatusBadge>
                   </Td>
                   <Td>
-                    <ActionButton onClick={() => handleOpenEditModal(cat)} disabled={cat.isDeleted}>
+                    <ActionButton onClick={() => handleOpenEditModal(cat)} disabled={!cat.isActive}>
                       <FaPencilAlt />
                     </ActionButton>
-                    <ActionButton $isDelete onClick={() => handleOpenDeleteModal(cat)} disabled={cat.isDeleted}>
+                    <ActionButton $isDelete onClick={() => handleOpenDeleteModal(cat)} disabled={!cat.isActive}>
                       <FaTrash />
                     </ActionButton>
                   </Td>
@@ -141,7 +156,7 @@ export default function PartCategoryAdmin() {
 
       <AnimatePresence>
         {isEditModalOpen && (
-          <CategoryEditModal categoryType="Part" itemToEdit={itemToEdit} onClose={() => setIsEditModalOpen(false)} />
+          <CategoryEditModal categoryType="Service" itemToEdit={itemToEdit} onClose={() => setIsEditModalOpen(false)} />
         )}
       </AnimatePresence>
 
