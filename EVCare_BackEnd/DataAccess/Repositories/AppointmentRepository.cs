@@ -9,6 +9,7 @@ using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Part;
+using DataAccess.Dtos.PartCategory;
 using DataAccess.Dtos.Payment;
 using DataAccess.Dtos.Service;
 using DataAccess.Dtos.Technician;
@@ -615,24 +616,36 @@ namespace DataAccess.Repositories
             var parts = await _dbContext.AppointmentPartConditions
                 .AsNoTracking()
                 .Where(apc => apc.AppointmentId == appointmentId)
-                .Include(apc=>apc.Part)
-                .Select(apc => new DamagedPartViewModel
+                .Include(apc=>apc.Part).ThenInclude(p=>p.Category)
+                .GroupBy(apc=> apc.Part.Category.Name)
+                .Select(apc => new PartCategoryAppointmentViewModel
                 {
-                     DamageLevel = apc.Level,
-                        Id = apc.PartId,
-                        PartCategoryId = apc.Part.CategoryId,
-                        PartName = apc.Part.Name
+                       PartCategoryName = apc.Key,
+                       DamagedPartViewModels = apc
+                       .GroupBy(apc2=>apc2.PartId)
+                       .Select(g => g
+                        .OrderByDescending(x => x.Level)
+                        .Select(x => new DamagedPartViewModel
+                        {
+                            DamageLevel = x.Level,
+                            Id = x.PartId,
+                            PartName = x.Part.Name,
+                            PartCategoryId = x.Part.CategoryId
+                        })
+                        .FirstOrDefault()
+                        ).ToList()
                 }).ToListAsync();
 
             return await _dbSet.Where(x => x.Id == appointmentId)
-                .Include(x => x.Vehicle)
+                .Include(x => x.Vehicle).ThenInclude(v => v.Category)
                 .Include(x=>x.AppointmentPartConditions)
                 .Select(x => new AppointmentVehicleViewModel
                 {
                     Id = x.Id,
                     VehicleCategoryId = x.Vehicle.CategoryId,
-                    DamagedPartViewModels = parts
-                    
+                    VehicleModel3DUrl = x.Vehicle.Category.Model3DUrl,
+                    PartCategoryAppointmentViewModels = parts
+
 
                 }).FirstOrDefaultAsync();
         }
