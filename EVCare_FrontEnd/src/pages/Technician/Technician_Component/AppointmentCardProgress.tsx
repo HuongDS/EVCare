@@ -14,7 +14,6 @@ import {
 } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 
-// --- Styled Components ---
 const CardContainer = styled.div`
   width: 100%;
   background: #fff;
@@ -131,7 +130,6 @@ const DamageLevelBadgeStyled = styled.span<{ $level: DamageLevelEnum }>`
   background-color: ${({ $level }) => damageColorMap[$level] || "#999"};
 `;
 
-// **Container cho nút**
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -139,7 +137,6 @@ const ButtonWrapper = styled.div`
   gap: 1rem;
 `;
 
-// --- Component ---
 type Props = {
   data: TechnicianAppointmentsDto;
   onStatusChange?: (
@@ -215,13 +212,10 @@ const AppointmentCardProgress: React.FC<Props> = ({
 
   return (
     <CardContainer>
-      {/* Header */}
       <Header>
         <div>Appointment #{data.id}</div>
         <div>{currentStatus.replace("_", " ")}</div>
       </Header>
-
-      {/* Image Carousel */}
       {data.appointmentImages?.length > 0 && (
         <ImageCarousel>
           {data.appointmentImages.map((img, idx) => (
@@ -231,8 +225,6 @@ const AppointmentCardProgress: React.FC<Props> = ({
           ))}
         </ImageCarousel>
       )}
-
-      {/* Info Box */}
       <InfoBox>
         <InfoColumn>
           <div>
@@ -254,8 +246,6 @@ const AppointmentCardProgress: React.FC<Props> = ({
           </div>
         </InfoColumn>
       </InfoBox>
-
-      {/* Lists */}
       <ListSection>
         <SectionContainer>
           <SectionTitle>Services</SectionTitle>
@@ -301,8 +291,6 @@ const AppointmentCardProgress: React.FC<Props> = ({
           </ListWrapper>
         </SectionContainer>
       </ListSection>
-
-      {/* Nút bên phải */}
       <ButtonWrapper>
         <ReviewButton
           status={currentStatus}

@@ -211,13 +211,10 @@ const AppointmentCard: React.FC<Props> = ({
 
   return (
     <CardContainer>
-      {/* Header */}
       <Header>
         <div>Appointment #{data.id}</div>
         <div>{currentStatus.replace("_", " ")}</div>
       </Header>
-
-      {/* Image Carousel */}
       {data.appointmentImages?.length > 0 && (
         <ImageCarousel>
           {data.appointmentImages.map((img, idx) => (
@@ -228,7 +225,6 @@ const AppointmentCard: React.FC<Props> = ({
         </ImageCarousel>
       )}
 
-      {/* Info Box */}
       <InfoBox>
         <InfoColumn>
           <div>
@@ -251,7 +247,6 @@ const AppointmentCard: React.FC<Props> = ({
         </InfoColumn>
       </InfoBox>
 
-      {/* Lists */}
       <ListSection>
         <SectionBox>
           <SectionTitle>Services</SectionTitle>
@@ -295,8 +290,6 @@ const AppointmentCard: React.FC<Props> = ({
           </ListWrapper>
         </SectionBox>
       </ListSection>
-
-      {/* Button */}
       <ButtonWrapper>
         <ReviewButton
           status={currentStatus}
