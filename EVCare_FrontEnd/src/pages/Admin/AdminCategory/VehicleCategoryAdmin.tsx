@@ -10,38 +10,37 @@ import {
   Th,
   Tr,
   Td,
-  StatusBadge,
   ActionButton,
 } from "./Admin_Category.styled";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import type { Category } from "../../../models/PartModel/PartModel";
 import { useNotification } from "../../../context/useNotification";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import PartCategoryForm from "./PartCategoryForm";
-import CategoryEditModal from "./CategoryEditModal";
 import DeleteConfirmationModal from "../AdminService&Parts/DeleteConfirmModal";
-import { getPartCategories } from "../../../services/partApi";
-import { deletePartCategory } from "../../../services/partCategoryApi";
+import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
+import VehicleCategoryForm from "./VehicleCategoryForm"; // <-- UPDATED
+import VehicleCategoryEditModal from "./VehicleCategoryEditModal"; // <-- UPDATED
+import { deleteVehicleCategory, getVehicleCategories } from "../../../services/vehicleServicesApi";
+import { ERROR_MESSAGE } from "../../../constants/messages/Message";
 
 type SubTab = "view" | "add";
 
-export default function PartCategoryAdmin() {
+export default function VehicleCategoryAdmin() {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>("view");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<VehicleCategoryViewDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const notification = useNotification();
-  const [itemToEdit, setItemToEdit] = useState<Category | null>(null);
+  const [itemToEdit, setItemToEdit] = useState<VehicleCategoryViewDto | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<Category | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<VehicleCategoryViewDto | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await getPartCategories();
-      setCategories(data.data?.items ?? []);
+      const data = await getVehicleCategories();
+      setCategories(data?.data ?? []);
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({ message: "Error", description: ERROR_MESSAGE.FETCH_DATA_FAILED });
     }
     setIsLoading(false);
   }, [notification]);
@@ -50,18 +49,23 @@ export default function PartCategoryAdmin() {
     fetchData();
   }, [fetchData]);
 
-  const handleAddOrUpdateSuccess = () => {
-    notification.success({ message: "Add Part Category", description: "Added new Part Category successful." });
+  const handleAddSuccess = () => {
     fetchData();
     setActiveSubTab("view");
   };
 
-  const handleOpenEditModal = (category: Category) => {
+  const handleEditSuccess = () => {
+    fetchData();
+    setIsEditModalOpen(false);
+    setItemToEdit(null);
+  };
+
+  const handleOpenEditModal = (category: VehicleCategoryViewDto) => {
     setItemToEdit(category);
     setIsEditModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (category: Category) => {
+  const handleOpenDeleteModal = (category: VehicleCategoryViewDto) => {
     setItemToDelete(category);
     setIsDeleteModalOpen(true);
   };
@@ -69,7 +73,8 @@ export default function PartCategoryAdmin() {
   const confirmDelete = async () => {
     if (!itemToDelete) return;
     try {
-      await deletePartCategory(itemToDelete.id);
+      await deleteVehicleCategory(itemToDelete.id);
+      notification.success({ message: "Deleted", description: `Category ${itemToDelete.name} deleted.` });
       fetchData();
     } catch (error) {
       notification.error({ message: "Error", description: (error as Error).message });
@@ -83,29 +88,23 @@ export default function PartCategoryAdmin() {
       {isLoading ? (
         <SpinnerComponent />
       ) : (
-        <TableWrapper>
+        <TableWrapper $maxWidth="600px">
           <StyledTable>
             <thead>
               <Tr>
                 <Th>Name</Th>
-                <Th>Description</Th>
-                <Th>Status</Th>
-                <Th>Actions</Th>
+                <Th style={{ width: "120px" }}>Actions</Th>
               </Tr>
             </thead>
             <tbody>
               {categories.map((cat) => (
-                <Tr key={cat.id} $isDeleted={cat.isDeleted}>
+                <Tr key={cat.id}>
                   <Td>{cat.name}</Td>
-                  <Td>{cat.description}</Td>
                   <Td>
-                    <StatusBadge $isActive={!cat.isDeleted}>{cat.isDeleted ? "Deleted" : "Active"}</StatusBadge>
-                  </Td>
-                  <Td>
-                    <ActionButton onClick={() => handleOpenEditModal(cat)} disabled={cat.isDeleted}>
+                    <ActionButton onClick={() => handleOpenEditModal(cat)}>
                       <FaPencilAlt />
                     </ActionButton>
-                    <ActionButton $isDelete onClick={() => handleOpenDeleteModal(cat)} disabled={cat.isDeleted}>
+                    <ActionButton $isDelete onClick={() => handleOpenDeleteModal(cat)}>
                       <FaTrash />
                     </ActionButton>
                   </Td>
@@ -120,7 +119,7 @@ export default function PartCategoryAdmin() {
 
   const renderAddTab = () => (
     <TabContent key="add" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-      <PartCategoryForm onAddSuccess={handleAddOrUpdateSuccess} />
+      <VehicleCategoryForm onAddSuccess={handleAddSuccess} />
     </TabContent>
   );
 
@@ -141,11 +140,11 @@ export default function PartCategoryAdmin() {
 
       <AnimatePresence>
         {isEditModalOpen && (
-          <CategoryEditModal
-            categoryType="Part"
-            itemToEdit={itemToEdit}
+          <VehicleCategoryEditModal
+            isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
-            handleAddOrUpdateSuccess={handleAddOrUpdateSuccess}
+            onSuccess={handleEditSuccess}
+            itemToEdit={itemToEdit}
           />
         )}
       </AnimatePresence>
