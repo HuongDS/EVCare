@@ -73,15 +73,13 @@ namespace Application.Service
 
         public async Task DeleteAService(int serviceId)
         {
-            try
-            {
-                await _serviceRepository.DeleteAsync(serviceId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            
+               var service = await _serviceRepository.GetByIdAsync(serviceId);
+                  if (service == null) {
+                    throw new Exception("Service not found");
+                }
+                service.Deleted_At = DateTime.UtcNow;
+                await _serviceRepository.UpdateAsync(service);
+
         }
 
         public async Task<DataAccess.Entities.Service> UpdateAService(ServicePutModel model)
