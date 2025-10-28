@@ -104,7 +104,7 @@ export async function getAppointmentById(appointmentId: number) {
 }
 
 //[STAFF] - NGO CHI VY: Set Appointment Status - Appointment Steps
-export const changeAppointmentStatus = () => {
+export const useChangeAppointmentStatus = () => {
   return useMutation({
     mutationFn: async (params: ChangeAppointmentStatusParams) => {
       try {
