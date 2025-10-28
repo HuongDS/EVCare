@@ -9,10 +9,12 @@ import {
   SubmitButton,
   LoadingSpinner,
 } from "./Admin_Category.styled";
-import { FaSave } from "react-icons/fa";
+import { FaMagic, FaSave } from "react-icons/fa";
 import { useNotification } from "../../../context/useNotification";
 import type { PartCategoryCreateDto } from "../../../models/PartModel/PartCategoryCreateDto";
 import { createPartCategory } from "../../../services/partCategoryApi";
+import { callGemini } from "../../../services/geminiServices";
+import { GenerateButton } from "../AdminService&Parts/AdminService/Admin_Service.styled";
 
 interface Props {
   onAddSuccess: () => void;
@@ -22,6 +24,7 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
   const [formData, setFormData] = useState<PartCategoryCreateDto>({ name: "", description: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const notification = useNotification();
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -51,6 +54,35 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
     setIsSubmitting(false);
   };
 
+  const handleGeneratingDescription = async () => {
+    if (!formData.name || formData.name.trim().length <= 0) {
+      notification.warning({ message: "Warning", description: "Please enter a category name." });
+      return;
+    }
+    setIsGenerating(true);
+
+    const data = `Part Category Name: ${formData.name.trim()}`;
+    const prompt = `
+      You are an assistant for EVCare.
+      Your task is to generate a concise, professional description (1-2 sentences) for a given part category.
+      You MUST respond in the required JSON format.
+      You MUST set the 'duration' field to 0.
+    `;
+
+    try {
+      const response = await callGemini(data, prompt, 3, 1000);
+      if (response && response.description) {
+        setFormData((prev) => ({ ...prev, description: response.description }));
+        notification.success({ message: "Success", description: "Description generated successfully." });
+      } else {
+        notification.error({ message: "Error", description: "Failed to generate description." });
+      }
+    } catch (error) {
+      notification.error({ message: "Error", description: (error as Error).message });
+    }
+    setIsGenerating(false);
+  };
+
   return (
     <FormWrapper onSubmit={handleSubmit}>
       <InputGroup>
@@ -65,6 +97,11 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
           required
         />
       </InputGroup>
+
+      <GenerateButton type="button" onClick={handleGeneratingDescription} disabled={isGenerating}>
+        {isGenerating ? <LoadingSpinner /> : <FaMagic />}
+        Generate Description
+      </GenerateButton>
 
       <InputGroup>
         <StyledLabel htmlFor="part-description">Description</StyledLabel>

@@ -18,34 +18,18 @@ import { FaTimes, FaSave } from "react-icons/fa";
 import { useNotification } from "../../../context/useNotification";
 import { updatePartCategory } from "../../../services/partCategoryApi";
 import type { PartCategoryCreateDto } from "../../../models/PartModel/PartCategoryCreateDto";
+import { updateServiceCategory } from "../../../services/serviceServicesApi";
 
-type CategoryType = "Vehicle" | "Part" | "Service";
+type CategoryType = "Part" | "Service";
 
 interface Props {
   onClose: () => void;
   categoryType: CategoryType;
   itemToEdit: any;
+  handleAddOrUpdateSuccess: () => void;
 }
 
-const mockApi = {
-  updateVehicleCategory: async (id: number, data: { name: string }) => {
-    console.log("UPDATE: Vehicle", id, data);
-    await new Promise((r) => setTimeout(r, 1000));
-    return { message: "Cập nhật thành công!" };
-  },
-  updatePartCategory: async (id: number, data: { name: string; description: string }) => {
-    console.log("UPDATE: Part", id, data);
-    await new Promise((r) => setTimeout(r, 1000));
-    return { message: "Cập nhật thành công!" };
-  },
-  updateServiceCategory: async (id: number, data: { name: string; description: string }) => {
-    console.log("UPDATE: Service", id, data);
-    await new Promise((r) => setTimeout(r, 1000));
-    return { message: "Cập nhật thành công!" };
-  },
-};
-
-export default function CategoryEditModal({ onClose, categoryType, itemToEdit }: Props) {
+export default function CategoryEditModal({ onClose, categoryType, itemToEdit, handleAddOrUpdateSuccess }: Props) {
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const notification = useNotification();
@@ -70,9 +54,6 @@ export default function CategoryEditModal({ onClose, categoryType, itemToEdit }:
     try {
       let response;
       switch (categoryType) {
-        case "Vehicle":
-          response = await mockApi.updateVehicleCategory(itemToEdit.id, { name: formData.name });
-          break;
         case "Part":
           if (!formData.name || formData.name.trim().length <= 0) {
             throw new Error("Please enter a category name.");
@@ -87,10 +68,21 @@ export default function CategoryEditModal({ onClose, categoryType, itemToEdit }:
           response = await updatePartCategory(itemToEdit.id, data);
           break;
         case "Service":
-          response = await mockApi.updateServiceCategory(itemToEdit.id, formData);
+          if (!formData.name || formData.name.trim().length <= 0) {
+            throw new Error("Please enter a category name.");
+          }
+          if (!formData.description || formData.description.trim().length <= 0) {
+            throw new Error("Please enter a category description.");
+          }
+          const serviceData: PartCategoryCreateDto = {
+            name: formData.name,
+            description: formData.description,
+          };
+          response = await updateServiceCategory(itemToEdit.id, serviceData);
           break;
       }
       notification.success({ message: "Success", description: response.message });
+      handleAddOrUpdateSuccess();
     } catch (error) {
       notification.error({ message: "Error", description: (error as Error).message });
     }
