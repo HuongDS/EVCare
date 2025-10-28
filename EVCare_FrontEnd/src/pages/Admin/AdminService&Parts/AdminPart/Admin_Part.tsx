@@ -337,26 +337,29 @@ export default function Admin_Part() {
                           </Td>
                         </Tr>
                       ) : parts.length > 0 ? (
-                        parts.map((part) => (
-                          <Tr key={part.id}>
-                            <Td>
-                              <PartImage src={part.imageUrl} alt={part.name} />
-                            </Td>
-                            <Td>{part.name}</Td>
-                            <Td>{getCategoryName(part.categoryId)}</Td>
-                            <Td>{part.price.toLocaleString("vi-VN")} VND</Td>
-                            <Td>{part.replacementPrice.toLocaleString("vi-VN")} VND</Td>
-                            <Td>{part.quantity}</Td>
-                            <Td>
-                              <ActionButton onClick={() => handleDelete(part)}>
-                                <FaTrash />
-                              </ActionButton>
-                              <ActionButton onClick={() => handleSelectForUpdate(part)}>
-                                <FaPencilAlt />
-                              </ActionButton>
-                            </Td>
-                          </Tr>
-                        ))
+                        parts.map(
+                          (part) =>
+                            !part.isDeleted && (
+                              <Tr key={part.id}>
+                                <Td>
+                                  <PartImage src={part.imageUrl} alt={part.name} />
+                                </Td>
+                                <Td>{part.name}</Td>
+                                <Td>{getCategoryName(part.categoryId)}</Td>
+                                <Td>{part.price.toLocaleString("vi-VN")} VND</Td>
+                                <Td>{part.replacementPrice.toLocaleString("vi-VN")} VND</Td>
+                                <Td>{part.quantity}</Td>
+                                <Td>
+                                  <ActionButton onClick={() => handleDelete(part)}>
+                                    <FaTrash />
+                                  </ActionButton>
+                                  <ActionButton onClick={() => handleSelectForUpdate(part)}>
+                                    <FaPencilAlt />
+                                  </ActionButton>
+                                </Td>
+                              </Tr>
+                            )
+                        )
                       ) : (
                         <Tr>
                           <Td colSpan={7}>
@@ -404,11 +407,14 @@ export default function Admin_Part() {
                           required
                         >
                           {categories.length === 0 && <option>Is Loading...</option>}
-                          {categories.map((cat) => (
-                            <option key={cat.id} value={cat.id}>
-                              {cat.name}
-                            </option>
-                          ))}
+                          {categories.map(
+                            (cat) =>
+                              !cat.isDeleted && (
+                                <option key={cat.id} value={cat.id}>
+                                  {cat.name}
+                                </option>
+                              )
+                          )}
                         </StyledSelect>
                       </InputGroup>
 
