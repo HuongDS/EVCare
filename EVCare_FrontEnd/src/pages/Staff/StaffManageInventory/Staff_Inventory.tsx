@@ -19,8 +19,6 @@ import { DownloadButton } from "../../../components/Button/DownloadButton";
 
 const { Text } = Typography;
 
-// ====== Styled Components ======
-
 const Staff_Inventory = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [newQuantities, setNewQuantities] = useState<Record<number, number>>(
@@ -80,7 +78,7 @@ const Staff_Inventory = () => {
     setTotal(totalParts ?? 0);
     setLowStockItems(lowStockItems ?? 0);
     setTotalValue(totalValue ?? 0);
-  }, []);
+  }, [parts?.data?.items]);
 
   const { mutate: exportToExcel, isPending } = useExportInventoryToExcel();
 
