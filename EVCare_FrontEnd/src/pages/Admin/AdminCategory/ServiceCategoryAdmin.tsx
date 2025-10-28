@@ -16,26 +16,11 @@ import {
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useNotification } from "../../../context/useNotification";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import PartCategoryForm from "./PartCategoryForm";
 import CategoryEditModal from "./CategoryEditModal";
 import DeleteConfirmationModal from "../AdminService&Parts/DeleteConfirmModal";
 import type { ServiceCategoryAdminDto } from "../../../models/ServicesModel/ServiceCategoryAdminDto";
-
-const mockApi = {
-  getServiceCategories: async (): Promise<ServiceCategoryAdminDto[]> => {
-    console.log("FETCH: Vehicle Categories");
-    await new Promise((r) => setTimeout(r, 500));
-    return [
-      { id: 1, name: "SUV", description: "Service 01", isActive: true },
-      { id: 2, name: "SEDAN", description: "Service 02", isActive: false },
-      { id: 3, name: "COUPE", description: "Service 03", isActive: true },
-    ];
-  },
-  deleteServiceCategory: async (id: number) => {
-    console.log("DELETE: Vehicle Category", id);
-    await new Promise((r) => setTimeout(r, 500));
-  },
-};
+import { deleteServiceCategory, getAllServiceCategories } from "../../../services/serviceServicesApi";
+import ServiceCategoryForm from "./ServiceCategoryForm";
 
 type SubTab = "view" | "add";
 
@@ -52,10 +37,10 @@ export default function ServiceCategoryAdmin() {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await mockApi.getServiceCategories();
-      setCategories(data);
+      const data = await getAllServiceCategories();
+      setCategories(data?.data?.items ?? []);
     } catch (error) {
-      notification.error({ message: "Lỗi", description: "Không thể tải danh mục phụ tùng." });
+      notification.error({ message: "Error", description: (error as Error).message });
     }
     setIsLoading(false);
   }, [notification]);
@@ -64,8 +49,7 @@ export default function ServiceCategoryAdmin() {
     fetchData();
   }, [fetchData]);
 
-  const handleAddSuccess = () => {
-    notification.success({ message: "Thành công", description: "Đã thêm danh mục mới." });
+  const handleAddOrUpdateSuccess = () => {
     fetchData();
     setActiveSubTab("view");
   };
@@ -83,11 +67,11 @@ export default function ServiceCategoryAdmin() {
   const confirmDelete = async () => {
     if (!itemToDelete) return;
     try {
-      await mockApi.deleteServiceCategory(itemToDelete.id);
-      notification.success({ message: "Đã xóa", description: `Đã xóa danh mục ${itemToDelete.name}.` });
+      await deleteServiceCategory(itemToDelete.id);
+      notification.success({ message: "Deleted", description: `Deleted category ${itemToDelete.name}.` });
       fetchData();
     } catch (error) {
-      notification.error({ message: "Lỗi", description: (error as Error).message });
+      notification.error({ message: "Error", description: (error as Error).message });
     }
     setIsDeleteModalOpen(false);
     setItemToDelete(null);
@@ -135,7 +119,7 @@ export default function ServiceCategoryAdmin() {
 
   const renderAddTab = () => (
     <TabContent key="add" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-      <PartCategoryForm onAddSuccess={handleAddSuccess} />
+      <ServiceCategoryForm onAddSuccess={handleAddOrUpdateSuccess} />
     </TabContent>
   );
 
@@ -156,7 +140,12 @@ export default function ServiceCategoryAdmin() {
 
       <AnimatePresence>
         {isEditModalOpen && (
-          <CategoryEditModal categoryType="Service" itemToEdit={itemToEdit} onClose={() => setIsEditModalOpen(false)} />
+          <CategoryEditModal
+            handleAddOrUpdateSuccess={handleAddOrUpdateSuccess}
+            categoryType="Service"
+            itemToEdit={itemToEdit}
+            onClose={() => setIsEditModalOpen(false)}
+          />
         )}
       </AnimatePresence>
 
