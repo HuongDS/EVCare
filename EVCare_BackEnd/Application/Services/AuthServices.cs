@@ -79,13 +79,13 @@ namespace Application.Services
         {
             var checkEmailExist = await _accountRepository.GetAccountByEmail(data.email);
             var checkPhoneExist = await _accountRepository.GetAccountByPhoneAsync(data.phone);
-            if (checkEmailExist.Deleted_At != DateTime.MinValue)
-            {
-                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
-            }
             if (checkEmailExist != null)
             {
                 throw new Exception(Message.EMAIL_EXISTS);
+            }
+            if (checkEmailExist != null && checkEmailExist.Deleted_At != DateTime.MinValue)
+            {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
             }
             if (checkPhoneExist != null)
             {
@@ -158,7 +158,7 @@ namespace Application.Services
         {
             var checkEmailExist = await _accountRepository.GetAccountByEmail(data.accountInfo.email);
             var checkPhoneExist = await _accountRepository.GetAccountByPhoneAsync(data.accountInfo.phone);
-            if (checkEmailExist.Deleted_At != DateTime.MinValue)
+            if (checkEmailExist != null && checkEmailExist.Deleted_At != DateTime.MinValue)
             {
                 throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
             }
