@@ -101,11 +101,14 @@ export const UpdatePartForm = ({
               onChange={handleInputChange}
               required
             >
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
+              {categories.map(
+                (cat) =>
+                  !cat.isDeleted && (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  )
+              )}
             </StyledSelect>
           </InputGroup>
 

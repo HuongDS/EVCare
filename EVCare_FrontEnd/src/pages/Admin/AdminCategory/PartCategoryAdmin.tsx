@@ -50,7 +50,7 @@ export default function PartCategoryAdmin() {
     fetchData();
   }, [fetchData]);
 
-  const handleAddSuccess = () => {
+  const handleAddOrUpdateSuccess = () => {
     notification.success({ message: "Add Part Category", description: "Added new Part Category successful." });
     fetchData();
     setActiveSubTab("view");
@@ -120,7 +120,7 @@ export default function PartCategoryAdmin() {
 
   const renderAddTab = () => (
     <TabContent key="add" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-      <PartCategoryForm onAddSuccess={handleAddSuccess} />
+      <PartCategoryForm onAddSuccess={handleAddOrUpdateSuccess} />
     </TabContent>
   );
 
@@ -141,7 +141,12 @@ export default function PartCategoryAdmin() {
 
       <AnimatePresence>
         {isEditModalOpen && (
-          <CategoryEditModal categoryType="Part" itemToEdit={itemToEdit} onClose={() => setIsEditModalOpen(false)} />
+          <CategoryEditModal
+            categoryType="Part"
+            itemToEdit={itemToEdit}
+            onClose={() => setIsEditModalOpen(false)}
+            handleAddOrUpdateSuccess={handleAddOrUpdateSuccess}
+          />
         )}
       </AnimatePresence>
 
