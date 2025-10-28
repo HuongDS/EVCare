@@ -25,7 +25,7 @@ import ReFreshButton from "../../../components/Button/ReFreshButton";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
-import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
+import { useChangeAppointmentStatus } from "../../../services/appointmentServiceApi";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 
 interface Props {
@@ -56,7 +56,7 @@ export default function Appointment_Part_Tracking({
     if (isSuccess && order?.data?.parts) {
       setParts(order.data.parts);
     }
-  }, [isSuccess, order]);
+  }, [isSuccess, order?.data?.parts]);
 
   //hàm này thay đổi quantity được nhập từ staff
   const handleQuantityChange = async (
@@ -84,8 +84,10 @@ export default function Appointment_Part_Tracking({
 
   //Khi nhấn confirm thì gọi hàm này
   const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
+
   const { mutateAsync: updateOrder, isPending } = useStaffUpdateOrder();
   const queryClient = useQueryClient();
+
   const handleConfirmOrder = async () => {
     try {
       const newOrderUpdate: UpdateOrderRequest<OrderPartDto> = {
@@ -140,16 +142,14 @@ export default function Appointment_Part_Tracking({
     setIsSuccessModalOpen(false);
   };
 
-  //hủy cuộc hẹn
-  const { mutateAsync: appointmentStatus } = changeAppointmentStatus();
+  // hủy cuộc hẹn
+  const { mutateAsync: appointmentStatus } = useChangeAppointmentStatus();
+
   const handleCancelOrder = async () => {
-    const newOrderUpdate: UpdateOrderRequest<OrderPartDto> = {
-      id: data.orderId,
-      orderParts: [],
-    };
     try {
       await appointmentStatus({ appointmentId: data.id, status: "Canceled" });
-      await updateOrder(newOrderUpdate);
+
+      await updateOrder({ id: data.orderId, orderParts: [] });
       await updateOrderStatus({ orderID: data.orderId, status: "Canceled" });
       queryClient.invalidateQueries({
         queryKey: ["OrderDetail", data.orderId],
