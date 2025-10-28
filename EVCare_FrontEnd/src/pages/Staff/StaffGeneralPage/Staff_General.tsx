@@ -155,7 +155,9 @@ const StaffDashboard: React.FC = () => {
                 <TrendingUp size={28} />
                 <Statistic
                   title="Success Rate"
-                  value={Number((completedAppointment / total) * 100)}
+                  value={Number((completedAppointment / total) * 100).toFixed(
+                    2
+                  )}
                   suffix="%"
                 />
               </StatBox>
