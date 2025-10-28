@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Badge, Space } from "antd";
+import { Badge, Space } from "antd";
 import { CalendarOutlined, BellOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import {
@@ -8,11 +8,19 @@ import {
   DateContainer,
 } from "./HeaderStaff.styled";
 import EvCare from "../../assets/EVCare.png";
-import { useNavigate } from "react-router";
-import { getMe } from "../../services/authService";
+import { getMe, logout, deleteToken } from "../../services/authService";
 import type { AccountViewModel } from "../../models/Accounts/accountViewModel";
 import type { ResponseDto } from "../../models/AuthModel/authModel";
-
+import DropdownMenu from "../Header/DropdownMenu";
+import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
+import { useNavigate } from "react-router";
+import { handleError } from "../../utils/errorHandler";
+import { stopAdminDashboardConnection } from "../../signalr/adminConnection";
+import { stopStaffDashboardConnection } from "../../signalr/staffConnection";
+import { stopChatConnection } from "../../signalr/chatConnection";
+import { logoutRedux } from "../../states/authSlice";
+import type { AppDispatch } from "../../states/store";
+import { useDispatch } from "react-redux";
 const HeaderStaff: React.FC = () => {
   const [account, setAccount] = useState<ResponseDto<AccountViewModel> | null>(
     null
@@ -27,6 +35,24 @@ const HeaderStaff: React.FC = () => {
     };
     fetchData();
   }, []);
+  const dispatch = useDispatch<AppDispatch>();
+  const handleLogout = async () => {
+    const response = await logout();
+    if (!response) {
+      handleError("Error when logout");
+      return;
+    }
+    if (response.statusCode !== HTTP_STATUS.OK) {
+      handleError("Error when logout");
+      return;
+    }
+    deleteToken();
+    dispatch(logoutRedux());
+    await stopAdminDashboardConnection();
+    await stopStaffDashboardConnection();
+    await stopChatConnection();
+    navigate("/");
+  };
 
   return (
     <HeaderContainer>
@@ -37,14 +63,11 @@ const HeaderStaff: React.FC = () => {
           <CalendarOutlined />
           <span>{today}</span>
         </DateContainer>
+
         <Badge dot offset={[0, 2]}>
           <BellOutlined className="evc-icon" />
         </Badge>
-        <Avatar
-          src={`https://ui-avatars.com/api/?name=${account?.data?.last_Name}&background=random`}
-          alt={"hihi"}
-          onClick={() => navigate("/staff/general")} //fix đường dẫn ở đây nhé
-        />
+        <DropdownMenu handleLogout={handleLogout} />
       </Space>
     </HeaderContainer>
   );
