@@ -9,7 +9,6 @@ import {
   Tooltip,
 } from "antd";
 import styled from "styled-components";
-import type { UploadChangeParam } from "antd/es/upload";
 import {
   UploadOutlined,
   PictureOutlined,
@@ -28,7 +27,6 @@ import {
   MSG_TITLE,
   SUCCESS_MESSAGE,
 } from "../../../constants/messages/Message";
-import { FaSleigh } from "react-icons/fa";
 
 const { TextArea } = Input;
 
@@ -45,6 +43,10 @@ interface ModalProps {
 // Component
 const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
   const notification = useNotification();
+  const [previewImage, setPreviewImage] = useState<string | undefined>(
+    part?.imageUrl
+  );
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const [formData, setFormData] = useState<UpdateInventoryPayload>({
     id: 0,
@@ -67,13 +69,7 @@ const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
     }
   }, [part, isOpen]);
 
-  const [previewImage, setPreviewImage] = useState<string | undefined>(
-    part?.imageUrl
-  );
-  const [errors, setErrors] = useState<FormErrors>({});
-
-  const { mutateAsync: uploadImage, isPending: uploading } =
-    useUpdateInventoryImage();
+  const { mutateAsync: uploadImage } = useUpdateInventoryImage();
 
   const handleCustomRequest = async (options: any) => {
     const { file } = options;
