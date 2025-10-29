@@ -56,10 +56,16 @@ namespace Application.Services
         public async Task<Conversation> StartConsultationAsync(string customerAccountId)
         {
             var staffId = await _route.FindAvailableAsync(customerAccountId);
+            if (staffId == null)
+            {
+                staffId = "AI_BOT";
+            }
+
+            var type = staffId == "AI_BOT" ? "AI" : "consultation";
 
             var conversation = new Conversation
             {
-                Type = "consultation",
+                Type = type,
                 Participants = new List<Participant>
                 {
                     new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer },

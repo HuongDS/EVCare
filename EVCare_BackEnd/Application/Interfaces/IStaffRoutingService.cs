@@ -9,6 +9,6 @@ namespace Application.Interfaces
 {
     public interface IStaffRoutingService
     {
-        Task<string> FindAvailableAsync(string customerAccountId);
+        Task<string?> FindAvailableAsync(string customerAccountId);
     }
 }
