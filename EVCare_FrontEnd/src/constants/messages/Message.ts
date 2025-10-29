@@ -34,6 +34,7 @@ export const ERROR_MESSAGE = {
   FAILED_WHEN_CREATE_SERVICE: "Failed to create service!",
   FAILED_WHEN_DELETE_SERVICE: "Failed to delete service!",
   FAILED_WHEN_UPDATE_SERVICE: "Failed to update service!",
+  FAILED_TO_CANCEL_APPOINTMENT: "Failed to cancel appointment",
 };
 
 export const MSG_TITLE = {
@@ -50,6 +51,7 @@ export const MSG_TITLE = {
   UPDATE_PASSWORD: "Update Password",
   UPDATE_INVENTORY: "Update Inventory",
   UPLOAD_IMAGE: "Upload Image",
+  CANCEL_APPOINTMENT: "Appointment Cancellation",
 };
 
 export const SUCCESS_MESSAGE = {
@@ -60,6 +62,7 @@ export const SUCCESS_MESSAGE = {
   ADD_VEHICLE_SUCCESSFULLY: "Add vehivle success",
   SEND_REVIEW_SUCCESS: "Send Review Success",
   INVENTORY_UPDATED_SUCCESSFULLY: "Part is updated successfully",
+  APPOINTMENT_CANCELLED_SUCCESSFULLY: "Appointment is cancelled successfully",
 };
 
 export const AUTH_FORM_MESSAGE = {
