@@ -170,6 +170,7 @@ export default function TechnicianOrder({
       notification.success({
         message: "Update Successful",
         description: "Parts and damage levels updated successfully!",
+        showProgress: true,
       });
       onPartsUpdated?.(currentOrderId);
       setCartOpen(false);
@@ -179,6 +180,7 @@ export default function TechnicianOrder({
       notification.error({
         message: "Update Failed",
         description: "Failed to update parts or damage levels.",
+        showProgress: true,
       });
     } finally {
       setIsSending(false);
