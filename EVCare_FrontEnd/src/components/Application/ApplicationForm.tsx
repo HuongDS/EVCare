@@ -76,6 +76,7 @@ export default function ApplicationForm({
           message: "Application Sent",
           description:
             "Your leave application has been submitted successfully!",
+          showProgress: true,
         });
         queryClient.invalidateQueries({ queryKey: ["myApplications"] });
         onSuccess?.(res.data); // ✅ gọi callback thành công
@@ -85,6 +86,7 @@ export default function ApplicationForm({
         notification.error({
           message: "Send Failed",
           description: res.message || "Failed to send application.",
+          showProgress: true,
         });
         onError?.(res.message || "Failed to send application."); // ✅ gọi callback lỗi
       }
@@ -95,6 +97,7 @@ export default function ApplicationForm({
       notification.error({
         message: "Network Error",
         description: "Failed to send application. Please try again later.",
+        showProgress: true,
       });
       onError?.("Network error");
     },
@@ -158,6 +161,7 @@ export default function ApplicationForm({
       notification.warning({
         message: "Invalid Date",
         description: msg,
+        showProgress: true,
       });
       return;
     }
