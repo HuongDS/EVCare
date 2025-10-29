@@ -55,7 +55,7 @@ const SortDateRange = ({ setBeginDate, setEndDate }: SortDateRangeProps) => {
         onChange={handleRangeChange}
         format="DD/MM/YYYY"
         placeholder={["Start Date", "End Date"]}
-        style={{ width: "100px" }}
+        style={{ width: "80px" }}
         disabledDate={disabledDate}
       />
     </Space>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Card, Avatar, Tag, Button, Statistic, Typography } from "antd";
 import {
@@ -19,8 +19,9 @@ import dayjs from "dayjs";
 const { Title } = Typography;
 
 const StaffDashboard: React.FC = () => {
+  const [completedAppointment, setCompletedAppointment] = useState(0);
+  const [total, setTotal] = useState(0);
   const { data: appointments } = useGetAllAppointments({
-    status: "Done",
     beginTime: dayjs().format("MM/DD/YYYY"),
     endTime: dayjs().format("MM/DD/YYYY"),
   });
@@ -44,6 +45,18 @@ const StaffDashboard: React.FC = () => {
     if (hour < 18) return "Good Afternoon";
     return "Good Evening";
   };
+
+  useEffect(() => {
+    const completedAppointment = appointments?.data?.items?.filter(
+      (app) => app.status === "Done"
+    ).length;
+    const totalAppointments = appointments?.data?.items?.length;
+    console.log(completedAppointment);
+    console.log(totalAppointments);
+
+    setCompletedAppointment(completedAppointment ?? 0);
+    setTotal(totalAppointments ?? 0);
+  }, [appointments]);
 
   return (
     <Container>
@@ -117,7 +130,7 @@ const StaffDashboard: React.FC = () => {
               level={4}
               style={{ marginBottom: "1.5rem", color: "#1f2937" }}
             >
-              📊 Today's Statistics
+              Today's Statistics
             </Title>
             <StatsGrid>
               <StatBox $type="primary">
@@ -140,7 +153,13 @@ const StaffDashboard: React.FC = () => {
               </StatBox>
               <StatBox $type="warning">
                 <TrendingUp size={28} />
-                <Statistic title="Success Rate" value={100} suffix="%" />
+                <Statistic
+                  title="Success Rate"
+                  value={Number((completedAppointment / total) * 100).toFixed(
+                    2
+                  )}
+                  suffix="%"
+                />
               </StatBox>
               <StatBox $type="info">
                 <Clock size={28} />
@@ -148,7 +167,7 @@ const StaffDashboard: React.FC = () => {
                   title="Pending"
                   value={
                     appointments?.data?.items?.filter(
-                      (a) => a.status !== "Done"
+                      (a) => a.status === "Pending"
                     ).length ?? 0
                   }
                 />
@@ -160,7 +179,7 @@ const StaffDashboard: React.FC = () => {
         {/* Recent Appointments */}
         <TableContainer>
           <TableHeader>
-            <h3>📅 Recent Appointments</h3>
+            <h3>Recent Appointments</h3>
           </TableHeader>
           <StyledTable>
             <thead>
