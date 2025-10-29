@@ -616,13 +616,14 @@ namespace DataAccess.Repositories
             var parts = await _dbContext.AppointmentPartConditions
                 .AsNoTracking()
                 .Where(apc => apc.AppointmentId == appointmentId)
-                .Include(apc=>apc.Part).ThenInclude(p=>p.Category)
-                .GroupBy(apc=> apc.Part.Category.Name)
+                .Include(apc => apc.Part).ThenInclude(p => p.Category)
+                .GroupBy(apc => apc.Part.Category.Name)
                 .Select(apc => new PartCategoryAppointmentViewModel
                 {
-                       PartCategoryName = apc.Key,
-                       DamagedPartViewModels = apc
-                       .GroupBy(apc2=>apc2.PartId)
+                        PartCategoryName = apc.Key,
+                        NodeName = apc.Key.Replace(" ", "_").ToString(),
+                         DamagedPartViewModels = apc
+                       .GroupBy(apc2 => apc2.PartId)
                        .Select(g => g
                         .OrderByDescending(x => x.Level)
                         .Select(x => new DamagedPartViewModel
@@ -648,6 +649,36 @@ namespace DataAccess.Repositories
 
 
                 }).FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<ServiceSummaryViewModel>> GetTopServicesAsync(ServiceSummaryQueryDto model) {
+            var query = _dbContext.AppointmentServices
+                .AsNoTracking()
+                .Include(asv => asv.Service)
+                .Include(asv => asv.Appointment)
+                .AsQueryable();
+            if (model.FromDate.HasValue) {
+
+                query = query.Where(asv => DateOnly.FromDateTime(asv.Appointment.Appointment_Date) >= model.FromDate);
+            }
+            if (model.ToDate.HasValue) {
+                query = query.Where(asv => DateOnly.FromDateTime(asv.Appointment.Appointment_Date) <= model.ToDate);
+            }
+            var grouped = query
+               .GroupBy(asv => new { asv.ServiceId, asv.Service.Name })
+               .Select(g => new ServiceSummaryViewModel
+               {
+                   ServiceID = g.Key.ServiceId,
+                   ServiceName = g.Key.Name,
+                   TotalAppointments = g.Count()
+               })
+             .OrderByDescending(s => s.TotalAppointments);
+
+            if (model.Top.HasValue) {
+                var limited = grouped.Take(model.Top.Value);
+                return await limited.ToListAsync();
+            }
+            return await grouped.ToListAsync();
         }
     }
 }

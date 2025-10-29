@@ -8,6 +8,7 @@ using DataAccess.Dtos.Part;
 namespace DataAccess.Dtos.PartCategory {
     public class PartCategoryAppointmentViewModel {
         public string PartCategoryName { get; set; }
+        public string NodeName{ get; set; }
         public IEnumerable<DamagedPartViewModel> DamagedPartViewModels { get; set; }
     }
 }
