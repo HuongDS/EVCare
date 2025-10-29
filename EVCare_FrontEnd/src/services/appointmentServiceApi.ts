@@ -104,13 +104,13 @@ export async function getAppointmentById(appointmentId: number) {
 }
 
 //[STAFF] - NGO CHI VY: Set Appointment Status - Appointment Steps
-export const changeAppointmentStatus = () => {
+export const useChangeAppointmentStatus = () => {
   return useMutation({
-    mutationFn: async (params: ChangeAppointmentStatusParams) => {
+    mutationFn: async (payload: ChangeAppointmentStatusParams) => {
       try {
         const response = await api.put<ResponseDto<boolean | null>>(
           "/api/Appointment/staff",
-          params
+          payload
         );
         return response.data;
       } catch (error) {
