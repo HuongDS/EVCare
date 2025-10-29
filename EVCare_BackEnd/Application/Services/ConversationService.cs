@@ -23,8 +23,10 @@ namespace Application.Services
 
         public async Task<Conversation> CreateOrGetConsultationAsync(string customerAccountId, string staffAccountId)
         {
+            var type = staffAccountId == "AI_BOT" ? "AI" : "consultation";
+
             var conversation = Builders<Conversation>.Filter.And(
-                    Builders<Conversation>.Filter.Eq(c => c.Type, "consultation"),
+                    Builders<Conversation>.Filter.Eq(c => c.Type, type),
                     Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == customerAccountId),
                     Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == staffAccountId)
                 );
@@ -34,7 +36,7 @@ namespace Application.Services
 
             var newConversation = new Conversation
             {
-                Type = "consultation",
+                Type = type,
                 Participants = new List<Participant>
                 {
                     new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer },
@@ -53,11 +55,17 @@ namespace Application.Services
 
         public async Task<Conversation> StartConsultationAsync(string customerAccountId)
         {
-            var staffId = await _route.FindAvailableAsync();
+            var staffId = await _route.FindAvailableAsync(customerAccountId);
+            if (staffId == null)
+            {
+                staffId = "AI_BOT";
+            }
+
+            var type = staffId == "AI_BOT" ? "AI" : "consultation";
 
             var conversation = new Conversation
             {
-                Type = "consultation",
+                Type = type,
                 Participants = new List<Participant>
                 {
                     new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer },

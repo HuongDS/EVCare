@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DataAccess.Dtos.MongoDb_Message;
 
 namespace Application.Interfaces
 {
-    public interface IStaffRoutingService
+    public interface IAiChatServices
     {
-        Task<string?> FindAvailableAsync(string customerAccountId);
+        Task<string> GetChatResponseAsync(string userInput);
     }
 }

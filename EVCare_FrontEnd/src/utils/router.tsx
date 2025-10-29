@@ -39,47 +39,23 @@ const ChatPage = lazy(() =>
     default: module.ChatPage,
   }))
 );
-const Admin_Applications = lazy(() =>
-  import("../pages/Admin/AdminAplication/Admin_Applications").then(
-    (module) => ({
-      default: module.Admin_Applications,
-    })
-  )
+const Admin_General = lazy(() => import("../pages/Admin/AdminGeneral/Admin_General"));
+const Admin_Customer_Vehicle = lazy(() => import("../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle"));
+const Admin_Manage_Employee = lazy(() => import("../pages/Admin/AdminManageEmployee/Admin_ManageEmployee"));
+const AddEmployee = lazy(() => import("../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee"));
+const Admin_Part = lazy(() => import("../pages/Admin/AdminService&Parts/AdminPart/Admin_Part"));
+const Admin_Service = lazy(() => import("../pages/Admin/AdminService&Parts/AdminService/Admin_Service"));
+const Staff_Inventory = lazy(() => import("../pages/Staff/StaffManageInventory/Staff_Inventory"));
+const Staff_General = lazy(() => import("../pages/Staff/StaffGeneralPage/Staff_General"));
+const Manage_Technicians = lazy(() => import("../pages/Staff/StaffManageTechnicians/Manage_Technicians"));
+const Manage_Customer = lazy(() => import("../pages/Staff/StaffManageCustomer/Manage_Customer"));
+const Staff_Appoinments = lazy(() => import("../pages/Staff/StaffManageAppointment/Staff_Appoinments"));
+const AdminServiceCenter = lazy(() => import("../pages/Admin/AdminServiceCenter/AdminServiceCenter"));
+const Admin_Category = lazy(() => import("../pages/Admin/AdminCategory/Admin_Category"));
+const StaffChatPage = lazy(() =>
+  import("../pages/Customer/Chat/StaffChatPage").then((module) => ({ default: module.StaffChatPage }))
 );
-const Admin_General = lazy(
-  () => import("../pages/Admin/AdminGeneral/Admin_General")
-);
-const Admin_Customer_Vehicle = lazy(
-  () => import("../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle")
-);
-const Admin_Manage_Employee = lazy(
-  () => import("../pages/Admin/AdminManageEmployee/Admin_ManageEmployee")
-);
-const AddEmployee = lazy(
-  () =>
-    import("../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee")
-);
-const Admin_Part = lazy(
-  () => import("../pages/Admin/AdminService&Parts/AdminPart/Admin_Part")
-);
-const Admin_Service = lazy(
-  () => import("../pages/Admin/AdminService&Parts/AdminService/Admin_Service")
-);
-const Staff_Inventory = lazy(
-  () => import("../pages/Staff/StaffManageInventory/Staff_Inventory")
-);
-const Staff_General = lazy(
-  () => import("../pages/Staff/StaffGeneralPage/Staff_General")
-);
-const Manage_Technicians = lazy(
-  () => import("../pages/Staff/StaffManageTechnicians/Manage_Technicians")
-);
-const Manage_Customer = lazy(
-  () => import("../pages/Staff/StaffManageCustomer/Manage_Customer")
-);
-const Staff_Appoinments = lazy(
-  () => import("../pages/Staff/StaffManageAppointment/Staff_Appoinments")
-);
+
 import {
   LazyOrder,
   LazyHistory,
@@ -89,8 +65,6 @@ import {
   LazyMyJob,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
-import Admin_Category from "../pages/Admin/AdminCategory/Admin_Category";
-import AdminServiceCenter from "../pages/Admin/AdminServiceCenter/AdminServiceCenter";
 
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -363,7 +337,7 @@ const router = createBrowserRouter([
         path: "chat-with-customer",
         element: (
           <SuspenseWrapper>
-            <ChatPage />
+            <StaffChatPage />
           </SuspenseWrapper>
         ),
       },
