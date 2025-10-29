@@ -199,6 +199,7 @@ function BookingFormComponent({
       notification.error({
         message: MSG_TITLE.CREATE_APPOINTMENT,
         description: ERROR_MESSAGE.LICENSE_PLATE_WRONG,
+        showProgress: true,
       });
       setLicensePlate("");
       setIsLoading(false);
@@ -208,6 +209,7 @@ function BookingFormComponent({
       notification.error({
         message: MSG_TITLE.CREATE_APPOINTMENT,
         description: ERROR_MESSAGE.SERVICES_MUST_NOT_BE_EMPTY,
+        showProgress: true,
       });
       setIsLoading(false);
       return;
@@ -216,6 +218,7 @@ function BookingFormComponent({
       notification.error({
         message: MSG_TITLE.CREATE_APPOINTMENT,
         description: ERROR_MESSAGE.DATE_AND_TIME_CAN_NOT_BE_EMPTY,
+        showProgress: true,
       });
       setIsLoading(false);
       return;
@@ -236,6 +239,7 @@ function BookingFormComponent({
         notification.error({
           message: MSG_TITLE.CREATE_APPOINTMENT,
           description: (error as Error).message,
+          showProgress: true,
         });
         setIsLoading(false);
         setLicensePlate("");
@@ -256,11 +260,13 @@ function BookingFormComponent({
       notification.success({
         message: MSG_TITLE.CREATE_APPOINTMENT,
         description: response.message,
+        showProgress: true,
       });
     } catch (error) {
       notification.error({
         message: MSG_TITLE.CREATE_APPOINTMENT,
         description: (error as Error).message,
+        showProgress: true,
       });
     } finally {
       setIsLoading(false);
