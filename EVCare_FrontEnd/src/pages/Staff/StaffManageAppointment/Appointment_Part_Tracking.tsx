@@ -21,7 +21,7 @@ import type {
   UpdateOrderRequest,
 } from "../../../models/OrderModel/UpdateOrderModel";
 import { useQueryClient } from "@tanstack/react-query";
-import ReFreshButton from "../../../components/Button/LoadButton";
+import ReFreshButton from "../../../components/Button/ReFreshButton";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
@@ -76,7 +76,10 @@ export default function Appointment_Part_Tracking({
       setParts(updatedParts);
       setEditingPartId(null);
     } else {
-      alert("Change quantity error");
+      notification.error({
+        message: "Change quantity error",
+        showProgress: true,
+      });
     }
   };
 
@@ -195,7 +198,7 @@ export default function Appointment_Part_Tracking({
         <Card>
           <SectionTitle>
             Order Parts ({parts.length})
-            <ReFreshButton action={RefreshOrderDetail} text="Refresh" />
+            <ReFreshButton action={RefreshOrderDetail} />
           </SectionTitle>
 
           {parts.map((part) => (
