@@ -146,11 +146,32 @@ export default function Admin_Part() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!imageUrl) {
-      notification.error({ message: "Add Part", description: "Please upload an image." });
-      return;
-    }
     try {
+      if (!imageUrl) {
+        notification.error({ message: "Add Part", description: "Please upload an image." });
+        return;
+      }
+
+      if (newPart.name.trim().length <= 0) {
+        throw new Error("Please input a part name.");
+      }
+
+      if (newPart.description.trim().length <= 0) {
+        throw new Error("Please input a part description.");
+      }
+
+      if (newPart.price <= 0) {
+        throw new Error("Please input a valid part price.");
+      }
+
+      if (newPart.replacementPrice <= 0) {
+        throw new Error("Please input a valid part replacementPrice.");
+      }
+
+      if (newPart.stock <= 0) {
+        throw new Error("Please input a valid part stock.");
+      }
+
       const payload: NewPartDto = { ...newPart, image: imageUrl };
       if (payload.price === 0 || payload.replacementPrice === 0 || payload.stock === 0) {
         throw new Error("Price, Replacement Price or Stock must be greater than 0 when you adding !");
@@ -316,26 +337,29 @@ export default function Admin_Part() {
                           </Td>
                         </Tr>
                       ) : parts.length > 0 ? (
-                        parts.map((part) => (
-                          <Tr key={part.id}>
-                            <Td>
-                              <PartImage src={part.imageUrl} alt={part.name} />
-                            </Td>
-                            <Td>{part.name}</Td>
-                            <Td>{getCategoryName(part.categoryId)}</Td>
-                            <Td>{part.price.toLocaleString("vi-VN")} VND</Td>
-                            <Td>{part.replacementPrice.toLocaleString("vi-VN")} VND</Td>
-                            <Td>{part.quantity}</Td>
-                            <Td>
-                              <ActionButton onClick={() => handleDelete(part)}>
-                                <FaTrash />
-                              </ActionButton>
-                              <ActionButton onClick={() => handleSelectForUpdate(part)}>
-                                <FaPencilAlt />
-                              </ActionButton>
-                            </Td>
-                          </Tr>
-                        ))
+                        parts.map(
+                          (part) =>
+                            !part.isDeleted && (
+                              <Tr key={part.id}>
+                                <Td>
+                                  <PartImage src={part.imageUrl} alt={part.name} />
+                                </Td>
+                                <Td>{part.name}</Td>
+                                <Td>{getCategoryName(part.categoryId)}</Td>
+                                <Td>{part.price.toLocaleString("vi-VN")} VND</Td>
+                                <Td>{part.replacementPrice.toLocaleString("vi-VN")} VND</Td>
+                                <Td>{part.quantity}</Td>
+                                <Td>
+                                  <ActionButton onClick={() => handleDelete(part)}>
+                                    <FaTrash />
+                                  </ActionButton>
+                                  <ActionButton onClick={() => handleSelectForUpdate(part)}>
+                                    <FaPencilAlt />
+                                  </ActionButton>
+                                </Td>
+                              </Tr>
+                            )
+                        )
                       ) : (
                         <Tr>
                           <Td colSpan={7}>
@@ -383,11 +407,14 @@ export default function Admin_Part() {
                           required
                         >
                           {categories.length === 0 && <option>Is Loading...</option>}
-                          {categories.map((cat) => (
-                            <option key={cat.id} value={cat.id}>
-                              {cat.name}
-                            </option>
-                          ))}
+                          {categories.map(
+                            (cat) =>
+                              !cat.isDeleted && (
+                                <option key={cat.id} value={cat.id}>
+                                  {cat.name}
+                                </option>
+                              )
+                          )}
                         </StyledSelect>
                       </InputGroup>
 

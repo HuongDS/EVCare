@@ -10,7 +10,10 @@ namespace Application.Interfaces
 {
     public interface IServiceCategoryService
     {
+        Task<int> CreateServiceCategoryAsync(ServiceCategoryCreateModel model);
+        Task DeleteServiceCategoryAsync(int id);
         public Task<IEnumerable<ServiceCategoryViewModel>> GetServiceCategoryAndService();
         Task<PageResultDto<ServiceCategoryViewDto>> GetSrvicecategoryViewDto(ServiceCategoryQueryDto model);
+        Task UpdateServiceCategoryAsync(int id, ServiceCategoryCreateModel model);
     }
 }

@@ -42,7 +42,6 @@ const TechnicianSchedule: React.FC = () => {
     setError(null);
 
     try {
-      // --- Fetch appointments chỉ với 1 request (nếu backend hỗ trợ)
       const activeStatuses = [
         TechnicianWorkingSessionEnum.PENDING,
         TechnicianWorkingSessionEnum.INPROGRESS,
@@ -50,7 +49,7 @@ const TechnicianSchedule: React.FC = () => {
       ];
 
       const appointmentRes = await getTechnicianAppointments({
-        Status: activeStatuses.join(","), // backend phải hỗ trợ CSV
+        Status: activeStatuses.join(","),
         PageSize: 100,
         PageIndex: 1,
       });
@@ -67,7 +66,6 @@ const TechnicianSchedule: React.FC = () => {
 
       setAppointments(mappedAppointments);
 
-      // --- Fetch date off và blocked dates song song
       const [dateOffRes, blockedRes] = await Promise.all([
         getDateOff(),
         getBlockedDate(),
@@ -89,7 +87,6 @@ const TechnicianSchedule: React.FC = () => {
     }
   };
 
-  // --- Map events chỉ 1 lần, gọn hơn
   const events: EventInput[] = [
     ...appointments.map((a) => ({
       title: `ID: ${a.id}\n${a.vehicleModel}\n${a.status}`,

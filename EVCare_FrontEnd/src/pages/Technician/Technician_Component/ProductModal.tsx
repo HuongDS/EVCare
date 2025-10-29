@@ -108,8 +108,6 @@ export default function ProductModal({
                   action={handleAdd}
                 />
               </TopRow>
-
-              {/* 🔢 Quantity Input with NumberField */}
               <QuantityControl>
                 <IconButton
                   size="small"
