@@ -26,7 +26,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { ResponseDto } from "../../../models/OrderModel/UpdateOrderModel";
 import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-
+import { useNotification } from "../../../context/useNotification";
 interface PaymentPageProps {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
   currentStep: number;
@@ -41,7 +41,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
   const { mutateAsync: appointmentStatus } = useChangeAppointmentStatus();
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-
+  const notification = useNotification();
   const handlePayment = async () => {
     try {
       const response = await handlePaymentMethod();
@@ -86,7 +86,10 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
       return response;
     } catch (error) {
       handleError(error);
-      alert(error);
+      notification.error({
+        message: (error as Error).message,
+        showProgress: true,
+      });
     }
   }, [orderDetail?.data?.id, orderDetail?.data?.price, paymentMethod]);
 
