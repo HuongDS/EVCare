@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ButtonGroup, Container } from "react-bootstrap";
-import { ReactLenis } from "lenis/react";
+import { ReactLenis, useLenis } from "lenis/react";
 import { motion, type Variants } from "framer-motion";
 
 import {
@@ -26,7 +26,12 @@ import {
 import BookingForm from "../../Customer/Booking/BookingForm"; // Đảm bảo đường dẫn đúng
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store"; // Đảm bảo đường dẫn đúng
-import { closeAppointmentForm, openAppointmentForm, openLogin, setAction } from "../../../states/uiSlice"; // Đảm bảo đường dẫn đúng
+import {
+  closeAppointmentForm,
+  openAppointmentForm,
+  openLogin,
+  setAction,
+} from "../../../states/uiSlice"; // Đảm bảo đường dẫn đúng
 import { ACTION } from "../../../constants/messages/Actions"; // Đảm bảo đường dẫn đúng
 import { getAllActiveService } from "../../../services/servicesApi"; // Đảm bảo đường dẫn đúng
 import ServiceCarousel from "./ServiceCarousel"; // Đảm bảo đường dẫn đúng
@@ -58,12 +63,21 @@ const ServiceList = () => {
   const [currenPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [isHaveData, setIsHaveData] = useState(true);
+  const lenis = useLenis();
 
-  const { data, isLoading, isSuccess } = getAllActiveService(searchValue, 9, currenPage, sortBy, sortOrder);
+  const { data, isLoading, isSuccess } = getAllActiveService(
+    searchValue,
+    9,
+    currenPage,
+    sortBy,
+    sortOrder
+  );
 
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { createAppointmentFormOpen } = useSelector((state: RootState) => state.ui);
+  const { createAppointmentFormOpen } = useSelector(
+    (state: RootState) => state.ui
+  );
 
   const handleSortChange = useCallback(
     (newSortBy: SortBy): void => {
@@ -86,6 +100,14 @@ const ServiceList = () => {
     }
     dispatch(openAppointmentForm());
   }, [isAuthenticated, dispatch]);
+
+  useEffect(() => {
+    if (showForm) {
+      lenis?.stop();
+    } else {
+      lenis?.start();
+    }
+  }, [showForm, lenis]);
 
   useEffect(() => {
     if (data?.data?.items?.length === 0) {
@@ -139,11 +161,18 @@ const ServiceList = () => {
           <SortSection id="service-list-start">
             <ButtonGroup>
               <SortLabel>Sort by:</SortLabel>
-              <SortButton active={sortBy === "Name"} onClick={() => handleSortChange("Name")}>
+              <SortButton
+                active={sortBy === "Name"}
+                onClick={() => handleSortChange("Name")}
+              >
                 Name {sortBy === "Name" && (sortOrder === "asc" ? "↑" : "↓")}
               </SortButton>
-              <SortButton active={sortBy === "Duration"} onClick={() => handleSortChange("Duration")}>
-                Duration {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
+              <SortButton
+                active={sortBy === "Duration"}
+                onClick={() => handleSortChange("Duration")}
+              >
+                Duration{" "}
+                {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
               </SortButton>
             </ButtonGroup>
             <SearchBar
@@ -162,7 +191,10 @@ const ServiceList = () => {
 
             {!isLoading && !isHaveData && (
               <div style={{ gridColumn: "1 / -1" }}>
-                <NOT_FOUND_ITEMS icon="bi bi-sticky" message={LIST_SERVICES_MESSAGE.EMPTY + `${searchValue}`} />
+                <NOT_FOUND_ITEMS
+                  icon="bi bi-sticky"
+                  message={LIST_SERVICES_MESSAGE.EMPTY + `${searchValue}`}
+                />
               </div>
             )}
 
@@ -180,7 +212,9 @@ const ServiceList = () => {
                   >
                     <ServiceImageContainer>
                       <motion.img
-                        src={placeholderImages[index % placeholderImages.length]}
+                        src={
+                          placeholderImages[index % placeholderImages.length]
+                        }
                         alt={service.name}
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
@@ -196,7 +230,9 @@ const ServiceList = () => {
                         viewport={{ once: true }}
                       >
                         <ServiceTitle>{service.name}</ServiceTitle>
-                        <ServiceDescription>{service.description}</ServiceDescription>
+                        <ServiceDescription>
+                          {service.description}
+                        </ServiceDescription>
                         <ServiceDuration>
                           <strong>Duration:</strong> {service.duration} hours
                         </ServiceDuration>
