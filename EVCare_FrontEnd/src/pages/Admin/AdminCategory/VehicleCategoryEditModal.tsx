@@ -16,7 +16,10 @@ import VehicleCategoryFormFields from "./VehicleCategoryFormFields";
 import type { VehicleCategoryCreateDto } from "../../../models/VehicleModels/VehicleCategoryCreateDto";
 import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import { getDetailVehicleCategory, updateVehicleCategory } from "../../../services/vehicleServicesApi";
+import {
+  getDetailVehicleCategory,
+  updateVehicleCategory,
+} from "../../../services/vehicleServicesApi";
 
 interface Props {
   isOpen: boolean;
@@ -25,7 +28,12 @@ interface Props {
   itemToEdit: VehicleCategoryViewDto | null;
 }
 
-export default function VehicleCategoryEditModal({ isOpen, onClose, onSuccess, itemToEdit }: Props) {
+export default function VehicleCategoryEditModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  itemToEdit,
+}: Props) {
   const [formData, setFormData] = useState<VehicleCategoryCreateDto>({
     name: "",
     model3DUrl: "",
@@ -49,7 +57,11 @@ export default function VehicleCategoryEditModal({ isOpen, onClose, onSuccess, i
         });
       }
     } catch (error) {
-      notification.error({ message: "error", description: (error as Error).message });
+      notification.error({
+        message: "error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsLoading(false);
   };
@@ -65,32 +77,57 @@ export default function VehicleCategoryEditModal({ isOpen, onClose, onSuccess, i
     if (!itemToEdit) return;
 
     if (!formData.model3DUrl) {
-      notification.warning({ message: "Warning", description: "Please process the 3D model link first." });
+      notification.warning({
+        message: "Warning",
+        description: "Please process the 3D model link first.",
+        showProgress: true,
+      });
       return;
     }
     if (formData.partCategoryIds.length === 0) {
-      notification.warning({ message: "Warning", description: "Please select at least one part category." });
+      notification.warning({
+        message: "Warning",
+        description: "Please select at least one part category.",
+        showProgress: true,
+      });
       return;
     }
 
     if (formData.name.trim().length <= 0) {
-      notification.warning({ message: "Warning", description: "Please input name." });
+      notification.warning({
+        message: "Warning",
+        description: "Please input name.",
+        showProgress: true,
+      });
       return;
     }
 
     setIsSubmitting(true);
     try {
       const response = await updateVehicleCategory(itemToEdit.id, formData);
-      notification.success({ message: "Success", description: response.message });
+      notification.success({
+        message: "Success",
+        description: response.message,
+        showProgress: true,
+      });
       onSuccess();
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsSubmitting(false);
   };
 
   return (
-    <ModalBackdrop initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+    <ModalBackdrop
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
       <ModalContainer
         as="form"
         onSubmit={handleSubmit}
@@ -108,19 +145,38 @@ export default function VehicleCategoryEditModal({ isOpen, onClose, onSuccess, i
 
         <ModalBody>
           {isLoading ? (
-            <div style={{ minHeight: "300px", display: "grid", placeItems: "center" }}>
+            <div
+              style={{
+                minHeight: "300px",
+                display: "grid",
+                placeItems: "center",
+              }}
+            >
               <SpinnerComponent />
             </div>
           ) : (
-            <VehicleCategoryFormFields formData={formData} setFormData={setFormData} isSubmitting={isSubmitting} />
+            <VehicleCategoryFormFields
+              formData={formData}
+              setFormData={setFormData}
+              isSubmitting={isSubmitting}
+            />
           )}
         </ModalBody>
 
         <ModalFooter>
-          <ModalButton type="button" $isConfirm={false} onClick={onClose} disabled={isSubmitting}>
+          <ModalButton
+            type="button"
+            $isConfirm={false}
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
             Cancel
           </ModalButton>
-          <ModalButton type="submit" $isConfirm={true} disabled={isSubmitting || isLoading}>
+          <ModalButton
+            type="submit"
+            $isConfirm={true}
+            disabled={isSubmitting || isLoading}
+          >
             {isSubmitting ? <LoadingSpinner /> : <FaSave />}
             Save Changes
           </ModalButton>

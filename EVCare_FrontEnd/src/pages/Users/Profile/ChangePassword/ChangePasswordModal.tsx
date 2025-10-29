@@ -4,8 +4,14 @@ import { PasswordStrength } from "./PasswordStrength";
 import { PasswordRequirements } from "./PasswordRequirements";
 import type { AccountUpdatePasswordDto } from "../../../../models/Accounts/AccountUpdatePasswordDto";
 import { useNotification } from "../../../../context/useNotification";
-import { ERROR_MESSAGE, MSG_TITLE } from "../../../../constants/messages/Message";
-import { updatePassword, verifyOldPassword } from "../../../../services/accountService";
+import {
+  ERROR_MESSAGE,
+  MSG_TITLE,
+} from "../../../../constants/messages/Message";
+import {
+  updatePassword,
+  verifyOldPassword,
+} from "../../../../services/accountService";
 import { PASSWORD_REGEX } from "../../../../constants/regexs/PasswordRegex";
 import { useAlert } from "../../../../context/useAlert";
 import SpinnerComponent from "../../../../components/SpinnerComponent";
@@ -19,7 +25,9 @@ export const ChangePasswordModal: React.FC<Props> = ({ open, onClose }) => {
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [strength, setStrength] = useState<"weak" | "medium" | "strong" | "">("");
+  const [strength, setStrength] = useState<"weak" | "medium" | "strong" | "">(
+    ""
+  );
   const [requirements, setRequirements] = useState({
     length: false,
     lowercase: false,
@@ -43,7 +51,10 @@ export const ChangePasswordModal: React.FC<Props> = ({ open, onClose }) => {
     else setStrength("strong");
   }, [next]);
 
-  const canSubmit = Object.values(requirements).every(Boolean) && next === confirm && current.length > 0;
+  const canSubmit =
+    Object.values(requirements).every(Boolean) &&
+    next === confirm &&
+    current.length > 0;
 
   const notification = useNotification();
   const { showAlert } = useAlert();
@@ -57,11 +68,23 @@ export const ChangePasswordModal: React.FC<Props> = ({ open, onClose }) => {
       oldPassword: current,
     };
 
-    if (!PASSWORD_REGEX.test(next) || !PASSWORD_REGEX.test(confirm) || !PASSWORD_REGEX.test(current)) {
-      showAlert("error", MSG_TITLE.UPDATE_PASSWORD, ERROR_MESSAGE.INVALID_PASSWORD);
+    if (
+      !PASSWORD_REGEX.test(next) ||
+      !PASSWORD_REGEX.test(confirm) ||
+      !PASSWORD_REGEX.test(current)
+    ) {
+      showAlert(
+        "error",
+        MSG_TITLE.UPDATE_PASSWORD,
+        ERROR_MESSAGE.INVALID_PASSWORD
+      );
       return;
     } else if (next !== confirm) {
-      showAlert("error", MSG_TITLE.UPDATE_PASSWORD, ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME);
+      showAlert(
+        "error",
+        MSG_TITLE.UPDATE_PASSWORD,
+        ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME
+      );
       return;
     }
 
@@ -74,9 +97,14 @@ export const ChangePasswordModal: React.FC<Props> = ({ open, onClose }) => {
       notification.success({
         message: MSG_TITLE.UPDATE_PASSWORD,
         description: response.message,
+        showProgress: true,
       });
     } catch (error) {
-      notification.error({ message: MSG_TITLE.UPDATE_PASSWORD, description: (error as Error).message });
+      notification.error({
+        message: MSG_TITLE.UPDATE_PASSWORD,
+        description: (error as Error).message,
+        showProgress: true,
+      });
     } finally {
       //   onClose();
       resetForm();
@@ -140,11 +168,17 @@ export const ChangePasswordModal: React.FC<Props> = ({ open, onClose }) => {
                 onChange={setConfirm}
                 placeholder="Re-enter your new password"
                 required
-                error={confirm && next !== confirm ? "Passwords do not match" : ""}
+                error={
+                  confirm && next !== confirm ? "Passwords do not match" : ""
+                }
               />
 
               <div className="form-actions">
-                <button type="submit" className="submit-btn" disabled={!canSubmit}>
+                <button
+                  type="submit"
+                  className="submit-btn"
+                  disabled={!canSubmit}
+                >
                   Update Password
                 </button>
                 <button type="button" className="cancel-btn" onClick={onClose}>
