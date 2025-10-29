@@ -48,6 +48,8 @@ export const MSG_TITLE = {
   CREATE_APPOINTMENT: "Create Appointment",
   ADD_EMPLOYEE: "Add Employee",
   UPDATE_PASSWORD: "Update Password",
+  UPDATE_INVENTORY: "Update Inventory",
+  UPLOAD_IMAGE: "Upload Image",
 };
 
 export const SUCCESS_MESSAGE = {
@@ -57,6 +59,7 @@ export const SUCCESS_MESSAGE = {
   UPDATE_ACCOUNT_SUCCESSFULLY: "Update account success",
   ADD_VEHICLE_SUCCESSFULLY: "Add vehivle success",
   SEND_REVIEW_SUCCESS: "Send Review Success",
+  INVENTORY_UPDATED_SUCCESSFULLY: "Part is updated successfully",
 };
 
 export const AUTH_FORM_MESSAGE = {
@@ -74,7 +77,8 @@ export const LIST_SERVICES_MESSAGE = {
 
 //List of appointment
 export const LIST_APPOINTMENTS_MESSAGE = {
-  EMPTY_PENDING: (status: string) => `There are currently no ${status} appointments`,
+  EMPTY_PENDING: (status: string) =>
+    `There are currently no ${status} appointments`,
   NO_APPOINTMENT_FOUND: "No appointments found for: ",
 };
 
