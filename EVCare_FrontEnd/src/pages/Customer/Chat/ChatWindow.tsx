@@ -1,21 +1,27 @@
 import { useState, useEffect, useRef } from "react";
-import { Input, Button, Avatar, Spin } from "antd";
+import { Input, Button, Avatar, Spin, message, Tooltip } from "antd";
 import { useChat } from "../../../hooks/useChat";
-import { SendOutlined, UserOutlined, SmileOutlined } from "@ant-design/icons";
+import { SendOutlined, UserOutlined, SmileOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { getHistory } from "../../../services/chatService";
 import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
+import { RoleEnum } from "../../../models/enums";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../states/store";
 
 interface ChatWindowProps {
   conversationId: string;
   accountId: string;
+  onBack?: () => void;
+  isWidgetMode?: boolean;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountId }) => {
+export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountId, isWidgetMode, onBack }) => {
   const { messages, send, startTyping, stopTyping } = useChat(conversationId);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<HistoryMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
+  const role = useSelector((state: RootState) => state.auth.user?.role);
 
   useEffect(() => {
     (async () => {
@@ -44,17 +50,44 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
 
   const allMessages = [...history, ...messages];
 
+  const handleEndConversation = () => {
+    // TODO: Gọi API hoặc SignalR để kết thúc cuộc trò chuyện này
+    console.log("End conversation:", conversationId);
+    message.info("Conversation ended.");
+  };
+
   return (
     <div className="chat-window">
       {/* Chat Header */}
       <div className="chat-header">
+        {isWidgetMode && onBack && (
+          <Button
+            className="chat-header-back-btn"
+            type="text"
+            shape="circle"
+            icon={<ArrowLeftOutlined />}
+            onClick={onBack}
+          />
+        )}
         <div className="chat-header-content">
           <Avatar size={40} icon={<UserOutlined />} className="chat-header-avatar" />
           <div>
-            <h3 className="chat-header-title">Cuộc trò chuyện</h3>
-            <p className="chat-header-status">Đang hoạt động</p>
+            <h3 className="chat-header-title">Conversation</h3>
+            <p className="chat-header-status">Active</p>
           </div>
         </div>
+
+        {role === RoleEnum.STAFF && (
+          <Tooltip title="End conversation">
+            <Button
+              className="btn-end-conversation"
+              type="primary"
+              danger
+              shape="circle"
+              onClick={handleEndConversation}
+            />
+          </Tooltip>
+        )}
       </div>
 
       {/* Messages Area */}

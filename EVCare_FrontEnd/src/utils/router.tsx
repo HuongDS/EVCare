@@ -36,6 +36,12 @@ const Staff_General = lazy(() => import("../pages/Staff/StaffGeneralPage/Staff_G
 const Manage_Technicians = lazy(() => import("../pages/Staff/StaffManageTechnicians/Manage_Technicians"));
 const Manage_Customer = lazy(() => import("../pages/Staff/StaffManageCustomer/Manage_Customer"));
 const Staff_Appoinments = lazy(() => import("../pages/Staff/StaffManageAppointment/Staff_Appoinments"));
+const AdminServiceCenter = lazy(() => import("../pages/Admin/AdminServiceCenter/AdminServiceCenter"));
+const Admin_Category = lazy(() => import("../pages/Admin/AdminCategory/Admin_Category"));
+const StaffChatPage = lazy(() =>
+  import("../pages/Customer/Chat/StaffChatPage").then((module) => ({ default: module.StaffChatPage }))
+);
+
 import {
   LazyOrder,
   LazyHistory,
@@ -44,8 +50,6 @@ import {
   LazyApplication,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
-import Admin_Category from "../pages/Admin/AdminCategory/Admin_Category";
-import AdminServiceCenter from "../pages/Admin/AdminServiceCenter/AdminServiceCenter";
 
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <Suspense fallback={<SpinnerComponent />}>{children}</Suspense>;
@@ -309,7 +313,7 @@ const router = createBrowserRouter([
         path: "chat-with-customer",
         element: (
           <SuspenseWrapper>
-            <ChatPage />
+            <StaffChatPage />
           </SuspenseWrapper>
         ),
       },
