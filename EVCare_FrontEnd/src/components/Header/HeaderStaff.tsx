@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Badge, Space } from "antd";
 import { CalendarOutlined, BellOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -8,9 +8,7 @@ import {
   DateContainer,
 } from "./HeaderStaff.styled";
 import EvCare from "../../assets/EVCare.png";
-import { getMe, logout, deleteToken } from "../../services/authService";
-import type { AccountViewModel } from "../../models/Accounts/accountViewModel";
-import type { ResponseDto } from "../../models/AuthModel/authModel";
+import { logout, deleteToken } from "../../services/authService";
 import DropdownMenu from "../Header/DropdownMenu";
 import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
 import { useNavigate } from "react-router";
@@ -22,19 +20,9 @@ import { logoutRedux } from "../../states/authSlice";
 import type { AppDispatch } from "../../states/store";
 import { useDispatch } from "react-redux";
 const HeaderStaff: React.FC = () => {
-  const [account, setAccount] = useState<ResponseDto<AccountViewModel> | null>(
-    null
-  );
   const today = dayjs().format("D MMM, YYYY");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const Account = await getMe();
-      setAccount(Account);
-    };
-    fetchData();
-  }, []);
   const dispatch = useDispatch<AppDispatch>();
   const handleLogout = async () => {
     const response = await logout();
