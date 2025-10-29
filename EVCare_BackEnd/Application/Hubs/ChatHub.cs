@@ -16,11 +16,14 @@ namespace Application.Hubs
     {
         private readonly IChatServices _chatServices;
         private readonly IConversationService _conversationService;
+        private readonly IAiChatServices _aiChatServices;
 
-        public ChatHub(IChatServices chatServices, IConversationService conversationService)
+        public ChatHub(IChatServices chatServices, IConversationService conversationService,
+            IAiChatServices aiChatServices)
         {
             _chatServices = chatServices;
             _conversationService = conversationService;
+            _aiChatServices = aiChatServices;
         }
 
         public override async Task OnConnectedAsync()
@@ -36,8 +39,9 @@ namespace Application.Hubs
         public async Task SendMessage(string conversationId, string text, List<Attachment> atts)
         {
             var senderId = Context.UserIdentifier;
+            var conv = await _chatServices.GetConversationAsync(conversationId);
+            if (conv == null) throw new Exception("Conversation not found");
             var msg = await _chatServices.SaveMessageAsync(conversationId, senderId, text, atts);
-            var counterPart = await _conversationService.GetCounterpartAsync(conversationId, senderId);
 
             var sendData = new
             {
@@ -48,9 +52,29 @@ namespace Application.Hubs
                 attachments = atts,
                 sentAt = msg.SentAt
             };
-
-            await Clients.User(counterPart.ToString()).SendAsync("ReceiveMessage", sendData);
             await Clients.User(senderId.ToString()).SendAsync("ReceiveMessageAck", sendData);
+
+            if (conv.Type == "AI")
+            {
+                var aiResponse = await _aiChatServices.GetChatResponseAsync(text);
+                var aiMsg = await _chatServices.SaveMessageAsync(conversationId, "AI_BOT", aiResponse, null);
+                var aiSendData = new
+                {
+                    id = aiMsg.Id,
+                    conversationId = conversationId,
+                    senderId = "AI_BOT",
+                    text = aiMsg.Text,
+                    attachments = aiMsg.Attachments,
+                    sentAt = aiMsg.SentAt
+                };
+                await Clients.User(senderId.ToString()).SendAsync("ReceiveMessage", aiSendData);
+            }
+            else
+            {
+                var counterPart = await _conversationService.GetCounterpartAsync(conversationId, senderId);
+                await Clients.User(counterPart.ToString()).SendAsync("ReceiveMessage", sendData);
+            }
+
             await Clients.Group(conversationId.ToString()).SendAsync("UpdateConversation", new { conversationId });
         }
 
@@ -84,5 +108,6 @@ namespace Application.Hubs
         public async Task StartTyping(int conversationId) => await Clients.Group(conversationId.ToString()).SendAsync("UserStartedTyping", new { conversationId, userId = Context.UserIdentifier });
 
         public async Task StopTyping(int conversationId) => await Clients.Group(conversationId.ToString()).SendAsync("UserStoppedTyping", new { conversationId, userId = Context.UserIdentifier });
+
     }
 }

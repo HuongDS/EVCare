@@ -175,8 +175,9 @@ export const ContainerWrapper = styled.div`
   }
 
   .profile-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(15px);
+    // background: rgba(255, 255, 255, 0.7);
+    // backdrop-filter: blur(15px);
+    background: #fff;
     border: 1px solid rgba(255, 255, 255, 1);
     border-radius: 20px;
     padding: 40px;
