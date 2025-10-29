@@ -3,7 +3,11 @@ import UploadImage from "../../../components/UploadFields/uploadImage";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
 import { LICENSE_PLATE_REGEX } from "../../../constants/regexs/LicensePlateRegex";
 import { useAlert } from "../../../context/useAlert";
-import { ERROR_MESSAGE, MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
+import {
+  ERROR_MESSAGE,
+  MSG_TITLE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
 import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import { getVehicleCategories } from "../../../services/vehicleServicesApi";
 import { handleError } from "../../../utils/errorHandler";
@@ -21,19 +25,27 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
   const [preview, setPreview] = useState<string | null>(null);
   const [categoryId, setCategoryId] = useState(0);
   const { showAlert } = useAlert();
-  const [listCategories, setListCategories] = useState<VehicleCategoryViewDto[]>([]);
+  const [listCategories, setListCategories] = useState<
+    VehicleCategoryViewDto[]
+  >([]);
   const notification = useNotification();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!LICENSE_PLATE_REGEX.test(licensePlate) || licensePlate.includes("-")) {
-      showAlert("error", MSG_TITLE.ADD_VEHICLE, ERROR_MESSAGE.LICENSE_PLATE_WRONG);
+      showAlert(
+        "error",
+        MSG_TITLE.ADD_VEHICLE,
+        ERROR_MESSAGE.LICENSE_PLATE_WRONG
+      );
       return;
     }
     const payload: VehicleCreateDto = {
       categoryId: categoryId,
       licensePlate: licensePlate,
-      img: preview || "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=400&h=300&fit=crop",
+      img:
+        preview ||
+        "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=400&h=300&fit=crop",
     };
 
     try {
@@ -41,10 +53,15 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
       notification.success({
         message: MSG_TITLE.ADD_VEHICLE,
         description: SUCCESS_MESSAGE.ADD_VEHICLE_SUCCESSFULLY,
+        showProgress: true,
       });
     } catch (error) {
       handleError(error);
-      showAlert("error", MSG_TITLE.ADD_VEHICLE, (error as Error).message ?? ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      showAlert(
+        "error",
+        MSG_TITLE.ADD_VEHICLE,
+        (error as Error).message ?? ERROR_MESSAGE.SOME_THING_WENT_WRONG
+      );
     }
 
     // reset
@@ -67,7 +84,11 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
         setListCategories(response.data ?? []);
       } catch (error) {
         handleError(error);
-        showAlert("error", MSG_TITLE.ADD_VEHICLE, ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+        showAlert(
+          "error",
+          MSG_TITLE.ADD_VEHICLE,
+          ERROR_MESSAGE.SOME_THING_WENT_WRONG
+        );
       }
     };
     fetchData();
@@ -81,7 +102,11 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
         <form onSubmit={onSubmit}>
           <div className="form-group">
             <label>Vehicle Model</label>
-            <select required value={categoryId} onChange={(e) => setCategoryId(Number(e.target.value))}>
+            <select
+              required
+              value={categoryId}
+              onChange={(e) => setCategoryId(Number(e.target.value))}
+            >
               <option value="">Select a model</option>
               {listCategories.map((m) => (
                 <option key={m.id} value={m.id}>
@@ -114,7 +139,11 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
                 src={preview}
                 alt="Vehicle"
                 className="preview-image"
-                style={{ marginTop: "10px", width: "200px", borderRadius: "8px" }}
+                style={{
+                  marginTop: "10px",
+                  width: "200px",
+                  borderRadius: "8px",
+                }}
               />
             )}
           </div>

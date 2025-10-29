@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { formatDate } from "../../../utils/formatDate";
 import { updateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
 import { getAppointmentPartCondition } from "../../../services/appointmentPartCondition";
-
+import { useNotification } from "../../../context/useNotification";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
@@ -146,6 +146,7 @@ type Props = {
   onPartsUpdated?: (orderId: number) => void;
 };
 
+const notification = useNotification();
 const AppointmentCardProgress: React.FC<Props> = ({
   data,
   onStatusChange,
@@ -206,7 +207,10 @@ const AppointmentCardProgress: React.FC<Props> = ({
       console.error(err);
       setCurrentStatus(prevStatus);
       onStatusChange?.(data.orderId, prevStatus);
-      alert(ERROR_MESSAGE.CAN_NOT_UPDATE_STATUS);
+      notification.error({
+        message: ERROR_MESSAGE.CAN_NOT_UPDATE_STATUS,
+        showProgress: true,
+      });
     }
   };
 
