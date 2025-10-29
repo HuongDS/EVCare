@@ -13,6 +13,7 @@ import type {
 import axios from "axios";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import dayjs from "dayjs";
+import type { UpdateInventoryPayload } from "../models/Inventory/InventoryModel";
 
 interface GetPartCategoryParams {
   pageSize?: number;
@@ -105,6 +106,42 @@ export const useExportInventoryToExcel = () => {
         }
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
       }
+    },
+  });
+};
+
+export const useUpdateInventoryQuantity = () => {
+  return useMutation({
+    mutationFn: async (payload: UpdateInventoryPayload) => {
+      try {
+        const response = await api.put<ResponseDto<number | null>>(
+          "/api/Part/staff",
+          payload
+        );
+        return response.data;
+      } catch (error) {}
+    },
+  });
+};
+
+export const useUpdateInventoryImage = () => {
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await api.post<ResponseDto<string>>(
+        "/api/File/upload-image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            FolderName: "Parts",
+          },
+        }
+      );
+
+      return response.data.data;
     },
   });
 };
