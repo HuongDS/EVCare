@@ -22,7 +22,10 @@ import type { Service } from "../../../../models/ServicesModel/ServiceViewModel"
 import type { ServiceCreateDto } from "../../../../models/ServicesModel/ServiceCreateDto";
 import type { ServiceCategoryAdminDto } from "../../../../models/ServicesModel/ServiceCategoryAdminDto";
 import { StyledSelect } from "../AdminPart/Admin_Part.styled";
-import { createService, updateService } from "../../../../services/serviceServicesApi";
+import {
+  createService,
+  updateService,
+} from "../../../../services/serviceServicesApi";
 import { callGemini } from "../../../../services/geminiServices";
 import { AnimatePresence } from "framer-motion";
 
@@ -45,14 +48,22 @@ const generateServiceDetails = async (serviceName: string) => {
     if (result && result.description && typeof result.duration === "number") {
       return result;
     } else {
-      console.error("Failed to generate service details or received invalid data.");
+      console.error(
+        "Failed to generate service details or received invalid data."
+      );
     }
   } catch (error) {
     console.log(error);
   }
 };
 
-const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, serviceToEdit, serviceCategories }) => {
+const ServiceFormModal: React.FC<Props> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  serviceToEdit,
+  serviceCategories,
+}) => {
   const isUpdateMode = !!serviceToEdit;
   const notification = useNotification();
   const [formData, setFormData] = useState({
@@ -73,22 +84,39 @@ const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, service
         serviceCategoryId: serviceToEdit.serviceCategoryId,
       });
     } else {
-      setFormData({ name: "", description: "", duration: 0, serviceCategoryId: 0 });
+      setFormData({
+        name: "",
+        description: "",
+        duration: 0,
+        serviceCategoryId: 0,
+      });
     }
   }, [isOpen, isUpdateMode, serviceToEdit]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === "duration" ? parseFloat(value) || 0 : name === "serviceCategoryId" ? parseInt(value) || 0 : value,
+        name === "duration"
+          ? parseFloat(value) || 0
+          : name === "serviceCategoryId"
+          ? parseInt(value) || 0
+          : value,
     }));
   };
 
   const handleGenerateDetails = async () => {
     if (!formData.name.trim()) {
-      notification.warning({ message: "Warning", description: "Please enter a service name first." });
+      notification.warning({
+        message: "Warning",
+        description: "Please enter a service name first.",
+        showProgress: true,
+      });
       return;
     }
     setIsGenerating(true);
@@ -99,10 +127,18 @@ const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, service
         description: result.description,
         duration: result.duration,
       }));
-      notification.success({ message: "Generated", description: "Description and duration populated." });
+      notification.success({
+        message: "Generated",
+        description: "Description and duration populated.",
+        showProgress: true,
+      });
     } catch (error) {
       console.error("Failed to generate details", error);
-      notification.error({ message: "Error", description: "Could not generate details." });
+      notification.error({
+        message: "Error",
+        description: "Could not generate details.",
+        showProgress: true,
+      });
     }
     setIsGenerating(false);
   };
@@ -130,23 +166,40 @@ const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, service
 
       let response = null;
       if (isUpdateMode && serviceToEdit) {
-        const payload: Service = { id: serviceToEdit.id, ...formData, isDeleted: false };
+        const payload: Service = {
+          id: serviceToEdit.id,
+          ...formData,
+          isDeleted: false,
+        };
         response = await updateService(payload);
       } else {
         const payload: ServiceCreateDto = { ...formData };
         response = await createService(payload);
       }
       onSuccess();
-      notification.success({ message: "Success", description: response.message });
+      notification.success({
+        message: "Success",
+        description: response.message,
+        showProgress: true,
+      });
     } catch (error) {
       console.error("Failed to submit form", error);
-      notification.error({ message: "Error", description: (error as Error).message || "Could not save service." });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message || "Could not save service.",
+        showProgress: true,
+      });
     }
     setIsSubmitting(false);
   };
 
   return (
-    <ModalBackdrop initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+    <ModalBackdrop
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
       <ModalContainer
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -156,7 +209,9 @@ const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, service
       >
         <form onSubmit={handleSubmit} style={{ display: "contents" }}>
           <ModalHeader>
-            <ModalTitle>{isUpdateMode ? "Edit Service" : "Add New Service"}</ModalTitle>
+            <ModalTitle>
+              {isUpdateMode ? "Edit Service" : "Add New Service"}
+            </ModalTitle>
             <ModalCloseButton type="button" onClick={onClose}>
               <FaTimes />
             </ModalCloseButton>
@@ -189,7 +244,9 @@ const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, service
               <StyledSelect
                 id="service-category"
                 name="serviceCategoryId"
-                value={serviceToEdit?.serviceCategoryId ?? formData.serviceCategoryId}
+                value={
+                  serviceToEdit?.serviceCategoryId ?? formData.serviceCategoryId
+                }
                 onChange={handleInputChange}
                 required
                 disabled={isSubmitting || isGenerating}
@@ -208,12 +265,18 @@ const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, service
             <InputGroup>
               <AnimatePresence>
                 {isGenerating && (
-                  <GeneratingOverlay initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  <GeneratingOverlay
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
                     <LoadingSpinner />
                   </GeneratingOverlay>
                 )}
               </AnimatePresence>
-              <StyledLabel htmlFor="service-description">Description</StyledLabel>
+              <StyledLabel htmlFor="service-description">
+                Description
+              </StyledLabel>
               <StyledTextArea
                 id="service-description"
                 name="description"
@@ -227,12 +290,18 @@ const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, service
             <InputGroup>
               <AnimatePresence>
                 {isGenerating && (
-                  <GeneratingOverlay initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  <GeneratingOverlay
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
                     <LoadingSpinner />
                   </GeneratingOverlay>
                 )}
               </AnimatePresence>
-              <StyledLabel htmlFor="service-duration">Estimated Duration (Hours)</StyledLabel>
+              <StyledLabel htmlFor="service-duration">
+                Estimated Duration (Hours)
+              </StyledLabel>
               <StyledInput
                 id="service-duration"
                 name="duration"
@@ -247,10 +316,19 @@ const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, service
             </InputGroup>
           </ModalBody>
           <ModalFooter>
-            <ModalButton type="button" $isConfirm={false} onClick={onClose} disabled={isSubmitting}>
+            <ModalButton
+              type="button"
+              $isConfirm={false}
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
               Cancel
             </ModalButton>
-            <ModalButton type="submit" $isConfirm={true} disabled={isSubmitting || isGenerating}>
+            <ModalButton
+              type="submit"
+              $isConfirm={true}
+              disabled={isSubmitting || isGenerating}
+            >
               {isSubmitting ? <LoadingSpinner /> : <FaSave />}
               {isUpdateMode ? "Save Changes" : "Add Service"}
             </ModalButton>
