@@ -3,6 +3,7 @@ import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import styled from "styled-components";
 import Authentication from "../../pages/Shared/Auth/Authentication";
+import { ChatWidget } from "../../pages/Customer/Chat/ChatWidget";
 
 const Container = styled.div`
   display: flex;
@@ -25,6 +26,8 @@ export default function Layout() {
         </div>
       </Main>
       <Footer />
+
+      <ChatWidget />
     </Container>
   );
 }
