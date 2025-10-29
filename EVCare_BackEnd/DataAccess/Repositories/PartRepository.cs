@@ -50,6 +50,7 @@ namespace DataAccess.Repositories
                      Price = x.Price,
                      Quantity = x.Stock,
                      ImageUrl = x.Image,
+                     Description = x.Description,
                      ReplacementPrice = x.ReplacementPrice
                 });
             if (model.CategoryIds!=null) query = query.Where(x=>model.CategoryIds.Contains(x.CategoryId));
