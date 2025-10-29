@@ -30,10 +30,26 @@ namespace API.Controllers
         }
 
         [HttpPost("conversations/domain")]
-        public async Task<IActionResult> CreateDomain([FromBody] CreateDomainDto dto)
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+        public async Task<IActionResult> CreateDomain()
         {
-            var staffAccountId = await _staffRoutingService.FindAvailableAsync();
-            var conversation = await _conversationService.CreateOrGetConsultationAsync(dto.customerAccountId, staffAccountId);
+            var accountId = (int)HttpContext.Items["AccountId"];
+            var staffAccountId = await _staffRoutingService.FindAvailableAsync(accountId.ToString());
+            var conversation = await _conversationService.CreateOrGetConsultationAsync(accountId.ToString(), staffAccountId);
+            return Ok(new ResponseDto<object>
+            {
+                statusCode = HttpStatus.OK,
+                message = Application.Infrastructures.Message.DOMAIN_CREATE_SUCCESS,
+                data = conversation.Id
+            });
+        }
+
+        [HttpPost("conversations/domain/AI")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+        public async Task<IActionResult> CreateDomainWithAi()
+        {
+            var accountId = (int)HttpContext.Items["AccountId"];
+            var conversation = await _conversationService.CreateOrGetConsultationAsync(accountId.ToString(), "AI_BOT");
             return Ok(new ResponseDto<object>
             {
                 statusCode = HttpStatus.OK,
