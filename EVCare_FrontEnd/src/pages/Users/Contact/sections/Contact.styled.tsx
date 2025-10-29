@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const ContactWrapper = styled.div`
   font-family: "Outfit", sans-serif;
-  padding: 5rem 5%; /* Giảm padding 1 chút */
+  padding: 5rem 5%;
   background: linear-gradient(to bottom, #f9fff8 0%, #ffffff 100%);
   min-height: 90vh;
 `;
@@ -44,7 +44,6 @@ export const RightColumns = styled.div`
 
 export const TopRightColumns = styled.div`
   display: grid;
-  /* (NEW) Tự động chia cột, tối thiểu 200px */
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
 `;
@@ -53,8 +52,6 @@ export const Column = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-
-  /* (NEW) Style Thẻ (Card) */
   background: #ffffff;
   border-radius: 16px;
   padding: 1.5rem;
@@ -69,11 +66,9 @@ export const Column = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-size: clamp(3rem, 5vw, 4rem); /* Thu nhỏ 1 chút */
+  font-size: clamp(3rem, 5vw, 4rem);
   font-weight: 800;
-  margin-bottom: 1.5rem; /* (NEW) */
-
-  /* (NEW) Gradient Text */
+  margin-bottom: 1.5rem;
   background: linear-gradient(135deg, #00c656 0%, #00ad4e 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -108,7 +103,7 @@ export const Subtitle = styled.h2`
 
 export const ContactInfo = styled.p`
   font-size: 1rem;
-  color: #475569; /* (NEW) Màu chữ thứ cấp */
+  color: #475569;
   font-weight: 500;
   margin: 0;
 `;
@@ -118,9 +113,9 @@ export const ContactContent = styled.p`
   color: #475569;
   line-height: 1.7;
   margin-bottom: 20px;
-  text-align: left; /* (NEW) Bỏ justify */
+  text-align: left;
 
   @media (max-width: 900px) {
-    text-align: center; /* Căn giữa trên mobile */
+    text-align: center;
   }
 `;

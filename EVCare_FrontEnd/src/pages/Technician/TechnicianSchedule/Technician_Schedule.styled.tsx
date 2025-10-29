@@ -77,7 +77,6 @@ export const CalendarContainer = styled.div`
     box-shadow: none !important;
   }
 
-  /* Tháng/năm */
   .fc-toolbar-title {
     color: ${COLORS.primary};
     font-weight: 700;
@@ -92,7 +91,6 @@ export const CalendarContainer = styled.div`
     }
   }
 
-  /* Tên thứ trong lịch */
   .fc-col-header-cell-cushion {
     color: #222;
     font-weight: 600;
@@ -108,7 +106,6 @@ export const CalendarContainer = styled.div`
     }
   }
 
-  /* Số ngày trong tháng */
   .fc-daygrid-day-number {
     color: #222;
     font-weight: 500;
@@ -124,7 +121,6 @@ export const CalendarContainer = styled.div`
     }
   }
 
-  /* Timeline week/day: giờ màu đen */
   .fc-timegrid-axis-cushion {
     color: #222;
     font-weight: 500;
@@ -139,12 +135,10 @@ export const CalendarContainer = styled.div`
     }
   }
 
-  /* Grid background cho week/day */
   .fc-timegrid-col-frame {
     border-left: 1px solid #e0e0e0;
   }
 
-  /* Event styling */
   .fc-daygrid-event,
   .fc-timegrid-event {
     border-radius: 8px;

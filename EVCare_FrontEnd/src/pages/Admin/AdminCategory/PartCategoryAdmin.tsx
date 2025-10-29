@@ -41,7 +41,11 @@ export default function PartCategoryAdmin() {
       const data = await getPartCategories();
       setCategories(data.data?.items ?? []);
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsLoading(false);
   }, [notification]);
@@ -51,7 +55,11 @@ export default function PartCategoryAdmin() {
   }, [fetchData]);
 
   const handleAddOrUpdateSuccess = () => {
-    notification.success({ message: "Add Part Category", description: "Added new Part Category successful." });
+    notification.success({
+      message: "Add Part Category",
+      description: "Added new Part Category successful.",
+      showProgress: true,
+    });
     fetchData();
     setActiveSubTab("view");
   };
@@ -72,14 +80,23 @@ export default function PartCategoryAdmin() {
       await deletePartCategory(itemToDelete.id);
       fetchData();
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsDeleteModalOpen(false);
     setItemToDelete(null);
   };
 
   const renderViewTab = () => (
-    <TabContent key="view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <TabContent
+      key="view"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       {isLoading ? (
         <SpinnerComponent />
       ) : (
@@ -99,13 +116,22 @@ export default function PartCategoryAdmin() {
                   <Td>{cat.name}</Td>
                   <Td>{cat.description}</Td>
                   <Td>
-                    <StatusBadge $isActive={!cat.isDeleted}>{cat.isDeleted ? "Deleted" : "Active"}</StatusBadge>
+                    <StatusBadge $isActive={!cat.isDeleted}>
+                      {cat.isDeleted ? "Deleted" : "Active"}
+                    </StatusBadge>
                   </Td>
                   <Td>
-                    <ActionButton onClick={() => handleOpenEditModal(cat)} disabled={cat.isDeleted}>
+                    <ActionButton
+                      onClick={() => handleOpenEditModal(cat)}
+                      disabled={cat.isDeleted}
+                    >
                       <FaPencilAlt />
                     </ActionButton>
-                    <ActionButton $isDelete onClick={() => handleOpenDeleteModal(cat)} disabled={cat.isDeleted}>
+                    <ActionButton
+                      $isDelete
+                      onClick={() => handleOpenDeleteModal(cat)}
+                      disabled={cat.isDeleted}
+                    >
                       <FaTrash />
                     </ActionButton>
                   </Td>
@@ -119,7 +145,12 @@ export default function PartCategoryAdmin() {
   );
 
   const renderAddTab = () => (
-    <TabContent key="add" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+    <TabContent
+      key="add"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+    >
       <PartCategoryForm onAddSuccess={handleAddOrUpdateSuccess} />
     </TabContent>
   );
@@ -128,15 +159,23 @@ export default function PartCategoryAdmin() {
     <>
       <ManagerWrapper>
         <SubTabContainer>
-          <SubTabButton $isActive={activeSubTab === "view"} onClick={() => setActiveSubTab("view")}>
+          <SubTabButton
+            $isActive={activeSubTab === "view"}
+            onClick={() => setActiveSubTab("view")}
+          >
             View All
           </SubTabButton>
-          <SubTabButton $isActive={activeSubTab === "add"} onClick={() => setActiveSubTab("add")}>
+          <SubTabButton
+            $isActive={activeSubTab === "add"}
+            onClick={() => setActiveSubTab("add")}
+          >
             Add New
           </SubTabButton>
         </SubTabContainer>
 
-        <AnimatePresence mode="wait">{activeSubTab === "view" ? renderViewTab() : renderAddTab()}</AnimatePresence>
+        <AnimatePresence mode="wait">
+          {activeSubTab === "view" ? renderViewTab() : renderAddTab()}
+        </AnimatePresence>
       </ManagerWrapper>
 
       <AnimatePresence>

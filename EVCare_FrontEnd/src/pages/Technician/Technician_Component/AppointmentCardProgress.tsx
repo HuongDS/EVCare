@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { formatDate } from "../../../utils/formatDate";
 import { updateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
 import { getAppointmentPartCondition } from "../../../services/appointmentPartCondition";
-
+import { useNotification } from "../../../context/useNotification";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
@@ -14,7 +14,6 @@ import {
 } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 
-// --- Styled Components ---
 const CardContainer = styled.div`
   width: 100%;
   background: #fff;
@@ -131,7 +130,6 @@ const DamageLevelBadgeStyled = styled.span<{ $level: DamageLevelEnum }>`
   background-color: ${({ $level }) => damageColorMap[$level] || "#999"};
 `;
 
-// **Container cho nút**
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -139,7 +137,6 @@ const ButtonWrapper = styled.div`
   gap: 1rem;
 `;
 
-// --- Component ---
 type Props = {
   data: TechnicianAppointmentsDto;
   onStatusChange?: (
@@ -149,6 +146,7 @@ type Props = {
   onPartsUpdated?: (orderId: number) => void;
 };
 
+const notification = useNotification();
 const AppointmentCardProgress: React.FC<Props> = ({
   data,
   onStatusChange,
@@ -209,19 +207,19 @@ const AppointmentCardProgress: React.FC<Props> = ({
       console.error(err);
       setCurrentStatus(prevStatus);
       onStatusChange?.(data.orderId, prevStatus);
-      alert(ERROR_MESSAGE.CAN_NOT_UPDATE_STATUS);
+      notification.error({
+        message: ERROR_MESSAGE.CAN_NOT_UPDATE_STATUS,
+        showProgress: true,
+      });
     }
   };
 
   return (
     <CardContainer>
-      {/* Header */}
       <Header>
         <div>Appointment #{data.id}</div>
         <div>{currentStatus.replace("_", " ")}</div>
       </Header>
-
-      {/* Image Carousel */}
       {data.appointmentImages?.length > 0 && (
         <ImageCarousel>
           {data.appointmentImages.map((img, idx) => (
@@ -231,8 +229,6 @@ const AppointmentCardProgress: React.FC<Props> = ({
           ))}
         </ImageCarousel>
       )}
-
-      {/* Info Box */}
       <InfoBox>
         <InfoColumn>
           <div>
@@ -254,8 +250,6 @@ const AppointmentCardProgress: React.FC<Props> = ({
           </div>
         </InfoColumn>
       </InfoBox>
-
-      {/* Lists */}
       <ListSection>
         <SectionContainer>
           <SectionTitle>Services</SectionTitle>
@@ -301,8 +295,6 @@ const AppointmentCardProgress: React.FC<Props> = ({
           </ListWrapper>
         </SectionContainer>
       </ListSection>
-
-      {/* Nút bên phải */}
       <ButtonWrapper>
         <ReviewButton
           status={currentStatus}

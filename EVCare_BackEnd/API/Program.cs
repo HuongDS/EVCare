@@ -147,6 +147,7 @@ builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
 builder.Services.AddScoped<IAppointmentPartConditionService, AppointmentPartConditionService>();
 builder.Services.AddSingleton<IAiChatServices, AiChatServices>();
 
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITechnicianSkillService, TechnicianSkillService>();
 //builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
 //{

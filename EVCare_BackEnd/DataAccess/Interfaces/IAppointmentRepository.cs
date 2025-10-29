@@ -9,6 +9,8 @@ using DataAccess.Entities;
 using DataAccess.Enums;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Payment;
+using DataAccess.Dtos.Service;
+using DataAccess.Dtos.Part;
 
 namespace DataAccess.Interfaces
 {
@@ -41,5 +43,6 @@ namespace DataAccess.Interfaces
         Task<int> CountAppointmentsInMonthWithStatus(int year, int month, AppointmentStatusEnum status);
         Task <Appointment> GetByOrderIdAsync(int orderId);
         Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId);
+        Task<IEnumerable<ServiceSummaryViewModel>> GetTopServicesAsync(ServiceSummaryQueryDto model);
     }
 }

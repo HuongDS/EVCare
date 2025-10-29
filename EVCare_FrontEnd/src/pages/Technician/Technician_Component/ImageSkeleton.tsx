@@ -17,20 +17,18 @@ export default function ImageSkeleton({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // 🩹 Reset lại khi src thay đổi
   useEffect(() => {
     setLoading(true);
     setError(false);
   }, [src]);
 
-  // ⏱ Timeout fallback để không chờ vô hạn
   useEffect(() => {
     const timer = setTimeout(() => {
       if (loading) {
         setLoading(false);
         setError(true);
       }
-    }, 7000); // tăng nhẹ thời gian load
+    }, 7000);
     return () => clearTimeout(timer);
   }, [loading, src]);
 

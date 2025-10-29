@@ -25,8 +25,13 @@ import ReFreshButton from "../../../components/Button/ReFreshButton";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
-import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
+import { useChangeAppointmentStatus } from "../../../services/appointmentServiceApi";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import { useNotification } from "../../../context/useNotification";
+import {
+  MSG_TITLE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -47,6 +52,7 @@ export default function Appointment_Part_Tracking({
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [confirm, setConfirm] = useState(false);
+  const notification = useNotification();
 
   //gọi hàm để lấy order detail
   const { data: order, isSuccess } = useGetOrderDetail(data.orderId);
@@ -56,7 +62,7 @@ export default function Appointment_Part_Tracking({
     if (isSuccess && order?.data?.parts) {
       setParts(order.data.parts);
     }
-  }, [isSuccess, order]);
+  }, [isSuccess, order?.data?.parts]);
 
   //hàm này thay đổi quantity được nhập từ staff
   const handleQuantityChange = async (
@@ -70,7 +76,10 @@ export default function Appointment_Part_Tracking({
       setParts(updatedParts);
       setEditingPartId(null);
     } else {
-      alert("Change quantity error");
+      notification.error({
+        message: "Change quantity error",
+        showProgress: true,
+      });
     }
   };
 
@@ -84,8 +93,10 @@ export default function Appointment_Part_Tracking({
 
   //Khi nhấn confirm thì gọi hàm này
   const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
+
   const { mutateAsync: updateOrder, isPending } = useStaffUpdateOrder();
   const queryClient = useQueryClient();
+
   const handleConfirmOrder = async () => {
     try {
       const newOrderUpdate: UpdateOrderRequest<OrderPartDto> = {
@@ -140,23 +151,30 @@ export default function Appointment_Part_Tracking({
     setIsSuccessModalOpen(false);
   };
 
-  //hủy cuộc hẹn
-  const { mutateAsync: appointmentStatus } = changeAppointmentStatus();
+  // hủy cuộc hẹn
+  const { mutateAsync: appointmentStatus } = useChangeAppointmentStatus();
+
   const handleCancelOrder = async () => {
-    const newOrderUpdate: UpdateOrderRequest<OrderPartDto> = {
-      id: data.orderId,
-      orderParts: [],
-    };
     try {
       await appointmentStatus({ appointmentId: data.id, status: "Canceled" });
-      await updateOrder(newOrderUpdate);
+
+      await updateOrder({ id: data.orderId, orderParts: [] });
       await updateOrderStatus({ orderID: data.orderId, status: "Canceled" });
       queryClient.invalidateQueries({
         queryKey: ["OrderDetail", data.orderId],
       });
       closeModal();
+      notification.success({
+        message: MSG_TITLE.CANCEL_APPOINTMENT,
+        description: SUCCESS_MESSAGE.APPOINTMENT_CANCELLED_SUCCESSFULLY,
+        showProgress: true,
+      });
     } catch (error) {
-      alert("failed");
+      notification.error({
+        message: MSG_TITLE.CANCEL_APPOINTMENT,
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
   };
 

@@ -21,13 +21,26 @@ import { FaSave, FaBuilding, FaRegClock, FaTools } from "react-icons/fa";
 import { useNotification } from "../../../context/useNotification";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import type { ServiceCenterAdminModel } from "../../../models/ServiceCenter/ServiceCenterAdminModel";
-import { adminGetCenterInformation, updateCenterInformation } from "../../../services/serviceCenterService";
+import {
+  adminGetCenterInformation,
+  updateCenterInformation,
+} from "../../../services/serviceCenterService";
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
 
-const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const daysOfWeek = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 
 export default function AdminServiceCenter() {
-  const [formData, setFormData] = useState<ServiceCenterAdminModel | null>(null);
+  const [formData, setFormData] = useState<ServiceCenterAdminModel | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const notification = useNotification();
@@ -38,7 +51,10 @@ export default function AdminServiceCenter() {
       const response = await adminGetCenterInformation();
       setFormData(response?.data ?? null);
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -48,9 +64,15 @@ export default function AdminServiceCenter() {
     fetchData();
   }, [notification]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    const isNumericField = ["capacity", "workSlot", "dailyBookingLimit"].includes(name);
+    const isNumericField = [
+      "capacity",
+      "workSlot",
+      "dailyBookingLimit",
+    ].includes(name);
     const processedValue = isNumericField ? parseInt(value) || 0 : value;
     setFormData((prev) => (prev ? { ...prev, [name]: processedValue } : null));
   };
@@ -69,13 +91,27 @@ export default function AdminServiceCenter() {
       if (formData.name.trim().length <= 0) {
         throw new Error("Please input center's name.");
       }
-      if (formData.capacity <= 0 || formData.dailyBookingLimit <= 0 || formData.workSlot <= 0) {
-        throw new Error("Capacity, Daily Booking Limit or Work Slot must be greater than 0.");
+      if (
+        formData.capacity <= 0 ||
+        formData.dailyBookingLimit <= 0 ||
+        formData.workSlot <= 0
+      ) {
+        throw new Error(
+          "Capacity, Daily Booking Limit or Work Slot must be greater than 0."
+        );
       }
       const response = await updateCenterInformation(formData);
-      notification.success({ message: "Success", description: response.message });
+      notification.success({
+        message: "Success",
+        description: response.message,
+        showProgress: true,
+      });
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsSubmitting(false);
   };
@@ -83,7 +119,9 @@ export default function AdminServiceCenter() {
   if (isLoading) {
     return (
       <PageWrapper>
-        <div style={{ display: "grid", placeItems: "center", minHeight: "80vh" }}>
+        <div
+          style={{ display: "grid", placeItems: "center", minHeight: "80vh" }}
+        >
           <SpinnerComponent />
         </div>
       </PageWrapper>
@@ -94,7 +132,9 @@ export default function AdminServiceCenter() {
     <PageWrapper>
       <Header>
         <Title>Service Center Configuration</Title>
-        <Instruction>Manage your center's operational details, hours, and booking capacity.</Instruction>
+        <Instruction>
+          Manage your center's operational details, hours, and booking capacity.
+        </Instruction>
       </Header>
 
       <ConfigWrapper
@@ -232,7 +272,9 @@ export default function AdminServiceCenter() {
               disabled={isSubmitting}
               required
             />
-            <InstructionText>Max number of vehicles serviced at the same time.</InstructionText>
+            <InstructionText>
+              Max number of vehicles serviced at the same time.
+            </InstructionText>
           </InputGroup>
 
           <InputGroup>
@@ -247,12 +289,16 @@ export default function AdminServiceCenter() {
               disabled={isSubmitting}
               required
             />
-            <InstructionText>Number of bookable slots per day (e.g., 8 slots).</InstructionText>
+            <InstructionText>
+              Number of bookable slots per day (e.g., 8 slots).
+            </InstructionText>
           </InputGroup>
 
           <FullWidthWrapper>
             <InputGroup>
-              <StyledLabel htmlFor="dailyBookingLimit">Daily Booking Limit</StyledLabel>
+              <StyledLabel htmlFor="dailyBookingLimit">
+                Daily Booking Limit
+              </StyledLabel>
               <StyledInput
                 id="dailyBookingLimit"
                 name="dailyBookingLimit"
@@ -263,7 +309,10 @@ export default function AdminServiceCenter() {
                 disabled={isSubmitting}
                 required
               />
-              <InstructionText>Total number of bookings allowed per day. (e.g., Capacity * Work Slots)</InstructionText>
+              <InstructionText>
+                Total number of bookings allowed per day. (e.g., Capacity * Work
+                Slots)
+              </InstructionText>
             </InputGroup>
           </FullWidthWrapper>
         </ConfigGrid>

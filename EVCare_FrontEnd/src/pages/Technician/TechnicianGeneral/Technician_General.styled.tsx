@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-/* 🎨 Màu sắc & responsive breakpoints */
 const COLORS = {
   primary: "#4caf50",
   grayDark: "#222",
@@ -14,7 +13,6 @@ const BREAKPOINTS = {
   mobile: "480px",
 };
 
-/* 📦 Wrapper tổng thể */
 export const AppointmentWrapper = styled.div`
   padding: 24px;
   background: ${COLORS.grayLight};
@@ -26,7 +24,6 @@ export const AppointmentWrapper = styled.div`
   }
 `;
 
-/* 🏷️ Tiêu đề */
 export const TitleWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -47,7 +44,6 @@ export const Title = styled.h2`
   }
 `;
 
-/* 📜 Danh sách appointment */
 export const AppointmentList = styled.div`
   display: flex;
   flex-direction: column;
@@ -60,7 +56,6 @@ export const AppointmentList = styled.div`
   }
 `;
 
-/* 💧 Watermark khi trống */
 export const Watermark = styled.div`
   padding: 80px 0;
   text-align: center;
@@ -70,7 +65,6 @@ export const Watermark = styled.div`
   user-select: none;
 `;
 
-/* ⚠️ Thông báo lỗi */
 export const ErrorMessage = styled.div`
   color: ${COLORS.error};
   font-size: 1.1rem;

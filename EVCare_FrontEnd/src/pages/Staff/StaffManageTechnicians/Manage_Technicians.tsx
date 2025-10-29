@@ -9,6 +9,179 @@ import SpinnerComponent from "../../../components/SpinnerComponent";
 const { Title, Text } = Typography;
 const { Option } = Select;
 
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "Available":
+      return "success";
+    case "Busy":
+      return "warning";
+    case "OnLeave":
+      return "default";
+    default:
+      return "default";
+  }
+};
+
+const Manage_Technicians = () => {
+  // const [technicians] = useState(mockTechnicians);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [availableCount, setAvailableCount] = useState(0);
+  const [busyCount, setBusyCount] = useState(0);
+  const [total, setTotal] = useState(0);
+
+  const { data: technicians, isLoading } = useGetTechniciansToday({
+    ...(statusFilter !== "all" ? { Status: statusFilter } : {}),
+    ...((searchTerm && { FullName: searchTerm }) || {}),
+  });
+
+  useEffect(() => {
+    const availableCount = technicians?.data?.items?.filter(
+      (t) => t.status === "Available"
+    ).length;
+
+    const busyCount = technicians?.data?.items?.filter(
+      (t) => t.status === "Busy"
+    ).length;
+
+    setAvailableCount(availableCount || 0);
+    setBusyCount(busyCount || 0);
+    setTotal(technicians?.data?.items?.length || 0);
+  }, [technicians?.data?.items]);
+
+  return (
+    <Container>
+      <ContentWrapper>
+        <StatsBar>
+          <StatCard>
+            <div className="icon">
+              <User size={24} />
+            </div>
+            <div className="content">
+              <h3>{total}</h3>
+              <p>Total Technicians</p>
+            </div>
+          </StatCard>
+          <StatCard>
+            <div className="icon">
+              <Award size={24} />
+            </div>
+            <div className="content">
+              <h3>{availableCount}</h3>
+              <p>Available Now</p>
+            </div>
+          </StatCard>
+          <StatCard>
+            <div className="icon">
+              <Wrench size={24} />
+            </div>
+            <div className="content">
+              <h3>{busyCount}</h3>
+              <p>Currently Busy</p>
+            </div>
+          </StatCard>
+        </StatsBar>
+
+        <FilterSection>
+          <SearchBar
+            handleSearchValue={setSearchTerm}
+            searchValue={searchTerm}
+            placeholder="Search technician..."
+          />
+          <StyledSelect
+            value={statusFilter}
+            onChange={(value) => setStatusFilter(String(value))}
+            style={{ width: 200 }}
+          >
+            <Option value="all">All Status</Option>
+            <Option value="Available">Available</Option>
+            <Option value="Busy">Busy</Option>
+            <Option value="OnLeave">OnLeave</Option>
+          </StyledSelect>
+          <Text style={{ marginLeft: "auto", color: "#64748b" }}>
+            Showing {technicians?.data?.totalItems} of{" "}
+            {technicians?.data?.items?.length} technicians
+          </Text>
+        </FilterSection>
+
+        {isLoading ? (
+          <SpinnerComponent />
+        ) : (
+          <TechGrid>
+            {technicians?.data?.items?.map((tech) => (
+              <TechCard key={tech.id}>
+                <TechHeader>
+                  <TechAvatar
+                    src={`https://ui-avatars.com/api/?name=${tech.fullName}&background=3b82f6&color=fff&bold=true`}
+                  >
+                    {tech.fullName.charAt(0)}
+                  </TechAvatar>
+                  <TechInfo>
+                    <h3>{tech.fullName}</h3>
+                    <Text className="tech-id">ID: #{tech.id}</Text>
+                  </TechInfo>
+                  <StatusBadge
+                    status={getStatusColor(tech.status)}
+                    text={tech.status}
+                  />
+                </TechHeader>
+
+                <InfoRow>
+                  <Phone size={18} />
+                  <span className="label">Phone:</span>
+                  <span style={{ marginLeft: "auto" }}>{tech.phone}</span>
+                </InfoRow>
+
+                <InfoRow>
+                  <Award size={18} />
+                  <span className="label">Experience:</span>
+                  <span style={{ marginLeft: "auto" }}>
+                    {tech.expYears} {tech.expYears === 1 ? "year" : "years"}
+                  </span>
+                </InfoRow>
+
+                <SkillsSection>
+                  <div className="skills-label">
+                    <Wrench size={16} />
+                    <span>Skills & Expertise</span>
+                  </div>
+                  <div>
+                    {tech.skills.map((skill) => (
+                      <SkillTag key={skill.id}>{skill.name}</SkillTag>
+                    ))}
+                  </div>
+                </SkillsSection>
+              </TechCard>
+            ))}
+          </TechGrid>
+        )}
+
+        {technicians?.data?.items?.length === 0 && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              textAlign: "center",
+              padding: "3rem",
+              color: "#64748b",
+            }}
+          >
+            <User size={48} style={{ marginBottom: "1rem", opacity: 0.5 }} />
+            <Title level={4} style={{ color: "#64748b" }}>
+              No technicians found
+            </Title>
+            <Text>Try adjusting your search or filters</Text>
+          </div>
+        )}
+      </ContentWrapper>
+    </Container>
+  );
+};
+
+export default Manage_Technicians;
+
 const Container = styled.div`
   min-height: 100vh;
   background: #f8fafc;
@@ -226,176 +399,3 @@ const SkillTag = styled.span`
   margin-bottom: 0.5rem;
   border: 1px solid #dbeafe;
 `;
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "Available":
-      return "success";
-    case "Busy":
-      return "warning";
-    case "OnLeave":
-      return "default";
-    default:
-      return "default";
-  }
-};
-
-const Manage_Technicians = () => {
-  // const [technicians] = useState(mockTechnicians);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [availableCount, setAvailableCount] = useState(0);
-  const [busyCount, setBusyCount] = useState(0);
-  const [total, setTotal] = useState(0);
-
-  const { data: technicians, isLoading } = useGetTechniciansToday({
-    ...(statusFilter !== "all" ? { Status: statusFilter } : {}),
-    ...((searchTerm && { FullName: searchTerm }) || {}),
-  });
-
-  useEffect(() => {
-    const availableCount = technicians?.data?.items?.filter(
-      (t) => t.status === "Available"
-    ).length;
-
-    const busyCount = technicians?.data?.items?.filter(
-      (t) => t.status === "Busy"
-    ).length;
-
-    setAvailableCount(availableCount || 0);
-    setBusyCount(busyCount || 0);
-    setTotal(technicians?.data?.items?.length || 0);
-  }, []);
-
-  return (
-    <Container>
-      <ContentWrapper>
-        <StatsBar>
-          <StatCard>
-            <div className="icon">
-              <User size={24} />
-            </div>
-            <div className="content">
-              <h3>{total}</h3>
-              <p>Total Technicians</p>
-            </div>
-          </StatCard>
-          <StatCard>
-            <div className="icon">
-              <Award size={24} />
-            </div>
-            <div className="content">
-              <h3>{availableCount}</h3>
-              <p>Available Now</p>
-            </div>
-          </StatCard>
-          <StatCard>
-            <div className="icon">
-              <Wrench size={24} />
-            </div>
-            <div className="content">
-              <h3>{busyCount}</h3>
-              <p>Currently Busy</p>
-            </div>
-          </StatCard>
-        </StatsBar>
-
-        <FilterSection>
-          <SearchBar
-            handleSearchValue={setSearchTerm}
-            searchValue={searchTerm}
-            placeholder="Search technician..."
-          />
-          <StyledSelect
-            value={statusFilter}
-            onChange={(value) => setStatusFilter(String(value))}
-            style={{ width: 200 }}
-          >
-            <Option value="all">All Status</Option>
-            <Option value="Available">Available</Option>
-            <Option value="Busy">Busy</Option>
-            <Option value="OnLeave">OnLeave</Option>
-          </StyledSelect>
-          <Text style={{ marginLeft: "auto", color: "#64748b" }}>
-            Showing {technicians?.data?.totalItems} of{" "}
-            {technicians?.data?.items?.length} technicians
-          </Text>
-        </FilterSection>
-
-        {isLoading ? (
-          <SpinnerComponent />
-        ) : (
-          <TechGrid>
-            {technicians?.data?.items?.map((tech) => (
-              <TechCard key={tech.id}>
-                <TechHeader>
-                  <TechAvatar
-                    src={`https://ui-avatars.com/api/?name=${tech.fullName}&background=3b82f6&color=fff&bold=true`}
-                  >
-                    {tech.fullName.charAt(0)}
-                  </TechAvatar>
-                  <TechInfo>
-                    <h3>{tech.fullName}</h3>
-                    <Text className="tech-id">ID: #{tech.id}</Text>
-                  </TechInfo>
-                  <StatusBadge
-                    status={getStatusColor(tech.status)}
-                    text={tech.status}
-                  />
-                </TechHeader>
-
-                <InfoRow>
-                  <Phone size={18} />
-                  <span className="label">Phone:</span>
-                  <span style={{ marginLeft: "auto" }}>{tech.phone}</span>
-                </InfoRow>
-
-                <InfoRow>
-                  <Award size={18} />
-                  <span className="label">Experience:</span>
-                  <span style={{ marginLeft: "auto" }}>
-                    {tech.expYears} {tech.expYears === 1 ? "year" : "years"}
-                  </span>
-                </InfoRow>
-
-                <SkillsSection>
-                  <div className="skills-label">
-                    <Wrench size={16} />
-                    <span>Skills & Expertise</span>
-                  </div>
-                  <div>
-                    {tech.skills.map((skill) => (
-                      <SkillTag key={skill.id}>{skill.name}</SkillTag>
-                    ))}
-                  </div>
-                </SkillsSection>
-              </TechCard>
-            ))}
-          </TechGrid>
-        )}
-
-        {technicians?.data?.items?.length === 0 && (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              textAlign: "center",
-              padding: "3rem",
-              color: "#64748b",
-            }}
-          >
-            <User size={48} style={{ marginBottom: "1rem", opacity: 0.5 }} />
-            <Title level={4} style={{ color: "#64748b" }}>
-              No technicians found
-            </Title>
-            <Text>Try adjusting your search or filters</Text>
-          </div>
-        )}
-      </ContentWrapper>
-    </Container>
-  );
-};
-
-export default Manage_Technicians;
