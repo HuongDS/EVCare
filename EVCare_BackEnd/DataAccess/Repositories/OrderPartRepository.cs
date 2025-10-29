@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using DataAccess.Dtos.AI;
 using DataAccess.Dtos.OrderPart;
 using DataAccess.Dtos.OrderParts;
+using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Part;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -105,6 +107,34 @@ namespace DataAccess.Repositories
             }).ToList();
 
         }
+
+        public async Task<IEnumerable<PartSummaryViewModel>> GetTopParts(PartSummaryQueryDto model) {
+            var query = _dbContext.OrderParts
+                .AsNoTracking()
+                .Include(x => x.Part)
+                .Include(x=>x.Order)
+                .AsQueryable();
+            if (model.FromDate.HasValue) {
+                query = query.Where(x => DateOnly.FromDateTime(x.Order.Create_At.Date) >= model.FromDate.Value);
+
+            }
+            if (model.ToDate.HasValue) {
+                query = query.Where(x => DateOnly.FromDateTime(x.Order.Create_At.Date) <= model.ToDate.Value);
+            }
+            var grouped = query
+                .GroupBy(x => new { x.PartId, x.Part.Name, x.Part.Image })
+                .Select(g => new PartSummaryViewModel {
+                    PartName = g.Key.Name,
+                    ImageUrl = g.Key.Image,
+                    TotalUsed = g.Sum(x => x.Quantity)
+                })
+                .OrderByDescending(x => x.TotalUsed);
+            if (model.Top.HasValue) {
+                return await grouped.Take(model.Top.Value).ToListAsync();
+            }
+            return await grouped.ToListAsync();
+        }
+        
 
         public async Task RemoveRange(int orderId, int technicianId)
         {

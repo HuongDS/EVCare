@@ -24,7 +24,11 @@ interface Props {
   isSubmitting: boolean;
 }
 
-export default function VehicleCategoryFormFields({ formData, setFormData, isSubmitting }: Props) {
+export default function VehicleCategoryFormFields({
+  formData,
+  setFormData,
+  isSubmitting,
+}: Props) {
   const [allPartCategories, setAllPartCategories] = useState<Category[]>([]);
   const [isPartsLoading, setIsPartsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
@@ -39,6 +43,7 @@ export default function VehicleCategoryFormFields({ formData, setFormData, isSub
       notification.error({
         message: "Error",
         description: (error as Error).message,
+        showProgress: true,
       });
     } finally {
       setIsPartsLoading(false);
@@ -77,12 +82,15 @@ export default function VehicleCategoryFormFields({ formData, setFormData, isSub
     }
 
     const validExtensions = [".glb", ".obj", ".gltf", ".stl"];
-    const fileExtension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+    const fileExtension = file.name
+      .slice(file.name.lastIndexOf("."))
+      .toLowerCase();
 
     if (!validExtensions.includes(fileExtension)) {
       notification.error({
         message: "Invalid File Type",
         description: "Please select a .glb, .obj, .gltf, or .stl file.",
+        showProgress: true,
       });
       e.target.value = "";
       setFileName("");
@@ -105,6 +113,7 @@ export default function VehicleCategoryFormFields({ formData, setFormData, isSub
       notification.error({
         message: "Upload Failed",
         description: (error as Error).message,
+        showProgress: true,
       });
       e.target.value = "";
       setFileName("");
@@ -148,7 +157,14 @@ export default function VehicleCategoryFormFields({ formData, setFormData, isSub
             disabled={isSubmitting || isUploading}
           />
           {isUploading ? (
-            <div style={{ padding: "0 1rem", display: "grid", placeItems: "center", color: "#00ad4e" }}>
+            <div
+              style={{
+                padding: "0 1rem",
+                display: "grid",
+                placeItems: "center",
+                color: "#00ad4e",
+              }}
+            >
               <LoadingSpinner />
             </div>
           ) : fileName ? (
@@ -164,12 +180,18 @@ export default function VehicleCategoryFormFields({ formData, setFormData, isSub
                 maxWidth: "calc(100% - 40px)",
               }}
             >
-              <FaCheckCircle style={{ marginRight: "8px", color: "#00ad4e", flexShrink: 0 }} />
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{fileName}</span>
+              <FaCheckCircle
+                style={{ marginRight: "8px", color: "#00ad4e", flexShrink: 0 }}
+              />
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+                {fileName}
+              </span>
             </div>
           ) : null}
         </LinkInputWrapper>
-        <InstructionText>Select a 3D model file. We will process and host it in our cloud.</InstructionText>
+        <InstructionText>
+          Select a 3D model file. We will process and host it in our cloud.
+        </InstructionText>
       </InputGroup>
 
       <InputGroup>
@@ -177,7 +199,11 @@ export default function VehicleCategoryFormFields({ formData, setFormData, isSub
         <PillSelectorWrapper>
           <AnimatePresence>
             {isPartsLoading && (
-              <LoadingOverlay initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <LoadingOverlay
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <LoadingSpinner />
               </LoadingOverlay>
             )}
@@ -192,13 +218,19 @@ export default function VehicleCategoryFormFields({ formData, setFormData, isSub
                   onClick={() => togglePartCategory(cat.id)}
                   disabled={isSubmitting}
                 >
-                  {formData.partCategoryIds.includes(cat.id) ? <FaCheck /> : <FaTimes />}
+                  {formData.partCategoryIds.includes(cat.id) ? (
+                    <FaCheck />
+                  ) : (
+                    <FaTimes />
+                  )}
                   {cat.name}
                 </PillButton>
               )
           )}
         </PillSelectorWrapper>
-        <InstructionText>Select all part categories that apply to this vehicle type.</InstructionText>
+        <InstructionText>
+          Select all part categories that apply to this vehicle type.
+        </InstructionText>
       </InputGroup>
     </>
   );

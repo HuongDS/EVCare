@@ -4,7 +4,7 @@ import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Sta
 import ButtonAction from "../../../components/Button/ReviewButton";
 import { useAppDispatch } from "../../../states/store";
 import { setStep } from "../../../states/appointmentSlice";
-import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
+// import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
 import { CreateNewOrder } from "../../../services/orderServiceApi";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
@@ -19,6 +19,7 @@ import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
 import { APPOINTMENT_MESSAGE } from "../../../constants/messages/Message";
+import { useChangeAppointmentStatus } from "../../../services/appointmentServiceApi";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -39,7 +40,7 @@ export default function Appointment_CheckIn({
   const dispatch = useAppDispatch();
   const { mutateAsync: newOrder } = CreateNewOrder();
   const { mutateAsync: appointmentStatus, isPending } =
-    changeAppointmentStatus();
+    useChangeAppointmentStatus();
   const queryClient = useQueryClient();
 
   const handleChangeAppointmentStatus = async (status: string) => {

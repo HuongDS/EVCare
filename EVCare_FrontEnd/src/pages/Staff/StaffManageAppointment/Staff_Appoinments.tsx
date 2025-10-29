@@ -65,7 +65,7 @@ export default function Staff_Appoinments() {
   const { data: appointments, isLoading } = useGetAllAppointments({
     ...((searchValue && { customerName: searchValue }) || {}), //chỉ gửi customer name nếu nó k rỗng
     status: sortBy,
-    sortField: "AppointmentDate",
+    sortField: "Appointment_Date",
     ...((beginTime && { beginTime: beginTime }) || {}),
     ...((endTime && { endTime: endTime }) || {}),
     sortOrder: sortOrder,
@@ -152,7 +152,7 @@ export default function Staff_Appoinments() {
             )
           ) : (
             <NOT_FOUND_ITEMS
-              icon="bi bi-exclamation-circle"
+              icon={<i className="bi bi-exclamation-circle" />}
               message={LIST_APPOINTMENTS_MESSAGE.EMPTY_PENDING(sortBy)}
             />
           )}

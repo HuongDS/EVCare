@@ -519,7 +519,9 @@ namespace API.Controllers
 
         }
         [HttpGet("vehicle-category/{appointmentId}")]
-        [Authorize(Roles = "Staff,Admin,Technician")]
+        [Authorize]
+        [ServiceFilter(typeof(SetCustomerIdFilter))]
+        [ServiceFilter(typeof(AppointmentAuthorizationFilter))]
         public async Task<IActionResult> GetVehicleCategoryByAppointmentId(int appointmentId) {
             try {
                 var vehicle = await _appointmentService.GetVehicleByAppointmentId(appointmentId);

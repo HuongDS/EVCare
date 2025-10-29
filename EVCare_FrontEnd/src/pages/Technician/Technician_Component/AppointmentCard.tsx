@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { formatDate } from "../../../utils/formatDate";
 import { updateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
 import { getAppointmentPartCondition } from "../../../services/appointmentPartCondition";
-
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
@@ -13,7 +12,7 @@ import {
   damageColorMap,
 } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
-
+import { useNotification } from "../../../context/useNotification";
 // --- Styled Components ---
 const CardContainer = styled.div`
   width: 100%;
@@ -137,7 +136,7 @@ const ButtonWrapper = styled.div`
   margin-top: 0.8rem;
 `;
 
-// --- Component ---
+const notification = useNotification();
 type Props = {
   data: TechnicianAppointmentsDto;
   onStatusChange?: (
@@ -205,19 +204,19 @@ const AppointmentCard: React.FC<Props> = ({
       console.error(err);
       setCurrentStatus(prevStatus);
       onStatusChange?.(data.orderId, prevStatus);
-      alert(ERROR_MESSAGE.CAN_NOT_UPDATE_STATUS);
+      notification.error({
+        message: ERROR_MESSAGE.CAN_NOT_UPDATE_STATUS,
+        showProgress: true,
+      });
     }
   };
 
   return (
     <CardContainer>
-      {/* Header */}
       <Header>
         <div>Appointment #{data.id}</div>
         <div>{currentStatus.replace("_", " ")}</div>
       </Header>
-
-      {/* Image Carousel */}
       {data.appointmentImages?.length > 0 && (
         <ImageCarousel>
           {data.appointmentImages.map((img, idx) => (
@@ -228,7 +227,6 @@ const AppointmentCard: React.FC<Props> = ({
         </ImageCarousel>
       )}
 
-      {/* Info Box */}
       <InfoBox>
         <InfoColumn>
           <div>
@@ -251,7 +249,6 @@ const AppointmentCard: React.FC<Props> = ({
         </InfoColumn>
       </InfoBox>
 
-      {/* Lists */}
       <ListSection>
         <SectionBox>
           <SectionTitle>Services</SectionTitle>
@@ -295,8 +292,6 @@ const AppointmentCard: React.FC<Props> = ({
           </ListWrapper>
         </SectionBox>
       </ListSection>
-
-      {/* Button */}
       <ButtonWrapper>
         <ReviewButton
           status={currentStatus}
