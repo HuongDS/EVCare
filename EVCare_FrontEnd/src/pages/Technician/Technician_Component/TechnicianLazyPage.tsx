@@ -15,3 +15,6 @@ export const LazyGeneral = LazyPerformance(
 export const LazyApplication = LazyPerformance(
   () => import("../TechnicianApplication/Technician_Application")
 );
+export const LazyMyJob = LazyPerformance(
+  () => import("../TechnicianMyJob/Technician_MyJob")
+);
