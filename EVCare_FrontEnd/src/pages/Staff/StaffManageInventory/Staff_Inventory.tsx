@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { InputNumber, Select, Button, Card, Typography } from "antd";
+import { Select, Typography } from "antd";
 import {
   Package,
-  Save,
   Filter,
   AlertCircle,
   ChartCandlestick,
+  FileCog,
 } from "lucide-react";
 import {
   useExportInventoryToExcel,
@@ -16,15 +16,16 @@ import {
 import SearchBar from "../../../components/SearchBar/Search";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import { DownloadButton } from "../../../components/Button/DownloadButton";
+import UpdatePartModal from "./UpdatePartModal";
+import type { PartDetailDto } from "../../../models/PartModel/PartModel";
+import LoadButton from "../../../components/Button/LoadButton";
 
 const { Text } = Typography;
 
 const Staff_Inventory = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [newQuantities, setNewQuantities] = useState<Record<number, number>>(
-    {}
-  );
-
+  const [selectedPart, setSelectedPart] = useState<PartDetailDto | undefined>();
   const [total, setTotal] = useState(0);
   const [lowStockItems, setLowStockItems] = useState(0);
   const [totalValue, setTotalValue] = useState(0);
@@ -33,24 +34,8 @@ const Staff_Inventory = () => {
   const { data: partCategories } = useGetAllPartCategories({});
   const { data: parts, isLoading } = useGetParts({
     ...((searchValue && { partName: searchValue }) || {}),
+    pageSize: 100,
   });
-
-  const handleQuantityChange = (id: number, value: number | null) => {
-    if (value === null) {
-      const { [id]: _, ...rest } = newQuantities;
-      setNewQuantities(rest);
-    } else {
-      setNewQuantities((prev) => ({ ...prev, [id]: value }));
-    }
-  };
-
-  const handleSave = (id: number) => {
-    const newQuantity = newQuantities[id];
-    if (newQuantity === undefined) return;
-    console.log("Saving quantity:", { id, quantity: newQuantity });
-    const { [id]: _, ...rest } = newQuantities;
-    setNewQuantities(rest);
-  };
 
   const filteredParts =
     (selectedCategory
@@ -78,7 +63,7 @@ const Staff_Inventory = () => {
     setTotal(totalParts ?? 0);
     setLowStockItems(lowStockItems ?? 0);
     setTotalValue(totalValue ?? 0);
-  }, [parts?.data?.items]);
+  }, []);
 
   const { mutate: exportToExcel, isPending } = useExportInventoryToExcel();
 
@@ -162,70 +147,94 @@ const Staff_Inventory = () => {
 
         {isLoading ? (
           <SpinnerComponent />
-        ) : (
-          <PartsGrid>
-            {filteredParts.length > 0 ? (
-              filteredParts.map((part) => (
-                <PartCard key={part.id}>
-                  <ImageWrapper>
-                    <PartImage src={part.imageUrl} alt={part.name} />
-                    <StockBadge $lowStock={part.quantity < 10}>
-                      {part.quantity < 10 ? "Low Stock" : "In Stock"}
-                    </StockBadge>
-                  </ImageWrapper>
+        ) : filteredParts.length > 0 ? (
+          <TableWrapper>
+            <table>
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Part Name</th>
+                  <th>Category</th>
+                  <th>Unit Price (đ)</th>
+                  <th>Stock</th>
+                  <th style={{ display: "flex", justifyContent: "center" }}>
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredParts.map((part) => {
+                  const category =
+                    partCategories?.data?.items.find(
+                      (c) => c.id === part.categoryId
+                    )?.name || "Uncategorized";
 
-                  <CardContent>
-                    <CategoryLabel>
-                      {partCategories?.data?.items.find(
-                        (c) => c.id === part.categoryId
-                      )?.name || "Uncategorized"}
-                    </CategoryLabel>
-                    <PartName>{part.name}</PartName>
-
-                    <PriceRow>
-                      <PriceLabel>Unit Price</PriceLabel>
-                      <Price>{part.price.toLocaleString("vi-VN")}đ</Price>
-                    </PriceRow>
-
-                    <QuantitySection>
-                      <CurrentQuantity>
-                        <span className="label">Current Stock</span>
-                        <span className="value">{part.quantity}</span>
-                      </CurrentQuantity>
-
-                      <NewQuantityRow>
-                        <QuantityLabel>New Stock</QuantityLabel>
-                        <StyledInputNumber
-                          min={0}
-                          type="number"
-                          value={newQuantities[part.id]}
-                          placeholder="Enter new quantity"
-                          onChange={(value) =>
-                            handleQuantityChange(part.id, Number(value))
-                          }
+                  return (
+                    <tr
+                      key={part.id}
+                      className={part.quantity < 10 ? "low-stock" : ""}
+                    >
+                      <td>
+                        <img
+                          src={part.imageUrl}
+                          alt={part.name}
+                          width={60}
+                          height={60}
+                          style={{
+                            borderRadius: "6px",
+                            objectFit: "cover",
+                            width: "60px",
+                            height: "60px",
+                          }}
                         />
-                        <SaveButton
-                          icon={<Save size={16} />}
-                          onClick={() => handleSave(part.id)}
-                          disabled={newQuantities[part.id] === undefined}
+                      </td>
+                      <td>{part.name}</td>
+                      <td>{category}</td>
+                      <td>{part.price.toLocaleString("vi-VN")}</td>
+                      <td
+                        style={{
+                          color: part.quantity < 10 ? "#cf1322" : "#1a1a1a",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {part.quantity}
+                      </td>
+                      <td>
+                        <div
+                          style={{ display: "flex", justifyContent: "center" }}
                         >
-                          Save
-                        </SaveButton>
-                      </NewQuantityRow>
-                    </QuantitySection>
-                  </CardContent>
-                </PartCard>
-              ))
-            ) : (
-              <EmptyState>
-                <Package size={64} />
-                <h3>No items found</h3>
-                <p>Try adjusting your filters or check back later</p>
-              </EmptyState>
-            )}
-          </PartsGrid>
+                          <LoadButton
+                            text="Update"
+                            action={() => {
+                              setIsOpen(true);
+                              setSelectedPart(part);
+                            }}
+                            icon={<FileCog />}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </TableWrapper>
+        ) : (
+          <EmptyState>
+            <Package size={64} />
+            <h3>No items found</h3>
+            <p>Try adjusting your filters or check back later</p>
+          </EmptyState>
         )}
       </ContentWrapper>
+
+      {isOpen && (
+        <UpdatePartModal
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          part={selectedPart}
+        />
+      )}
     </Container>
   );
 };
@@ -373,195 +382,6 @@ const StyledSelect = styled(Select)`
   }
 `;
 
-const PartsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const PartCard = styled(Card)`
-  border: 1px solid #e8e8e8 !important;
-  border-radius: 8px !important;
-  overflow: hidden;
-  transition: all 0.25s ease;
-  background: white;
-
-  &:hover {
-    border-color: #262626 !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-  }
-
-  .ant-card-body {
-    padding: 0;
-  }
-`;
-
-const ImageWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  height: 200px;
-  background: #f5f5f5;
-  overflow: hidden;
-`;
-
-const PartImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-const StockBadge = styled.div<{ $lowStock: boolean }>`
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: ${({ $lowStock }) => ($lowStock ? "#fff1f0" : "#f6ffed")};
-  border: 1px solid ${({ $lowStock }) => ($lowStock ? "#ffa39e" : "#b7eb8f")};
-  color: ${({ $lowStock }) => ($lowStock ? "#cf1322" : "#389e0d")};
-  padding: 0.375rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-`;
-
-const CardContent = styled.div`
-  padding: 1.25rem;
-`;
-
-const CategoryLabel = styled.div`
-  font-size: 0.8rem;
-  color: #8c8c8c;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-`;
-
-const PartName = styled.h3`
-  font-size: 1.125rem;
-  margin: 0 0 1rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  line-height: 1.4;
-`;
-
-const PriceRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #f0f0f0;
-`;
-
-const PriceLabel = styled.div`
-  font-size: 0.875rem;
-  color: #8c8c8c;
-`;
-
-const Price = styled.div`
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1a1a1a;
-`;
-
-const QuantitySection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const CurrentQuantity = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  background: #fafafa;
-  border-radius: 6px;
-  border: 1px solid #e8e8e8;
-
-  .label {
-    font-size: 0.875rem;
-    color: #595959;
-    font-weight: 500;
-  }
-
-  .value {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1a1a1a;
-  }
-`;
-
-const NewQuantityRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`;
-
-const QuantityLabel = styled.div`
-  font-size: 0.875rem;
-  color: #595959;
-  font-weight: 500;
-  white-space: nowrap;
-`;
-
-const StyledInputNumber = styled(InputNumber)`
-  flex: 1;
-
-  .ant-input-number-input {
-    height: 40px;
-    font-size: 1rem;
-    text-align: center;
-  }
-
-  &.ant-input-number {
-    border: 1px solid #d9d9d9;
-    border-radius: 6px;
-
-    &:hover {
-      border-color: #262626;
-    }
-
-    &.ant-input-number-focused {
-      border-color: #262626;
-      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
-    }
-  }
-`;
-
-const SaveButton = styled(Button)`
-  height: 40px;
-  border-radius: 6px;
-  background: #1a1a1a;
-  border: none;
-  color: white;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0 1.25rem;
-
-  &:hover:not(:disabled) {
-    background: #262626 !important;
-    color: white !important;
-  }
-
-  &:active:not(:disabled) {
-    background: #000000 !important;
-  }
-
-  &:disabled {
-    background: #f5f5f5 !important;
-    color: #bfbfbf !important;
-    cursor: not-allowed;
-  }
-`;
-
 const EmptyState = styled.div`
   grid-column: 1 / -1;
   text-align: center;
@@ -586,5 +406,52 @@ const EmptyState = styled.div`
   p {
     color: #8c8c8c;
     margin: 0;
+  }
+`;
+
+const TableWrapper = styled.div`
+  background: white;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  th {
+    background: #fafafa;
+    color: #595959;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  td {
+    font-size: 0.9rem;
+    color: #1a1a1a;
+    vertical-align: middle;
+  }
+
+  tr.low-stock {
+    background: #fff2f0;
+  }
+
+  tr:hover {
+    background: #fafafa;
+  }
+
+  button {
+    height: 36px;
+    border-radius: 6px;
+    font-weight: 500;
   }
 `;
