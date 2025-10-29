@@ -38,8 +38,8 @@ export const Title = styled.h1`
 
 export const Instruction = styled.p`
   font-size: 1rem;
-  color: #374151;
-  margin: 0;
+  color: #4b5563;
+  margin-top: 0.25rem;
 `;
 
 export const SearchContainer = styled.div`

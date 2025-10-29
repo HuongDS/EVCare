@@ -44,6 +44,8 @@ import {
   LazyApplication,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
+import Admin_Category from "../pages/Admin/AdminCategory/Admin_Category";
+import AdminServiceCenter from "../pages/Admin/AdminServiceCenter/AdminServiceCenter";
 
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <Suspense fallback={<SpinnerComponent />}>{children}</Suspense>;
@@ -230,6 +232,22 @@ const router = createBrowserRouter([
         element: (
           <SuspenseWrapper>
             <Admin_Applications />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "categories",
+        element: (
+          <SuspenseWrapper>
+            <Admin_Category />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "center-information",
+        element: (
+          <SuspenseWrapper>
+            <AdminServiceCenter />
           </SuspenseWrapper>
         ),
       },

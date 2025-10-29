@@ -175,5 +175,11 @@ namespace Application.Infrastructures
         public static string VEHICLE_CATEGORY_DELETE_SUCCESSFULLY  = "Delete vehicle category successfully";
 
         public static string VEHICLE_CATEGORY_UNBANNED_SUCCESSFULLY = "Unbanned vehicle category successfully";
+
+        public static string SERVICE_CATEGORY_CREATE_SUCCESSFULLY  = "Create service category successfully";
+
+        public static string SERVICE_CATEGORY_UPDATE_SUCCESSFULLY = "Update service category successfully";
+
+        public static string SERVICE_CATEGORY_DELETE_SUCCESSFULLY = "Delete service category successfully";
     }
 }

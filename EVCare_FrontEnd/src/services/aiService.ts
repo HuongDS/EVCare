@@ -37,3 +37,12 @@ export async function getPredictRevenue(from: string, nextDays: string) {
   });
   return response.data;
 }
+
+export async function getReplenishmentSuggestions(LeadDate: number) {
+  const response = await api.get("/api/AI/replenishment-gemini", {
+    params: {
+      LeadDate: LeadDate,
+    },
+  });
+  return response.data;
+}

@@ -28,7 +28,6 @@ export default function Technician_General() {
   const [isError, setIsError] = useState(false);
   const [fade, setFade] = useState(false);
 
-  // --- fetchAppointments định nghĩa sớm, tránh lỗi "used before declared"
   const fetchAppointments = useCallback(
     async (statusOverride?: TechnicianWorkingSessionEnum) => {
       const statusToFetch = statusOverride ?? activeStatus;
@@ -54,7 +53,6 @@ export default function Technician_General() {
     [activeStatus]
   );
 
-  // --- xử lý state từ navigate (chỉ 1 lần)
   useEffect(() => {
     const tab = location.state?.tab;
     if (tab === "ADDING_PART") {
@@ -108,7 +106,6 @@ export default function Technician_General() {
         sortName={sortName}
         active={activeStatus}
         onChange={(val) => {
-          // ✅ Không reset layout, chỉ fetch lại card
           if (val !== activeStatus) {
             setActiveStatus(val);
             fetchAppointments(val);

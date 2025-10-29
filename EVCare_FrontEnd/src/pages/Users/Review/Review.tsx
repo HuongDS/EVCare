@@ -29,7 +29,6 @@ export default function ReviewServicePage() {
   const { isLoading } = useGetAllCategory();
   const observerRef = useRef<HTMLDivElement | null>(null);
 
-  // ✅ chỉ fetch 1 lần
   const fetchAllReviews = useCallback(async () => {
     try {
       setLoading(true);
@@ -46,7 +45,6 @@ export default function ReviewServicePage() {
     fetchAllReviews();
   }, [fetchAllReviews]);
 
-  // ✅ Lọc + sắp xếp client-side
   const filteredReviews = useMemo(() => {
     let result = allReviews;
 
@@ -67,7 +65,6 @@ export default function ReviewServicePage() {
     });
   }, [allReviews, selectedServices, selectedRating, sortOrder]);
 
-  // ✅ Reset list khi filter/sort đổi
   useEffect(() => {
     setPageIndex(1);
     setHasMore(true);
@@ -75,7 +72,6 @@ export default function ReviewServicePage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [filteredReviews, pageSize]);
 
-  // ✅ Load thêm khi scroll
   const handleLoadMore = useCallback(() => {
     const nextPage = pageIndex + 1;
     const start = (nextPage - 1) * pageSize;
@@ -89,7 +85,6 @@ export default function ReviewServicePage() {
     }
   }, [pageIndex, filteredReviews, pageSize]);
 
-  // ✅ Observer ổn định (ko re-init nhiều)
   useEffect(() => {
     if (loading || !hasMore) return;
     const observer = new IntersectionObserver(
@@ -136,7 +131,6 @@ export default function ReviewServicePage() {
       <Banner />
 
       <S.Container>
-        {/* Sidebar */}
         <S.Sidebar>
           <FilterService
             selectedServices={selectedServices}
@@ -146,7 +140,6 @@ export default function ReviewServicePage() {
           />
         </S.Sidebar>
 
-        {/* Main content */}
         <S.MainContent>
           <S.SortWrapper>
             <S.SortButton onClick={toggleSortOrder}>
@@ -162,7 +155,6 @@ export default function ReviewServicePage() {
             </S.SortButton>
           </S.SortWrapper>
 
-          {/* Active filter info */}
           {(selectedServices.length > 0 || selectedRating !== null) && (
             <S.ActiveFilterInfo>
               <span>Filtering by: </span>
@@ -173,10 +165,8 @@ export default function ReviewServicePage() {
             </S.ActiveFilterInfo>
           )}
 
-          {/* Review list */}
           <ReviewSection reviews={reviews} />
 
-          {/* Loading & footer states */}
           {loading && <S.LoadingText>Loading more...</S.LoadingText>}
           <div ref={observerRef} style={{ height: 1 }}></div>
 
