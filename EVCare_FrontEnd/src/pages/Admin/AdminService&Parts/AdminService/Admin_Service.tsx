@@ -43,8 +43,13 @@ export default function Admin_Service() {
   const [totalItems, setTotalItems] = useState(0);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [serviceToEdit, setServiceToEdit] = useState<Service | null>(null);
-  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; service?: Service }>({ isOpen: false });
-  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryAdminDto[]>([]);
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    service?: Service;
+  }>({ isOpen: false });
+  const [serviceCategories, setServiceCategories] = useState<
+    ServiceCategoryAdminDto[]
+  >([]);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -68,7 +73,10 @@ export default function Admin_Service() {
       setPageIndex(response?.data?.pageIndex ?? pageIndex);
       setPageSize(response?.data?.pageSize ?? pageSize);
     } catch (error) {
-      notification.error({ message: "Error", description: "Could not load services." });
+      notification.error({
+        message: "Error",
+        description: "Could not load services.",
+      });
     }
     setIsLoading(false);
   }, [search, pageIndex, pageSize, notification]);
@@ -98,7 +106,11 @@ export default function Admin_Service() {
       const response = await getAllServiceCategories();
       setServiceCategories(response?.data?.items || []);
     } catch (error) {
-      notification.error({ message: "Error", description: "Could not load services categories" });
+      notification.error({
+        message: "Error",
+        description: "Could not load services categories",
+        showProgress: true,
+      });
     }
     setIsLoading(false);
   }, []);
@@ -130,11 +142,23 @@ export default function Admin_Service() {
 
     try {
       await deleteService({ serviceId: serviceToDelete.id });
-      notification.success({ message: "Success", description: "Service marked as deleted." });
-      setServices((prev) => prev.map((s) => (s.id === serviceToDelete.id ? { ...s, isDeleted: true } : s)));
+      notification.success({
+        message: "Success",
+        description: "Service marked as deleted.",
+        showProgress: true,
+      });
+      setServices((prev) =>
+        prev.map((s) =>
+          s.id === serviceToDelete.id ? { ...s, isDeleted: true } : s
+        )
+      );
     } catch (error) {
       console.error("Failed to delete service", error);
-      notification.error({ message: "Error", description: "Could not delete service." });
+      notification.error({
+        message: "Error",
+        description: "Could not delete service.",
+        showProgress: true,
+      });
     }
   };
 
@@ -173,7 +197,9 @@ export default function Admin_Service() {
       <ContentWrapper>
         <Header>
           <Title>Service Management</Title>
-          <Instruction>Add, edit, and manage all available services.</Instruction>
+          <Instruction>
+            Add, edit, and manage all available services.
+          </Instruction>
         </Header>
 
         <Toolbar>
@@ -213,11 +239,16 @@ export default function Admin_Service() {
                     <Td>{service.description}</Td>
                     <Td>{service.duration.toFixed(1)} hrs</Td>
                     <Td>
-                      <UpdateButton onClick={() => handleOpenEditModal(service)} disabled={service.isDeleted}>
+                      <UpdateButton
+                        onClick={() => handleOpenEditModal(service)}
+                        disabled={service.isDeleted}
+                      >
                         <FaPencilAlt /> Edit
                       </UpdateButton>
                       {!service.isDeleted && (
-                        <ActionButton onClick={() => handleOpenDeleteModal(service)}>
+                        <ActionButton
+                          onClick={() => handleOpenDeleteModal(service)}
+                        >
                           <FaTrash /> Delete
                         </ActionButton>
                       )}

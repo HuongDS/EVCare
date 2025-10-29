@@ -1,5 +1,8 @@
 import { useState } from "react";
-import type { Category, PartDetailDto } from "../../../../models/PartModel/PartModel";
+import type {
+  Category,
+  PartDetailDto,
+} from "../../../../models/PartModel/PartModel";
 import {
   ButtonRow,
   CancelButton,
@@ -14,7 +17,7 @@ import {
 } from "./Admin_Part.styled";
 import { Editor } from "@tinymce/tinymce-react";
 import UploadImage from "../../../../components/UploadFields/uploadImage";
-
+import { useNotification } from "../../../../context/useNotification";
 export const UpdatePartForm = ({
   part,
   categories,
@@ -41,9 +44,13 @@ export const UpdatePartForm = ({
   });
 
   const [newImageUrl, setNewImageUrl] = useState<string>(part.imageUrl);
-
+  const notification = useNotification();
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | string
+    e:
+      | React.ChangeEvent<
+          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
+      | string
   ) => {
     if (typeof e === "string") {
       setFormData((prev) => ({ ...prev, description: e }));
@@ -52,7 +59,10 @@ export const UpdatePartForm = ({
       setFormData((prev) => ({
         ...prev,
         [name]:
-          name === "price" || name === "replacementPrice" || name === "quantity" || name === "categoryId"
+          name === "price" ||
+          name === "replacementPrice" ||
+          name === "quantity" ||
+          name === "categoryId"
             ? Number(value)
             : value,
       }));
@@ -69,7 +79,11 @@ export const UpdatePartForm = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newImageUrl) {
-      alert("Please upload an image.");
+      notification.error({
+        message: "Please upload an image.",
+        description: "No image uploaded",
+        showProgress: true,
+      });
       return;
     }
     const payload: PartDetailDto = { ...formData, imageUrl: newImageUrl };
@@ -162,7 +176,9 @@ export const UpdatePartForm = ({
               />
             </InputGroup>
             <InputGroup>
-              <StyledLabel htmlFor="update-replacementPrice">Replacement price (VND)</StyledLabel>
+              <StyledLabel htmlFor="update-replacementPrice">
+                Replacement price (VND)
+              </StyledLabel>
               <StyledInput
                 id="update-replacementPrice"
                 name="replacementPrice"
@@ -193,7 +209,11 @@ export const UpdatePartForm = ({
           <InputGroup>
             <StyledLabel>Upload new photo (if you want to change)</StyledLabel>
             <DraggerWrapper>
-              <UploadImage handleFileSubmit={handleFileSubmit} handleFileRemove={handleFileRemove} imgQuantity={1} />
+              <UploadImage
+                handleFileSubmit={handleFileSubmit}
+                handleFileRemove={handleFileRemove}
+                imgQuantity={1}
+              />
             </DraggerWrapper>
           </InputGroup>
         </div>
