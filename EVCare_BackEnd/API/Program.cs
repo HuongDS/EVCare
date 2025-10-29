@@ -145,6 +145,7 @@ builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<IRedisService, RedisService>();
 builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
 builder.Services.AddScoped<IAppointmentPartConditionService, AppointmentPartConditionService>();
+builder.Services.AddSingleton<IAiChatServices, AiChatServices>();
 
 builder.Services.AddScoped<ITechnicianSkillService, TechnicianSkillService>();
 //builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
@@ -198,8 +199,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateVehivleModelValidator
 builder.Services.AddValidatorsFromAssemblyContaining<AppointmentCustomerCreateModelValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<BlockedDatePostModelValidator>();
 
-builder.WebHost.ConfigureKestrel(o => { o.Limits.MaxRequestBodySize = null; }); 
-builder.Services.Configure<FormOptions>(o => {
+builder.WebHost.ConfigureKestrel(o => { o.Limits.MaxRequestBodySize = null; });
+builder.Services.Configure<FormOptions>(o =>
+{
     o.MultipartBodyLengthLimit = 1_073_741_824; // 1GB
 });
 
@@ -391,13 +393,16 @@ app.UseAzureSignalR(routes =>
 //{
 //    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
 //});
-using (var scope = app.Services.CreateScope()) {
+using (var scope = app.Services.CreateScope())
+{
     var db = scope.ServiceProvider.GetRequiredService<EVCareDbContext>();
     var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
-    try {
+    try
+    {
         mapper.ConfigurationProvider.AssertConfigurationIsValid();
     }
-    catch(Exception ex) {
+    catch (Exception ex)
+    {
         Console.WriteLine(ex.Message);
     }
     _ = db.PartCategories.FirstOrDefault();
