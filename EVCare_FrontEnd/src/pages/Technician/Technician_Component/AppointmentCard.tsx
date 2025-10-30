@@ -136,7 +136,6 @@ const ButtonWrapper = styled.div`
   margin-top: 0.8rem;
 `;
 
-const notification = useNotification();
 type Props = {
   data: TechnicianAppointmentsDto;
   onStatusChange?: (
@@ -158,7 +157,7 @@ const AppointmentCard: React.FC<Props> = ({
   const [damageLevels, setDamageLevels] = useState<
     Record<number, DamageLevelEnum>
   >({});
-
+  const notification = useNotification();
   useEffect(() => {
     const fetchDamageLevels = async () => {
       try {
