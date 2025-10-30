@@ -146,7 +146,6 @@ type Props = {
   onPartsUpdated?: (orderId: number) => void;
 };
 
-const notification = useNotification();
 const AppointmentCardProgress: React.FC<Props> = ({
   data,
   onStatusChange,
@@ -159,7 +158,7 @@ const AppointmentCardProgress: React.FC<Props> = ({
   const [damageLevels, setDamageLevels] = useState<
     Record<number, DamageLevelEnum>
   >({});
-
+  const notification = useNotification();
   useEffect(() => {
     const fetchDamageLevels = async () => {
       try {

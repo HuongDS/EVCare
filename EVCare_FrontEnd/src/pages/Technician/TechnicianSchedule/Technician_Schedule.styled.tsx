@@ -169,18 +169,50 @@ export const CalendarContainer = styled.div`
   }
 
   .appointment {
-    background-color: ${COLORS.appointment} !important;
-    border-color: ${COLORS.appointment} !important;
+    margin: 2px !important;
+  }
+
+  .appointment.pending {
+    background-color: #ffb74d !important;
+    border-color: #ffb74d !important;
+  }
+
+  .appointment.inprogress {
+    background-color: #42a5f5 !important;
+    border-color: #42a5f5 !important;
+  }
+
+  .appointment.adding_part {
+    background-color: #ab47bc !important;
+    border-color: #ab47bc !important;
+  }
+
+  .appointment.confirm {
+    background-color: #26a69a !important;
+    border-color: #26a69a !important;
+  }
+
+  .appointment.completed {
+    background-color: #66bb6a !important;
+    border-color: #66bb6a !important;
+  }
+
+  .appointment.canceled {
+    background-color: #ef5350 !important;
+    border-color: #ef5350 !important;
+    text-decoration: line-through;
   }
 
   .dayOff {
     background-color: ${COLORS.dayOff} !important;
-    border-color: ${COLORS.dayOff} !important;
+    border: 1px solid #0000002c !important;
+    margin: 2px !important;
   }
 
   .blocked {
     background-color: ${COLORS.blocked} !important;
-    border-color: ${COLORS.blocked} !important;
+    border: 1px solid #000000ff !important;
+    margin: 2px !important;
   }
 `;
 
