@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { Input, Button, Avatar, Spin, message, Tooltip } from "antd";
+import { Input, Button, Avatar, Spin } from "antd";
 import { useChat } from "../../../hooks/useChat";
 import { SendOutlined, UserOutlined, SmileOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { getHistory } from "../../../services/chatService";
 import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
-import { RoleEnum } from "../../../models/enums";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../states/store";
+// import { RoleEnum } from "../../../models/enums";
+// import { useSelector } from "react-redux";
+// import type { RootState } from "../../../states/store";
 
 interface ChatWindowProps {
   conversationId: string;
@@ -21,7 +21,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
   const [history, setHistory] = useState<HistoryMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
-  const role = useSelector((state: RootState) => state.auth.user?.role);
+  // const role = useSelector((state: RootState) => state.auth.user?.role);
 
   useEffect(() => {
     (async () => {
@@ -50,11 +50,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
 
   const allMessages = [...history, ...messages];
 
-  const handleEndConversation = () => {
-    // TODO: Gọi API hoặc SignalR để kết thúc cuộc trò chuyện này
-    console.log("End conversation:", conversationId);
-    message.info("Conversation ended.");
-  };
+  // const handleEndConversation = () => {
+  //   // TODO: Gọi API hoặc SignalR để kết thúc cuộc trò chuyện này
+  //   console.log("End conversation:", conversationId);
+  //   message.info("Conversation ended.");
+  // };
 
   return (
     <div className="chat-window">
@@ -77,7 +77,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
           </div>
         </div>
 
-        {role === RoleEnum.STAFF && (
+        {/* {role === RoleEnum.STAFF && (
           <Tooltip title="End conversation">
             <Button
               className="btn-end-conversation"
@@ -87,7 +87,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
               onClick={handleEndConversation}
             />
           </Tooltip>
-        )}
+        )} */}
       </div>
 
       {/* Messages Area */}
@@ -147,7 +147,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
               }}
               onFocus={startTyping}
               onBlur={stopTyping}
-              placeholder="Nhập tin nhắn của bạn..."
+              placeholder="Input your message..."
             />
           </div>
           <Button
@@ -158,7 +158,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
             className="btn-send-message"
             size="large"
           >
-            Gửi
+            Send
           </Button>
         </div>
       </div>
