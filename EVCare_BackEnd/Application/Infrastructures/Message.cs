@@ -190,5 +190,7 @@ namespace Application.Infrastructures
         public static string DASHBOARD_PART_HISTORY_GET_SUCCESSFULLY  = "Get dashboard part history successfully";
 
         public static string ORDER_PARTS_GET_SUCCESS  = "Get order parts successfully";
+
+        public static string GET_ACCOUNT_ID_SUCCESS  = "Get account id successfully";
     }
 }

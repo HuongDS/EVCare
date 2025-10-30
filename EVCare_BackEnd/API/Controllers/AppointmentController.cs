@@ -39,9 +39,11 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Staff")]
         [HttpPost("staff")]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
         public async Task<IActionResult> CreateAppointment(AppointmentCreateModel model) {
             try {
-                var appointmentId = await _appointmentService.CreateAppointment(model);
+                int employeeId = (int)HttpContext.Items["EmployeeId"];
+                var appointmentId = await _appointmentService.CreateAppointmentForStaff(model,employeeId);
                 return Ok(new
                 {
                     StatusCode = HttpStatus.CREATED,
