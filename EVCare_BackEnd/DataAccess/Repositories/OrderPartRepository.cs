@@ -68,6 +68,21 @@ namespace DataAccess.Repositories
             return result;
         }
 
+        public async Task<IEnumerable<OrderPartViewModel>> GetOrdersForTechnicianAsync(int technicianId, int orderId) {
+            return await _dbContext.OrderParts
+                .AsNoTracking()
+                .Include(x => x.Part)
+                .Where(x => x.TechnicianId == technicianId && x.OrderId == orderId)
+                .Select(x => new OrderPartViewModel {
+                    partID = x.PartId,
+                    partName = x.Part.Name,
+                    orderId = x.OrderId,
+                    quantity = x.Quantity,
+                    price = x.Price
+                })
+                .ToListAsync();
+        }
+
         public async Task<List<PartBrief>> GetPartBriefs()
         {
             var today = DateTime.Now.Date;
