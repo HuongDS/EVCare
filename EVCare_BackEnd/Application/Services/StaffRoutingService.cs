@@ -23,7 +23,8 @@ namespace Application.Services
         }
         public async Task<string?> FindAvailableAsync(string customerAccountId)
         {
-            var appointment = await _dbContext.Appointments.FirstOrDefaultAsync(a => a.CustomerId.ToString() == customerAccountId && a.Status != AppointmentStatusEnum.Pending && a.Status != AppointmentStatusEnum.Confirmed);
+            var cus = await _dbContext.Customers.FirstOrDefaultAsync(c => c.AccountId.ToString() == customerAccountId);
+            var appointment = await _dbContext.Appointments.FirstOrDefaultAsync(a => a.CustomerId.ToString() == cus.Id.ToString() && a.Status != AppointmentStatusEnum.Pending && a.Status != AppointmentStatusEnum.Confirmed);
             if (appointment is null) throw new Exception(Application.Infrastructures.Message.APPOINTMENT_NOT_FOUND);
 
             var candidate = await _dbContext.Employees.FirstOrDefaultAsync(a => a.Id == appointment.EmployeeId);
