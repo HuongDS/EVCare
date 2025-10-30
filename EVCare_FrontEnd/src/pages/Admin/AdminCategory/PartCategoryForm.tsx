@@ -21,12 +21,17 @@ interface Props {
 }
 
 export default function PartCategoryForm({ onAddSuccess }: Props) {
-  const [formData, setFormData] = useState<PartCategoryCreateDto>({ name: "", description: "" });
+  const [formData, setFormData] = useState<PartCategoryCreateDto>({
+    name: "",
+    description: "",
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const notification = useNotification();
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -49,14 +54,22 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
       onAddSuccess();
       setFormData({ name: "", description: "" });
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsSubmitting(false);
   };
 
   const handleGeneratingDescription = async () => {
     if (!formData.name || formData.name.trim().length <= 0) {
-      notification.warning({ message: "Warning", description: "Please enter a category name." });
+      notification.warning({
+        message: "Warning",
+        description: "Please enter a category name.",
+        showProgress: true,
+      });
       return;
     }
     setIsGenerating(true);
@@ -73,12 +86,24 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
       const response = await callGemini(data, prompt, 3, 1000);
       if (response && response.description) {
         setFormData((prev) => ({ ...prev, description: response.description }));
-        notification.success({ message: "Success", description: "Description generated successfully." });
+        notification.success({
+          message: "Success",
+          description: "Description generated successfully.",
+          showProgress: true,
+        });
       } else {
-        notification.error({ message: "Error", description: "Failed to generate description." });
+        notification.error({
+          message: "Error",
+          description: "Failed to generate description.",
+          showProgress: true,
+        });
       }
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsGenerating(false);
   };
@@ -98,7 +123,11 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
         />
       </InputGroup>
 
-      <GenerateButton type="button" onClick={handleGeneratingDescription} disabled={isGenerating}>
+      <GenerateButton
+        type="button"
+        onClick={handleGeneratingDescription}
+        disabled={isGenerating}
+      >
         {isGenerating ? <LoadingSpinner /> : <FaMagic />}
         Generate Description
       </GenerateButton>

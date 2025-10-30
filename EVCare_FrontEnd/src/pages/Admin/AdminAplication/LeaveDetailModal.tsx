@@ -32,7 +32,11 @@ interface ModalProps {
   setRefresh: (v: boolean) => void;
 }
 
-const LeaveDetailModal: React.FC<ModalProps> = ({ application, onClose, setRefresh }) => {
+const LeaveDetailModal: React.FC<ModalProps> = ({
+  application,
+  onClose,
+  setRefresh,
+}) => {
   const [employee, setEmployee] = useState<EmployeeViewModel | null>(null);
   const [note, setNote] = useState(application.note || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,6 +56,7 @@ const LeaveDetailModal: React.FC<ModalProps> = ({ application, onClose, setRefre
         notification.error({
           message: "Error",
           description: (error as Error).message,
+          showProgress: true,
         });
       } finally {
         setIsLoading(false);
@@ -72,12 +77,14 @@ const LeaveDetailModal: React.FC<ModalProps> = ({ application, onClose, setRefre
       notification.success({
         message: "Process Application",
         description: res.message,
+        showProgress: true,
       });
       setRefresh(true);
     } catch (error) {
       notification.error({
         message: "Error",
         description: (error as Error).message,
+        showProgress: true,
       });
     }
   };
@@ -91,9 +98,16 @@ const LeaveDetailModal: React.FC<ModalProps> = ({ application, onClose, setRefre
             <h4>Sender information</h4>
             {!isLoading && employee ? (
               <>
-                <EmployeeAvatar src={employee.avatar || "default-avatar.png"} alt="Avatar" />
+                <EmployeeAvatar
+                  src={employee.avatar || "default-avatar.png"}
+                  alt="Avatar"
+                />
                 <strong>{employee.fullName}</strong>
-                <p>{employee.role === RoleEnum.TECHNICIAN ? "Technician" : "Staff"}</p>
+                <p>
+                  {employee.role === RoleEnum.TECHNICIAN
+                    ? "Technician"
+                    : "Staff"}
+                </p>
 
                 <InfoTable>
                   <tbody>
@@ -123,10 +137,12 @@ const LeaveDetailModal: React.FC<ModalProps> = ({ application, onClose, setRefre
           <RequestInfo>
             <h4>Application's Content</h4>
             <p>
-              <strong>Day Off:</strong> {new Date(application.dateOff).toLocaleDateString("vi-VN")}
+              <strong>Day Off:</strong>{" "}
+              {new Date(application.dateOff).toLocaleDateString("vi-VN")}
             </p>
             <p>
-              <strong>Date sent:</strong> {new Date(application.createdAt).toLocaleDateString("vi-VN")}
+              <strong>Date sent:</strong>{" "}
+              {new Date(application.createdAt).toLocaleDateString("vi-VN")}
             </p>
             <p>
               <strong>Reason:</strong>
@@ -143,10 +159,16 @@ const LeaveDetailModal: React.FC<ModalProps> = ({ application, onClose, setRefre
                   disabled={isSubmitting}
                 />
                 <ActionButtons>
-                  <DenyButton onClick={() => handleSubmit(ApplicationStatusEnum.REJECTED)} disabled={isSubmitting}>
+                  <DenyButton
+                    onClick={() => handleSubmit(ApplicationStatusEnum.REJECTED)}
+                    disabled={isSubmitting}
+                  >
                     {isSubmitting ? "Processing..." : "Rejected"}
                   </DenyButton>
-                  <ApproveButton onClick={() => handleSubmit(ApplicationStatusEnum.APPROVED)} disabled={isSubmitting}>
+                  <ApproveButton
+                    onClick={() => handleSubmit(ApplicationStatusEnum.APPROVED)}
+                    disabled={isSubmitting}
+                  >
                     {isSubmitting ? "Processing" : "Approved"}
                   </ApproveButton>
                 </ActionButtons>
@@ -156,7 +178,9 @@ const LeaveDetailModal: React.FC<ModalProps> = ({ application, onClose, setRefre
             {application.status !== ApplicationStatusEnum.PENDING && (
               <ActionForm>
                 <h4>Note</h4>
-                <ReasonBox $isNote={true}>{application.note || "(No notes)"}</ReasonBox>
+                <ReasonBox $isNote={true}>
+                  {application.note || "(No notes)"}
+                </ReasonBox>
               </ActionForm>
             )}
           </RequestInfo>

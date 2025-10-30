@@ -124,7 +124,7 @@ export const Buttons = styled.div`
     font-size: 15px;
     padding: 10px 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: 20px;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 173, 78, 0.25);
     transition: all 0.3s ease-out;

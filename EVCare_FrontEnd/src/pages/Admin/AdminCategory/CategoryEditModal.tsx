@@ -29,7 +29,12 @@ interface Props {
   handleAddOrUpdateSuccess: () => void;
 }
 
-export default function CategoryEditModal({ onClose, categoryType, itemToEdit, handleAddOrUpdateSuccess }: Props) {
+export default function CategoryEditModal({
+  onClose,
+  categoryType,
+  itemToEdit,
+  handleAddOrUpdateSuccess,
+}: Props) {
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const notification = useNotification();
@@ -43,7 +48,9 @@ export default function CategoryEditModal({ onClose, categoryType, itemToEdit, h
     }
   }, [itemToEdit]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -58,7 +65,10 @@ export default function CategoryEditModal({ onClose, categoryType, itemToEdit, h
           if (!formData.name || formData.name.trim().length <= 0) {
             throw new Error("Please enter a category name.");
           }
-          if (!formData.description || formData.description.trim().length <= 0) {
+          if (
+            !formData.description ||
+            formData.description.trim().length <= 0
+          ) {
             throw new Error("Please enter a category description.");
           }
           const data: PartCategoryCreateDto = {
@@ -71,7 +81,10 @@ export default function CategoryEditModal({ onClose, categoryType, itemToEdit, h
           if (!formData.name || formData.name.trim().length <= 0) {
             throw new Error("Please enter a category name.");
           }
-          if (!formData.description || formData.description.trim().length <= 0) {
+          if (
+            !formData.description ||
+            formData.description.trim().length <= 0
+          ) {
             throw new Error("Please enter a category description.");
           }
           const serviceData: PartCategoryCreateDto = {
@@ -81,10 +94,18 @@ export default function CategoryEditModal({ onClose, categoryType, itemToEdit, h
           response = await updateServiceCategory(itemToEdit.id, serviceData);
           break;
       }
-      notification.success({ message: "Success", description: response.message });
+      notification.success({
+        message: "Success",
+        description: response.message,
+        showProgress: true,
+      });
       handleAddOrUpdateSuccess();
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsSubmitting(false);
   };
@@ -92,7 +113,12 @@ export default function CategoryEditModal({ onClose, categoryType, itemToEdit, h
   const showDescription = categoryType === "Part" || categoryType === "Service";
 
   return (
-    <ModalBackdrop initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+    <ModalBackdrop
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
       <ModalContainer
         as="form"
         onSubmit={handleSubmit}
@@ -136,7 +162,12 @@ export default function CategoryEditModal({ onClose, categoryType, itemToEdit, h
           )}
         </ModalBody>
         <ModalFooter>
-          <ModalButton type="button" $isConfirm={false} onClick={onClose} disabled={isSubmitting}>
+          <ModalButton
+            type="button"
+            $isConfirm={false}
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
             Cancel
           </ModalButton>
           <ModalButton type="submit" $isConfirm={true} disabled={isSubmitting}>

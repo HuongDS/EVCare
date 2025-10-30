@@ -7,9 +7,12 @@ interface handleSearchProps {
   searchValue?: string;
 }
 
-const SearchBar = ({ handleSearchValue, placeholder, searchValue }: handleSearchProps) => {
+const SearchBar = ({
+  handleSearchValue,
+  placeholder,
+  searchValue,
+}: handleSearchProps) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Bạn nên bỏ .trim() ở đây để user có thể gõ space
     handleSearchValue(event.target.value);
   };
   return (

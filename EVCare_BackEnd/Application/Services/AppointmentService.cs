@@ -44,6 +44,7 @@ namespace Application.Services
                 throw new Exception("This day is fully booked");
             }
             var appointment = _mapper.Map<Appointment>(model);
+            appointment.Status = AppointmentStatusEnum.Confirmed;
             await _appointmentRepository.AddAsync(appointment);
 
             return appointment.Id;
