@@ -1,9 +1,9 @@
 import { HiOutlineMail } from "react-icons/hi";
-import TextFieldAnimation from "../../../../components/TextField/TextFieldAnimation";
+import TextFieldAnimation from "../../../components/TextField/TextFieldAnimation";
 import { FieldGroup, NameGroup, SubmitBtn } from "../Authentication.styled";
 import { FiKey, FiPhone } from "react-icons/fi";
-import TextFieldWithIcon from "../../../../components/TextFieldWithIcon/TextFieldWithIcon";
-import SpinnerComponent from "../../../../components/SpinnerComponent";
+import TextFieldWithIcon from "../../../components/TextFieldWithIcon/TextFieldWithIcon";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 interface SignUpProps {
   email: string;

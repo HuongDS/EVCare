@@ -1,9 +1,9 @@
-import TextFieldWithIcon from "../../../../components/TextFieldWithIcon/TextFieldWithIcon";
+import TextFieldWithIcon from "../../../components/TextFieldWithIcon/TextFieldWithIcon";
 import { HiOutlineMail } from "react-icons/hi";
 import { FiKey } from "react-icons/fi";
 import { FieldGroup, SubmitBtn } from "../Authentication.styled";
 import { Link } from "react-router";
-import SpinnerComponent from "../../../../components/SpinnerComponent";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 interface SignInProps {
   email: string;
