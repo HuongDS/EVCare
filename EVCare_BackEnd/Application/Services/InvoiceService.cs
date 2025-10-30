@@ -100,14 +100,17 @@ namespace Application.Services
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
-            await _invoiceRepository.AddAsync(invoice);
-            return _vnPayService.CreatePaymentUrl(context, model);
+            var random = new Random();
+            long orderCode = ((long)random.Next(0, int.MaxValue) << 32) | (uint)random.Next(0, int.MaxValue);
+            invoice.OrderCode = orderCode;
+            await _redisService.SaveDate(invoice, orderCode.ToString());
+            return _vnPayService.CreatePaymentUrl(context, model,invoice.OrderCode);
         }
 
         public async Task SendMailToPayAsync(string paymentUrl, InvoiceCreateModel model)
         {
             var centerInfo = await _serviceCenterService.GetCenterInformationAsync();
-            var (listOrderParts, total) = await _orderService.GetOrderPartViewModelsAsync(model.OrderId);
+            var listOrderParts = await _orderService.GetOrderPartViewModelsAsync(model.OrderId);
             var appointmentId = await _orderService.GetAppointmentIdByOrderIdAsync(model.OrderId);
             var appointmentInfo = await _appointmentService.GetAppointmentInforToAsync(appointmentId);
             var invoiceData = new InvoiceMailDto
@@ -116,7 +119,7 @@ namespace Application.Services
                 orderParts = listOrderParts,
                 appointmentInfo = appointmentInfo,
                 linkToPay = paymentUrl,
-                totalAmount = total
+                totalAmount = model.Total_Price
             };
             await _notificationServices.SendInvoiceToCustomer(invoiceData);
         }
@@ -124,26 +127,27 @@ namespace Application.Services
         public async Task PaymentCallback(IQueryCollection query)
         {
             var result = _vnPayService.PaymentExecute(query);
-            var invoice = await _invoiceRepository.GetInvoiceById(int.Parse(result.OrderId));
+          
             if (result == null || result.VnPayResponseCode != "00")
             {
-                await _invoiceRepository.DeleteAsync(invoice.Id);
                 throw new Exception("Payment failed or invalid response");
             }
             else
             {
+                var invoice = await _redisService.GetObjectData<Invoice>(result.OrderCode.ToString());
                 if (invoice == null)
                 {
                     throw new Exception("Invoice not found");
                 }
                 invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+                await _redisService.DeleteAsync(result.OrderCode.ToString());
+                await _invoiceRepository.AddAsync(invoice);
                 var order = await _orderRepository.GetByIdAsync(invoice.OrderId);
                 order.Status = OrderStatusEnum.Completed;
                 await _orderRepository.UpdateAsync(order);
                 var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(invoice.OrderId);
                 appointment.Status = AppointmentStatusEnum.Done;
                 await _appointmentRepository.UpdateAsync(appointment);
-                await _invoiceRepository.UpdateAsync(invoice);
                 // send noti to admin dashboard
                 await _onInvoiceCompleteHandler.HandleAsync();
 
