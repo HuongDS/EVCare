@@ -22,16 +22,8 @@ namespace Application.Mappings
             .ForMember(dest => dest.AppointmentImages, opt =>
                 opt.MapFrom(src => src.ImagesUrls != null
                     ? src.ImagesUrls.Select(url => new Appointmentimage { Image = url })
-                    : new List<Appointmentimage>()))
-             .ForMember(dest => dest.Alerts, opt => opt.MapFrom(src => new List<Alert>
-             {
-                 new Alert
-                {
-                    Message=$"New appointment created for customer ID: {src.CustomerId} on {src.Appointment_Date}",
-                    Create_At= DateTime.UtcNow,
-                    Is_Read=false
-                }
-             }));
+                    : new List<Appointmentimage>()));
+             
             CreateMap<AppointmentUpdateModel, Appointment>();
                 
 
