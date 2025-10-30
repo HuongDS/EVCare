@@ -1,20 +1,20 @@
-import { loginWithGoogle, saveTokens } from "../../../../services/authService";
+import { loginWithGoogle, saveTokens } from "../../../services/authService.ts";
 import {
   ERROR_MESSAGE,
   MSG_TITLE,
-} from "../../../../constants/messages/Message";
+} from "../../../constants/messages/Message.ts";
 import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../../../../states/store";
-import { loginSuccess } from "../../../../states/authSlice";
-import { toUseFromJwt } from "../../../../token/jwtDecode";
+import type { AppDispatch } from "../../../states/store.ts";
+import { loginSuccess } from "../../../states/authSlice.ts";
+import { toUseFromJwt } from "../../../token/jwtDecode.ts";
 import type { CredentialResponse } from "@react-oauth/google";
 import { GoogleLogin } from "@react-oauth/google";
-import HTTP_STATUS from "../../../../constants/Code/HttpStatusCode";
-import { saveUser } from "../../../../token/tokenStore";
-import { closeLogin } from "../../../../states/uiSlice";
-import { RoleEnum } from "../../../../models/enums";
+import HTTP_STATUS from "../../../constants/Code/HttpStatusCode.ts";
+import { saveUser } from "../../../token/tokenStore.ts";
+import { closeLogin } from "../../../states/uiSlice.ts";
+import { RoleEnum } from "../../../models/enums/index.tsx";
 import { useNavigate } from "react-router";
-import { useNotification } from "../../../../context/useNotification.ts";
+import { useNotification } from "../../../context/useNotification.ts";
 
 export default function GoogleButton() {
   const dispatch = useDispatch<AppDispatch>();
