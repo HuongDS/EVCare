@@ -12,6 +12,8 @@ namespace DataAccess.Dtos.OrderPart
         public string partName { get; set; }
         public int orderId { get; set; }
         public int quantity { get; set; }
+        public decimal replacePrice { get; set; }
+
         public decimal price { get; set; }
     }
 }
