@@ -42,30 +42,46 @@ const TechnicianSchedule: React.FC = () => {
     setError(null);
 
     try {
+      // ✅ Danh sách status muốn lấy
       const activeStatuses = [
         TechnicianWorkingSessionEnum.PENDING,
         TechnicianWorkingSessionEnum.INPROGRESS,
         TechnicianWorkingSessionEnum.ADDING_PART,
-      ];
+        TechnicianWorkingSessionEnum.CONFIRM,
+        TechnicianWorkingSessionEnum.COMPLETED,
+        TechnicianWorkingSessionEnum.CANCELED,
+      ].map(String);
 
-      const appointmentRes = await getTechnicianAppointments({
-        Status: activeStatuses.join(","),
-        PageSize: 100,
-        PageIndex: 1,
-      });
+      // ✅ Gọi song song tất cả các status
+      const results = await Promise.all(
+        activeStatuses.map((status) =>
+          getTechnicianAppointments({
+            Status: status,
+            PageSize: 100,
+            PageIndex: 1,
+          }).catch((err) => {
+            console.error(`❌ Failed to fetch ${status}:`, err);
+            return { items: [] }; // tránh crash nếu 1 status lỗi
+          })
+        )
+      );
 
-      const mappedAppointments: SimpleAppointment[] = (
-        appointmentRes.items ?? []
-      ).map((a) => ({
-        id: a.id,
-        appointmentDate: a.appointmentDate,
-        status: a.status,
-        vehicleModel: a.vehicleModel,
-        extraProps: { ...a },
-      }));
+      // ✅ Gộp tất cả item từ các status
+      const allAppointments = results.flatMap((res) => res.items ?? []);
+
+      const mappedAppointments: SimpleAppointment[] = allAppointments.map(
+        (a) => ({
+          id: a.id,
+          appointmentDate: a.appointmentDate,
+          status: a.status,
+          vehicleModel: a.vehicleModel,
+          extraProps: { ...a },
+        })
+      );
 
       setAppointments(mappedAppointments);
 
+      // ✅ Gọi các API khác song song
       const [dateOffRes, blockedRes] = await Promise.all([
         getDateOff(),
         getBlockedDate(),
@@ -79,7 +95,7 @@ const TechnicianSchedule: React.FC = () => {
           dateTime: dayjs(d.dateTime),
         }))
       );
-    } catch (err: unknown) {
+    } catch (err) {
       console.error(err);
       setError((err as Error)?.message || "Failed to load schedule data");
     } finally {
@@ -87,6 +103,7 @@ const TechnicianSchedule: React.FC = () => {
     }
   };
 
+  // ✅ Gom tất cả sự kiện hiển thị lên lịch
   const events: EventInput[] = [
     ...appointments.map((a) => ({
       title: `ID: ${a.id}\n${a.vehicleModel}\n${a.status}`,
@@ -121,8 +138,10 @@ const TechnicianSchedule: React.FC = () => {
   return (
     <ScheduleWrapper>
       <ScheduleTitle>Technician Schedule</ScheduleTitle>
+
       {loading && <div>Loading...</div>}
       {error && <ErrorMessage>{error}</ErrorMessage>}
+
       {!loading && !error && (
         <CalendarContainer>
           <LazyPerformanceSchedule
