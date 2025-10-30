@@ -621,7 +621,6 @@ namespace DataAccess.Repositories
                 .Select(apc => new PartCategoryAppointmentViewModel
                 {
                         PartCategoryName = apc.Key,
-                        NodeName = apc.Key.Replace(" ", "_").ToString(),
                          DamagedPartViewModels = apc
                        .GroupBy(apc2 => apc2.PartId)
                        .Select(g => g
@@ -631,7 +630,8 @@ namespace DataAccess.Repositories
                             DamageLevel = x.Level,
                             Id = x.PartId,
                             PartName = x.Part.Name,
-                            PartCategoryId = x.Part.CategoryId
+                            PartCategoryId = x.Part.CategoryId,
+                            NodeName = x.Part.Name.Replace(" ","-")
                         })
                         .FirstOrDefault()
                         ).ToList()
