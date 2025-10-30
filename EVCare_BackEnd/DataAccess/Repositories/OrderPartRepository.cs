@@ -64,6 +64,7 @@ namespace DataAccess.Repositories
                 quantity = o.Quantity,
                 price = o.Price,
                 partName = o.Part.Name,
+                replacePrice = o.Part.ReplacementPrice
             }).ToListAsync();
             return result;
         }
@@ -78,7 +79,8 @@ namespace DataAccess.Repositories
                     partName = x.Part.Name,
                     orderId = x.OrderId,
                     quantity = x.Quantity,
-                    price = x.Price
+                    price = x.Price,
+                    replacePrice = x.Part.ReplacementPrice
                 })
                 .ToListAsync();
         }
