@@ -122,11 +122,11 @@ namespace Application.Services
                 data = _mapper.Map<OrderResponseDto>(order)
             };
         }
-        public async Task<(StringBuilder, decimal)> GetOrderPartViewModelsAsync(int orderId)
+        public async Task<StringBuilder> GetOrderPartViewModelsAsync(int orderId)
         {
             var orderparts = await _orderPartRepository.GetOrderPartViewModelAsync(orderId);
             var orderPartRows = new StringBuilder();
-            decimal total = 0;
+            
             foreach (var op in orderparts)
             {
                 orderPartRows.Append($@"
@@ -135,11 +135,12 @@ namespace Application.Services
                     <td style=""padding:10px; border:1px solid #ddd;"">{op.partName}</td>
                     <td style=""padding:10px; border:1px solid #ddd; text-align:center;"">{op.quantity}</td>
                     <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{op.price:N0}</td>
-                    <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{(op.quantity * op.price):N0}</td>
+                    <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{op.replacePrice:N0}</td>
+                    <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{(op.quantity * (op.replacePrice + op.price)):N0}</td>
                 </tr>");
-                total += op.quantity * op.price;
+                
             }
-            return (orderPartRows, total);
+            return orderPartRows;
         }
         public async Task<int> GetAppointmentIdByOrderIdAsync(int orderId)
         {
