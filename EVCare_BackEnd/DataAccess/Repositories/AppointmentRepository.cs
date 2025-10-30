@@ -177,7 +177,7 @@ namespace DataAccess.Repositories
         }
         public async Task<Appointment> GetAppointmentByOrderIdAsync(int orderId)
         {
-            var entity = await _dbContext.Appointments.Include(x => x.Alerts).FirstOrDefaultAsync(x => x.OrderId == orderId);
+            var entity = await _dbContext.Appointments.FirstOrDefaultAsync(x => x.OrderId == orderId);
             if (entity is null)
             {
                 throw new Exception($"Entity with orderId = {orderId} is not found.");
