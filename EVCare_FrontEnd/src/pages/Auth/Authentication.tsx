@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import logo from "../../../assets/EVCare.png";
+import logo from "../../assets/EVCare.png";
 import SwitchButton from "../../components/Button/SwitchButton";
 import {
   FormContainer,
