@@ -49,7 +49,8 @@ namespace Application.Tests {
             //Act
             var result = await authService.ValidateInfo(inputRegister);
             //Assert
-          //  Assert.
+            Assert.NotNull(result);
+            Assert.Equal(result,inputRegister);
 
         }
     }
