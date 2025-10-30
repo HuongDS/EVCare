@@ -10,6 +10,7 @@ namespace Application.Interfaces
     {
         Task DeleteAsync(string v);
         Task<T?> GetObjectData<T>(string email) where T : class;
-        Task SaveDate(DataAccess.Entities.Invoice invoice,string orderCode);
+        Task SaveDate(DataAccess.Entities.Invoice invoice, string orderCode);
+        Task<bool> SetObjectDataAsync<T>(string key, T value, TimeSpan expiry) where T : class;
     }
 }
