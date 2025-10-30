@@ -91,3 +91,7 @@ export const APPOINTMENT_MESSAGE = {
   APPOINTMENT_CANCEL_SUCCESS: "Appointment is cancelled successfully",
   APPOINTMENT_CANCEL_FAIL: "Failed to cancel this appointment",
 };
+
+export const FORM_MESSAGES = {
+  NAME: "Please enter your name.",
+};
