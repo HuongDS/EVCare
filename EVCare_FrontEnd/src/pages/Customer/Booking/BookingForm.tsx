@@ -292,7 +292,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
   if (!show || loading) return null;
 
   return (
-    <BookingFormWrapper show={show} dialogClassName="modal-dialog-scrollable">
+    <BookingFormWrapper show={show} data-lenis-prevent>
       <BookingFormHeader>
         <FormTitle>Booking Form</FormTitle>
         <CloseButton onClick={handleClose}>x</CloseButton>
@@ -304,7 +304,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
           backButtonText="Back"
         >
           <Step>
-            <StepContent>
+            <StepContent data-lenis-prevent>
               <LeftBody>
                 <h5>
                   <PiNumberCircleOneFill /> Information
@@ -345,7 +345,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
 
           {/* Step 2: Service */}
           <Step>
-            <StepContent>
+            <StepContent data-lenis-prevent>
               <RightBody>
                 <h5>
                   <PiNumberCircleTwoFill /> Service
@@ -362,7 +362,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
 
           {/* Step 3: Time */}
           <Step>
-            <StepContent>
+            <StepContent data-lenis-prevent>
               <RightBody>
                 <h5>
                   <PiNumberCircleThreeFill /> Time
