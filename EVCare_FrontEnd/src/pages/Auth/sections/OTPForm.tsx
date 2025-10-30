@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
-import { ONE_NUMBER_REGEX } from "../../../../constants/regexs/NumberRegex";
+import { ONE_NUMBER_REGEX } from "../../../constants/regexs/NumberRegex";
 import { FormWrapperOTP, SubmitBtn } from "../Authentication.styled";
-import SpinnerComponent from "../../../../components/SpinnerComponent";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 type OTPFormProps = {
   otp: string[];
@@ -10,7 +10,12 @@ type OTPFormProps = {
   disable: boolean;
 };
 
-export default function OTPForm({ otp, setOtp, handleVerifyOTP, disable }: OTPFormProps) {
+export default function OTPForm({
+  otp,
+  setOtp,
+  handleVerifyOTP,
+  disable,
+}: OTPFormProps) {
   const handleChange = (i: number, val: string) => {
     if (!ONE_NUMBER_REGEX.test(val)) return;
     setOtp((prev) => {
