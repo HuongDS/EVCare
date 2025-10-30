@@ -19,7 +19,7 @@ namespace Application.Services
             var apiKey = configuration["AiService:ApiKey"]!;
             _geminiModel = new GenerativeModel(
                  apiKey: apiKey,
-                 model: "gemini-1.5-flash-latest"
+                 model: "gemini-2.0-flash"
                 );
 
             _systemPrompt = "You are a virtual assistant of EVCare, an expert in electric vehicles and vehicle maintenance. Answer customer questions in a concise, friendly and helpful manner.";
