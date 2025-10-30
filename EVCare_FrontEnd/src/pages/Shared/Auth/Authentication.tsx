@@ -12,6 +12,7 @@ import OTPForm from "./sections/OTPForm";
 import {
   AUTH_FORM_MESSAGE,
   ERROR_MESSAGE,
+  FORM_MESSAGES,
   MSG_TITLE,
 } from "../../../constants/messages/Message";
 import type {
@@ -158,15 +159,17 @@ export default function Authentication() {
     ) {
       notification.warning({
         message: "Error",
-        description: ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED,
+        description: FORM_MESSAGES.NAME,
         showProgress: true,
+        duration: 3,
       });
       return;
     } else if (firstName.trim().length == 0 || lastName.trim().length == 0) {
       notification.warning({
         message: "Error",
-        description: ERROR_MESSAGE.THIS_FIELD_NOT_VALID,
+        description: FORM_MESSAGES.NAME,
         showProgress: true,
+        duration: 3,
       });
       return;
     } else if (!EMAIL_REGEX.test(email)) {
@@ -174,6 +177,7 @@ export default function Authentication() {
         message: "Error",
         description: ERROR_MESSAGE.INVALID_EMAIL,
         showProgress: true,
+        duration: 3,
       });
       return;
     } else if (
@@ -184,6 +188,7 @@ export default function Authentication() {
         message: "Error",
         description: ERROR_MESSAGE.INVALID_PASSWORD,
         showProgress: true,
+        duration: 3,
       });
       return;
     } else if (!PHONE_NUMBER_REGEX.test(phone)) {
@@ -191,6 +196,7 @@ export default function Authentication() {
         message: "Error",
         description: ERROR_MESSAGE.INVALID_PHONE,
         showProgress: true,
+        duration: 3,
       });
       return;
     } else if (password !== confirm) {
@@ -198,6 +204,7 @@ export default function Authentication() {
         message: "Error",
         description: ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME,
         showProgress: true,
+        duration: 3,
       });
       return;
     }
