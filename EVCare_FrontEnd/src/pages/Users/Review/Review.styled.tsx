@@ -20,7 +20,7 @@ export const Container = styled.div`
 `;
 
 export const Sidebar = styled.aside`
-  flex: 0 0 260px;
+  flex: 0 0 250px;
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
