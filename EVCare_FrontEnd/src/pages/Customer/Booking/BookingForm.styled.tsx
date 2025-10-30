@@ -8,7 +8,8 @@ export const BookingFormWrapper = styled(Modal)`
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 10px auto;
+    margin: 20px auto;
+    overscroll-behavior: contain;
 
     @media (max-width: 1024px) {
       max-width: 90%;
@@ -29,6 +30,7 @@ export const BookingFormWrapper = styled(Modal)`
     padding: 20px 40px;
     box-sizing: border-box;
     border-radius: 12px;
+    overscroll-behavior: contain;
 
     @media (max-width: 1024px) {
       padding: 20px 25px;
@@ -41,7 +43,6 @@ export const BookingFormWrapper = styled(Modal)`
 
   .modal-body {
     flex: 1;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -353,7 +354,7 @@ export const StepContent = styled.div`
   justify-content: space-evenly;
   height: 100%;
   max-height: 90vh;
-  overflow: hidden;
+  overscroll-behavior: contain;
 
   @media (max-width: 768px) {
     justify-content: flex-start;
