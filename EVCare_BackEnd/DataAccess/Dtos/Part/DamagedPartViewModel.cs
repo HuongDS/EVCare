@@ -10,6 +10,7 @@ namespace DataAccess.Dtos.Part {
         public int Id { get; set; }
         public int PartCategoryId { get; set; }
         public string PartName { get; set; }
+        public string NodeName{ get; set; }
         public DamageLevelEnum DamageLevel { get; set; }
     }
 }
