@@ -631,7 +631,7 @@ namespace DataAccess.Repositories
                             Id = x.PartId,
                             PartName = x.Part.Name,
                             PartCategoryId = x.Part.CategoryId,
-                            NodeName = x.Part.Name.Replace(" ","-")
+                            NodeName = x.Part.Name.Replace(" ","_")
                         })
                         .FirstOrDefault()
                         ).ToList()
