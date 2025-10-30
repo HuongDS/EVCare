@@ -177,7 +177,7 @@ namespace DataAccess.Repositories
         }
         public async Task<Appointment> GetAppointmentByOrderIdAsync(int orderId)
         {
-            var entity = await _dbContext.Appointments.Include(x => x.Alerts).FirstOrDefaultAsync(x => x.OrderId == orderId);
+            var entity = await _dbContext.Appointments.FirstOrDefaultAsync(x => x.OrderId == orderId);
             if (entity is null)
             {
                 throw new Exception($"Entity with orderId = {orderId} is not found.");
@@ -621,7 +621,6 @@ namespace DataAccess.Repositories
                 .Select(apc => new PartCategoryAppointmentViewModel
                 {
                         PartCategoryName = apc.Key,
-                        NodeName = apc.Key.Replace(" ", "_").ToString(),
                          DamagedPartViewModels = apc
                        .GroupBy(apc2 => apc2.PartId)
                        .Select(g => g
@@ -631,7 +630,8 @@ namespace DataAccess.Repositories
                             DamageLevel = x.Level,
                             Id = x.PartId,
                             PartName = x.Part.Name,
-                            PartCategoryId = x.Part.CategoryId
+                            PartCategoryId = x.Part.CategoryId,
+                            NodeName = x.Part.Name.Replace(" ","_")
                         })
                         .FirstOrDefault()
                         ).ToList()

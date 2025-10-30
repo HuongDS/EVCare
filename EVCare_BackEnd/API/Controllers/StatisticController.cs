@@ -13,9 +13,9 @@ namespace API.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
-    public class DashboardController : ControllerBase {
+    public class StatisticController : ControllerBase {
         private readonly IDashboardService _dashboardService;
-        public DashboardController(IDashboardService dashboardService) {
+        public StatisticController(IDashboardService dashboardService) {
             _dashboardService = dashboardService;
         }
         [HttpGet("top-services")]

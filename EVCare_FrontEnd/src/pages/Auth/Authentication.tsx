@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
-import logo from "../../../assets/EVCare.png";
-import SwitchButton from "../../../components/Button/SwitchButton";
+import logo from "../../assets/EVCare.png";
+import SwitchButton from "../../components/Button/SwitchButton";
 import {
   FormContainer,
   HeaderBox,
@@ -14,41 +14,41 @@ import {
   ERROR_MESSAGE,
   FORM_MESSAGES,
   MSG_TITLE,
-} from "../../../constants/messages/Message";
+} from "../../constants/messages/Message";
 import type {
   LoginRequestDto,
   RegisterRequestDto,
   VerifyOTPDto,
-} from "../../../models/AuthModel/authModel";
+} from "../../models/AuthModel/authModel";
 import {
   login,
   register,
   saveTokens,
   sendOtp,
   verifyOtp,
-} from "../../../services/authService";
-import { toUseFromJwt } from "../../../token/jwtDecode";
+} from "../../services/authService";
+import { toUseFromJwt } from "../../token/jwtDecode";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../../states/store";
-import { loginSuccess } from "../../../states/authSlice";
-import { LENGTH } from "../../../constants/Code/Constants";
-import { OTP_REGEX } from "../../../constants/regexs/OTPRegex";
-import { saveUser } from "../../../token/tokenStore";
-import { PASSWORD_REGEX } from "../../../constants/regexs/PasswordRegex";
-import { EMAIL_REGEX } from "../../../constants/regexs/EmailRegex";
-import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
+import type { AppDispatch, RootState } from "../../states/store";
+import { loginSuccess } from "../../states/authSlice";
+import { LENGTH } from "../../constants/Code/Constants";
+import { OTP_REGEX } from "../../constants/regexs/OTPRegex";
+import { saveUser } from "../../token/tokenStore";
+import { PASSWORD_REGEX } from "../../constants/regexs/PasswordRegex";
+import { EMAIL_REGEX } from "../../constants/regexs/EmailRegex";
+import { PHONE_NUMBER_REGEX } from "../../constants/regexs/PhoneNumberRegex";
 import {
   closeLogin,
   consumeAction,
   openAppointmentForm,
-} from "../../../states/uiSlice";
-import { ACTION } from "../../../constants/messages/Actions";
-import HTTP_STATUS from "../../../constants/Code/HttpStatusCode";
-import { handleError } from "../../../utils/errorHandler";
+} from "../../states/uiSlice";
+import { ACTION } from "../../constants/messages/Actions";
+import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
+import { handleError } from "../../utils/errorHandler";
 import ForgotPassword from "./sections/ForgotPassword";
-import { RoleEnum } from "../../../models/enums";
+import { RoleEnum } from "../../models/enums";
 import { useNavigate } from "react-router";
-import { useNotification } from "../../../context/useNotification";
+import { useNotification } from "../../context/useNotification";
 
 // interface AuthProps {
 //   show: boolean;

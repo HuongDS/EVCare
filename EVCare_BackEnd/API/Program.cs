@@ -100,7 +100,6 @@ builder.Services.AddScoped<IOrderPartRepository, OrderPartRepository>();
 builder.Services.AddScoped<IGenericCategoryRepository<Part>, GenericCategoryRepository<Part>>();
 builder.Services.AddScoped<IPartRepository, PartRepository>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
-builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<IServiceCenterRepository, ServiceCenterRepository>();
 builder.Services.AddScoped<ITechnicianWorkingSessionRepository, TechnicianWorkingSessionRepository>();
 builder.Services.AddScoped<IPartCategoryRepository, PartCategoryRepository>();
@@ -129,7 +128,7 @@ builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
 builder.Services.AddScoped<IBlockedDateService, BlockedDateService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IAlertServices, AlertServices>();
+
 builder.Services.AddScoped<IApplicationServices, ApplicationServices>();
 builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
 builder.Services.AddScoped<ILinkServices, LinkServices>();
@@ -145,6 +144,8 @@ builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<IRedisService, RedisService>();
 builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
 builder.Services.AddScoped<IAppointmentPartConditionService, AppointmentPartConditionService>();
+builder.Services.AddSingleton<IAiChatServices, AiChatServices>();
+
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITechnicianSkillService, TechnicianSkillService>();
 //builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
@@ -198,8 +199,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateVehivleModelValidator
 builder.Services.AddValidatorsFromAssemblyContaining<AppointmentCustomerCreateModelValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<BlockedDatePostModelValidator>();
 
-builder.WebHost.ConfigureKestrel(o => { o.Limits.MaxRequestBodySize = null; }); 
-builder.Services.Configure<FormOptions>(o => {
+builder.WebHost.ConfigureKestrel(o => { o.Limits.MaxRequestBodySize = null; });
+builder.Services.Configure<FormOptions>(o =>
+{
     o.MultipartBodyLengthLimit = 1_073_741_824; // 1GB
 });
 
@@ -391,13 +393,16 @@ app.UseAzureSignalR(routes =>
 //{
 //    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
 //});
-using (var scope = app.Services.CreateScope()) {
+using (var scope = app.Services.CreateScope())
+{
     var db = scope.ServiceProvider.GetRequiredService<EVCareDbContext>();
     var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
-    try {
+    try
+    {
         mapper.ConfigurationProvider.AssertConfigurationIsValid();
     }
-    catch(Exception ex) {
+    catch (Exception ex)
+    {
         Console.WriteLine(ex.Message);
     }
     _ = db.PartCategories.FirstOrDefault();

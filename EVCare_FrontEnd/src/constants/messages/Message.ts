@@ -52,6 +52,7 @@ export const MSG_TITLE = {
   UPDATE_INVENTORY: "Update Inventory",
   UPLOAD_IMAGE: "Upload Image",
   CANCEL_APPOINTMENT: "Appointment Cancellation",
+  PAYMENT: "Payment",
 };
 
 export const SUCCESS_MESSAGE = {
@@ -63,6 +64,7 @@ export const SUCCESS_MESSAGE = {
   SEND_REVIEW_SUCCESS: "Send Review Success",
   INVENTORY_UPDATED_SUCCESSFULLY: "Part is updated successfully",
   APPOINTMENT_CANCELLED_SUCCESSFULLY: "Appointment is cancelled successfully",
+  PAID_SUCCESSFULLY: "Order is paid successfully",
 };
 
 export const AUTH_FORM_MESSAGE = {

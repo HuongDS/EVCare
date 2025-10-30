@@ -25,17 +25,37 @@ namespace Application.Services
         {
             var conv = await _conv.Find(c => c.Id == conversationId).FirstOrDefaultAsync();
             if (conv == null) throw new Exception("Conversation not found");
-            var receiverId = conv.Participants.FirstOrDefault(p => p.AccountId != senderId)?.AccountId;
-            if (receiverId == null) throw new Exception("Receiver not found");
+
             var msg = new Message
             {
                 ConversationId = conversationId,
                 SenderId = senderId,
-                ReceiverId = receiverId,
+                ReceiverId = "",
                 Text = text,
                 Attachments = atts,
                 SentAt = DateTime.UtcNow
             };
+
+            if (conv.Type == "AI")
+            {
+                msg.ReceiverId = "AI_BOT";
+            }
+            else
+            {
+                var receiverId = conv.Participants.FirstOrDefault(p => p.AccountId != senderId)?.AccountId;
+                if (receiverId == null) throw new Exception("Receiver not found");
+                msg.ReceiverId = receiverId;
+
+                if (conv.Unread.ContainsKey(receiverId))
+                {
+                    conv.Unread[receiverId]++;
+                }
+                else
+                {
+                    conv.Unread[receiverId] = 1;
+                }
+            }
+
             await _msg.InsertOneAsync(msg);
 
             // Update conversation's last message and unread count
@@ -45,14 +65,6 @@ namespace Application.Services
                 SentAt = msg.SentAt,
                 SenderId = senderId
             };
-            if (conv.Unread.ContainsKey(receiverId))
-            {
-                conv.Unread[receiverId]++;
-            }
-            else
-            {
-                conv.Unread[receiverId] = 1;
-            }
             conv.UpdatedAt = DateTime.UtcNow;
             var update = Builders<Conversation>.Update
                 .Set(c => c.LastMessage, conv.LastMessage)
@@ -75,6 +87,12 @@ namespace Application.Services
         {
             var update = Builders<Conversation>.Update.Set($"Unread.{readerId}", 0);
             await _conv.UpdateOneAsync(c => c.Id == conversationId, update);
+        }
+
+        public async Task<Conversation?> GetConversationAsync(string convId)
+        {
+            var conv = await _conv.Find(c => c.Id == convId).FirstOrDefaultAsync();
+            return conv;
         }
     }
 }

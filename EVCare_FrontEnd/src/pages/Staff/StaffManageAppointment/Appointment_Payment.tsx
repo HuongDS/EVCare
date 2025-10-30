@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { Card, Divider, Button, Tag } from "antd";
 import {
   CreditCardOutlined,
@@ -19,14 +19,18 @@ import type {
 import { usePayByPayOS } from "../../../services/PaymentServiceApi";
 import { handleError } from "../../../utils/errorHandler";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { useChangeAppointmentStatus } from "../../../services/appointmentServiceApi";
 import { useAppDispatch } from "../../../states/store";
 import { setStep } from "../../../states/appointmentSlice";
 import { useQueryClient } from "@tanstack/react-query";
-import type { ResponseDto } from "../../../models/OrderModel/UpdateOrderModel";
-import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import CancelPaymentButton from "../StaffComponents/CancelPaymentButton";
+import { useStaffDashboardHub } from "../../../hooks/useStaffHub";
+import {
+  MSG_TITLE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
 import { useNotification } from "../../../context/useNotification";
+
 interface PaymentPageProps {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
   currentStep: number;
@@ -36,12 +40,24 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
   const [paymentMethod, setPaymentMethod] = useState<
     "VnPay" | "PayOs" | "Cash"
   >();
+  const [vnPayPending, setVnPayPending] = useState(false);
   const [qrcode, setQrCode] = useState("");
   const { data: orderDetail } = useGetOrderDetail(data.orderId);
-  const { mutateAsync: appointmentStatus } = useChangeAppointmentStatus();
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const notification = useNotification();
+
+  useStaffDashboardHub<string>((type) => {
+    if (type === "InvoiceComplete") {
+      notification.success({
+        message: MSG_TITLE.PAYMENT,
+        description: SUCCESS_MESSAGE.PAID_SUCCESSFULLY,
+        showProgress: true,
+      });
+      dispatch(setStep({ id: data.id, step: currentStep + 2 }));
+    }
+  });
+
   const handlePayment = async () => {
     try {
       const response = await handlePaymentMethod();
@@ -50,22 +66,13 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
         return;
       }
 
+      if (paymentMethod === "VnPay") {
+        setVnPayPending(true);
+      }
+
       await queryClient.invalidateQueries({
         queryKey: ["Invoice", orderDetail?.data?.id],
       });
-
-      await appointmentStatus({
-        appointmentId: data.id,
-        status: "Done",
-      });
-
-      const newInvoice = queryClient.getQueryData<
-        ResponseDto<InvoiceViewModel>
-      >(["Invoice", orderDetail?.data?.id]);
-
-      if (newInvoice?.data?.status === "Completed") {
-        dispatch(setStep({ id: data.id, step: currentStep + 2 }));
-      }
     } catch (error) {
       handleError(error);
     }
@@ -233,6 +240,23 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
                   </AmountTag>
                 </QRInfo>
               </QRSection>
+            )}
+
+            {vnPayPending && (
+              <PaymentCard>
+                <FlexContainer>
+                  <Spinner />
+                  <TextContainer>
+                    <MainText>Awaiting Payment</MainText>
+                    <Description>
+                      Payment instructions have been sent to customer email via
+                      VNPay
+                    </Description>
+                    <HintText>Wait for completing appointment</HintText>
+                  </TextContainer>
+                  <CancelPaymentButton onclick={() => setVnPayPending(false)} />
+                </FlexContainer>
+              </PaymentCard>
             )}
           </StyledCard>
         </MainContent>
@@ -569,4 +593,61 @@ const TableBody = styled.tbody`
       font-size: 13px;
     }
   }
+`;
+
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const PaymentCard = styled.div`
+  margin-top: 10px;
+  padding: 16px;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+`;
+
+const Spinner = styled.div`
+  width: 20px;
+  height: 20px;
+  border: 2px solid #3b82f6;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: ${spin} 1s linear infinite;
+  margin-top: 2px;
+  flex-shrink: 0;
+`;
+
+const TextContainer = styled.div`
+  flex: 1;
+`;
+
+const MainText = styled.p`
+  font-size: 14px;
+  color: #1e3a8a;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+`;
+
+const Description = styled.p`
+  font-size: 14px;
+  color: #1e40af;
+  margin: 0 0 8px 0;
+`;
+
+const HintText = styled.p`
+  font-size: 12px;
+  color: #2563eb;
+  margin: 0;
 `;

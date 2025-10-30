@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DataAccess.Entities;
 
-namespace DataAccess.Interfaces
+namespace Application.Interfaces
 {
-    public interface IAlertRepository : IGenericRepository<Alert>
+    public interface IAiChatServices
     {
+        Task<string> GetChatResponseAsync(string userInput);
     }
 }
