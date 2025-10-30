@@ -3,14 +3,54 @@ import styled from "styled-components";
 
 export const BookingFormWrapper = styled(Modal)`
   .modal-dialog {
-    max-width: 70%;
+    max-width: 80%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    overscroll-behavior: contain;
+
+    @media (max-width: 1024px) {
+      max-width: 90%;
+      margin: 15px auto;
+    }
+
+    @media (max-width: 768px) {
+      max-width: 95%;
+      margin: 10px auto;
+    }
   }
 
   .modal-content {
-    max-height: 100vh;
-    overflow-y: auto;
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
     font-family: "Outfit", sans-serif;
-    padding: 20px;
+    padding: 20px 40px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    overscroll-behavior: contain;
+
+    @media (max-width: 1024px) {
+      padding: 20px 25px;
+    }
+
+    @media (max-width: 768px) {
+      padding: 15px 18px;
+    }
+  }
+
+  .modal-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 20px;
+
+    @media (max-width: 768px) {
+      padding: 0;
+    }
   }
 `;
 
@@ -27,11 +67,15 @@ export const Label = styled.label`
   font-size: 14px;
   color: #4b5563;
   margin-bottom: 3px;
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+  }
 `;
 
 export const Input = styled.input`
   width: 100%;
-  padding: 5px;
+  padding: 6px 8px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 14px;
@@ -41,51 +85,69 @@ export const Input = styled.input`
     border-color: #10b981;
     box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
   }
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+  }
 `;
 
 export const BookingFormHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e5e7eb;
+
+  @media (max-width: 768px) {
+    padding: 10px 15px;
+  }
 `;
+
 export const FormTitle = styled.h2`
-  width: 60%;
-  display: flex;
-  justify-content: flex-end;
   font-weight: 600;
   color: #00ad4e;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
 `;
 
 export const CloseButton = styled.button`
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
   background-color: #fff;
-  color: black;
   border: 2px solid #d1d5db;
-  font-size: 1rem;
-  font-weight: 300;
   width: 30px;
   height: 30px;
   border-radius: 7px;
+  font-size: 1rem;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: 0.3s ease;
 
   &:hover {
     background-color: #ee0d0d;
-    border: 2px solid #ee0d0d;
-    color: #fff;
+    border-color: #ee0d0d;
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    width: 26px;
+    height: 26px;
+    font-size: 0.9rem;
   }
 `;
 
 export const BookingFormBody = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  height: 80%;
   padding: 0 5%;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
 `;
 
 export const SubTitle = styled.div`
@@ -94,6 +156,12 @@ export const SubTitle = styled.div`
   h5 {
     font-weight: 600;
     color: #00ad4e;
+  }
+
+  @media (max-width: 768px) {
+    h5 {
+      font-size: 16px;
+    }
   }
 `;
 
@@ -104,7 +172,16 @@ export const NumberIcon = styled.i`
 
 export const LeftBody = styled.div`
   margin: 0 10%;
+
+  @media (max-width: 1024px) {
+    margin: 0 5%;
+  }
+
+  @media (max-width: 768px) {
+    margin: 0;
+  }
 `;
+
 export const ImageUpload = styled.div`
   border: 2px dashed #d1d5db;
   border-radius: 6px;
@@ -116,6 +193,11 @@ export const ImageUpload = styled.div`
   &:hover {
     border-color: #10b981;
     background: #f0fdf4;
+  }
+
+  @media (max-width: 768px) {
+    padding: 18px;
+    font-size: 13px;
   }
 `;
 
@@ -132,7 +214,12 @@ export const Select = styled.select`
     border-color: #10b981;
     box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
   }
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+  }
 `;
+
 export const Required = styled.span`
   color: #ef4444;
 `;
@@ -141,21 +228,47 @@ export const RightBody = styled.div`
   display: flex;
   flex-direction: column;
   margin: 0 10%;
+
+  @media (max-width: 1024px) {
+    margin: 0 5%;
+  }
+
+  @media (max-width: 768px) {
+    margin: 0;
+  }
 `;
 
 export const BookingFormButton = styled.div`
   display: flex;
   justify-content: center;
+  margin-top: 15px;
+
   button {
-    width: 20%;
-    padding: 8px;
+    width: 30%;
+    padding: 10px;
     border: none;
     border-radius: 10px;
     background-color: #00ad4e;
     color: white;
     font-weight: 600;
+    transition: background 0.3s;
+
+    &:hover {
+      background-color: #00c65e;
+    }
+
+    @media (max-width: 1024px) {
+      width: 40%;
+    }
+
+    @media (max-width: 768px) {
+      width: 60%;
+      padding: 8px;
+      font-size: 14px;
+    }
   }
 `;
+
 export const ServiceOption = styled.div`
   display: flex;
   align-items: center;
@@ -169,7 +282,12 @@ export const ServiceOption = styled.div`
   &:hover {
     background: #f9fafb;
   }
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
 `;
+
 export const Checkbox = styled.input`
   margin-right: 12px;
   width: 18px;
@@ -185,11 +303,20 @@ export const MoreInfoLink = styled.button`
   background: none;
   cursor: pointer;
   text-decoration: underline;
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+  }
 `;
+
 export const TimeInputGroup = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const TimeInput = styled.div`
@@ -213,5 +340,25 @@ export const TextArea = styled.textarea`
     outline: none;
     border-color: #10b981;
     box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+    min-height: 100px;
+  }
+`;
+
+export const StepContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 100%;
+  max-height: 90vh;
+  overscroll-behavior: contain;
+
+  @media (max-width: 768px) {
+    justify-content: flex-start;
+    max-height: none;
+    margin: 20px;
   }
 `;
