@@ -5,106 +5,39 @@ import styled from "styled-components";
 
 const MAIN_GREEN = "#00AD4E";
 const LIGHT_GREEN = "#00C65E";
-const DARK_GRAY = "#222";
-const LIGHT_GRAY = "#a3a3a3";
+const DARK_GRAY = "#333";
+const LIGHT_GRAY = "#d1d5db";
+const TEXT_COLOR = "#222";
 
+/* ----------------- Container & Layout ------------------ */
 const OuterContainer = styled.div`
   display: flex;
-  min-height: 100%;
-  flex: 1 1 0%;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 1rem;
-
-  @media (min-width: 640px) {
-    aspect-ratio: 4 / 3;
-  }
-  @media (min-width: 768px) {
-    aspect-ratio: 2 / 1;
-  }
+  font-family: "Outfit", sans-serif;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 `;
 
 const StepCircleContainer = styled.div`
-  margin-left: auto;
-  margin-right: auto;
   width: 100%;
-  max-width: 28rem;
-  border-radius: 2rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  border: 1px solid ${DARK_GRAY};
+  max-width: 800px;
   background: #fff;
+  border: 1px solid ${LIGHT_GRAY};
+  border-radius: 16px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin: 0 auto;
 `;
 
+/* ----------------- Step Indicators ------------------ */
 const StepIndicatorRow = styled.div`
   display: flex;
-  width: 100%;
-  align-items: center;
-  padding: 2rem;
-`;
-
-const StepContentDefault = styled(motion.div)`
-  position: relative;
-  overflow: hidden;
-`;
-
-const StepDefault = styled.div`
-  padding: 0 2rem;
-`;
-
-const FooterContainer = styled.div`
-  padding: 0 2rem 2rem;
-`;
-
-const FooterNav = styled.div<{ $isFirst: boolean }>`
-  margin-top: 2.5rem;
-  display: flex;
-  justify-content: ${({ $isFirst }) =>
-    $isFirst ? "flex-end" : "space-between"};
-`;
-
-const BackButton = styled.button`
-  transition: all 350ms;
-  border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  color: ${LIGHT_GRAY};
-  cursor: pointer;
-  border: none;
-  background: none;
-
-  &:hover {
-    color: ${MAIN_GREEN};
-  }
-
-  &.inactive {
-    pointer-events: none;
-    opacity: 0.5;
-    color: ${LIGHT_GRAY};
-  }
-`;
-
-const NextButton = styled.button`
-  transition: all 350ms;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  border-radius: 9999px;
-  background-color: ${MAIN_GREEN};
-  color: #fff;
-  font-weight: 500;
-  letter-spacing: -0.025em;
-  padding: 0.375rem 0.875rem;
-  cursor: pointer;
-  border: none;
-
-  &:hover {
-    background-color: ${LIGHT_GREEN};
-  }
-
-  &:active {
-    background-color: ${MAIN_GREEN};
-  }
+  align-items: center;
+  padding: 15px 0;
+  flex-wrap: wrap;
 `;
 
 const StepIndicatorWrapper = styled(motion.div)`
@@ -115,33 +48,24 @@ const StepIndicatorWrapper = styled(motion.div)`
 
 const StepIndicatorInner = styled(motion.div)`
   display: flex;
-  height: 2rem;
-  width: 2rem;
+  height: 36px;
+  width: 36px;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: 50%;
   font-weight: 600;
-`;
-
-const ActiveDot = styled.div`
-  height: 0.75rem;
-  width: 0.75rem;
-  border-radius: 9999px;
-  background-color: #fff;
-`;
-
-const StepNumber = styled.span`
   font-size: 0.875rem;
+  transition: all 0.3s ease;
 `;
 
 const StepConnectorContainer = styled.div`
   position: relative;
-  margin: 0 0.5rem;
-  height: 0.125rem;
+  margin: 0 10px;
+  height: 3px;
   flex: 1;
-  overflow: hidden;
-  border-radius: 0.25rem;
+  border-radius: 5px;
   background-color: ${LIGHT_GRAY};
+  overflow: hidden;
 `;
 
 const StepConnectorInner = styled(motion.div)`
@@ -151,6 +75,78 @@ const StepConnectorInner = styled(motion.div)`
   height: 100%;
 `;
 
+/* ----------------- Step Content ------------------ */
+const StepContentDefault = styled(motion.div)`
+  position: relative;
+  overflow: hidden;
+  padding: 15px 20px;
+  min-height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+`;
+
+const StepDefault = styled.div`
+  color: ${TEXT_COLOR};
+  width: 100%;
+  box-sizing: border-box;
+`;
+
+/* ----------------- Footer Buttons ------------------ */
+const FooterContainer = styled.div`
+  padding: 15px 0 0;
+`;
+
+const FooterNav = styled.div<{ $isFirst: boolean }>`
+  display: flex;
+  justify-content: ${({ $isFirst }) =>
+    $isFirst ? "flex-end" : "space-between"};
+  gap: 10px;
+`;
+
+const BackButton = styled.button`
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: ${MAIN_GREEN};
+  border: 1px solid ${MAIN_GREEN};
+  background: white;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover {
+    background: ${MAIN_GREEN};
+    color: white;
+  }
+`;
+
+const NextButton = styled.button`
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-weight: 600;
+  border: none;
+  color: white;
+  background: ${MAIN_GREEN};
+  cursor: pointer;
+  &:hover {
+    background: ${LIGHT_GREEN};
+  }
+  &:disabled {
+    background: ${LIGHT_GRAY};
+    cursor: not-allowed;
+  }
+`;
+
+const ActiveDot = styled.div`
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background: white;
+`;
+
+const StepNumber = styled.span`
+  font-size: 0.875rem;
+`;
+
 const CheckIconSvg = styled.svg`
   height: 1rem;
   width: 1rem;
@@ -158,17 +154,12 @@ const CheckIconSvg = styled.svg`
 `;
 
 const stepVariants: Variants = {
-  enter: (dir: number) => ({
-    x: dir >= 0 ? "-100%" : "100%",
-    opacity: 0,
-  }),
-  center: { x: "0%", opacity: 1 },
-  exit: (dir: number) => ({
-    x: dir >= 0 ? "50%" : "-50%",
-    opacity: 0,
-  }),
+  enter: (dir: number) => ({ x: dir >= 0 ? 100 : -100, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir >= 0 ? -100 : 100, opacity: 0 }),
 };
 
+/* ----------------- Stepper Logic ------------------ */
 interface StepperProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   initialStep?: number;
@@ -177,6 +168,7 @@ interface StepperProps extends HTMLAttributes<HTMLDivElement> {
   backButtonText?: string;
   nextButtonText?: string;
   disableStepIndicators?: boolean;
+  isNextDisabled?: boolean;
 }
 
 export default function Stepper({
@@ -185,8 +177,9 @@ export default function Stepper({
   onStepChange = () => {},
   onFinalStepCompleted = () => {},
   backButtonText = "Back",
-  nextButtonText = "Continue",
+  nextButtonText = "Next",
   disableStepIndicators = false,
+  isNextDisabled = false,
   ...rest
 }: StepperProps) {
   const [currentStep, setCurrentStep] = useState(initialStep);
@@ -249,14 +242,17 @@ export default function Stepper({
                   {backButtonText}
                 </BackButton>
               )}
-              <NextButton
-                onClick={() => {
-                  setDirection(1);
-                  updateStep(isLastStep ? totalSteps + 1 : currentStep + 1);
-                }}
-              >
-                {isLastStep ? "Complete" : nextButtonText}
-              </NextButton>
+              {!isLastStep && (
+                <NextButton
+                  disabled={isNextDisabled}
+                  onClick={() => {
+                    setDirection(1);
+                    updateStep(currentStep + 1);
+                  }}
+                >
+                  {nextButtonText}
+                </NextButton>
+              )}
             </FooterNav>
           </FooterContainer>
         )}
@@ -265,6 +261,7 @@ export default function Stepper({
   );
 }
 
+/* ----------------- Step Transitions ------------------ */
 interface StepContentWrapperProps {
   isCompleted: boolean;
   currentStep: number;
@@ -331,6 +328,7 @@ function SlideTransition({
   );
 }
 
+/* ----------------- Step Indicator ------------------ */
 export function Step({ children }: { children: ReactNode }) {
   return <StepDefault>{children}</StepDefault>;
 }
@@ -367,7 +365,7 @@ function StepIndicator({
     >
       <StepIndicatorInner
         variants={{
-          inactive: { backgroundColor: DARK_GRAY, color: LIGHT_GRAY },
+          inactive: { backgroundColor: LIGHT_GRAY, color: DARK_GRAY },
           active: { backgroundColor: MAIN_GREEN, color: "#fff" },
           complete: { backgroundColor: LIGHT_GREEN, color: "#fff" },
         }}
@@ -385,6 +383,7 @@ function StepIndicator({
   );
 }
 
+/* ----------------- Step Connector & Check Icon ------------------ */
 function StepConnector({ isComplete }: { isComplete: boolean }) {
   const lineVariants: Variants = {
     incomplete: { width: 0, backgroundColor: "transparent" },
