@@ -279,6 +279,8 @@ namespace Application.Services
             await _unitOfWork.ExecuteInTransactionAsync( async()=> await AddOrder(model, technicianId));
         }
 
-        
+        public async Task<IEnumerable<OrderPartViewModel>> GetOrdersForTechnicianAsync(int technicianId, int orderId) {
+            return await _orderPartRepository.GetOrdersForTechnicianAsync(technicianId, orderId);
+        }
     }
 }
