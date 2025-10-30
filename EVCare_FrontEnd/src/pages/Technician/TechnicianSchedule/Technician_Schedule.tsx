@@ -42,25 +42,19 @@ const TechnicianSchedule: React.FC = () => {
     setError(null);
 
     try {
-      // ✅ Danh sách status muốn lấy
       const activeStatuses = [
         TechnicianWorkingSessionEnum.PENDING,
         TechnicianWorkingSessionEnum.INPROGRESS,
-        TechnicianWorkingSessionEnum.ADDING_PART,
-        TechnicianWorkingSessionEnum.CONFIRM,
         TechnicianWorkingSessionEnum.COMPLETED,
         TechnicianWorkingSessionEnum.CANCELED,
       ].map(String);
-
-      // ✅ Gọi song song tất cả các status
       const results = await Promise.all(
         activeStatuses.map((status) =>
           getTechnicianAppointments({
             Status: status,
             PageSize: 100,
             PageIndex: 1,
-          }).catch((err) => {
-            console.error(`❌ Failed to fetch ${status}:`, err);
+          }).catch(() => {
             return { items: [] }; // tránh crash nếu 1 status lỗi
           })
         )
@@ -108,14 +102,14 @@ const TechnicianSchedule: React.FC = () => {
     ...appointments.map((a) => ({
       title: `ID: ${a.id}\n${a.vehicleModel}\n${a.status}`,
       start: dayjs(a.appointmentDate).toDate(),
-      className: "appointment",
+      className: `appointment ${a.status?.toLowerCase()}`,
       extendedProps: a.extraProps,
     })),
     ...applications.map((d) => ({
       title: "Day Off",
       start: d,
       className: "dayOff",
-      extendedProps: { reason: "Ngày nghỉ" },
+      extendedProps: { reason: "Day Off" },
     })),
     ...blockedDates.map((d) => ({
       title: d.reason || "Blocked",
