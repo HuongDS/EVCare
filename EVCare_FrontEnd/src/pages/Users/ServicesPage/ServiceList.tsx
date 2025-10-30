@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ButtonGroup, Container } from "react-bootstrap";
-import { ReactLenis, useLenis } from "lenis/react";
+import { ReactLenis } from "lenis/react";
 import { motion, type Variants } from "framer-motion";
 
 import {
@@ -63,7 +63,6 @@ const ServiceList = () => {
   const [currenPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [isHaveData, setIsHaveData] = useState(true);
-  const lenis = useLenis();
 
   const { data, isLoading, isSuccess } = getAllActiveService(
     searchValue,
@@ -100,14 +99,6 @@ const ServiceList = () => {
     }
     dispatch(openAppointmentForm());
   }, [isAuthenticated, dispatch]);
-
-  useEffect(() => {
-    if (showForm) {
-      lenis?.stop();
-    } else {
-      lenis?.start();
-    }
-  }, [showForm, lenis]);
 
   useEffect(() => {
     if (data?.data?.items?.length === 0) {
