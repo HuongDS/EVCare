@@ -11,21 +11,17 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
-    {
+    public class AccountController : ControllerBase {
         private readonly IAccountService _accountService;
-        public AccountController(IAccountService accountService)
-        {
+        public AccountController(IAccountService accountService) {
 
             _accountService = accountService;
         }
         [HttpGet("me")]
         [Authorize]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> GetMyAccountDetail()
-        {
-            try
-            {
+        public async Task<IActionResult> GetMyAccountDetail() {
+            try {
                 var accountId = (int)HttpContext.Items["AccountId"];
                 var account = await _accountService.GetAccountById(accountId);
                 return Ok(new ResponseDto<AccountViewModel>
@@ -36,8 +32,7 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
 
                 return BadRequest(new ResponseDto<object>
                 {
@@ -52,11 +47,9 @@ namespace API.Controllers
         [HttpPut("update-me")]
         [Authorize]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> UpdateAccountDetail(AccountUpdateDto data)
-        {
+        public async Task<IActionResult> UpdateAccountDetail(AccountUpdateDto data) {
             var accountId = (int)HttpContext.Items["AccountId"];
-            try
-            {
+            try {
                 var response = await _accountService.UpdateAccountByAccountID(data, accountId);
                 return Ok(new ResponseDto<AccountViewModel>
                 {
@@ -65,8 +58,7 @@ namespace API.Controllers
                     message = Message.UPDATE_ACCOUNT_SUCCESS
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
@@ -78,10 +70,8 @@ namespace API.Controllers
 
         [HttpDelete("{accountId}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteAccount(int accountId)
-        {
-            try
-            {
+        public async Task<IActionResult> DeleteAccount(int accountId) {
+            try {
                 await _accountService.DeleteAccount(accountId);
 
                 return Ok(new ResponseDto<object>
@@ -91,8 +81,7 @@ namespace API.Controllers
                     message = Message.DELETE_ACCOUNT_SUCCESS
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
@@ -105,14 +94,11 @@ namespace API.Controllers
         [HttpPost("verify-password")]
         [Authorize(Roles = "Customer, Staff, Technician")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> VerifyPassword([FromBody] AccountUpdatePasswordDto data)
-        {
-            try
-            {
+        public async Task<IActionResult> VerifyPassword([FromBody] AccountUpdatePasswordDto data) {
+            try {
                 var accountId = (int)HttpContext.Items["AccountId"];
                 var isValid = await _accountService.VerifyPasswordByAcccountId(accountId, data.oldPassword);
-                if (!isValid)
-                {
+                if (!isValid) {
                     throw new Exception(Message.OLD_PASSWORD_INCORRECT);
                 }
                 return Ok(new ResponseDto<bool>
@@ -122,8 +108,7 @@ namespace API.Controllers
                     message = Message.VERIFY_PASSWORD_SUCCESS
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
@@ -136,10 +121,8 @@ namespace API.Controllers
         [HttpPost("update-password")]
         [Authorize(Roles = "Customer, Staff, Technician")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> UpdatePassword([FromBody] AccountUpdatePasswordDto data)
-        {
-            try
-            {
+        public async Task<IActionResult> UpdatePassword([FromBody] AccountUpdatePasswordDto data) {
+            try {
                 var accountId = (int)HttpContext.Items["AccountId"];
                 var response = await _accountService.UpdatePasswordByAccountId(accountId, data);
                 return Ok(new ResponseDto<AccountViewModel>
@@ -149,8 +132,7 @@ namespace API.Controllers
                     message = Message.CHANGE_PASSWORD_SUCCESS
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,
@@ -161,11 +143,9 @@ namespace API.Controllers
         }
 
         [HttpPut("unbanned-account/{accountId}")]
-        [Authorize(Roles = "Admin")] 
-        public async Task<IActionResult> UnbannedAccount(int accountId)
-        {
-            try
-            {
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UnbannedAccount(int accountId) {
+            try {
                 var response = await _accountService.UnbannedAccount(accountId);
                 return Ok(new ResponseDto<int>
                 {
@@ -174,8 +154,29 @@ namespace API.Controllers
                     message = Message.UNBANNED_ACCOUNT_SUCCESS
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("accountId/{email}")]
+        [Authorize(Roles = "Admin, Staff")]
+        public async Task<IActionResult> GetAccountIdByEmail(string email) {
+            try {
+                var accountId = await _accountService.GetAccountIdByEmail(email);
+                return Ok(new ResponseDto<int>
+                {
+                    data = accountId,
+                    statusCode = HttpStatus.OK,
+                    message = Message.GET_ACCOUNT_ID_SUCCESS
+                });
+            }
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     data = null,

@@ -47,6 +47,14 @@ namespace Application.Services
             return data;
         }
 
+        public async Task<int> GetAccountIdByEmail(string email) {
+           var account = await _accountRepository.GetAccountByEmail(email);
+              if (account == null) {
+                throw new Exception(Message.ACCOUNT_NOT_FOUND);
+            }
+              return account.Id;
+        }
+
         public async Task<int> UnbannedAccount(int accountId)
         {
             var account = await _accountRepository.GetByIdAsync(accountId);
