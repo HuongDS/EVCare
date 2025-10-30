@@ -102,8 +102,6 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
         description: (error as Error).message || "Failed to start consultation",
       });
     }
-    // setSelectedId("AI_CONVERSATION_ID");
-    // setView("chat");
   };
 
   // === Các hàm điều hướng ===

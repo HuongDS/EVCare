@@ -8,7 +8,7 @@ export const WidgetChatStyleWrapper = styled.div`
     width: 60px;
     height: 60px;
     font-size: 24px;
-    z-index: 998;
+    z-index: 99999;
     background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
     border: none;
     box-shadow: 0 8px 20px rgba(46, 212, 44, 0.25);
@@ -35,7 +35,7 @@ export const WidgetChatStyleWrapper = styled.div`
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    z-index: 999;
+    z-index: 99999;
     overflow: hidden;
     display: flex;
     flex-direction: column;
