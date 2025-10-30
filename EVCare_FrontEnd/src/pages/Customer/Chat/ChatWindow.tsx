@@ -34,8 +34,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    await send(input);
     setInput("");
+    await send(input);
   };
 
   useEffect(() => {
