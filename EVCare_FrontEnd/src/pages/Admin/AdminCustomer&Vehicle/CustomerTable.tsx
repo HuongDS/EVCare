@@ -102,7 +102,7 @@ const CustomerRow: React.FC<{
           >
             <Td colSpan={6}>
               <ExpandableContent>
-                <h4>Xe của {user.customerName}</h4>
+                <h4>{user.customerName}'s cars</h4>
                 <VehicleGrid>
                   {user.vehicles.map((v) => (
                     <VehicleCard key={v.id}>

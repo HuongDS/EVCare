@@ -1,39 +1,142 @@
 import styled from "styled-components";
 
-export const ChatStyleWrapper = styled.div`
-  /* Layout & Container Styles */
+export const StaffChatStyleWrapper = styled.div`
   .chat-layout {
-    height: 100vh;
-    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
+    height: 100%;
     border-radius: 12px;
     overflow: hidden;
     display: flex;
+    flex-direction: row; /* Chế độ 2 cột */
   }
 
   .chat-sider {
     background: #ffffff;
     box-shadow: 4px 0 24px rgba(46, 212, 44, 0.08);
     border-radius: 12px 0 0 12px;
+    width: 320px; /* Cố định 320px */
+    min-width: 320px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   .chat-content {
     position: relative;
     padding: 0;
-    flex: 1;
+    flex: 1; /* Chiếm phần còn lại */
     background: transparent;
-    height: 100vh;
+    height: 100%;
+  }
+
+  .chat-window {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #ffffff;
+    border-radius: 0 12px 12px 0;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    max-height: 94vh;
+  }
+
+  .chat-content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .staff-chat-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .staff-chat-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .staff-chat-title .anticon {
+    color: #00ad4e;
+    font-size: 1.5rem;
+  }
+
+  .staff-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .chat-header {
+    flex-shrink: 0;
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #fafafa;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .chat-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .chat-header-avatar {
+    background: #ffffff;
+    color: #00ad4e;
+  }
+
+  .chat-header-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .chat-header-status {
+    font-size: 0.8rem;
+    color: #00ad4e;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .btn-end-conversation {
+    background: #fff0f0;
+    border-color: #ffccc7;
+    color: #f5222d;
+    box-shadow: none;
+  }
+
+  .btn-end-conversation:hover {
+    background: #f5222d;
+    border-color: #f5222d;
+    color: #ffffff;
   }
 
   .chat-sidebar-header {
     padding: 1.25rem;
     border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .chat-sidebar-title {
     font-size: 1.25rem;
     font-weight: 700;
     color: #1f2937;
-    margin-bottom: 0.75rem;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -42,28 +145,6 @@ export const ChatStyleWrapper = styled.div`
   .chat-sidebar-title .anticon {
     color: #00ad4e;
     font-size: 1.5rem;
-  }
-
-  /* New Consultation Button */
-  .btn-new-consultation {
-    width: 100%;
-    height: 42px;
-    border-radius: 10px;
-    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
-    border: none;
-    box-shadow: 0 4px 12px rgba(46, 212, 44, 0.08);
-    font-weight: 600;
-    font-size: 15px;
-    transition: all 0.3s ease;
-  }
-
-  .btn-new-consultation:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(46, 212, 44, 0.08);
-  }
-
-  .btn-new-consultation:active {
-    transform: translateY(0);
   }
 
   .chat-sidebar-list {
@@ -88,7 +169,6 @@ export const ChatStyleWrapper = styled.div`
     border-left-color: #00ad4e;
   }
 
-  /* Conversation Avatar */
   .conversation-avatar-wrapper {
     position: relative;
   }
@@ -108,7 +188,6 @@ export const ChatStyleWrapper = styled.div`
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
-  /* Conversation Item Meta */
   .conversation-title {
     display: flex;
     justify-content: space-between;
@@ -147,51 +226,6 @@ export const ChatStyleWrapper = styled.div`
     color: #374151;
   }
 
-  .chat-window {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background: #ffffff;
-    border-radius: 0 12px 12px 0;
-    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-  }
-
-  .chat-header {
-    flex-shrink: 0;
-    padding: 12px 16px;
-    border-bottom: 1px solid #f0f0f0;
-    background-color: #fafafa;
-  }
-
-  .chat-header-content {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .chat-header-avatar {
-    background: #ffffff;
-    color: #00ad4e;
-  }
-
-  .chat-header-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  .chat-header-status {
-    font-size: 1rem;
-    color: #00ad4e;
-    margin: 0;
-    font-weight: 700;
-  }
-
-  /* ========================================
-   Messages Area Styles
-   ======================================== */
-
   .chat-messages-area {
     flex: 1;
     overflow-y: auto;
@@ -210,37 +244,6 @@ export const ChatStyleWrapper = styled.div`
     min-height: min-content;
   }
 
-  .chat-content-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
-  /* Loading State */
-  .chat-loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
-
-  /* Empty State */
-  .chat-empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: #9ca3af;
-  }
-
-  .chat-empty-icon {
-    font-size: 3rem;
-    margin-bottom: 0.75rem;
-  }
-
-  /* Message Bubble */
   .message-wrapper {
     display: flex;
     animation: fadeIn 0.3s ease;
@@ -378,6 +381,27 @@ export const ChatStyleWrapper = styled.div`
     cursor: not-allowed;
   }
 
+  .chat-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .chat-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #9ca3af;
+  }
+
+  .chat-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+  }
+
   .chat-welcome-state {
     display: flex;
     flex-direction: column;
@@ -387,6 +411,7 @@ export const ChatStyleWrapper = styled.div`
     text-align: center;
     padding: 2rem;
     background-color: #fff;
+    position: relative;
   }
 
   .chat-welcome-icon-wrapper {
@@ -416,65 +441,9 @@ export const ChatStyleWrapper = styled.div`
     line-height: 1.6;
   }
 
-  .staff-chat-header {
-    padding: 1.25rem;
-    border-bottom: 1px solid #f0f0f0;
-  }
-
-  .staff-chat-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1f2937;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .staff-chat-title .anticon {
-    color: #00ad4e;
-    font-size: 1.5rem;
-  }
-
-  .staff-status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-
-  .consultation-modal .ant-modal-header {
-    border-bottom: 1px solid #f0f0f0;
-    padding: 1.25rem 1.5rem;
-  }
-
-  .consultation-modal .ant-modal-title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.125rem;
-    font-weight: 600;
-  }
-
-  .consultation-modal .ant-modal-title .anticon {
-    color: #00ad4e;
-  }
-
-  .consultation-modal .ant-modal-body {
-    padding: 1.5rem;
-  }
-
-  .consultation-modal-label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 0.5rem;
-  }
-
-  .consultation-modal .ant-input {
-    border-radius: 8px;
+  /* Ẩn các nút lựa chọn của Khách hàng */
+  .chat-choice-buttons {
+    display: none;
   }
 
   .chat-messages-area::-webkit-scrollbar,
@@ -521,7 +490,38 @@ export const ChatStyleWrapper = styled.div`
 
   @media (max-width: 768px) {
     .chat-sider {
+      position: absolute;
+      left: -320px;
+      top: 0;
+      bottom: 0;
+      z-index: 50;
       width: 280px !important;
+      min-width: 280px !important;
+      box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .chat-sider.open {
+      left: 0;
+    }
+
+    .chat-content {
+      overflow: hidden;
+    }
+
+    .chat-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 40;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .chat-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .message-content {
@@ -556,43 +556,6 @@ export const ChatStyleWrapper = styled.div`
 
     .message-content {
       max-width: 90%;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .chat-sider {
-      position: absolute;
-      left: -320px;
-      top: 0;
-      bottom: 0;
-      z-index: 50;
-      width: 280px;
-      min-width: 280px;
-      box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
-      transition: all 0.3s ease;
-    }
-
-    .chat-sider.open {
-      left: 0;
-    }
-
-    .chat-content {
-      overflow: hidden;
-    }
-
-    .chat-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: 40;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .chat-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
     }
   }
 `;

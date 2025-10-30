@@ -35,9 +35,9 @@ export const ContentWrapper = styled.div`
 export const TitleContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between; /* 2 nút kéo ra 2 bên */
+  justify-content: space-between;
   margin-bottom: 24px;
-  flex-wrap: wrap; /* responsive */
+  flex-wrap: wrap;
 
   @media (max-width: ${BREAKPOINTS.mobile}) {
     flex-direction: column;
@@ -49,7 +49,7 @@ export const TitleContainer = styled.div`
 export const CenterWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center; /* title + search căn giữa */
+  align-items: center;
   gap: 8px;
 `;
 
@@ -90,7 +90,6 @@ export const PaginationContainer = styled.div`
   padding-top: 24px;
 `;
 
-/* 🌟 Base Button */
 const BaseButton = styled.button`
   padding: 8px 14px;
   border-radius: 6px;

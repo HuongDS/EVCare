@@ -156,25 +156,49 @@ export default function Authentication() {
       firstName.length === 0 ||
       lastName.length === 0
     ) {
-      alert(ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
+      notification.warning({
+        message: "Error",
+        description: ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED,
+        showProgress: true,
+      });
       return;
     } else if (firstName.trim().length == 0 || lastName.trim().length == 0) {
-      alert(ERROR_MESSAGE.THIS_FIELD_NOT_VALID);
+      notification.warning({
+        message: "Error",
+        description: ERROR_MESSAGE.THIS_FIELD_NOT_VALID,
+        showProgress: true,
+      });
       return;
     } else if (!EMAIL_REGEX.test(email)) {
-      alert(ERROR_MESSAGE.INVALID_EMAIL);
+      notification.warning({
+        message: "Error",
+        description: ERROR_MESSAGE.INVALID_EMAIL,
+        showProgress: true,
+      });
       return;
     } else if (
       !PASSWORD_REGEX.test(password) ||
       !PASSWORD_REGEX.test(confirm)
     ) {
-      alert(ERROR_MESSAGE.INVALID_PASSWORD);
+      notification.warning({
+        message: "Error",
+        description: ERROR_MESSAGE.INVALID_PASSWORD,
+        showProgress: true,
+      });
       return;
     } else if (!PHONE_NUMBER_REGEX.test(phone)) {
-      alert(ERROR_MESSAGE.INVALID_PHONE);
+      notification.warning({
+        message: "Error",
+        description: ERROR_MESSAGE.INVALID_PHONE,
+        showProgress: true,
+      });
       return;
     } else if (password !== confirm) {
-      alert(ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME);
+      notification.warning({
+        message: "Error",
+        description: ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME,
+        showProgress: true,
+      });
       return;
     }
     const registerData: RegisterRequestDto = {
@@ -198,11 +222,10 @@ export default function Authentication() {
       setIsOTP(true);
       setIsLoading(false);
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : ERROR_MESSAGE.SOME_THING_WENT_WRONG
-      );
+      notification.error({
+        message: (error as Error).message,
+        showProgress: true,
+      });
       handleError(error);
       setIsLoading(false);
       return;
@@ -213,7 +236,10 @@ export default function Authentication() {
     setIsLoading(true);
     const code = otp.join("");
     if (code.length != LENGTH.OTP_LENGTH || !OTP_REGEX.test(code)) {
-      alert(`OTP must be ${LENGTH.OTP_LENGTH} numbers`);
+      notification.warning({
+        message: `OTP must be ${LENGTH.OTP_LENGTH} numbers`,
+        showProgress: true,
+      });
       return;
     }
     try {
@@ -222,9 +248,12 @@ export default function Authentication() {
         otp: code,
       };
       const response = await verifyOtp(data);
-      alert(response.message);
+      notification.success({ message: response.message });
     } catch (error) {
-      alert(error);
+      notification.error({
+        message: (error as Error).message,
+        showProgress: true,
+      });
       setIsLoading(false);
       handleError(error);
       return;
@@ -239,13 +268,16 @@ export default function Authentication() {
     setIsForgot(true);
     try {
       if (!EMAIL_REGEX.test(email.trim())) {
-        alert(ERROR_MESSAGE.INVALID_EMAIL);
+        notification.warning({ message: ERROR_MESSAGE.INVALID_EMAIL });
         return;
       }
       const response = await sendOtp(email);
       console.log(response);
     } catch (error) {
-      alert(error);
+      notification.error({
+        message: (error as Error).message,
+        showProgress: true,
+      });
       handleError(error);
       return;
     } finally {

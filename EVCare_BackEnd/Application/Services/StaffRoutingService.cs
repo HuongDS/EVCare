@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess;
+using DataAccess.Dtos.MongoDb_Message;
 using DataAccess.Enums;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
@@ -20,15 +21,13 @@ namespace Application.Services
         {
             _dbContext = dbContext;
         }
-        public async Task<string> FindAvailableAsync()
+        public async Task<string?> FindAvailableAsync(string customerAccountId)
         {
-            var candidate = await _dbContext.Accounts
-                .Include(a => a.Employee)
-                .Where(a => a.Role == RoleEnum.Staff && a.Deleted_At == DateTime.MinValue && a.Employee.Status == EmployeeStatusEnum.Available)
-                .OrderByDescending(a => a.Id)
-                .FirstOrDefaultAsync();
+            var appointment = await _dbContext.Appointments.FirstOrDefaultAsync(a => a.CustomerId.ToString() == customerAccountId && a.Status != AppointmentStatusEnum.Pending && a.Status != AppointmentStatusEnum.Confirmed);
+            if (appointment is null) throw new Exception(Application.Infrastructures.Message.APPOINTMENT_NOT_FOUND);
 
-            if (candidate is null) throw new Exception(Message.NOT_FOUND_STAFF_SASTISFY);
+            var candidate = await _dbContext.Employees.FirstOrDefaultAsync(a => a.Id == appointment.EmployeeId);
+            if (candidate is null) return null;
 
             return candidate.Id.ToString();
         }

@@ -26,14 +26,11 @@ import DeleteConfirmationModal from "../DeleteConfirmModal";
 import SearchBar from "../../AdminCustomer&Vehicle/SearchBar";
 import type { Service } from "../../../../models/ServicesModel/ServiceViewModel";
 import {
-  createService,
   deleteService,
-  getAllServices,
+  getAllServiceCategories,
   getAllServicesWithPagination,
-  updateService,
 } from "../../../../services/serviceServicesApi";
-import type { ServiceCreateDto } from "../../../../models/ServicesModel/ServiceCreateDto";
-import type { ServiceCategoryViewModel } from "../../../../models/ServicesModel/ServiceCategoryViewModel";
+import type { ServiceCategoryAdminDto } from "../../../../models/ServicesModel/ServiceCategoryAdminDto";
 
 export default function Admin_Service() {
   const [services, setServices] = useState<Service[]>([]);
@@ -46,8 +43,13 @@ export default function Admin_Service() {
   const [totalItems, setTotalItems] = useState(0);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [serviceToEdit, setServiceToEdit] = useState<Service | null>(null);
-  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; service?: Service }>({ isOpen: false });
-  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryViewModel[]>([]);
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    service?: Service;
+  }>({ isOpen: false });
+  const [serviceCategories, setServiceCategories] = useState<
+    ServiceCategoryAdminDto[]
+  >([]);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -71,13 +73,17 @@ export default function Admin_Service() {
       setPageIndex(response?.data?.pageIndex ?? pageIndex);
       setPageSize(response?.data?.pageSize ?? pageSize);
     } catch (error) {
-      notification.error({ message: "Error", description: "Could not load services." });
+      notification.error({
+        message: "Error",
+        description: "Could not load services.",
+      });
     }
     setIsLoading(false);
   }, [search, pageIndex, pageSize, notification]);
 
   useEffect(() => {
     fetchData();
+    fetchServiceCategories();
   }, [fetchData]);
 
   const handleSearch = (searchValue: string) => {
@@ -97,10 +103,14 @@ export default function Admin_Service() {
   const fetchServiceCategories = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await getAllServices();
-      setServiceCategories(response?.data || []);
+      const response = await getAllServiceCategories();
+      setServiceCategories(response?.data?.items || []);
     } catch (error) {
-      notification.error({ message: "Error", description: "Could not load services categories" });
+      notification.error({
+        message: "Error",
+        description: "Could not load services categories",
+        showProgress: true,
+      });
     }
     setIsLoading(false);
   }, []);
@@ -108,12 +118,10 @@ export default function Admin_Service() {
   const handleOpenEditModal = (service: Service) => {
     setServiceToEdit(service);
     setIsFormModalOpen(true);
-    fetchServiceCategories();
   };
 
   const handleOpenDeleteModal = (service: Service) => {
     setDeleteModal({ isOpen: true, service: service });
-    fetchServiceCategories();
   };
 
   const handleCloseFormModal = () => {
@@ -133,51 +141,65 @@ export default function Admin_Service() {
     setDeleteModal({ isOpen: false });
 
     try {
-      await deleteService(serviceToDelete.id);
-      notification.success({ message: "Success", description: "Service marked as deleted." });
-      setServices((prev) => prev.map((s) => (s.id === serviceToDelete.id ? { ...s, isDeleted: true } : s)));
+      await deleteService({ serviceId: serviceToDelete.id });
+      notification.success({
+        message: "Success",
+        description: "Service marked as deleted.",
+        showProgress: true,
+      });
+      setServices((prev) =>
+        prev.map((s) =>
+          s.id === serviceToDelete.id ? { ...s, isDeleted: true } : s
+        )
+      );
     } catch (error) {
       console.error("Failed to delete service", error);
-      notification.error({ message: "Error", description: "Could not delete service." });
-    }
-  };
-
-  const handleCreateService = async (data: ServiceCreateDto) => {
-    try {
-      const response = await createService(data);
-      notification.success({
-        message: "Add Service",
-        description: response.message,
-      });
-    } catch (error) {
       notification.error({
-        message: "Add Service",
-        description: (error as Error).message,
+        message: "Error",
+        description: "Could not delete service.",
+        showProgress: true,
       });
     }
   };
 
-  const handleUpdateService = async (data: Service) => {
-    try {
-      const response = await updateService(data);
-      notification.success({
-        message: "Update Service",
-        description: response.message,
-      });
-    } catch (error) {
-      notification.error({
-        message: "Update Service",
-        description: (error as Error).message,
-      });
-    }
-  };
+  // const handleCreateService = async (data: ServiceCreateDto) => {
+  //   try {
+  //     const response = await createService(data);
+  //     notification.success({
+  //       message: "Add Service",
+  //       description: response.message,
+  //     });
+  //   } catch (error) {
+  //     notification.error({
+  //       message: "Add Service",
+  //       description: (error as Error).message,
+  //     });
+  //   }
+  // };
+
+  // const handleUpdateService = async (data: Service) => {
+  //   try {
+  //     const response = await updateService(data);
+  //     notification.success({
+  //       message: "Update Service",
+  //       description: response.message,
+  //     });
+  //   } catch (error) {
+  //     notification.error({
+  //       message: "Update Service",
+  //       description: (error as Error).message,
+  //     });
+  //   }
+  // };
 
   return (
     <PageWrapper>
       <ContentWrapper>
         <Header>
           <Title>Service Management</Title>
-          <Instruction>Add, edit, and manage all available services.</Instruction>
+          <Instruction>
+            Add, edit, and manage all available services.
+          </Instruction>
         </Header>
 
         <Toolbar>
@@ -217,11 +239,16 @@ export default function Admin_Service() {
                     <Td>{service.description}</Td>
                     <Td>{service.duration.toFixed(1)} hrs</Td>
                     <Td>
-                      <UpdateButton onClick={() => handleOpenEditModal(service)} disabled={service.isDeleted}>
+                      <UpdateButton
+                        onClick={() => handleOpenEditModal(service)}
+                        disabled={service.isDeleted}
+                      >
                         <FaPencilAlt /> Edit
                       </UpdateButton>
                       {!service.isDeleted && (
-                        <ActionButton onClick={() => handleOpenDeleteModal(service)}>
+                        <ActionButton
+                          onClick={() => handleOpenDeleteModal(service)}
+                        >
                           <FaTrash /> Delete
                         </ActionButton>
                       )}
@@ -255,8 +282,7 @@ export default function Admin_Service() {
             onClose={handleCloseFormModal}
             onSuccess={handleFormSuccess}
             serviceToEdit={serviceToEdit}
-            addApiFn={handleCreateService}
-            updateApiFn={handleUpdateService}
+            serviceCategories={serviceCategories}
           />
         )}
       </AnimatePresence>

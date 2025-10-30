@@ -1,3 +1,4 @@
+using System;
 using System.Security.Authentication;
 using System.Text;
 using API.Filters;
@@ -18,6 +19,7 @@ using Application.Validators.Order;
 using Application.Validators.Part;
 using Application.Validators.Service;
 using Application.Validators.Vehicle;
+using AutoMapper;
 using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
@@ -143,7 +145,9 @@ builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<IRedisService, RedisService>();
 builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
 builder.Services.AddScoped<IAppointmentPartConditionService, AppointmentPartConditionService>();
+builder.Services.AddSingleton<IAiChatServices, AiChatServices>();
 
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITechnicianSkillService, TechnicianSkillService>();
 //builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
 //{
@@ -164,14 +168,7 @@ builder.Services.AddScoped<OnAppointmentConfirmHandler>();
 
 
 // AutoMapper
-builder.Services.AddAutoMapper(typeof(ServiceProfile));
-builder.Services.AddAutoMapper(typeof(VehicleProfile));
-builder.Services.AddAutoMapper(typeof(VehicleCategoryProfile));
-builder.Services.AddAutoMapper(typeof(AppointmentProfile));
-builder.Services.AddAutoMapper(typeof(AccountProfile));
-builder.Services.AddAutoMapper(typeof(PartCategoryProfile));
-builder.Services.AddAutoMapper(typeof(PartHistoryProfile));
-//builder.Services.AddAutoMapper(typeof(ServiceCenterProfile));
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 //Action Filter
 builder.Services.AddScoped<AuthorizeVehicleOwnerFilter>();
@@ -203,8 +200,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateVehivleModelValidator
 builder.Services.AddValidatorsFromAssemblyContaining<AppointmentCustomerCreateModelValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<BlockedDatePostModelValidator>();
 
-builder.WebHost.ConfigureKestrel(o => { o.Limits.MaxRequestBodySize = null; }); 
-builder.Services.Configure<FormOptions>(o => {
+builder.WebHost.ConfigureKestrel(o => { o.Limits.MaxRequestBodySize = null; });
+builder.Services.Configure<FormOptions>(o =>
+{
     o.MultipartBodyLengthLimit = 1_073_741_824; // 1GB
 });
 
@@ -396,4 +394,18 @@ app.UseAzureSignalR(routes =>
 //{
 //    endpoints.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
 //});
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<EVCareDbContext>();
+    var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
+    try
+    {
+        mapper.ConfigurationProvider.AssertConfigurationIsValid();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+    _ = db.PartCategories.FirstOrDefault();
+}
 app.Run();

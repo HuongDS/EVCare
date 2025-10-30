@@ -4,4 +4,5 @@ export type Service = {
   description: string;
   duration: number;
   isDeleted: boolean;
+  serviceCategoryId: number;
 };

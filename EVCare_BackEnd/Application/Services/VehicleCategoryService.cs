@@ -7,6 +7,7 @@ using Application.Dtos;
 using Application.Interfaces;
 using AutoMapper;
 using DataAccess.Dtos.VehicleCategory;
+using DataAccess.Entities;
 using DataAccess.Interfaces;
 
 namespace Application.Services
@@ -30,12 +31,13 @@ namespace Application.Services
 
         public async Task<int> CreateCategoryAsync(VehicleCategoryCreateModel model) {
 
-            var id = 0;
+          
+            VehiclesCategory createdCategory =null;
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var categoryEntity = _mapper.Map<DataAccess.Entities.VehiclesCategory>(model);
                 
-                var createdCategory = await _vehicleCategoryRepository.AddAsync(categoryEntity);
+                 createdCategory = await _vehicleCategoryRepository.AddAsync(categoryEntity);
                 if (model.PartCategoryIds != null && model.PartCategoryIds.Length > 0)
                 {
                    await  _vehiclePartCompatibilityRepository.AddRangeAsync(model.PartCategoryIds.Select(partCategoryId => new DataAccess.Entities.VehiclePartCompatibility
@@ -44,9 +46,10 @@ namespace Application.Services
                         PartCategoryId = partCategoryId
                     }));
                 }
+                
             });
 
-            return id;
+            return createdCategory!.Id;
         }
 
         public async Task DeleteCategoryAsync(int id) {

@@ -8,6 +8,8 @@ import axios from "axios";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import type { Service } from "../models/ServicesModel/ServiceViewModel";
 import type { PageResultDto } from "../models/PageResult/PageResultDto";
+import type { ServiceCategoryAdminDto } from "../models/ServicesModel/ServiceCategoryAdminDto";
+import type { ServiceCategoryCreateDto } from "../models/ServicesModel/ServiceCategoryCreateDto";
 
 /**
  * [CUSTOMER, STAFF, ADMIN] get all service category
@@ -43,13 +45,12 @@ export async function createService(data: ServiceCreateDto) {
   }
 }
 
-export async function deleteService(data: number) {
+export async function deleteService(params: { serviceId: number }) {
   try {
-    await api.delete("/api/Service", {
-      params: {
-        id: data,
-      },
+    const response = await api.delete("/api/Service", {
+      params: params,
     });
+    return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errMsg = error.response?.data.message || error.message;
@@ -84,5 +85,56 @@ export async function getAllServicesWithPagination(params: {
     return response.data;
   } catch (error) {
     handleError(error);
+  }
+}
+
+export async function getAllServiceCategories(pageSize?: number) {
+  try {
+    const response = await api.get<ResponseDto<PageResultDto<ServiceCategoryAdminDto>>>("/api/ServiceCategory/admin", {
+      params: {
+        pageSize: pageSize ?? 1000,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function createServiceCategory(data: ServiceCategoryCreateDto) {
+  try {
+    const response = await api.post<ResponseDto<number>>("/api/ServiceCategory", data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.FAILED_WHEN_UPDATE_SERVICE);
+  }
+}
+
+export async function updateServiceCategory(id: number, data: ServiceCategoryCreateDto) {
+  try {
+    const response = await api.put(`/api/ServiceCategory/${id}`, data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.FAILED_WHEN_UPDATE_SERVICE);
+  }
+}
+
+export async function deleteServiceCategory(serviceCategoryId: number) {
+  try {
+    await api.delete(`/api/ServiceCategory/${serviceCategoryId}`);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.FAILED_WHEN_DELETE_SERVICE);
   }
 }
