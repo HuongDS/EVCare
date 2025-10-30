@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { Card, Divider, Button, Tag, notification } from "antd";
+import { Card, Divider, Button, Tag } from "antd";
 import {
   CreditCardOutlined,
   DollarOutlined,
