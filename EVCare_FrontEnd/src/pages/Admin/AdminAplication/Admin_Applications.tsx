@@ -38,32 +38,23 @@ const getStatusBadge = (status: ApplicationStatusEnum) => {
   }
 };
 
-export const Admin_Applications: React.FC = () => {
-  const [applications, setApplications] = useState<ApplicationAdminViewDto[]>(
-    []
-  );
-  const [selectedApp, setSelectedApp] =
-    useState<ApplicationAdminViewDto | null>(null);
+const Admin_Applications: React.FC = () => {
+  const [applications, setApplications] = useState<ApplicationAdminViewDto[]>([]);
+  const [selectedApp, setSelectedApp] = useState<ApplicationAdminViewDto | null>(null);
   const [pageIndex, setPageIndex] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [keyword, setKeyword] = useState<string>("");
-  const [status, setStatus] = useState<ApplicationStatusEnum | undefined>(
-    undefined
-  );
+  const [status, setStatus] = useState<ApplicationStatusEnum | undefined>(undefined);
   const [dateRange, setDateRange] = useState<RangePickerProps["value"]>(null);
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fromDate = dateRange?.[0]
-          ? dateRange[0].toDate().toDateString()
-          : "";
-        const toDate = dateRange?.[1]
-          ? dateRange[1].toDate().toDateString()
-          : "";
+        const fromDate = dateRange?.[0] ? dateRange[0].toDate().toDateString() : "";
+        const toDate = dateRange?.[1] ? dateRange[1].toDate().toDateString() : "";
 
         let response = null;
         if (fromDate != "" && toDate != "") {
@@ -132,17 +123,11 @@ export const Admin_Applications: React.FC = () => {
       <ContentWrapper>
         <Header>
           <Title>Approval of Leave Request</Title>
-          <Subtitle>
-            Manage and respond to employee leave requests (technicians, staff).
-          </Subtitle>
+          <Subtitle>Manage and respond to employee leave requests (technicians, staff).</Subtitle>
         </Header>
 
         <FilterBar>
-          <SearchBar
-            search={keyword}
-            placeholder="Search by Employee Name or ID"
-            onSearch={handleSearch}
-          />
+          <SearchBar search={keyword} placeholder="Search by Employee Name or ID" onSearch={handleSearch} />
           <FilterBarItem>
             <Select
               defaultValue={undefined}
@@ -159,10 +144,7 @@ export const Admin_Applications: React.FC = () => {
           </FilterBarItem>
 
           <FilterBarItem>
-            <DatePicker.RangePicker
-              value={dateRange}
-              onChange={handleDateRangeChange}
-            />
+            <DatePicker.RangePicker value={dateRange} onChange={handleDateRangeChange} />
           </FilterBarItem>
         </FilterBar>
 
@@ -186,14 +168,10 @@ export const Admin_Applications: React.FC = () => {
                   <td>{new Date(app.dateOff).toLocaleDateString("vi-VN")}</td>
                   <td>{new Date(app.createdAt).toLocaleDateString("vi-VN")}</td>
                   <td>
-                    <StatusBadge status={app.status}>
-                      {getStatusBadge(app.status)}
-                    </StatusBadge>
+                    <StatusBadge status={app.status}>{getStatusBadge(app.status)}</StatusBadge>
                   </td>
                   <td>
-                    <ViewButton onClick={() => setSelectedApp(app)}>
-                      Details
-                    </ViewButton>
+                    <ViewButton onClick={() => setSelectedApp(app)}>Details</ViewButton>
                   </td>
                 </tr>
               ))}
@@ -210,13 +188,11 @@ export const Admin_Applications: React.FC = () => {
         />
 
         {selectedApp && (
-          <LazyLeaveDetailModal
-            setRefresh={setRefresh}
-            application={selectedApp}
-            onClose={handleCloseModal}
-          />
+          <LazyLeaveDetailModal setRefresh={setRefresh} application={selectedApp} onClose={handleCloseModal} />
         )}
       </ContentWrapper>
     </PageWrapper>
   );
 };
+
+export default Admin_Applications;
