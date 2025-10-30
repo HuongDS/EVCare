@@ -3,7 +3,7 @@ import { StyledWrapper } from "./Style/SearchBar.styled";
 
 interface handleSearchProps {
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // Xác định kiểu cho e
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
 }
 

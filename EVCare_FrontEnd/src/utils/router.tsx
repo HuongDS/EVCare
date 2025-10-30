@@ -4,25 +4,39 @@ import SpinnerComponent from "../components/SpinnerComponent";
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
 import { RoleEnum } from "../models/enums";
 const Layout = lazy(() => import("../components/Layouts/CustomerLayout"));
-const AdminLayout = lazy(() => import("../pages/Admin/AdminComponents/AdminLayout"));
+const AdminLayout = lazy(
+  () => import("../pages/Admin/AdminComponents/AdminLayout")
+);
 const StaffLayout = lazy(() => import("../components/Layouts/StaffLayout"));
-const TechnicianDefaultLayout = lazy(() => import("../pages/Technician/Technician_Component/TechnicianLayout"));
-const TechnicianOrderLayout = lazy(() => import("../pages/Technician/Technician_Component/Technician_OrderLayout"));
+const TechnicianDefaultLayout = lazy(
+  () => import("../pages/Technician/Technician_Component/TechnicianLayout")
+);
+const TechnicianOrderLayout = lazy(
+  () =>
+    import("../pages/Technician/Technician_Component/Technician_OrderLayout")
+);
 const HomePage = lazy(() => import("../pages/Users/HomePage/HomePage"));
-const ServiceList = lazy(() => import("../pages/Users/ServicesPage/ServiceList"));
+const ServiceList = lazy(
+  () => import("../pages/Users/ServicesPage/ServiceList")
+);
 const AboutUs = lazy(() => import("../pages/Users/AboutUs/AboutUs"));
 const ContactUs = lazy(() => import("../pages/Users/Contact/ContactUs"));
-const OrderList = lazy(() => import("../pages/Customer/OrderHistory/Appointment/AppointmentList"));
-const Rating = lazy(() => import("../pages/Customer/OrderHistory/Rating/Rating"));
+const OrderList = lazy(
+  () => import("../pages/Customer/OrderHistory/Appointment/AppointmentList")
+);
+const Rating = lazy(
+  () => import("../pages/Customer/OrderHistory/Rating/Rating")
+);
 const Test = lazy(() => import("../components/Test"));
 const PageNotFound = lazy(() => import("../components/Layouts/PageNotFound"));
-const UserProfilePage = lazy(() => import("../pages/Users/Profile/UserProfilePage"));
+const UserProfilePage = lazy(
+  () => import("../pages/Users/Profile/UserProfilePage")
+);
 const Review = lazy(() => import("../pages/Users/Review/Review"));
 const PolicyPage = lazy(() => import("../pages/Users/PolicyPage/Policy"));
-const ChatPage = lazy(() => import("../pages/Customer/Chat/ChatPage").then((module) => ({ default: module.ChatPage })));
-const Admin_Applications = lazy(() =>
-  import("../pages/Admin/AdminAplication/Admin_Applications").then((module) => ({
-    default: module.Admin_Applications,
+const ChatPage = lazy(() =>
+  import("../pages/Customer/Chat/ChatPage").then((module) => ({
+    default: module.ChatPage,
   }))
 );
 const Admin_General = lazy(() => import("../pages/Admin/AdminGeneral/Admin_General"));
@@ -48,10 +62,13 @@ import {
   LazySchedule,
   LazyGeneral,
   LazyApplication,
+  LazyMyJob,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
 
-const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return <Suspense fallback={<SpinnerComponent />}>{children}</Suspense>;
 };
 
@@ -144,7 +161,14 @@ const router = createBrowserRouter([
       {
         path: "account-information",
         element: (
-          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER, RoleEnum.ADMIN, RoleEnum.TECHNICIAN, RoleEnum.STAFF]}>
+          <ProtectedRoute
+            allowedRoles={[
+              RoleEnum.CUSTOMER,
+              RoleEnum.ADMIN,
+              RoleEnum.TECHNICIAN,
+              RoleEnum.STAFF,
+            ]}
+          >
             <SuspenseWrapper>
               <UserProfilePage />
             </SuspenseWrapper>
@@ -334,6 +358,7 @@ const router = createBrowserRouter([
       { path: "application", element: <LazyApplication /> },
       { path: "history", element: <LazyHistory /> },
       { path: "schedule", element: <LazySchedule /> },
+      { path: "my-jobs", element: <LazyMyJob /> },
     ],
   },
   {

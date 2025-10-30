@@ -1,24 +1,43 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import OrderHistorySort from "../../CustomerComponent/AppointmentHistoryFilter";
 import { Title } from "./AppointmentList.styled";
-import { getAppointmentById, getCustomerAppointment } from "../../../../services/appointmentServiceApi";
+import {
+  getAppointmentById,
+  getCustomerAppointment,
+} from "../../../../services/appointmentServiceApi";
 import SpinnerComponent from "../../../../components/SpinnerComponent";
 import AppointmentDetail from "../AppointmentDetail/AppointmentDetail";
 import type { AppointmentViewDetailModel } from "../../../../models/AppointmentsModel/AppointmentViewDetailModel";
 import AppointmentHistoryCard from "./AppointmentHistoryCard";
 import { handleError } from "../../../../utils/errorHandler";
-
+import { useNotification } from "../../../../context/useNotification";
 export default function OrderList() {
-  const sortBy = useMemo(() => ["Pending", "Confirmed", "InProgress", "ReadyForPickup", "Done", "Canceled"], []);
-  const [listAppointment, setListAppointment] = useState<AppointmentViewDetailModel[]>([]);
+  const sortBy = useMemo(
+    () => [
+      "Pending",
+      "Confirmed",
+      "InProgress",
+      "ReadyForPickup",
+      "Done",
+      "Canceled",
+    ],
+    []
+  );
+  const [listAppointment, setListAppointment] = useState<
+    AppointmentViewDetailModel[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(sortBy[0]);
-  const [filteredList, setFilteredList] = useState<AppointmentViewDetailModel[]>([]);
+  const [filteredList, setFilteredList] = useState<
+    AppointmentViewDetailModel[]
+  >([]);
   const [selectedAppointment, setSelectedAppointment] = useState(0);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [loadingModalDetail, setLoadingModalDetail] = useState<number | null>(null);
+  const [loadingModalDetail, setLoadingModalDetail] = useState<number | null>(
+    null
+  );
   const [data, setData] = useState<AppointmentViewDetailModel>(Object);
-
+  const notification = useNotification();
   const onViewAppointmentDetail = useCallback(async (appointmentId: number) => {
     setLoadingModalDetail(appointmentId);
     setSelectedAppointment(appointmentId);
@@ -31,7 +50,11 @@ export default function OrderList() {
       }
     } catch (error) {
       handleError(error);
-      alert(error);
+      notification.error({
+        message: "Error",
+        description: "Failed to fetch data",
+        showProgress: true,
+      });
     }
     setIsOpenModal(true);
     setLoadingModalDetail(null);
@@ -59,7 +82,11 @@ export default function OrderList() {
       setIsLoading(true);
       const response = await getCustomerAppointment();
       setListAppointment(response.data ?? []);
-      setFilteredList(response.data ? response.data.filter((a) => a.status === selectedCategory) : []);
+      setFilteredList(
+        response.data
+          ? response.data.filter((a) => a.status === selectedCategory)
+          : []
+      );
       setIsLoading(false);
     };
     fetchData();
@@ -78,9 +105,15 @@ export default function OrderList() {
         </div>
       ) : (
         <>
-          <OrderHistorySort sortName={sortBy} onSelectCategory={handleFiltered} selectedCategory={selectedCategory} />
+          <OrderHistorySort
+            sortName={sortBy}
+            onSelectCategory={handleFiltered}
+            selectedCategory={selectedCategory}
+          />
           {filteredList.length === 0 ? (
-            <p style={{ textAlign: "center", marginTop: "20px" }}>No orders found.</p>
+            <p style={{ textAlign: "center", marginTop: "20px" }}>
+              No orders found.
+            </p>
           ) : (
             filteredList.map((a) => (
               <AppointmentHistoryCard

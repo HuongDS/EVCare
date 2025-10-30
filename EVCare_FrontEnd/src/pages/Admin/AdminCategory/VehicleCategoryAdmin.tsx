@@ -19,7 +19,10 @@ import DeleteConfirmationModal from "../AdminService&Parts/DeleteConfirmModal";
 import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import VehicleCategoryForm from "./VehicleCategoryForm"; // <-- UPDATED
 import VehicleCategoryEditModal from "./VehicleCategoryEditModal"; // <-- UPDATED
-import { deleteVehicleCategory, getVehicleCategories } from "../../../services/vehicleServicesApi";
+import {
+  deleteVehicleCategory,
+  getVehicleCategories,
+} from "../../../services/vehicleServicesApi";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
 
 type SubTab = "view" | "add";
@@ -29,9 +32,12 @@ export default function VehicleCategoryAdmin() {
   const [categories, setCategories] = useState<VehicleCategoryViewDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const notification = useNotification();
-  const [itemToEdit, setItemToEdit] = useState<VehicleCategoryViewDto | null>(null);
+  const [itemToEdit, setItemToEdit] = useState<VehicleCategoryViewDto | null>(
+    null
+  );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<VehicleCategoryViewDto | null>(null);
+  const [itemToDelete, setItemToDelete] =
+    useState<VehicleCategoryViewDto | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
@@ -40,7 +46,11 @@ export default function VehicleCategoryAdmin() {
       const data = await getVehicleCategories();
       setCategories(data?.data ?? []);
     } catch (error) {
-      notification.error({ message: "Error", description: ERROR_MESSAGE.FETCH_DATA_FAILED });
+      notification.error({
+        message: "Error",
+        description: ERROR_MESSAGE.FETCH_DATA_FAILED,
+        showProgress: true,
+      });
     }
     setIsLoading(false);
   }, [notification]);
@@ -74,17 +84,30 @@ export default function VehicleCategoryAdmin() {
     if (!itemToDelete) return;
     try {
       await deleteVehicleCategory(itemToDelete.id);
-      notification.success({ message: "Deleted", description: `Category ${itemToDelete.name} deleted.` });
+      notification.success({
+        message: "Deleted",
+        description: `Category ${itemToDelete.name} deleted.`,
+        showProgress: true,
+      });
       fetchData();
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsDeleteModalOpen(false);
     setItemToDelete(null);
   };
 
   const renderViewTab = () => (
-    <TabContent key="view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <TabContent
+      key="view"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       {isLoading ? (
         <SpinnerComponent />
       ) : (
@@ -104,7 +127,10 @@ export default function VehicleCategoryAdmin() {
                     <ActionButton onClick={() => handleOpenEditModal(cat)}>
                       <FaPencilAlt />
                     </ActionButton>
-                    <ActionButton $isDelete onClick={() => handleOpenDeleteModal(cat)}>
+                    <ActionButton
+                      $isDelete
+                      onClick={() => handleOpenDeleteModal(cat)}
+                    >
                       <FaTrash />
                     </ActionButton>
                   </Td>
@@ -118,7 +144,12 @@ export default function VehicleCategoryAdmin() {
   );
 
   const renderAddTab = () => (
-    <TabContent key="add" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+    <TabContent
+      key="add"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+    >
       <VehicleCategoryForm onAddSuccess={handleAddSuccess} />
     </TabContent>
   );
@@ -127,15 +158,23 @@ export default function VehicleCategoryAdmin() {
     <>
       <ManagerWrapper>
         <SubTabContainer>
-          <SubTabButton $isActive={activeSubTab === "view"} onClick={() => setActiveSubTab("view")}>
+          <SubTabButton
+            $isActive={activeSubTab === "view"}
+            onClick={() => setActiveSubTab("view")}
+          >
             View All
           </SubTabButton>
-          <SubTabButton $isActive={activeSubTab === "add"} onClick={() => setActiveSubTab("add")}>
+          <SubTabButton
+            $isActive={activeSubTab === "add"}
+            onClick={() => setActiveSubTab("add")}
+          >
             Add New
           </SubTabButton>
         </SubTabContainer>
 
-        <AnimatePresence mode="wait">{activeSubTab === "view" ? renderViewTab() : renderAddTab()}</AnimatePresence>
+        <AnimatePresence mode="wait">
+          {activeSubTab === "view" ? renderViewTab() : renderAddTab()}
+        </AnimatePresence>
       </ManagerWrapper>
 
       <AnimatePresence>

@@ -74,17 +74,13 @@ export default function TechnicianOrder({
 
   const pageSize = LENGTH.VIEW_PARTCARD_MAX;
 
-  /** Fetch parts + appointment together */
   useEffect(() => {
     const fetchData = async () => {
       if (!currentOrderId) return;
       setIsLoading(true);
       try {
-        // Fetch all parts
         const partsRes = await getAllParts({ pageIndex: 1, pageSize: 1000 });
         setAllParts(partsRes.items ?? []);
-
-        // Fetch technician appointment
         const appointmentRes = await getTechnicianAppointments({
           Status: "AddingPart",
         });
@@ -119,7 +115,6 @@ export default function TechnicianOrder({
     fetchData();
   }, [currentOrderId]);
 
-  /** Update display parts for search & pagination */
   const updateDisplayParts = useCallback(() => {
     const query = searchQuery.trim().toLowerCase();
     const filtered = allParts.filter(
@@ -136,7 +131,6 @@ export default function TechnicianOrder({
     updateDisplayParts();
   }, [updateDisplayParts]);
 
-  /** Cart handlers */
   const handleAddToCart = (part: OrderPartsResponseDto, quantity: number) => {
     setCart((prev) => {
       const exist = prev.find((item) => item.part.id === part.id);
@@ -176,6 +170,7 @@ export default function TechnicianOrder({
       notification.success({
         message: "Update Successful",
         description: "Parts and damage levels updated successfully!",
+        showProgress: true,
       });
       onPartsUpdated?.(currentOrderId);
       setCartOpen(false);
@@ -185,6 +180,7 @@ export default function TechnicianOrder({
       notification.error({
         message: "Update Failed",
         description: "Failed to update parts or damage levels.",
+        showProgress: true,
       });
     } finally {
       setIsSending(false);

@@ -65,8 +65,6 @@ export default function CartModal({
   const [damageLevels, setDamageLevels] = useState<
     Record<number, DamageLevelEnum>
   >({});
-
-  // Initialize damageLevels when cart changes
   useEffect(() => {
     const initLevels: Record<number, DamageLevelEnum> = {};
     cart.forEach(({ part }) => {
@@ -93,7 +91,6 @@ export default function CartModal({
         <Box sx={boxStyle}>
           <Title>Part's Cart ({cart.length})</Title>
           <CartContainer>
-            {/* Left side: cart list */}
             <CartList>
               {cart.map(({ part, quantity }) => (
                 <CartItem key={part.id}>
@@ -106,7 +103,6 @@ export default function CartModal({
 
                   <ItemRight>
                     <QuantityControl>
-                      {/* Button giảm */}
                       <IconButton
                         size="small"
                         onClick={() =>
@@ -124,8 +120,6 @@ export default function CartModal({
                       </IconButton>
 
                       <QuantityNumber>{quantity}</QuantityNumber>
-
-                      {/* Button tăng */}
                       <IconButton
                         size="small"
                         onClick={() => onQuantityChange(part.id, quantity + 1)}
@@ -138,8 +132,6 @@ export default function CartModal({
                       >
                         +
                       </IconButton>
-
-                      {/* Damage dropdown */}
                       <select
                         value={damageLevels[part.id]}
                         onChange={(e) =>
@@ -169,8 +161,6 @@ export default function CartModal({
                         )}
                       </select>
                     </QuantityControl>
-
-                    {/* Remove */}
                     <IconButton
                       color="error"
                       onClick={() => onRemove(part.id)}
@@ -182,8 +172,6 @@ export default function CartModal({
                 </CartItem>
               ))}
             </CartList>
-
-            {/* Right side: checkout */}
             <CheckoutBox>
               <CheckoutHeader>Check Out</CheckoutHeader>
               <TotalSection>

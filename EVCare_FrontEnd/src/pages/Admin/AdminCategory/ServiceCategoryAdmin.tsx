@@ -19,7 +19,10 @@ import SpinnerComponent from "../../../components/SpinnerComponent";
 import CategoryEditModal from "./CategoryEditModal";
 import DeleteConfirmationModal from "../AdminService&Parts/DeleteConfirmModal";
 import type { ServiceCategoryAdminDto } from "../../../models/ServicesModel/ServiceCategoryAdminDto";
-import { deleteServiceCategory, getAllServiceCategories } from "../../../services/serviceServicesApi";
+import {
+  deleteServiceCategory,
+  getAllServiceCategories,
+} from "../../../services/serviceServicesApi";
 import ServiceCategoryForm from "./ServiceCategoryForm";
 
 type SubTab = "view" | "add";
@@ -29,9 +32,12 @@ export default function ServiceCategoryAdmin() {
   const [categories, setCategories] = useState<ServiceCategoryAdminDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const notification = useNotification();
-  const [itemToEdit, setItemToEdit] = useState<ServiceCategoryAdminDto | null>(null);
+  const [itemToEdit, setItemToEdit] = useState<ServiceCategoryAdminDto | null>(
+    null
+  );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<ServiceCategoryAdminDto | null>(null);
+  const [itemToDelete, setItemToDelete] =
+    useState<ServiceCategoryAdminDto | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
@@ -40,7 +46,11 @@ export default function ServiceCategoryAdmin() {
       const data = await getAllServiceCategories();
       setCategories(data?.data?.items ?? []);
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsLoading(false);
   }, [notification]);
@@ -68,17 +78,30 @@ export default function ServiceCategoryAdmin() {
     if (!itemToDelete) return;
     try {
       await deleteServiceCategory(itemToDelete.id);
-      notification.success({ message: "Deleted", description: `Deleted category ${itemToDelete.name}.` });
+      notification.success({
+        message: "Deleted",
+        description: `Deleted category ${itemToDelete.name}.`,
+        showProgress: true,
+      });
       fetchData();
     } catch (error) {
-      notification.error({ message: "Error", description: (error as Error).message });
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
+      });
     }
     setIsDeleteModalOpen(false);
     setItemToDelete(null);
   };
 
   const renderViewTab = () => (
-    <TabContent key="view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <TabContent
+      key="view"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       {isLoading ? (
         <SpinnerComponent />
       ) : (
@@ -98,13 +121,22 @@ export default function ServiceCategoryAdmin() {
                   <Td>{cat.name}</Td>
                   <Td>{cat.description}</Td>
                   <Td>
-                    <StatusBadge $isActive={cat.isActive}>{cat.isActive ? "Active" : "Deleted"}</StatusBadge>
+                    <StatusBadge $isActive={cat.isActive}>
+                      {cat.isActive ? "Active" : "Deleted"}
+                    </StatusBadge>
                   </Td>
                   <Td>
-                    <ActionButton onClick={() => handleOpenEditModal(cat)} disabled={!cat.isActive}>
+                    <ActionButton
+                      onClick={() => handleOpenEditModal(cat)}
+                      disabled={!cat.isActive}
+                    >
                       <FaPencilAlt />
                     </ActionButton>
-                    <ActionButton $isDelete onClick={() => handleOpenDeleteModal(cat)} disabled={!cat.isActive}>
+                    <ActionButton
+                      $isDelete
+                      onClick={() => handleOpenDeleteModal(cat)}
+                      disabled={!cat.isActive}
+                    >
                       <FaTrash />
                     </ActionButton>
                   </Td>
@@ -118,7 +150,12 @@ export default function ServiceCategoryAdmin() {
   );
 
   const renderAddTab = () => (
-    <TabContent key="add" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+    <TabContent
+      key="add"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+    >
       <ServiceCategoryForm onAddSuccess={handleAddOrUpdateSuccess} />
     </TabContent>
   );
@@ -127,15 +164,23 @@ export default function ServiceCategoryAdmin() {
     <>
       <ManagerWrapper>
         <SubTabContainer>
-          <SubTabButton $isActive={activeSubTab === "view"} onClick={() => setActiveSubTab("view")}>
+          <SubTabButton
+            $isActive={activeSubTab === "view"}
+            onClick={() => setActiveSubTab("view")}
+          >
             View All
           </SubTabButton>
-          <SubTabButton $isActive={activeSubTab === "add"} onClick={() => setActiveSubTab("add")}>
+          <SubTabButton
+            $isActive={activeSubTab === "add"}
+            onClick={() => setActiveSubTab("add")}
+          >
             Add New
           </SubTabButton>
         </SubTabContainer>
 
-        <AnimatePresence mode="wait">{activeSubTab === "view" ? renderViewTab() : renderAddTab()}</AnimatePresence>
+        <AnimatePresence mode="wait">
+          {activeSubTab === "view" ? renderViewTab() : renderAddTab()}
+        </AnimatePresence>
       </ManagerWrapper>
 
       <AnimatePresence>
