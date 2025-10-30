@@ -3,6 +3,7 @@ import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import styled from "styled-components";
 import Authentication from "../../pages/Shared/Auth/Authentication";
+import { ChatWidget } from "../../pages/Customer/Chat/ChatWidget";
 
 const Container = styled.div`
   display: flex;
@@ -18,13 +19,11 @@ export default function Layout() {
       <Header />
       <Authentication />
       <Main>
-        <div id="smooth-wrapper">
-          <div id="smooth-content">
-            <Outlet />
-          </div>
-        </div>
+        <Outlet />
       </Main>
       <Footer />
+
+      <ChatWidget />
     </Container>
   );
 }

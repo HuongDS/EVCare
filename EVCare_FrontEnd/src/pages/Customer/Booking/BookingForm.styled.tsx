@@ -57,16 +57,27 @@ export const FormTitle = styled.h2`
 `;
 
 export const CloseButton = styled.button`
-  font-size: 1em;
-  height: 50%;
-  border: none;
-  border-radius: 5px;
-  background-color: #ccc;
-  color: white;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: #fff;
+  color: black;
+  border: 2px solid #d1d5db;
+  font-size: 1rem;
+  font-weight: 300;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  transition: 0.3s ease;
+
   &:hover {
-    color: red;
-    background-color: white;
-    border: 1px solid #ccc;
+    background-color: #ee0d0d;
+    border: 2px solid #ee0d0d;
+    color: #fff;
   }
 `;
 

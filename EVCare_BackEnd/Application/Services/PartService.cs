@@ -44,7 +44,7 @@ namespace Application.Services
 
         public async Task<int> CreateAPart(PartCreateModel model, int accountId)
         {
-            int id = 0;
+            Part part = null;
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var category = await _partCategoryRepository.GetByIdAsync(model.CategoryId);
@@ -52,7 +52,11 @@ namespace Application.Services
                 {
                     throw new Exception("Category not found");
                 }
-                var part = _mapper.Map<DataAccess.Entities.Part>(model);
+                if(category.Deleted_At != DateTime.MinValue)
+                {
+                    throw new Exception("Category has been deleted");
+                }
+                part = _mapper.Map<DataAccess.Entities.Part>(model);
                 await _partRepository.AddAsync(part);
                 await _unitOfWork.SaveChangesAsync();
                 var partHistory = _mapper.Map<PartHistory>(model);
@@ -60,9 +64,9 @@ namespace Application.Services
                 var account = await _accountRepository.GetByIdAsync(accountId);
                 partHistory.EmployeeName = account.First_Name + " " + account.Last_Name;
                 await _partHistoryRepository.AddAsync(partHistory);
-                id = part.Id;
+                
             });
-            return id;
+            return part.Id;
 
         }
 

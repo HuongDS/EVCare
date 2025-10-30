@@ -39,13 +39,6 @@ const ChatPage = lazy(() =>
     default: module.ChatPage,
   }))
 );
-const Admin_Applications = lazy(() =>
-  import("../pages/Admin/AdminAplication/Admin_Applications").then(
-    (module) => ({
-      default: module.Admin_Applications,
-    })
-  )
-);
 const Admin_General = lazy(
   () => import("../pages/Admin/AdminGeneral/Admin_General")
 );
@@ -80,12 +73,25 @@ const Manage_Customer = lazy(
 const Staff_Appoinments = lazy(
   () => import("../pages/Staff/StaffManageAppointment/Staff_Appoinments")
 );
+const AdminServiceCenter = lazy(
+  () => import("../pages/Admin/AdminServiceCenter/AdminServiceCenter")
+);
+const Admin_Category = lazy(
+  () => import("../pages/Admin/AdminCategory/Admin_Category")
+);
+const StaffChatPage = lazy(() =>
+  import("../pages/Customer/Chat/StaffChatPage").then((module) => ({
+    default: module.StaffChatPage,
+  }))
+);
+
 import {
   LazyOrder,
   LazyHistory,
   LazySchedule,
   LazyGeneral,
   LazyApplication,
+  LazyMyJob,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
 
@@ -278,11 +284,27 @@ const router = createBrowserRouter([
           </SuspenseWrapper>
         ),
       },
+      // {
+      //   path: "applications",
+      //   element: (
+      //     <SuspenseWrapper>
+      //       <Admin_Applications />
+      //     </SuspenseWrapper>
+      //   ),
+      // },
       {
-        path: "applications",
+        path: "categories",
         element: (
           <SuspenseWrapper>
-            <Admin_Applications />
+            <Admin_Category />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "center-information",
+        element: (
+          <SuspenseWrapper>
+            <AdminServiceCenter />
           </SuspenseWrapper>
         ),
       },
@@ -344,7 +366,7 @@ const router = createBrowserRouter([
         path: "chat-with-customer",
         element: (
           <SuspenseWrapper>
-            <ChatPage />
+            <StaffChatPage />
           </SuspenseWrapper>
         ),
       },
@@ -365,6 +387,7 @@ const router = createBrowserRouter([
       { path: "application", element: <LazyApplication /> },
       { path: "history", element: <LazyHistory /> },
       { path: "schedule", element: <LazySchedule /> },
+      { path: "my-jobs", element: <LazyMyJob /> },
     ],
   },
   {

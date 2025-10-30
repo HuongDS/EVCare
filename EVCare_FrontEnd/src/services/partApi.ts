@@ -86,11 +86,13 @@ export async function deletePart(data: number) {
   }
 }
 
-export async function getPartCategories() {
+export async function getPartCategories(pageSize?: number) {
   try {
-    const response = await api.get<ResponseDto<PageResultDto<Category>>>(
-      "/api/PartCategory"
-    );
+    const response = await api.get<ResponseDto<PageResultDto<Category>>>("/api/PartCategory", {
+      params: {
+        pageSize: pageSize ?? 1000,
+      },
+    });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

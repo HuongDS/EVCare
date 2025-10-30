@@ -93,7 +93,10 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
       return response;
     } catch (error) {
       handleError(error);
-      alert(error);
+      notification.error({
+        message: (error as Error).message,
+        showProgress: true,
+      });
     }
   }, [orderDetail?.data?.id, orderDetail?.data?.price, paymentMethod]);
 

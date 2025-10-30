@@ -31,10 +31,19 @@ import UploadImage from "../../../../components/UploadFields/uploadImage";
 import DeleteConfirmationModal from "../DeleteConfirmModal";
 import SpinnerComponent from "../../../../components/SpinnerComponent";
 import { Editor } from "@tinymce/tinymce-react";
-import type { Category, PartDetailDto } from "../../../../models/PartModel/PartModel";
+import type {
+  Category,
+  PartDetailDto,
+} from "../../../../models/PartModel/PartModel";
 import type { NewPartDto } from "../../../../models/PartModel/NewPartDto";
 import { useNotification } from "../../../../context/useNotification";
-import { createPart, deletePart, getAllParts02, getPartCategories, updatePart } from "../../../../services/partApi";
+import {
+  createPart,
+  deletePart,
+  getAllParts02,
+  getPartCategories,
+  updatePart,
+} from "../../../../services/partApi";
 import { UpdatePartForm } from "./UpdatePartForm";
 import { Pagination } from "../../../../components/Paginations/Pagination";
 import { ERROR_MESSAGE } from "../../../../constants/messages/Message";
@@ -77,7 +86,10 @@ export default function Admin_Part() {
         // }
       } catch (error) {
         console.error("Failed to fetch categories", error);
-        notification.error({ message: "Fetch Data", description: ERROR_MESSAGE.FETCH_DATA_FAILED });
+        notification.error({
+          message: "Fetch Data",
+          description: ERROR_MESSAGE.FETCH_DATA_FAILED,
+        });
       }
     };
     fetchCategories();
@@ -89,9 +101,16 @@ export default function Admin_Part() {
       try {
         let partsData = null;
         if (search.trim().length > 0) {
-          partsData = await getAllParts02({ PartName: search.trim(), PageSize: pageSize, PageIndex: pageIndex });
+          partsData = await getAllParts02({
+            PartName: search.trim(),
+            PageSize: pageSize,
+            PageIndex: pageIndex,
+          });
         } else {
-          partsData = await getAllParts02({ PageSize: pageSize, PageIndex: pageIndex });
+          partsData = await getAllParts02({
+            PageSize: pageSize,
+            PageIndex: pageIndex,
+          });
         }
         setParts(partsData.items);
         setTotalPages(partsData.totalPages);
@@ -100,7 +119,10 @@ export default function Admin_Part() {
         setPageSize(partsData.pageSize);
       } catch (error) {
         console.error("Failed to fetch data", error);
-        notification.error({ message: "Fetch Data", description: ERROR_MESSAGE.FETCH_DATA_FAILED });
+        notification.error({
+          message: "Fetch Data",
+          description: ERROR_MESSAGE.FETCH_DATA_FAILED,
+        });
       }
       setIsLoading(false);
     };
@@ -108,7 +130,11 @@ export default function Admin_Part() {
   }, [search, pageIndex, pageSize, notification]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | string
+    e:
+      | React.ChangeEvent<
+          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
+      | string
   ) => {
     if (typeof e === "string") {
       setNewPart((prev) => ({
@@ -120,7 +146,10 @@ export default function Admin_Part() {
       setNewPart((prev) => ({
         ...prev,
         [name]:
-          name === "price" || name === "replacementPrice" || name === "stock" || name === "categoryId"
+          name === "price" ||
+          name === "replacementPrice" ||
+          name === "stock" ||
+          name === "categoryId"
             ? Number(value)
             : value,
       }));
@@ -146,14 +175,45 @@ export default function Admin_Part() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!imageUrl) {
-      notification.error({ message: "Add Part", description: "Please upload an image." });
-      return;
-    }
     try {
+      if (!imageUrl) {
+        notification.error({
+          message: "Add Part",
+          description: "Please upload an image.",
+          showProgress: true,
+        });
+        return;
+      }
+
+      if (newPart.name.trim().length <= 0) {
+        throw new Error("Please input a part name.");
+      }
+
+      if (newPart.description.trim().length <= 0) {
+        throw new Error("Please input a part description.");
+      }
+
+      if (newPart.price <= 0) {
+        throw new Error("Please input a valid part price.");
+      }
+
+      if (newPart.replacementPrice <= 0) {
+        throw new Error("Please input a valid part replacementPrice.");
+      }
+
+      if (newPart.stock <= 0) {
+        throw new Error("Please input a valid part stock.");
+      }
+
       const payload: NewPartDto = { ...newPart, image: imageUrl };
-      if (payload.price === 0 || payload.replacementPrice === 0 || payload.stock === 0) {
-        throw new Error("Price, Replacement Price or Stock must be greater than 0 when you adding !");
+      if (
+        payload.price === 0 ||
+        payload.replacementPrice === 0 ||
+        payload.stock === 0
+      ) {
+        throw new Error(
+          "Price, Replacement Price or Stock must be greater than 0 when you adding !"
+        );
       }
       const response = await createPart(payload);
       setParts((prev) => [
@@ -174,6 +234,7 @@ export default function Admin_Part() {
       notification.success({
         message: "Add Part",
         description: "Product added successfully!",
+        showProgress: true,
       });
       setNewPart({
         name: "",
@@ -190,6 +251,7 @@ export default function Admin_Part() {
       notification.error({
         message: "Add Part",
         description: (error as Error).message,
+        showProgress: true,
       });
     }
   };
@@ -213,11 +275,13 @@ export default function Admin_Part() {
       notification.info({
         message: "Delete Part",
         description: "Product deleted successfully!",
+        showProgress: true,
       });
     } catch (error) {
       notification.error({
         message: "Delete Part",
         description: (error as Error).message || "Failed to delete product.",
+        showProgress: true,
       });
     }
   };
@@ -229,20 +293,41 @@ export default function Admin_Part() {
 
   const handleUpdateSubmit = async (id: number, payload: PartDetailDto) => {
     try {
-      if (payload.price === 0 || payload.replacementPrice === 0 || payload.quantity === 0) {
-        throw new Error("Price, Replacement Price or Quantity must be greater than 0 when you updating !");
+      if (
+        payload.price === 0 ||
+        payload.replacementPrice === 0 ||
+        payload.quantity === 0
+      ) {
+        throw new Error(
+          "Price, Replacement Price or Quantity must be greater than 0 when you updating !"
+        );
       }
       await updatePart(id, payload);
-      notification.success({ message: "Update Part", description: "Update successfully!" });
+      notification.success({
+        message: "Update Part",
+        description: "Update successfully!",
+        showProgress: true,
+      });
       setParts((prevParts) =>
         prevParts.map((p) =>
-          p.id === id ? { ...p, ...payload, quantity: payload.quantity, imageUrl: payload.imageUrl } : p
+          p.id === id
+            ? {
+                ...p,
+                ...payload,
+                quantity: payload.quantity,
+                imageUrl: payload.imageUrl,
+              }
+            : p
         )
       );
       setPartToEdit(null);
       setActiveTab("list");
     } catch (error) {
-      notification.error({ message: "Update Part", description: `${(error as Error).message}` });
+      notification.error({
+        message: "Update Part",
+        description: `${(error as Error).message}`,
+        showProgress: true,
+      });
     }
   };
 
@@ -257,13 +342,22 @@ export default function Admin_Part() {
       <ContentWrapper>
         <Header>
           <Title>Product Management</Title>
-          <Instruction>Manage, add new, and delete spare parts in the system.</Instruction>
+          <Instruction>
+            Manage, add new, and delete spare parts in the system.
+          </Instruction>
         </Header>
 
-        <SearchBar search={search} onSearchChange={handleSearch} placeHolder="Search by part name..." />
+        <SearchBar
+          search={search}
+          onSearchChange={handleSearch}
+          placeHolder="Search by part name..."
+        />
 
         <TabContainer>
-          <TabButton $isActive={activeTab === "list"} onClick={() => setActiveTab("list")}>
+          <TabButton
+            $isActive={activeTab === "list"}
+            onClick={() => setActiveTab("list")}
+          >
             <FaList />
             Spare Parts List
           </TabButton>
@@ -316,30 +410,53 @@ export default function Admin_Part() {
                           </Td>
                         </Tr>
                       ) : parts.length > 0 ? (
-                        parts.map((part) => (
-                          <Tr key={part.id}>
-                            <Td>
-                              <PartImage src={part.imageUrl} alt={part.name} />
-                            </Td>
-                            <Td>{part.name}</Td>
-                            <Td>{getCategoryName(part.categoryId)}</Td>
-                            <Td>{part.price.toLocaleString("vi-VN")} VND</Td>
-                            <Td>{part.replacementPrice.toLocaleString("vi-VN")} VND</Td>
-                            <Td>{part.quantity}</Td>
-                            <Td>
-                              <ActionButton onClick={() => handleDelete(part)}>
-                                <FaTrash />
-                              </ActionButton>
-                              <ActionButton onClick={() => handleSelectForUpdate(part)}>
-                                <FaPencilAlt />
-                              </ActionButton>
-                            </Td>
-                          </Tr>
-                        ))
+                        parts.map(
+                          (part) =>
+                            !part.isDeleted && (
+                              <Tr key={part.id}>
+                                <Td>
+                                  <PartImage
+                                    src={part.imageUrl}
+                                    alt={part.name}
+                                  />
+                                </Td>
+                                <Td>{part.name}</Td>
+                                <Td>{getCategoryName(part.categoryId)}</Td>
+                                <Td>
+                                  {part.price.toLocaleString("vi-VN")} VND
+                                </Td>
+                                <Td>
+                                  {part.replacementPrice.toLocaleString(
+                                    "vi-VN"
+                                  )}{" "}
+                                  VND
+                                </Td>
+                                <Td>{part.quantity}</Td>
+                                <Td>
+                                  <ActionButton
+                                    onClick={() => handleDelete(part)}
+                                  >
+                                    <FaTrash />
+                                  </ActionButton>
+                                  <ActionButton
+                                    onClick={() => handleSelectForUpdate(part)}
+                                  >
+                                    <FaPencilAlt />
+                                  </ActionButton>
+                                </Td>
+                              </Tr>
+                            )
+                        )
                       ) : (
                         <Tr>
                           <Td colSpan={7}>
-                            <EmptyState>{isLoading ? <SpinnerComponent /> : "There are no products."}</EmptyState>
+                            <EmptyState>
+                              {isLoading ? (
+                                <SpinnerComponent />
+                              ) : (
+                                "There are no products."
+                              )}
+                            </EmptyState>
                           </Td>
                         </Tr>
                       )}
@@ -362,7 +479,9 @@ export default function Admin_Part() {
                   <FormGrid>
                     <div>
                       <InputGroup>
-                        <StyledLabel htmlFor="name">Spare PartDetailDto Name</StyledLabel>
+                        <StyledLabel htmlFor="name">
+                          Spare PartDetailDto Name
+                        </StyledLabel>
                         <StyledInput
                           id="name"
                           name="name"
@@ -382,17 +501,24 @@ export default function Admin_Part() {
                           onChange={handleInputChange}
                           required
                         >
-                          {categories.length === 0 && <option>Is Loading...</option>}
-                          {categories.map((cat) => (
-                            <option key={cat.id} value={cat.id}>
-                              {cat.name}
-                            </option>
-                          ))}
+                          {categories.length === 0 && (
+                            <option>Is Loading...</option>
+                          )}
+                          {categories.map(
+                            (cat) =>
+                              !cat.isDeleted && (
+                                <option key={cat.id} value={cat.id}>
+                                  {cat.name}
+                                </option>
+                              )
+                          )}
                         </StyledSelect>
                       </InputGroup>
 
                       <InputGroup>
-                        <StyledLabel htmlFor="description">Description</StyledLabel>
+                        <StyledLabel htmlFor="description">
+                          Description
+                        </StyledLabel>
                         <Editor
                           apiKey={import.meta.env.VITE_TINY_KEY}
                           value={newPart.description}
@@ -441,7 +567,9 @@ export default function Admin_Part() {
                           />
                         </InputGroup>
                         <InputGroup>
-                          <StyledLabel htmlFor="replacementPrice">Replacement price (VND)</StyledLabel>
+                          <StyledLabel htmlFor="replacementPrice">
+                            Replacement price (VND)
+                          </StyledLabel>
                           <StyledInput
                             id="replacementPrice"
                             name="replacementPrice"
@@ -479,11 +607,18 @@ export default function Admin_Part() {
                           />
                         </DraggerWrapper>
                         {imageUrl && (
-                          <div style={{ marginTop: "10px", textAlign: "center" }}>
+                          <div
+                            style={{ marginTop: "10px", textAlign: "center" }}
+                          >
                             <img
                               src={imageUrl}
                               alt="Preview"
-                              style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "8px" }}
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                              }}
                             />
                           </div>
                         )}
