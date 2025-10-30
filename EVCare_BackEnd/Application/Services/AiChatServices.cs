@@ -39,7 +39,7 @@ namespace Application.Services
             }
             catch (Exception ex)
             {
-                return "Sorry, the AI ​​system (Gemini) is temporarily under maintenance.";
+                return "Sorry, the AI ​​system (Gemini) is temporarily under maintenance. Error: " + ex.Message;
             }
         }
     }

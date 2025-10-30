@@ -86,11 +86,7 @@ export const StaffChatPage = () => {
         <Content className="chat-content">
           {selected ? (
             <div className="chat-content-wrapper" style={{ height: "100%" }}>
-              <ChatWindow
-                accountId={accountId?.toString() || ""}
-                conversationId={selected}
-                isWidgetMode={false} /* 2. BÁO CHO NÓ BIẾT ĐÂY LÀ TRANG STAFF */
-              />
+              <ChatWindow accountId={accountId?.toString() || ""} conversationId={selected} isWidgetMode={false} />
             </div>
           ) : (
             <div className="chat-welcome-state" style={{ height: "100%" }}>
