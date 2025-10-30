@@ -7,7 +7,7 @@ import SearchBar from "../../../../components/SearchBar/Search";
 interface FilterServiceProps {
   selectedServices: number[];
   onSelectService: (serviceId: number) => void;
-  selectedRating: number | null; // ✅ chỉ 1 rating
+  selectedRating: number | null;
   onSelectRating: (rating: number | null) => void;
 }
 
@@ -54,7 +54,6 @@ export default function FilterService({
         placeholder="Search service..."
         handleSearchValue={handleSearchChange}
       />
-      {/* Rating Filter */}
       <Typography variant="h6" margin={2} color="#16a34a" fontWeight={600}>
         Filter by Rating
       </Typography>
@@ -80,7 +79,6 @@ export default function FilterService({
           No services found.
         </Typography>
       )}
-      {/* Services */}
       <Typography variant="h6" margin={2} color="#16a34a" fontWeight={600}>
         Services
       </Typography>
@@ -105,7 +103,8 @@ export default function FilterService({
             display="flex"
             flexDirection="row"
             key={cat.name}
-            maxWidth="40vw"
+            flexWrap="wrap"
+            minWidth="25vw"
           >
             {cat.services.map((s) => {
               const selected = selectedServices.includes(s.id);

@@ -4,23 +4,21 @@ import {
   PiNumberCircleTwoFill,
   PiNumberCircleThreeFill,
 } from "react-icons/pi";
-// import { Plus } from "lucide-react";
 import {
-  BookingFormBody,
-  BookingFormButton,
-  BookingFormHeader,
   BookingFormWrapper,
+  BookingFormHeader,
+  FormTitle,
   CloseButton,
   FormGroup,
-  FormTitle,
   Label,
   LeftBody,
-  NumberIcon,
   RightBody,
-  SubSection,
-  SubTitle,
   TextArea,
+  BookingFormButton,
+  SubSection,
+  StepContent,
 } from "./BookingForm.styled";
+import { Checkbox } from "@mui/material";
 import UploadImage from "../../../components/UploadFields/uploadImage";
 import { getCustomerId } from "../../../services/customerServices";
 import type { RootState } from "../../../states/store";
@@ -30,28 +28,29 @@ import {
   getVehicleByCustomerId,
   getVehicleCategories,
 } from "../../../services/vehicleServicesApi";
-import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
-import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
-import type { ServiceCategoryViewModel } from "../../../models/ServicesModel/ServiceCategoryViewModel";
 import { getAllServices } from "../../../services/serviceServicesApi";
-import { handleError } from "../../../utils/errorHandler";
-import type { AccountViewModel } from "../../../models/Accounts/accountViewModel";
 import { getAccountInformation } from "../../../services/accountService";
-import SelectVehicleSection from "./SelectVehicleSection";
-import NameAndPhoneNumberSection from "./NameAndPhoneNumberSection";
-import ServiceSection from "./ServiceSection";
-import { Dayjs } from "dayjs";
-import TimeSection from "./TimeSection";
-import type { AppointmentCreateModel } from "../../../models/AppointmentsModel/AppointmentCreateModel";
+import { handleError } from "../../../utils/errorHandler";
 import { createAppointment } from "../../../services/appointmentServiceApi";
-import SpinnerComponent from "../../../components/SpinnerComponent";
-import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
 import { LICENSE_PLATE_REGEX } from "../../../constants/regexs/LicensePlateRegex";
 import { ERROR_MESSAGE, MSG_TITLE } from "../../../constants/messages/Message";
 import { LENGTH } from "../../../constants/Code/Constants";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 import { useNotification } from "../../../context/useNotification";
 import AppointmentPolicySection from "./AppointmentPolicySection";
-import { Checkbox } from "@mui/material";
+import NameAndPhoneNumberSection from "./NameAndPhoneNumberSection";
+import SelectVehicleSection from "./SelectVehicleSection";
+import ServiceSection from "./ServiceSection";
+import TimeSection from "./TimeSection";
+import Stepper, { Step } from "../../../components/StepperComponent";
+import { Modal } from "react-bootstrap";
+import type { Dayjs } from "dayjs";
+import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
+import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
+import type { ServiceCategoryViewModel } from "../../../models/ServicesModel/ServiceCategoryViewModel";
+import type { AccountViewModel } from "../../../models/Accounts/accountViewModel";
+import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
+import type { AppointmentCreateModel } from "../../../models/AppointmentsModel/AppointmentCreateModel";
 
 interface Props {
   show: boolean;
@@ -60,47 +59,44 @@ interface Props {
   setLoading: (loading: boolean) => void;
 }
 
-function BookingFormComponent({
-  show,
-  handleClose,
-  setLoading,
-  loading,
-}: Props) {
+function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
   const accountId = useSelector(
     (state: RootState) => state.auth.user?.accountId
   );
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
+
+  const [accountInfor, setAccountInfor] = useState<AccountViewModel>();
   const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<
     VehicleViewDto[]
   >([]);
-
-  const [selectedValue, setSelectedValue] = useState(0);
-  const [isAddNew, setIsAddNew] = useState(true);
   const [listCategories, setListCategories] = useState<
     VehicleCategoryViewDto[]
   >([]);
   const [serviceCategories, setServiceCategories] = useState<
     ServiceCategoryViewModel[]
   >([]);
-  const [accountInfor, setAccountInfor] = useState<AccountViewModel>();
-  const [selectedServices, setSelectedServices] = useState<number[]>([]);
-  const [dateSelected, setDateSelected] = useState<Dayjs>();
-  const [timeSelected, setTimeSelected] = useState<Dayjs | undefined>(
-    undefined
-  );
-  const [note, setNote] = useState("");
+
+  const [selectedValue, setSelectedValue] = useState(0);
+  const [isAddNew, setIsAddNew] = useState(true);
   const [vehicleCategory, setVehicleCategory] = useState(0);
   const [licensePlate, setLicensePlate] = useState("");
-  const [appointmentDate, setAppointmentDate] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [urls, setUrls] = useState<string[]>([]);
+
+  const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const [dateSelected, setDateSelected] = useState<Dayjs>();
+  const [timeSelected, setTimeSelected] = useState<Dayjs>();
+  const [note, setNote] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
   const [checkbox, setCheckBox] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [appointmentDate, setAppointmentDate] = useState("");
 
   const notification = useNotification();
 
+  // --- logic chọn xe ---
   const handleSelectVehicle = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = Number(e.target.value);
@@ -109,25 +105,18 @@ function BookingFormComponent({
         setSelectedValue(0);
       } else {
         setIsAddNew(false);
-        const vehicle = listVehicleOfCustomer.find(
-          (v) => v.id === Number(e.target.value)
-        );
-        setVehicleCategory(
-          listCategories.find((c) => c.id === vehicle?.cateId)?.id || 0
-        );
-        setSelectedValue(Number(e.target.value));
-        setLicensePlate(vehicle?.licensePlate || "");
+        const vehicle = listVehicleOfCustomer.find((v) => v.id === value);
+        if (vehicle) {
+          setVehicleCategory(vehicle.cateId);
+          setLicensePlate(vehicle.licensePlate);
+          setSelectedValue(vehicle.id);
+        }
       }
     },
-    [
-      setVehicleCategory,
-      listVehicleOfCustomer,
-      setSelectedValue,
-      setIsAddNew,
-      listCategories,
-    ]
+    [listVehicleOfCustomer]
   );
 
+  // --- dịch vụ ---
   const handleSelectServices = useCallback((serviceId: number) => {
     setSelectedServices((prev) =>
       prev.includes(serviceId)
@@ -142,20 +131,15 @@ function BookingFormComponent({
       if (servicesInCategory.length === 0) return;
       setSelectedServices((prev) => {
         const allSelected = servicesInCategory.every((s) => prev.includes(s));
-        if (allSelected) {
-          return prev.filter((s) => !servicesInCategory.includes(s));
-        } else {
-          const currSelect = [...prev];
-          servicesInCategory.forEach((e) => {
-            if (!currSelect.includes(e)) currSelect.push(e);
-          });
-          return currSelect;
-        }
+        return allSelected
+          ? prev.filter((s) => !servicesInCategory.includes(s))
+          : [...new Set([...prev, ...servicesInCategory])];
       });
     },
     []
   );
 
+  // --- ngày giờ ---
   const handleSelectDate = useCallback(
     (date: Dayjs | undefined) => {
       setDateSelected(date);
@@ -190,18 +174,12 @@ function BookingFormComponent({
 
   const handleSubmit = useCallback(async () => {
     setIsLoading(true);
-    if (
-      !licensePlate ||
-      licensePlate.trim().length === 0 ||
-      !LICENSE_PLATE_REGEX.test(licensePlate) ||
-      licensePlate.includes("-")
-    ) {
+    if (!LICENSE_PLATE_REGEX.test(licensePlate)) {
       notification.error({
         message: MSG_TITLE.CREATE_APPOINTMENT,
         description: ERROR_MESSAGE.LICENSE_PLATE_WRONG,
         showProgress: true,
       });
-      setLicensePlate("");
       setIsLoading(false);
       return;
     }
@@ -223,17 +201,16 @@ function BookingFormComponent({
       setIsLoading(false);
       return;
     }
-    let tmp = 0;
-    if (note.length > 0) setNote(note.trim());
-    if (selectedValue === 0) {
+
+    let vehicleId = selectedValue;
+    if (isAddNew && licensePlate) {
       try {
-        const data: VehicleCreateDto = {
+        const newVehicle: VehicleCreateDto = {
           categoryId: vehicleCategory,
-          licensePlate: licensePlate,
+          licensePlate,
         };
-        const response = await createVehicle(data);
-        tmp = response.data ?? 0;
-        setSelectedValue(tmp);
+        const res = await createVehicle(newVehicle);
+        vehicleId = res.data ?? 0;
       } catch (error) {
         handleError(error);
         notification.error({
@@ -242,19 +219,18 @@ function BookingFormComponent({
           showProgress: true,
         });
         setIsLoading(false);
-        setLicensePlate("");
-        setIsAddNew(true);
         return;
       }
     }
 
     const data: AppointmentCreateModel = {
-      vehicleId: tmp !== 0 ? tmp : selectedValue,
+      vehicleId,
       note: note.trim(),
       appointment_Date: appointmentDate,
       imagesUrls: urls,
       serviceIds: selectedServices,
     };
+
     try {
       const response = await createAppointment(data);
       notification.success({
@@ -262,6 +238,7 @@ function BookingFormComponent({
         description: response.message,
         showProgress: true,
       });
+      handleClose();
     } catch (error) {
       notification.error({
         message: MSG_TITLE.CREATE_APPOINTMENT,
@@ -270,228 +247,183 @@ function BookingFormComponent({
       });
     } finally {
       setIsLoading(false);
-      setSelectedServices([]);
-      setAppointmentDate("");
-      setLicensePlate("");
-      setNote("");
-      setDateSelected(undefined);
-      setTimeSelected(undefined);
-      setSelectedValue(0);
-      setIsAddNew(true);
     }
   }, [
-    selectedValue,
-    selectedServices,
-    appointmentDate,
-    vehicleCategory,
     licensePlate,
-    note,
-    urls,
+    selectedServices,
     dateSelected,
     timeSelected,
+    appointmentDate,
+    isAddNew,
+    selectedValue,
+    vehicleCategory,
+    urls,
+    note,
+    handleClose,
     notification,
   ]);
 
-  const handleNoteChange = useCallback((note: string) => {
-    setNote(note);
-  }, []);
-
-  const handleSelectVehicleCategory = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setVehicleCategory(Number(e.target.value));
-    },
-    []
-  );
-
-  const handleFileSubmit = useCallback((url: string) => {
-    setUrls((prev) => [...prev, url]);
-  }, []);
-
-  const handleSetVisible = useCallback(() => {
-    setVisible((prev) => !prev);
-    setCheckBox(false);
-  }, []);
-
+  // --- fetch data ---
   useEffect(() => {
-    if (!show) return;
-    if (!isAuthenticated || !accountId) return;
+    if (!show || !isAuthenticated || !accountId) return;
     const fetchData = async () => {
       setLoading(true);
-      const customer = await getCustomerId(accountId);
-      if (customer == null || customer == undefined) {
-        handleError("Fail when fetch data in booking form");
-        return;
-      }
-      const account = await getAccountInformation();
-      setAccountInfor(account.data);
-      const listVehicleOfCustomer = await getVehicleByCustomerId(
-        customer.data?.id ?? 0
-      );
-      if (!listVehicleOfCustomer) {
-        handleError("Error in BookingForm.tsx");
-        return;
-      }
-      setListVehicleOfCustomer(listVehicleOfCustomer.data ?? []);
-      const listVehicleCategories = await getVehicleCategories();
-      if (!listVehicleCategories) {
-        handleError("Error in BookingForm.tsx");
-        return;
-      }
-      setListCategories(listVehicleCategories.data ?? []);
+      try {
+        const customer = await getCustomerId(accountId);
+        const acc = await getAccountInformation();
+        const vehicles = await getVehicleByCustomerId(customer?.data?.id ?? 0);
+        const categories = await getVehicleCategories();
+        const services = await getAllServices();
 
-      const services = await getAllServices();
-      if (!services) {
-        handleError("Error in BookingForm.tsx");
-        return;
+        setAccountInfor(acc?.data);
+        setListVehicleOfCustomer(vehicles?.data ?? []);
+        setListCategories(categories?.data ?? []);
+        setServiceCategories(services?.data ?? []);
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setLoading(false);
       }
-      setServiceCategories(services.data ?? []);
-      setLoading(false);
     };
     fetchData();
-  }, [accountId, isAuthenticated, show, setLoading]);
+  }, [show, accountId, isAuthenticated, setLoading]);
 
-  useEffect(() => {
-    if (listCategories.length === 0) return;
-    setVehicleCategory(listCategories[0].id);
-  }, [listCategories]);
-
+  // --- giao diện ---
   if (!show || loading) return null;
 
   return (
-    <BookingFormWrapper show={show}>
+    <BookingFormWrapper show={show} data-lenis-prevent>
       <BookingFormHeader>
         <FormTitle>Booking Form</FormTitle>
         <CloseButton onClick={handleClose}>x</CloseButton>
       </BookingFormHeader>
-      <BookingFormBody>
-        <LeftBody>
-          <SubTitle>
-            <NumberIcon as={PiNumberCircleOneFill} />
-            <h5>Information</h5>
-          </SubTitle>
-          <SubSection>
-            <NameAndPhoneNumberSection accountInfor={accountInfor} />
-          </SubSection>
-          <SubSection>
-            <SelectVehicleSection
-              isAddNew={isAddNew}
-              selectedValue={selectedValue}
-              handleSelectVehicle={handleSelectVehicle}
-              listVehicleOfCustomer={listVehicleOfCustomer}
-              listCategories={listCategories}
-              handleSelectVehicleCategory={handleSelectVehicleCategory}
-              vehicleCategory={vehicleCategory}
-              setLicensePlate={setLicensePlate}
-              licensePlate={licensePlate}
-            />
-            <FormGroup>
-              <Label>Image</Label>
-              <UploadImage
-                handleFileRemove={(url) =>
-                  setUrls((prev) => prev.filter((item) => item != url))
-                }
-                imgQuantity={LENGTH.IMAGES}
-                handleFileSubmit={handleFileSubmit}
-              ></UploadImage>
-              {urls.length > 0 && (
+      <Modal.Body>
+        <Stepper
+          onFinalStepCompleted={handleSubmit}
+          nextButtonText="Next"
+          backButtonText="Back"
+        >
+          <Step>
+            <StepContent data-lenis-prevent>
+              <LeftBody>
+                <h5>
+                  <PiNumberCircleOneFill /> Information
+                </h5>
+                <SubSection>
+                  <NameAndPhoneNumberSection accountInfor={accountInfor} />
+                </SubSection>
+                <SubSection>
+                  <SelectVehicleSection
+                    isAddNew={isAddNew}
+                    selectedValue={selectedValue}
+                    handleSelectVehicle={handleSelectVehicle}
+                    listVehicleOfCustomer={listVehicleOfCustomer}
+                    listCategories={listCategories}
+                    handleSelectVehicleCategory={(e) =>
+                      setVehicleCategory(Number(e.target.value))
+                    }
+                    vehicleCategory={vehicleCategory}
+                    setLicensePlate={setLicensePlate}
+                    licensePlate={licensePlate}
+                  />
+                  <FormGroup>
+                    <Label>Image</Label>
+                    <UploadImage
+                      handleFileRemove={(url) =>
+                        setUrls((prev) => prev.filter((item) => item !== url))
+                      }
+                      imgQuantity={LENGTH.IMAGES}
+                      handleFileSubmit={(url) =>
+                        setUrls((prev) => [...prev, url])
+                      }
+                    />
+                  </FormGroup>
+                </SubSection>
+              </LeftBody>
+            </StepContent>
+          </Step>
+
+          {/* Step 2: Service */}
+          <Step>
+            <StepContent data-lenis-prevent>
+              <RightBody>
+                <h5>
+                  <PiNumberCircleTwoFill /> Service
+                </h5>
+                <ServiceSection
+                  serviceCategories={serviceCategories}
+                  handleServiceCategoriesChange={handleServiceCategoriesChange}
+                  handleSelectServices={handleSelectServices}
+                  selectedServices={selectedServices}
+                />
+              </RightBody>
+            </StepContent>
+          </Step>
+
+          {/* Step 3: Time */}
+          <Step>
+            <StepContent data-lenis-prevent>
+              <RightBody>
+                <h5>
+                  <PiNumberCircleThreeFill /> Time
+                </h5>
+                <TimeSection
+                  date={dateSelected}
+                  time={timeSelected}
+                  handleSelectDate={handleSelectDate}
+                  handleSelectTime={handleSelectTime}
+                />
+                <FormGroup>
+                  <Label>Note</Label>
+                  <TextArea
+                    placeholder="Enter any additional notes..."
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                  />
+                </FormGroup>
+
                 <div
                   style={{
                     display: "flex",
-                    flexWrap: "wrap",
-                    marginTop: "10px",
-                    gap: "10px",
+                    justifyContent: "center",
+                    marginTop: "15px",
                   }}
                 >
-                  {urls.map((url, index) => (
-                    <img
-                      key={index}
-                      src={url}
-                      alt={`Preview ${index}`}
-                      style={{
-                        width: "120px",
-                        height: "90px",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                        border: "1px solid #ddd",
-                      }}
+                  {!visible && (
+                    <Checkbox
+                      color="success"
+                      onChange={() => setCheckBox((prev) => !prev)}
                     />
-                  ))}
+                  )}
+                  <AppointmentPolicySection
+                    visible={visible}
+                    handleSetVisible={() => {
+                      setVisible((p) => !p);
+                      setCheckBox(false);
+                    }}
+                  />
                 </div>
-              )}
-            </FormGroup>
-          </SubSection>
-        </LeftBody>
-        <RightBody>
-          <SubTitle>
-            <NumberIcon as={PiNumberCircleTwoFill} />
-            <h5>Service</h5>
-          </SubTitle>
-          <SubSection>
-            <ServiceSection
-              serviceCategories={serviceCategories}
-              handleServiceCategoriesChange={handleServiceCategoriesChange}
-              handleSelectServices={handleSelectServices}
-              selectedServices={selectedServices}
-            />
-          </SubSection>
-          <SubTitle>
-            <NumberIcon as={PiNumberCircleThreeFill} />
-            <h5>Time</h5>
-          </SubTitle>
-          <SubSection>
-            <TimeSection
-              date={dateSelected}
-              time={timeSelected}
-              handleSelectDate={handleSelectDate}
-              handleSelectTime={handleSelectTime}
-            />
-            <FormGroup>
-              <Label>Note</Label>
-              <TextArea
-                placeholder="Enter any additional notes..."
-                value={note}
-                onChange={(e) => handleNoteChange(e.target.value)}
-              />
-            </FormGroup>
-          </SubSection>
-        </RightBody>
-      </BookingFormBody>
 
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: "15px",
-        }}
-      >
-        {visible ? (
-          <></>
-        ) : (
-          <Checkbox
-            color="success"
-            onChange={() => setCheckBox((prev) => !prev)}
-          />
-        )}
-        <AppointmentPolicySection
-          visible={visible}
-          handleSetVisible={handleSetVisible}
-        />
-      </div>
-
-      {isLoading ? (
-        <SpinnerComponent />
-      ) : (
-        <BookingFormButton>
-          <button disabled={!checkbox} type="button" onClick={handleSubmit}>
-            SEND
-          </button>
-        </BookingFormButton>
-      )}
+                {isLoading ? (
+                  <SpinnerComponent />
+                ) : (
+                  <BookingFormButton>
+                    <button
+                      disabled={!checkbox}
+                      type="button"
+                      onClick={handleSubmit}
+                    >
+                      SEND
+                    </button>
+                  </BookingFormButton>
+                )}
+              </RightBody>
+            </StepContent>
+          </Step>
+        </Stepper>
+      </Modal.Body>
     </BookingFormWrapper>
   );
 }
 
-const BookingForm = React.memo(BookingFormComponent);
-export default BookingForm;
+export default React.memo(BookingFormStepper);
