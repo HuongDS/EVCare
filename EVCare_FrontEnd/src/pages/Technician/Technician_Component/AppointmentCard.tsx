@@ -136,7 +136,6 @@ const ButtonWrapper = styled.div`
   margin-top: 0.8rem;
 `;
 
-const notification = useNotification();
 type Props = {
   data: TechnicianAppointmentsDto;
   onStatusChange?: (
@@ -151,6 +150,8 @@ const AppointmentCard: React.FC<Props> = ({
   onStatusChange,
   onPartsUpdated,
 }) => {
+  const notification = useNotification();
+
   const [currentStatus, setCurrentStatus] =
     useState<TechnicianWorkingSessionEnum>(
       data.status as TechnicianWorkingSessionEnum

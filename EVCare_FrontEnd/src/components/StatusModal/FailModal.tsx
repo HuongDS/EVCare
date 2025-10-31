@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import ErrorIcon from "../IconsAnimation/errorIcon";
-import ButtonAction from "../Button/ReviewButton";
+import ButtonAction from "../Button/ButtonAction";
 
 const initBox = keyframes`
   from {

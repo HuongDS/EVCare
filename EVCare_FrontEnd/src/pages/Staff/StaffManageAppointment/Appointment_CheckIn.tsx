@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import TextAreaDisabled from "../../../components/TextField/TextAreaDisabled";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
-import ButtonAction from "../../../components/Button/ReviewButton";
+import ButtonAction from "../../../components/Button/ButtonAction";
 import { useAppDispatch } from "../../../states/store";
 import { setStep } from "../../../states/appointmentSlice";
 // import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";

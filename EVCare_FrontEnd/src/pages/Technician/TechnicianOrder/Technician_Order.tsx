@@ -30,7 +30,7 @@ import {
 } from "./Technician_Order.styled";
 
 import { LENGTH } from "../../../constants/Code/Constants";
-import ButtonAction from "../../../components/Button/ReviewButton";
+import ButtonAction from "../../../components/Button/ButtonAction";
 import { useNotification } from "../../../context/useNotification";
 
 interface TechnicianOrderProps {

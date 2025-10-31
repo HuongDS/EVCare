@@ -13,7 +13,7 @@ import {
   QuantityControl,
 } from "./Style/ProductModal.styled";
 
-import ButtonAction from "../../../components/Button/ReviewButton";
+import ButtonAction from "../../../components/Button/ButtonAction";
 
 interface ProductModalProps {
   open: boolean;
