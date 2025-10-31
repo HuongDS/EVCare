@@ -53,8 +53,5 @@ export function useChat(conversationId?: string) {
   const markRead = async (upToMessageId: number) =>
     connectionRef.current?.invoke("MarkAsRead", conversationId, upToMessageId);
 
-  const startTyping = async () => connectionRef.current?.invoke("UserStartedTyping", conversationId);
-  const stopTyping = async () => connectionRef.current?.invoke("UserStoppedTyping", conversationId);
-
-  return { messages, setMessages, unread, typingUsers, send, markRead, startTyping, stopTyping };
+  return { messages, setMessages, unread, typingUsers, send, markRead };
 }

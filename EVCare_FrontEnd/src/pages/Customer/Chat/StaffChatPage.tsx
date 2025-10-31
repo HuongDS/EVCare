@@ -9,6 +9,7 @@ import { getChatConnection } from "../../../signalr/chatConnection";
 import { CustomerServiceOutlined, BellOutlined } from "@ant-design/icons";
 import { listConversations } from "../../../services/chatService";
 import { StaffChatStyleWrapper } from "./StaffChat.styled";
+import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
 
 const { Sider, Content } = Layout;
 
@@ -18,6 +19,7 @@ export const StaffChatPage = () => {
   const connection = getChatConnection();
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
   const [loading, setLoading] = useState(true);
+  const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -45,6 +47,30 @@ export const StaffChatPage = () => {
     });
   }, [connection]);
 
+  const handleNewMessage = (conversationId: string, newMessage: HistoryMessage) => {
+    setConversations((prev) => {
+      const conTarget = prev.find((c) => c.id === conversationId);
+      if (!conTarget) return prev;
+      const update = {
+        ...conTarget,
+        lastMessage: {
+          text: newMessage.text,
+          sentAt: newMessage.sentAt,
+          senderId: newMessage.senderId,
+        },
+      };
+
+      const oldConvo = prev.filter((c) => c.id !== conversationId);
+      return [update, ...oldConvo];
+    });
+  };
+
+  const handleSelectConversation = (conversationId: string) => {
+    setSelected(conversationId);
+    const conv = conversations.find((c) => c.id === conversationId) || null;
+    setSelectedConv(conv);
+  };
+
   return (
     <StaffChatStyleWrapper className="chat-fullpage-mode" style={{ height: "100%" }}>
       <Layout className="chat-layout" style={{ height: "100%" }}>
@@ -54,7 +80,7 @@ export const StaffChatPage = () => {
             <div className="staff-chat-header">
               <h2 className="staff-chat-title">
                 <CustomerServiceOutlined />
-                Hỗ trợ khách hàng
+                Customer support
               </h2>
               <div className="staff-status-indicator">
                 <Badge status="processing" />
@@ -76,7 +102,7 @@ export const StaffChatPage = () => {
                   accountId={accountId?.toString() || ""}
                   conversations={conversations}
                   selectedId={selected}
-                  onSelect={(c) => setSelected(c.id)}
+                  onSelect={(c) => handleSelectConversation(c.id)}
                 />
               )}
             </div>
@@ -86,7 +112,13 @@ export const StaffChatPage = () => {
         <Content className="chat-content">
           {selected ? (
             <div className="chat-content-wrapper" style={{ height: "100%" }}>
-              <ChatWindow accountId={accountId?.toString() || ""} conversationId={selected} isWidgetMode={false} />
+              <ChatWindow
+                accountId={accountId?.toString() || ""}
+                conversationId={selected}
+                isWidgetMode={false}
+                setLastMessage={handleNewMessage}
+                selectedConversation={selectedConv}
+              />
             </div>
           ) : (
             <div className="chat-welcome-state" style={{ height: "100%" }}>
