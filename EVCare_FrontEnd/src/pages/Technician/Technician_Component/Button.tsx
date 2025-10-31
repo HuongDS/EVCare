@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import ViewDetailsModal from "./ViewDetailsModal";
-import ButtonAction from "../../../components/Button/ReviewButton";
+import ButtonAction from "../../../components/Button/ButtonAction";
 import AlertModal from "./AlertModal";
 
 interface ReviewButtonProps {

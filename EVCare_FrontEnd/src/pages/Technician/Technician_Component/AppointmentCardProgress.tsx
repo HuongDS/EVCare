@@ -146,12 +146,13 @@ type Props = {
   onPartsUpdated?: (orderId: number) => void;
 };
 
-const notification = useNotification();
 const AppointmentCardProgress: React.FC<Props> = ({
   data,
   onStatusChange,
   onPartsUpdated,
 }) => {
+  const notification = useNotification();
+
   const [currentStatus, setCurrentStatus] =
     useState<TechnicianWorkingSessionEnum>(
       data.status as TechnicianWorkingSessionEnum
