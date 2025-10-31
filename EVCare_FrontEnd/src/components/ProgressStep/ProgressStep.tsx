@@ -13,7 +13,7 @@ interface StepsProps {
 export const ProgressSteps = ({ steps, currentStep, children }: StepsProps) => {
   return (
     <Steps.Root step={currentStep} count={steps.length}>
-      <Steps.List style={{ margin: "2%" }}>
+      <Steps.List style={{ margin: "1%" }}>
         {steps.map((step, index) => (
           <Steps.Item key={index} index={index} title={step.title}>
             <Steps.Indicator boxSize={8} />
