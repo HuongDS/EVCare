@@ -23,6 +23,7 @@
     "@fullcalendar/react": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
     "@gsap/react": "^2.1.2",
+    "@hookform/resolvers": "^5.2.2",
     "@microsoft/signalr": "^9.0.6",
     "@mui/icons-material": "^7.3.4",
     "@mui/lab": "^7.0.1-beta.18",
@@ -30,6 +31,8 @@
     "@mui/styles": "^6.5.0",
     "@mui/x-date-pickers": "^8.11.3",
     "@react-oauth/google": "^0.12.2",
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.4.0",
     "@reduxjs/toolkit": "2.9.0",
     "@sentry/browser": "^10.16.0",
     "@sentry/react": "^10.16.0",
@@ -62,6 +65,7 @@
     "react-bootstrap": "2.10.10",
     "react-day-picker": "^9.11.1",
     "react-dom": "19.1.1",
+    "react-hook-form": "^7.65.0",
     "react-icons": "^5.5.0",
     "react-intersection-observer": "^9.16.0",
     "react-medium-image-zoom": "^5.4.0",
@@ -75,8 +79,11 @@
     "slick-carousel": "^1.8.1",
     "styled-components": "6.1.19",
     "tailwindcss": "^4.1.14",
+    "three": "^0.180.0",
+    "three-stdlib": "^2.36.0",
     "tippy.js": "^6.3.7",
-    "yup": "^1.7.1"
+    "yup": "^1.7.1",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

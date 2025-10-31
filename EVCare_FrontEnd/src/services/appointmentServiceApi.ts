@@ -4,6 +4,7 @@ import type {
   GetAppointmentsParams,
   GetAppointmentWithTechnician,
   PageModel,
+  RemindSchedulePayload,
   ResponseDto,
   StaffAppointmentsDto,
 } from "../models/AppointmentsModel/Staff_Appointments_Model";
@@ -255,6 +256,53 @@ export const useGetAppointmentHaveTech = (params: GetAppointmentsParams) => {
             error.response?.data.message ||
             error.message ||
             ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+//[STAFF] - Lấy appointment detail sử dụng tanstack
+export const useGetAppointmentById = (appointmentId: number) => {
+  return useQuery({
+    queryKey: ["Appointment", appointmentId],
+    queryFn: async () => {
+      try {
+        const response = await api.get<ResponseDto<AppointmentViewDetailModel>>(
+          `/api/Appointment/${appointmentId}`
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            APPOINTMENT_MESSAGE.APPOINTMENT_DOES_NOT_EXIST;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+//[STAFF] - Nhập lịch bảo trì tiếp theo
+export const useEnterRemindSchedule = () => {
+  return useMutation({
+    mutationFn: async (payload: RemindSchedulePayload) => {
+      try {
+        const response = await api.put<ResponseDto<number>>(
+          "/api/Vehicle/staff/update",
+          payload
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg = error.response?.data.message || error.message;
           throw new Error(errMsg);
         }
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);

@@ -16,6 +16,7 @@ import { handleError } from "../../../utils/errorHandler";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AssignedTechnician {
   technicianID: number;
@@ -36,6 +37,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const queryClient = useQueryClient();
 
   const allSkills = data.services.map((service) => service.id).flat();
 
@@ -89,6 +91,8 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
         technicianIds: techniciansList,
         status: "Pending",
       });
+
+      await queryClient.invalidateQueries({ queryKey: ["Staff Appointments"] });
       setIsSuccessModalOpen(true);
       setModalMessage("Assign Technicians successfully!");
     } catch (error) {

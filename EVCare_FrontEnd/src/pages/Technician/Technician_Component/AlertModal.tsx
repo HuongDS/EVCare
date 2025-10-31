@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal } from "@mui/material";
 import styled, { keyframes } from "styled-components";
-import ButtonAction from "../../../components/Button/ReviewButton";
+import ButtonAction from "../../../components/Button/ButtonAction";
 
 interface AlertModalProps {
   open: boolean;
