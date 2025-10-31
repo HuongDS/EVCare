@@ -1,6 +1,9 @@
 import { List, Badge, Avatar } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import type { Conversation } from "../../../models/Message/Conversation";
+import { useSelector } from "react-redux";
+import { RoleEnum } from "../../../models/enums";
+import type { RootState } from "../../../states/store";
 
 interface ChatSidebarProps {
   conversations: Conversation[];
@@ -10,6 +13,8 @@ interface ChatSidebarProps {
 }
 
 export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelect, accountId, selectedId }) => {
+  const role = useSelector((state: RootState) => state.auth.user?.role);
+
   const formatTime = (timestamp?: string) => {
     if (!timestamp) return "";
     const date = new Date(timestamp);
@@ -52,7 +57,9 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
               title={
                 <div className="conversation-title">
                   <span className={`conversation-name ${isSelected ? "selected" : ""}`}>
-                    {`User #${item.participants[1]?.accountId}`}
+                    {role === RoleEnum.STAFF
+                      ? `Customer #${item.participants[0]?.accountId}`
+                      : `Staff #${item.participants[1]?.accountId}`}
                   </span>
                   <span className="conversation-time">
                     <ClockCircleOutlined />
@@ -62,7 +69,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
               }
               description={
                 <div className={`conversation-preview ${unreadCount > 0 ? "unread" : ""}`}>
-                  {item.lastMessage?.text || "No messages yet"}
+                  {item.lastMessage?.text || "No messages yet."}
                 </div>
               }
             />

@@ -81,7 +81,7 @@ namespace API.Controllers
 
         [HttpGet("conversations")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> List(int pageIndex = 1, int pageSize = 20)
+        public async Task<IActionResult> List(int pageIndex = 1, int pageSize = 1000)
         {
             var accountId = HttpContext.Items["AccountId"];
             var (list, totalPages, totalItems) = await _conversationService.ListMineAsync(accountId.ToString(), pageSize, pageIndex);

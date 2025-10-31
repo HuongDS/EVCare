@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Modal, Spin, Tooltip, Alert, Space, Radio, List } from "antd";
+import { Button, Modal, Spin, Tooltip } from "antd";
 import { MessageOutlined, PlusOutlined, RobotOutlined, UserSwitchOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import type { Conversation } from "../../../models/Message/Conversation";
 import { listConversations, startConsultation, startChatWithAi } from "../../../services/chatService";
@@ -12,7 +12,8 @@ import { WidgetChatStyleWrapper } from "./WidgetChat.styled";
 import { useNotification } from "../../../context/useNotification";
 import { getCustomerAppointment } from "../../../services/appointmentServiceApi";
 import type { AppointmentViewDetailModel } from "../../../models/AppointmentsModel/AppointmentViewDetailModel";
-import { Text } from "lucide-react";
+import { formatDate } from "../../../utils/formatDate";
+import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
 
 interface ChatPageProps {
   isWidgetMode?: boolean;
@@ -87,6 +88,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
         description: (error as Error).message || "Failed to start consultation",
       });
     }
+    setIsLoading(false);
   };
 
   const handleStartAIChat = async () => {
@@ -218,11 +220,27 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
             conversationId={selectedId}
             onBack={handleBackToList}
             isWidgetMode={isWidgetMode}
+            setLastMessage={handleNewMessage}
           />
         );
       default:
         return <WelcomeAndChoiceState />;
     }
+  };
+
+  const handleNewMessage = (conversationId: string, newMessage: HistoryMessage) => {
+    setConversations((prev) => {
+      const conTarget = prev.find((c) => c.id === conversationId);
+      if (!conTarget) return prev;
+      conTarget.lastMessage = {
+        text: newMessage.text,
+        sentAt: newMessage.sentAt,
+        senderId: newMessage.senderId,
+      };
+
+      const oldConvo = prev.filter((c) => c.id !== conversationId);
+      return [conTarget, ...oldConvo];
+    });
   };
 
   return (
@@ -257,53 +275,48 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
         }}
         cancelButtonProps={{ size: "large" }}
       >
-        <Spin spinning={isLoading}>
-          <div style={{ padding: "1.5rem 0 0.5rem" }}>
-            <Alert
-              message="Staff Chat Policy"
-              description={
-                <Space direction="vertical" size={0}>
-                  <Text>
-                    - We only support direct chat with staff for appointments that are in progress or completed.
-                  </Text>
-                  <Text>- Appointments that are pending, canceled, or confirmed will be handled by AI.</Text>
-                </Space>
-              }
-              type="info"
-              showIcon
-              style={{ marginBottom: "1.5rem" }}
-            />
+        <WidgetChatStyleWrapper>
+          <Spin spinning={isLoading}>
+            <div className="custom-modal-body">
+              <div className="custom-modal-alert">
+                <span className="alert-icon">i</span>
+                <div className="alert-content">
+                  <p className="alert-title">Staff Chat Policy</p>
+                  <ul className="alert-list">
+                    <li>We only support direct chat with staff for appointments that are in progress or completed.</li>
+                    <li>Other appointments (Pending, Canceled...) will be advised by AI.</li>
+                  </ul>
+                </div>
+              </div>
 
-            <label className="consultation-modal-label" style={{ marginBottom: "1rem" }}>
-              Please select an appointment to get started:
-            </label>
+              <label className="custom-modal-label">Please select an appointment to start:</label>
 
-            {allAppointments.length > 0 ? (
-              <Radio.Group
-                onChange={(e) => setSelectedAppointmentId(e.target.value)}
-                value={selectedAppointmentId}
-                style={{ width: "100%" }}
-              >
-                <List
-                  bordered
-                  dataSource={allAppointments}
-                  renderItem={(appt: any) => (
-                    <List.Item>
-                      <Radio value={appt.id}>
-                        <Text>#{appt.code || `ID: ...${appt.id.slice(-6)}`}</Text>
-                        <Text type="secondary" style={{ marginLeft: "10px" }}>
-                          (Status: {appt.status})
-                        </Text>
-                      </Radio>
-                    </List.Item>
-                  )}
-                />
-              </Radio.Group>
-            ) : (
-              <Text type="secondary">You don't have any valid appointments to start a chat with.</Text>
-            )}
-          </div>
-        </Spin>
+              {allAppointments.length > 0 ? (
+                <div className="custom-radio-list">
+                  {allAppointments.map((appt: AppointmentViewDetailModel) => (
+                    <div
+                      key={appt.id}
+                      className={`custom-radio-item ${selectedAppointmentId === appt.id ? "selected" : ""}`}
+                      onClick={() => setSelectedAppointmentId(appt.id)}
+                    >
+                      <div className="radio-icon">
+                        <div className="radio-dot"></div>
+                      </div>
+                      <div className="radio-content">
+                        <span className="radio-title">{`Appointment #${appt.id} | Time & Date: ${formatDate(
+                          appt.appointmentDate.toString()
+                        )}`}</span>
+                        <span className="radio-status">(Status: {appt.status})</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="custom-empty-text">You don't have any valid appointments to start a chat with.</p>
+              )}
+            </div>
+          </Spin>
+        </WidgetChatStyleWrapper>
       </Modal>
     </WidgetChatStyleWrapper>
   );

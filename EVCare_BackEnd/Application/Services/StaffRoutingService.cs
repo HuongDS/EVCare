@@ -25,7 +25,7 @@ namespace Application.Services
         {
             var cus = await _dbContext.Customers.FirstOrDefaultAsync(c => c.AccountId.ToString() == customerAccountId);
             var appointment = await _dbContext.Appointments
-                .FirstOrDefaultAsync(a => a.CustomerId.ToString() == cus.Id.ToString()
+                .FirstOrDefaultAsync(a => a.CustomerId == cus.Id
                                         && a.Id == appointmentId
                                         && a.Status != AppointmentStatusEnum.Pending
                                         && a.Status != AppointmentStatusEnum.Confirmed
@@ -35,7 +35,7 @@ namespace Application.Services
             var candidate = await _dbContext.Employees.FirstOrDefaultAsync(a => a.Id == appointment.EmployeeId);
             if (candidate is null) return null;
 
-            return candidate.Id.ToString();
+            return candidate.AccountId.ToString();
         }
     }
 }
