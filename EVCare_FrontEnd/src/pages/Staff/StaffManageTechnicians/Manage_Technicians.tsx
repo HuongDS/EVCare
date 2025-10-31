@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Select, Badge, Avatar, Card, Typography } from "antd";
 import { Phone, Award, Wrench, User } from "lucide-react";
@@ -26,28 +26,25 @@ const Manage_Technicians = () => {
   // const [technicians] = useState(mockTechnicians);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [availableCount, setAvailableCount] = useState(0);
-  const [busyCount, setBusyCount] = useState(0);
-  const [total, setTotal] = useState(0);
 
   const { data: technicians, isLoading } = useGetTechniciansToday({
     ...(statusFilter !== "all" ? { Status: statusFilter } : {}),
     ...((searchTerm && { FullName: searchTerm }) || {}),
   });
 
-  useEffect(() => {
-    const availableCount = technicians?.data?.items?.filter(
+  const { availableCount, busyCount, total } = useMemo(() => {
+    const techniciansList = technicians?.data?.items;
+    const availableCount = techniciansList?.filter(
       (t) => t.status === "Available"
     ).length;
 
-    const busyCount = technicians?.data?.items?.filter(
+    const busyCount = techniciansList?.filter(
       (t) => t.status === "Busy"
     ).length;
 
-    setAvailableCount(availableCount || 0);
-    setBusyCount(busyCount || 0);
-    setTotal(technicians?.data?.items?.length || 0);
-  }, [technicians?.data?.items]);
+    const total = techniciansList?.length;
+    return { availableCount, busyCount, total };
+  }, [technicians]);
 
   return (
     <Container>
