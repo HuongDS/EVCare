@@ -90,7 +90,7 @@ export default function AppointmentCard({
               <ButtonAction
                 text="View Details"
                 color="white"
-                backgroundColor="#1da1f2"
+                backgroundColor="#00AD4E"
                 action={onOpenProgress}
               />
             ) : data.status !== "Pending" && data.status !== "Canceled" ? (

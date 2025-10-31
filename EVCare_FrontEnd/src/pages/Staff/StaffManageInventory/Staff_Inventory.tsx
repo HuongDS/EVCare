@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Select, Typography } from "antd";
-import { Package, Filter, AlertCircle, ChartCandlestick } from "lucide-react";
+import { Package, AlertCircle, ChartCandlestick } from "lucide-react";
 import {
   useExportInventoryToExcel,
   useGetAllPartCategories,

@@ -2,68 +2,67 @@ import styled from "styled-components";
 
 type ActionButtonProps = {
   text: string;
-  color: string;
-  backgroundColor: string;
+  color?: string;
+  backgroundColor?: string;
   action: () => void;
   icon?: React.ReactNode;
   type?: "button" | "submit";
   disabled?: boolean;
 };
 
-const mainColor = ({ $bg }: { $bg: string }) => $bg || "#00ad4e";
-const lightColor = "#00c656";
-
-const hoverMainColor = "#009a46";
-const hoverLightColor = "#00b850";
-
 const ActionButton = styled.button<{ $color: string; $bg: string }>`
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: fit-content;
-  padding: 10px 18px;
+
+  padding: 5px 14px;
   border: none;
   border-radius: 8px;
   font-family: "Outfit", sans-serif;
-  color: ${({ $color }) => $color || "white"};
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
+
+  color: ${({ $color }) => $color || "#ffffff"};
+  background-color: ${({ $bg }) => $bg || "#007b55"};
+
   cursor: pointer;
-  background: linear-gradient(135deg, ${lightColor} 0%, ${mainColor} 100%);
-  box-shadow: 0 4px 12px rgba(0, 173, 78, 0.25);
-  transition: all 0.3s ease-out;
+  transition: all 0.2s ease-in-out;
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, ${hoverLightColor} 0%, ${hoverMainColor} 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 173, 78, 0.4);
+    background-color: #153f00;
+    transform: translateY(-1px);
   }
 
   &:active:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 173, 78, 0.3);
+    background-color: #005c40;
+    transform: translateY(0);
   }
 
   &:disabled {
-    background: #cdd3d8;
-    color: #8a94a1;
+    background-color: #e0e0e0;
+    color: #9e9e9e;
     cursor: not-allowed;
-    box-shadow: none;
   }
 `;
 
 export default function ButtonAction({
   icon,
   text,
-  color,
-  backgroundColor,
+  color = "white",
+  backgroundColor = "#007b55",
   action,
   type = "button",
   disabled = false,
 }: ActionButtonProps) {
   return (
-    <ActionButton $color={color} $bg={backgroundColor} onClick={action} type={type} disabled={disabled}>
+    <ActionButton
+      $color={color}
+      $bg={backgroundColor}
+      onClick={action}
+      type={type}
+      disabled={disabled}
+    >
       {icon}
       {text}
     </ActionButton>

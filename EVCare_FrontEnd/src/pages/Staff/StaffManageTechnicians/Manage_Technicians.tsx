@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Select, Badge, Avatar, Card, Typography } from "antd";
 import { Phone, Award, Wrench, User } from "lucide-react";
