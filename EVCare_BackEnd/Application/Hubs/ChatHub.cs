@@ -78,36 +78,36 @@ namespace Application.Hubs
             await Clients.Group(conversationId.ToString()).SendAsync("UpdateConversation", new { conversationId });
         }
 
-        public async Task MaskAsRead(string conversationId, string upToMessageId)
-        {
-            var userId = Context.UserIdentifier;
+        //public async Task MaskAsRead(string conversationId, string upToMessageId)
+        //{
+        //    var userId = Context.UserIdentifier;
 
-            await _chatServices.MarkAsReadUpToAsync(conversationId, userId, upToMessageId);
+        //    await _chatServices.MarkAsReadUpToAsync(conversationId, userId, upToMessageId);
 
-            var counterPart = await _conversationService.GetCounterpartAsync(conversationId, userId);
-            await Clients.User(userId.ToString()).SendAsync("UnreadChanged", new { conversationId, unread = 0 });
-            await Clients.User(counterPart.ToString()).SendAsync("ReadReceipt", new { conversationId, readerId = userId, upToMessageId });
-        }
+        //    var counterPart = await _conversationService.GetCounterpartAsync(conversationId, userId);
+        //    await Clients.User(userId.ToString()).SendAsync("UnreadChanged", new { conversationId, unread = 0 });
+        //    await Clients.User(counterPart.ToString()).SendAsync("ReadReceipt", new { conversationId, readerId = userId, upToMessageId });
+        //}
 
-        public async Task StartConsultation(int appointmentId)
-        {
-            var customerId = Context.UserIdentifier;
-            var conversation = await _conversationService.StartConsultationAsync(customerId, appointmentId);
+        //public async Task StartConsultation(int appointmentId)
+        //{
+        //    var customerId = Context.UserIdentifier;
+        //    var conversation = await _conversationService.StartConsultationAsync(customerId, appointmentId);
 
-            await Groups.AddToGroupAsync(Context.ConnectionId, conversation.Id.ToString());
+        //    await Groups.AddToGroupAsync(Context.ConnectionId, conversation.Id.ToString());
 
-            await Clients.User(conversation.Participants[1].AccountId.ToString()).SendAsync("NewConsultation", conversation);
+        //    await Clients.User(conversation.Participants[1].AccountId.ToString()).SendAsync("NewConsultation", conversation);
 
-            await Clients.User(customerId.ToString()).SendAsync("ConsultationStarted", new
-            {
-                conversationId = conversation.Id,
-                staffId = conversation.Participants[1].AccountId
-            });
-        }
+        //    await Clients.User(customerId.ToString()).SendAsync("ConsultationStarted", new
+        //    {
+        //        conversationId = conversation.Id,
+        //        staffId = conversation.Participants[1].AccountId
+        //    });
+        //}
 
-        public async Task StartTyping(int conversationId) => await Clients.Group(conversationId.ToString()).SendAsync("UserStartedTyping", new { conversationId, userId = Context.UserIdentifier });
+        //public async Task StartTyping(int conversationId) => await Clients.Group(conversationId.ToString()).SendAsync("UserStartedTyping", new { conversationId, userId = Context.UserIdentifier });
 
-        public async Task StopTyping(int conversationId) => await Clients.Group(conversationId.ToString()).SendAsync("UserStoppedTyping", new { conversationId, userId = Context.UserIdentifier });
+        //public async Task StopTyping(int conversationId) => await Clients.Group(conversationId.ToString()).SendAsync("UserStoppedTyping", new { conversationId, userId = Context.UserIdentifier });
 
     }
 }

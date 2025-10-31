@@ -4,6 +4,10 @@ import { useChat } from "../../../hooks/useChat";
 import { SendOutlined, UserOutlined, SmileOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { getHistory } from "../../../services/chatService";
 import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
+import { RoleEnum } from "../../../models/enums";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../states/store";
+import type { Conversation } from "../../../models/Message/Conversation";
 // import { RoleEnum } from "../../../models/enums";
 // import { useSelector } from "react-redux";
 // import type { RootState } from "../../../states/store";
@@ -14,6 +18,7 @@ interface ChatWindowProps {
   onBack?: () => void;
   isWidgetMode?: boolean;
   setLastMessage?: (conversationId: string, newMessage: HistoryMessage) => void;
+  selectedConversation: Conversation | null;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({
@@ -22,13 +27,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   isWidgetMode,
   onBack,
   setLastMessage,
+  selectedConversation,
 }) => {
-  const { messages, send, startTyping, stopTyping } = useChat(conversationId);
+  const { messages, send } = useChat(conversationId);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<HistoryMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
-  // const role = useSelector((state: RootState) => state.auth.user?.role);
+  const role = useSelector((state: RootState) => state.auth.user?.role);
 
   useEffect(() => {
     (async () => {
@@ -58,7 +64,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       };
       setLastMessage && setLastMessage(conversationId, lastMsg);
     }
-  }, [messages, conversationId, setLastMessage]);
+  }, [messages, conversationId, setLastMessage, send]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -80,7 +86,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
   return (
     <div className="chat-window">
-      {/* Chat Header */}
       <div className="chat-header">
         {isWidgetMode && onBack && (
           <Button
@@ -94,7 +99,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         <div className="chat-header-content">
           <Avatar size={40} icon={<UserOutlined />} className="chat-header-avatar" />
           <div>
-            <h3 className="chat-header-title">Conversation</h3>
+            <h3 className="chat-header-title">
+              {role === RoleEnum.STAFF
+                ? `Customer #${selectedConversation?.participants[0]?.name}`
+                : `Staff #${selectedConversation?.participants[1]?.name}`}
+            </h3>
             <p className="chat-header-status">Active</p>
           </div>
         </div>
@@ -167,8 +176,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                   handleSend();
                 }
               }}
-              onFocus={startTyping}
-              onBlur={stopTyping}
               placeholder="Input your message..."
             />
           </div>
