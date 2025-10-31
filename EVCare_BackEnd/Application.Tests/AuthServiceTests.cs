@@ -201,18 +201,18 @@ namespace Application.Tests {
             //Arrange
             var inputRegister = new RegisterRequestDto
             {
-                
+
                 email = "abc@gmail.com",
                 firstName = "Sanh",
                 lastName = "Nguyen",
                 password = "12345678@s",
                 phone = "0908249649"
             };
-           
+
             var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
             accountRepositoryMock.Setup(a => a.AddAsync(It.IsAny<DataAccess.Entities.Account>()))
                 .ReturnsAsync((DataAccess.Entities.Account acc) => acc);
-            accountRepositoryMock.Setup(a=>a.GetAccountByEmail(It.IsAny<string>()))
+            accountRepositoryMock.Setup(a => a.GetAccountByEmail(It.IsAny<string>()))
                 .ReturnsAsync(new DataAccess.Entities.Account
                 {
                     Create_At = DateTime.Now,
@@ -229,7 +229,7 @@ namespace Application.Tests {
                     _fixture.Create<IEmployeeRepository>(),
                     _fixture.Create<ITechnicianRepository>()
                 );
-            
+
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
                 .ReturnsAsync(inputRegister);
             var authService = authServiceMock.Object;
@@ -239,5 +239,30 @@ namespace Application.Tests {
             Assert.NotNull(result);
             Assert.True(result.accountId > 0);
         }
+
+        [Fact]
+        public async Task RegisterAccountAsync_WithInvalidData_ThrowsException() {
+           
+         
+            var authServiceMock = new Mock<AuthServices>(
+                   _fixture.Create<IAccountRepository>(),
+                   _fixture.Create<ITokenServices>(),
+                   _fixture.Create<IConfiguration>(),
+                   _fixture.Create<IRefreshTokenRepository>(),
+                   _fixture.Create<ICustomerRepository>(),
+                   _fixture.Create<IOtpServices>(),
+                   _fixture.Create<IEmployeeRepository>(),
+                   _fixture.Create<ITechnicianRepository>()
+               );
+
+            authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
+                .ThrowsAsync(new Exception("Data invalid"));
+            var authService = authServiceMock.Object;
+            var resultException = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.RegisterAccountAsync(new RegisterRequestDto()));
+            Assert.Equal("Data invalid", resultException.Message);
+
+        } 
+    
     }
 }
