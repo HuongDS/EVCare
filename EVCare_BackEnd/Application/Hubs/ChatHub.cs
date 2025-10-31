@@ -105,9 +105,9 @@ namespace Application.Hubs
             });
         }
 
-        public async Task StartTyping(int conversationId) => await Clients.Group(conversationId.ToString()).SendAsync("UserStartedTyping", new { conversationId, userId = Context.UserIdentifier });
+        //public async Task StartTyping(int conversationId) => await Clients.Group(conversationId.ToString()).SendAsync("UserStartedTyping", new { conversationId, userId = Context.UserIdentifier });
 
-        public async Task StopTyping(int conversationId) => await Clients.Group(conversationId.ToString()).SendAsync("UserStoppedTyping", new { conversationId, userId = Context.UserIdentifier });
+        //public async Task StopTyping(int conversationId) => await Clients.Group(conversationId.ToString()).SendAsync("UserStoppedTyping", new { conversationId, userId = Context.UserIdentifier });
 
     }
 }
