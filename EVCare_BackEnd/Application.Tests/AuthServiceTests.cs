@@ -7,6 +7,7 @@ using AutoFixture.AutoMoq;
 using DataAccess.Dtos.Accounts;
 using DataAccess.Dtos.Register;
 using DataAccess.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Moq;
 
@@ -242,8 +243,8 @@ namespace Application.Tests {
 
         [Fact]
         public async Task RegisterAccountAsync_WithInvalidData_ThrowsException() {
-           
-         
+
+
             var authServiceMock = new Mock<AuthServices>(
                    _fixture.Create<IAccountRepository>(),
                    _fixture.Create<ITokenServices>(),
@@ -262,7 +263,37 @@ namespace Application.Tests {
                 async () => await authService.RegisterAccountAsync(new RegisterRequestDto()));
             Assert.Equal("Data invalid", resultException.Message);
 
-        } 
-    
+        }
+
+        [Fact]
+        public async void SetRefreshCookie_WithValidData_SetsCookie() {
+
+           
+            var cookieName = "RefreshTokenCookie";
+            var refreshValue = "refresh_abc123";
+            var expires = DateTime.UtcNow.AddDays(7);
+
+            var configMock = _fixture.Freeze<Mock<IConfiguration>>();
+            configMock.SetupGet(c => c["Cookies:RefreshTokenName"]).Returns(cookieName);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Response.Body = new MemoryStream(); 
+
+            var authService = _fixture.Create<AuthServices>();
+
+           
+            authService.SetRefreshCookie(httpContext, refreshValue, expires);
+
+           
+            var setCookieHeader = httpContext.Response.Headers["Set-Cookie"].ToString();
+
+            Assert.Contains($"{cookieName}={refreshValue}", setCookieHeader);
+            Assert.Contains("httponly", setCookieHeader.ToLower());
+            Assert.Contains("secure", setCookieHeader.ToLower());
+            Assert.Contains("samesite=none", setCookieHeader.ToLower());
+            var expectedExpires = expires.ToUniversalTime().ToString("R").ToLower();
+            Assert.Contains($"expires={expectedExpires}", setCookieHeader.ToLower());
+
+        }
     }
-}
+  }
