@@ -21,7 +21,6 @@ import type {
   UpdateOrderRequest,
 } from "../../../models/OrderModel/UpdateOrderModel";
 import { useQueryClient } from "@tanstack/react-query";
-import ReFreshButton from "../../../components/Button/ReFreshButton";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
@@ -32,6 +31,9 @@ import {
   MSG_TITLE,
   SUCCESS_MESSAGE,
 } from "../../../constants/messages/Message";
+import { openModel3d } from "../../../states/uiSlice";
+import ReFreshButton from "../../../components/Button/ReFreshButton";
+import ShowButton from "../../../components/Button/ShowButton";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -198,7 +200,13 @@ export default function Appointment_Part_Tracking({
         <Card>
           <SectionTitle>
             Order Parts ({parts.length})
-            <ReFreshButton action={RefreshOrderDetail} />
+            <div>
+              <ReFreshButton action={RefreshOrderDetail} />
+              <ShowButton
+                onclick={() => dispatch(openModel3d())}
+                text="Model 3D"
+              />
+            </div>
           </SectionTitle>
 
           {parts.map((part) => (
