@@ -1,4 +1,4 @@
-import { CircleCheck, CircleX } from "lucide-react";
+// import { CircleCheck, CircleX } from "lucide-react";
 import type { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
@@ -75,6 +75,7 @@ interface IconData {
   text: string;
   required?: boolean;
   setText: (val: string) => void;
+  error?: boolean;
 }
 
 export default function TextFieldWithIcon({
@@ -83,6 +84,7 @@ export default function TextFieldWithIcon({
   text,
   required = false,
   setText,
+  error,
 }: IconData) {
   return (
     <div>
@@ -98,8 +100,6 @@ export default function TextFieldWithIcon({
             required={required}
           />
         </FieldGroup>
-        <CircleCheck color="#00AD4E" />
-        <CircleX color="red" />
       </Field>
     </div>
   );

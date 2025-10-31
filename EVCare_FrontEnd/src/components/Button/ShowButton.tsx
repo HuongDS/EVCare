@@ -3,26 +3,30 @@ import styled from "styled-components";
 interface props {
   onclick: () => void;
   text: string;
+  width?: string;
+  height?: string;
 }
-const ShowButton = ({ onclick, text }: props) => {
+const ShowButton = ({ onclick, text, width, height }: props) => {
   return (
-    <StyledWrapper>
+    <StyledWrapper $width={width ?? "auto"} $height={height ?? "auto"}>
       <button onClick={onclick}>{text}</button>
     </StyledWrapper>
   );
 };
 
-const StyledWrapper = styled.div`
+const StyledWrapper = styled.div<{ $width: string; $height: string }>`
   button {
     border: none;
-    color: #0c3902;
-    border: 2px solid black;
-    border-radius: 15px;
+    color: #00ad4e;
+    border: 2px solid #00ad4e;
+    border-radius: 10px;
     background-size: 100% auto;
     font-family: "Outfit", sans-serif;
     font-weight: bold;
     font-size: 17px;
     padding: 0.2em 1em;
+    width: ${(props) => props.$width || "auto"};
+    height: ${(props) => props.$height || "auto"};
   }
 
   button:hover {
