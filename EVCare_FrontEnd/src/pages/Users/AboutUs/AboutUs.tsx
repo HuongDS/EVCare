@@ -75,7 +75,7 @@ const Note = styled.div`
 
 const Title = styled.h1`
   font-family: "Outfit", sans-serif;
-  font-size: clamp(3rem, 15vw, 15rem);
+  font-size: clamp(3rem, 13vw, 15rem);
   font-weight: 800;
   text-align: center;
   margin: 0;

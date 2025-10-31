@@ -17,7 +17,7 @@ export async function updateTechnicianWorkingSession(payload: {
       "/api/TechnicianWorkingSession/my-working-session",
       payload
     );
-    console.log("🔎 Update API response:", response.data);
+    console.log("Update API response:", response.data);
     return response.data.data ?? null;
   } catch (error) {
     handleError(error);
