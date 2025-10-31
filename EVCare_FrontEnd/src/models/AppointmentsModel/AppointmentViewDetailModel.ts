@@ -6,6 +6,7 @@ export type AppointmentViewDetailModel = {
   appointmentDate: Dayjs;
   status: AppointmentStatusEnum;
   note: string;
+  vehicleId: number;
   vehicleName: string;
   vehiclePlateNumber: string;
   customerName: string;
