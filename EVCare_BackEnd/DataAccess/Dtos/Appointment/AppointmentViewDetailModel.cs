@@ -14,6 +14,7 @@ namespace DataAccess.Dtos.Appointment
         public DateTime AppointmentDate { get; set; }
         public AppointmentStatusEnum Status { get; set; }
         public string? Note { get; set; }
+        public int VehicleId { get; set; }
         public string VehicleName { get; set; }
         public string VehiclePlateNumber { get; set; }
         public string CustomerName { get; set; }

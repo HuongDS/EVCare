@@ -75,17 +75,16 @@ namespace Application.Services
                 data = null
             };
         }
-        public async Task<RegisterRequestDto> ValidateInfo(RegisterRequestDto data)
+        public virtual async Task<RegisterRequestDto> ValidateInfo(RegisterRequestDto data)
         {
             var checkEmailExist = await _accountRepository.GetAccountByEmail(data.email);
             var checkPhoneExist = await _accountRepository.GetAccountByPhoneAsync(data.phone);
-            if (checkEmailExist != null)
-            {
+            if (checkEmailExist != null) {
+                if(checkEmailExist.Deleted_At != DateTime.MinValue)
+                {
+                    throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
+                }
                 throw new Exception(Message.EMAIL_EXISTS);
-            }
-            if (checkEmailExist != null && checkEmailExist.Deleted_At != DateTime.MinValue)
-            {
-                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
             }
             if (checkPhoneExist != null)
             {
