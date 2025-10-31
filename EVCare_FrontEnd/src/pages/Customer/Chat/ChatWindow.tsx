@@ -13,9 +13,16 @@ interface ChatWindowProps {
   accountId: string;
   onBack?: () => void;
   isWidgetMode?: boolean;
+  setLastMessage?: (conversationId: string, newMessage: HistoryMessage) => void;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountId, isWidgetMode, onBack }) => {
+export const ChatWindow: React.FC<ChatWindowProps> = ({
+  conversationId,
+  accountId,
+  isWidgetMode,
+  onBack,
+  setLastMessage,
+}) => {
   const { messages, send, startTyping, stopTyping } = useChat(conversationId);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<HistoryMessage[]>([]);
@@ -37,6 +44,21 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
     setInput("");
     await send(input);
   };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const newMessage = messages[messages.length - 1];
+      const lastMsg: HistoryMessage = {
+        id: newMessage.id.toString(),
+        text: newMessage.text ?? "",
+        senderId: newMessage.senderId.toString(),
+        sentAt: newMessage.sentAt ?? "",
+        attachments: newMessage.attachments ?? [],
+        receiverId: newMessage.receiverId?.toString() ?? "",
+      };
+      setLastMessage && setLastMessage(conversationId, lastMsg);
+    }
+  }, [messages, conversationId, setLastMessage]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -99,7 +121,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
         ) : allMessages.length === 0 ? (
           <div className="chat-empty-state">
             <SmileOutlined className="chat-empty-icon" />
-            <p>Bắt đầu cuộc trò chuyện của bạn</p>
+            <p>Start your conversation</p>
           </div>
         ) : (
           <>

@@ -58,7 +58,7 @@ export const StaffChatPage = () => {
               </h2>
               <div className="staff-status-indicator">
                 <Badge status="processing" />
-                <span>Sẵn sàng hỗ trợ</span>
+                <span>Ready to support</span>
               </div>
             </div>
 
@@ -93,9 +93,9 @@ export const StaffChatPage = () => {
               <div className="chat-welcome-icon-wrapper">
                 <CustomerServiceOutlined className="chat-welcome-icon" />
               </div>
-              <h3 className="chat-welcome-title">Sẵn sàng hỗ trợ</h3>
+              <h3 className="chat-welcome-title">Ready to support</h3>
               <p className="chat-welcome-description">
-                Đang chờ khách hàng bắt đầu tư vấn. Hãy chọn một cuộc trò chuyện từ danh sách bên trái.
+                Waiting for the customer to start a consultation. Please select a conversation from the left list.
               </p>
             </div>
           )}

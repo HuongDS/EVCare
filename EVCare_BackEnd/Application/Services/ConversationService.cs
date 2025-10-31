@@ -63,7 +63,16 @@ namespace Application.Services
 
             var type = staffId == "AI_BOT" ? "AI" : "consultation";
 
-            var conversation = new Conversation
+            var conversation = Builders<Conversation>.Filter.And(
+                   Builders<Conversation>.Filter.Eq(c => c.Type, type),
+                   Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == customerAccountId),
+                   Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == staffId)
+               );
+
+            var existed = await _conversations.Find(conversation).FirstOrDefaultAsync();
+            if (existed != null) return existed;
+
+            var newConversation = new Conversation
             {
                 Type = type,
                 Participants = new List<Participant>
@@ -79,8 +88,8 @@ namespace Application.Services
                 AssignedTo = staffId
             };
 
-            await _conversations.InsertOneAsync(conversation);
-            return conversation;
+            await _conversations.InsertOneAsync(newConversation);
+            return newConversation;
         }
 
         public async Task<(List<Conversation>, int, int)> ListMineAsync(string accountId, int pageSize, int pageIndex)
