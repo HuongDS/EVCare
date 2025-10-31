@@ -1,13 +1,7 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Select, Typography } from "antd";
-import {
-  Package,
-  Filter,
-  AlertCircle,
-  ChartCandlestick,
-  FileCog,
-} from "lucide-react";
+import { Package, Filter, AlertCircle, ChartCandlestick } from "lucide-react";
 import {
   useExportInventoryToExcel,
   useGetAllPartCategories,
@@ -18,7 +12,8 @@ import SpinnerComponent from "../../../components/SpinnerComponent";
 import { DownloadButton } from "../../../components/Button/DownloadButton";
 import UpdatePartModal from "./UpdatePartModal";
 import type { PartDetailDto } from "../../../models/PartModel/PartModel";
-import LoadButton from "../../../components/Button/LoadButton";
+import ShowButton from "../../../components/Button/ShowButton";
+import { Pagination } from "../../../components/Paginations/Pagination";
 
 const { Text } = Typography;
 
@@ -26,15 +21,14 @@ const Staff_Inventory = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedPart, setSelectedPart] = useState<PartDetailDto | undefined>();
-  const [total, setTotal] = useState(0);
-  const [lowStockItems, setLowStockItems] = useState(0);
-  const [totalValue, setTotalValue] = useState(0);
   const [searchValue, setSearchValue] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data: partCategories } = useGetAllPartCategories({});
   const { data: parts, isLoading } = useGetParts({
     ...((searchValue && { partName: searchValue }) || {}),
-    pageSize: 100,
+    pageIndex: currentPage,
+    pageSize: 5,
   });
 
   const filteredParts =
@@ -50,20 +44,15 @@ const Staff_Inventory = () => {
     })) ?? []),
   ];
 
-  useEffect(() => {
-    const totalParts = parts?.data?.items?.length;
-    const lowStockItems = parts?.data?.items?.filter(
-      (p) => p.quantity < 10
-    ).length;
-    const totalValue = parts?.data?.items?.reduce(
-      (sum, p) => sum + p.price * p.quantity,
-      0
-    );
+  const { total, lowStockItems, totalValue } = useMemo(() => {
+    const items = parts?.data?.items ?? [];
 
-    setTotal(totalParts ?? 0);
-    setLowStockItems(lowStockItems ?? 0);
-    setTotalValue(totalValue ?? 0);
-  }, []);
+    const total = items.length;
+    const lowStockItems = items.filter((p) => p.quantity < 10).length;
+    const totalValue = items.reduce((sum, p) => sum + p.price * p.quantity, 0);
+
+    return { total, lowStockItems, totalValue };
+  }, [parts]);
 
   const { mutate: exportToExcel, isPending } = useExportInventoryToExcel();
 
@@ -133,12 +122,14 @@ const Staff_Inventory = () => {
             searchValue={searchValue}
             placeholder="Search part..."
           />
-          <Filter size={20} className="filter-icon" />
           <StyledSelect
             options={categoryOptions}
             placeholder="Filter by Category"
             value={selectedCategory}
             onChange={(v) => setSelectedCategory(Number(v))}
+            style={{
+              height: "44px",
+            }}
           />
           <Text style={{ marginLeft: "auto", color: "#8c8c8c" }}>
             Showing {filteredParts.length} of {total} items
@@ -203,13 +194,12 @@ const Staff_Inventory = () => {
                         <div
                           style={{ display: "flex", justifyContent: "center" }}
                         >
-                          <LoadButton
+                          <ShowButton
                             text="Update"
-                            action={() => {
+                            onclick={() => {
                               setIsOpen(true);
                               setSelectedPart(part);
                             }}
-                            icon={<FileCog />}
                           />
                         </div>
                       </td>
@@ -218,6 +208,13 @@ const Staff_Inventory = () => {
                 })}
               </tbody>
             </table>
+            <Pagination
+              totalPage={parts?.data?.totalPages || 0}
+              totalItems={parts?.data?.totalItems || 0}
+              pageIndex={currentPage}
+              pageSize={5}
+              onPageChange={setCurrentPage}
+            />
           </TableWrapper>
         ) : (
           <EmptyState>

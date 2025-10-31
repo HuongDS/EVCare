@@ -1,17 +1,7 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import styled from "styled-components";
-import { Badge, Avatar, Card, Typography, Button, Modal } from "antd";
-import {
-  Phone,
-  Mail,
-  MapPin,
-  MessageCircle,
-  Car,
-  User,
-  Users,
-  UserCheck,
-  Ban,
-} from "lucide-react";
+import { Badge, Avatar, Card, Typography } from "antd";
+import { Phone, Mail, Car, User, Users, UserCheck, Ban } from "lucide-react";
 import { useGetAllCustomer } from "../../../services/staffService";
 import SearchBar from "../../../components/SearchBar/Search";
 
@@ -19,24 +9,21 @@ const { Title, Text } = Typography;
 
 const Manage_Customer: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
-  const [chatModalVisible, setChatModalVisible] = useState(false);
 
   const { data: customers } = useGetAllCustomer({
     keyword: searchTerm,
   });
 
-  const activeCount = customers?.data?.items.filter((c) => !c.banned).length;
-  const bannedCount = customers?.data?.items.filter((c) => c.banned).length;
-  const totalVehicles = customers?.data?.items.reduce(
-    (sum, c) => sum + c.vehicles.length,
-    0
-  );
-
-  const handleChatClick = (customer: any) => {
-    setSelectedCustomer(customer);
-    setChatModalVisible(true);
-  };
+  const { activeCount, bannedCount, totalVehicles } = useMemo(() => {
+    const customerList = customers?.data?.items;
+    const activeCount = customerList?.filter((c) => !c.banned).length;
+    const bannedCount = customerList?.filter((c) => c.banned).length;
+    const totalVehicles = customerList?.reduce(
+      (sum, c) => sum + c.vehicles.length,
+      0
+    );
+    return { activeCount, bannedCount, totalVehicles };
+  }, [customers]);
 
   return (
     <Container>
@@ -125,14 +112,6 @@ const Manage_Customer: React.FC = () => {
                 </div>
               </InfoRow>
 
-              <InfoRow>
-                <MapPin size={18} />
-                <div className="content">
-                  <div className="label">Address</div>
-                  <div className="value">{customer.address}</div>
-                </div>
-              </InfoRow>
-
               {customer.vehicles.length > 0 && (
                 <VehiclesSection>
                   <div className="vehicles-header">
@@ -149,16 +128,6 @@ const Manage_Customer: React.FC = () => {
                   </div>
                 </VehiclesSection>
               )}
-
-              {!customer.banned && (
-                <ActionButton
-                  type="primary"
-                  icon={<MessageCircle size={18} />}
-                  onClick={() => handleChatClick(customer)}
-                >
-                  Chat with Customer
-                </ActionButton>
-              )}
             </CustomerCard>
           ))}
 
@@ -173,34 +142,6 @@ const Manage_Customer: React.FC = () => {
           )}
         </CustomerGrid>
       </ContentWrapper>
-
-      <Modal
-        title={
-          <div
-            style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
-          >
-            <MessageCircle size={20} color="#3b82f6" />
-            <span>Chat with {selectedCustomer?.customerName}</span>
-          </div>
-        }
-        open={chatModalVisible}
-        onCancel={() => setChatModalVisible(false)}
-        footer={null}
-        width={600}
-      >
-        <div
-          style={{ padding: "1rem 0", textAlign: "center", color: "#64748b" }}
-        >
-          <MessageCircle
-            size={48}
-            style={{ marginBottom: "1rem", opacity: 0.5 }}
-          />
-          <p style={{ margin: 0 }}>Chat feature will be implemented here</p>
-          <p style={{ fontSize: "0.875rem", marginTop: "0.5rem" }}>
-            Customer ID: #{selectedCustomer?.accountId}
-          </p>
-        </div>
-      </Modal>
     </Container>
   );
 };
@@ -437,27 +378,6 @@ const VehicleTag = styled.div`
   .category {
     color: #3b82f6;
     font-size: 0.75rem;
-  }
-`;
-
-const ActionButton = styled(Button)`
-  width: 100%;
-  height: 40px;
-  display: flex;
-  border-radius: 8px;
-  font-weight: 500;
-  border: none;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-
-  &:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
   }
 `;
 
