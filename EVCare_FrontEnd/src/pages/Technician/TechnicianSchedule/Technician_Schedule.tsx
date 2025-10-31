@@ -45,9 +45,12 @@ const TechnicianSchedule: React.FC = () => {
       const activeStatuses = [
         TechnicianWorkingSessionEnum.PENDING,
         TechnicianWorkingSessionEnum.INPROGRESS,
+        TechnicianWorkingSessionEnum.ADDING_PART,
+        TechnicianWorkingSessionEnum.CONFIRM,
         TechnicianWorkingSessionEnum.COMPLETED,
         TechnicianWorkingSessionEnum.CANCELED,
       ].map(String);
+
       const results = await Promise.all(
         activeStatuses.map((status) =>
           getTechnicianAppointments({
@@ -55,12 +58,11 @@ const TechnicianSchedule: React.FC = () => {
             PageSize: 100,
             PageIndex: 1,
           }).catch(() => {
-            return { items: [] }; // tránh crash nếu 1 status lỗi
+            return { items: [] };
           })
         )
       );
 
-      // ✅ Gộp tất cả item từ các status
       const allAppointments = results.flatMap((res) => res.items ?? []);
 
       const mappedAppointments: SimpleAppointment[] = allAppointments.map(
@@ -75,7 +77,6 @@ const TechnicianSchedule: React.FC = () => {
 
       setAppointments(mappedAppointments);
 
-      // ✅ Gọi các API khác song song
       const [dateOffRes, blockedRes] = await Promise.all([
         getDateOff(),
         getBlockedDate(),
@@ -97,7 +98,6 @@ const TechnicianSchedule: React.FC = () => {
     }
   };
 
-  // ✅ Gom tất cả sự kiện hiển thị lên lịch
   const events: EventInput[] = [
     ...appointments.map((a) => ({
       title: `ID: ${a.id}\n${a.vehicleModel}\n${a.status}`,

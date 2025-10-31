@@ -169,7 +169,7 @@ export const CalendarContainer = styled.div`
   }
 
   .appointment {
-    margin: 2px !important;
+    background-color: ${COLORS.appointment} !important;
   }
 
   .appointment.pending {
@@ -182,7 +182,7 @@ export const CalendarContainer = styled.div`
     border-color: #42a5f5 !important;
   }
 
-  .appointment.adding_part {
+  .appointment.addingpart {
     background-color: #ab47bc !important;
     border-color: #ab47bc !important;
   }
