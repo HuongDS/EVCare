@@ -17,10 +17,10 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
 
-    if (diffMins < 1) return "Vừa xong";
-    if (diffMins < 60) return `${diffMins} phút`;
-    if (diffMins < 1440) return `${Math.floor(diffMins / 60)} giờ`;
-    return `${Math.floor(diffMins / 1440)} ngày`;
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins} minutes`;
+    if (diffMins < 1440) return `${Math.floor(diffMins / 60)} hours`;
+    return `${Math.floor(diffMins / 1440)} days`;
   };
 
   return (
@@ -62,7 +62,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
               }
               description={
                 <div className={`conversation-preview ${unreadCount > 0 ? "unread" : ""}`}>
-                  {item.lastMessage?.text || "Chưa có tin nhắn"}
+                  {item.lastMessage?.text || "No messages yet"}
                 </div>
               }
             />
