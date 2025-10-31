@@ -23,7 +23,7 @@ import {
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { deleteToken, logout } from "../../services/authService";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useAppDispatch } from "../../states/store";
 import { logoutRedux } from "../../states/authSlice";
 
@@ -203,17 +203,23 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ role }) => {
   const [selectedKey, setSelectedKey] = useState<string[]>(["1"]);
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const currentPath = window.location.pathname;
-    const foundKey = menuByRole[role].find((item) => item.route === currentPath)?.key;
+    const foundKey = menuByRole[role].find(
+      (item) => item.route === location.pathname
+    )?.key;
+
+    console.log(foundKey);
 
     if (foundKey) {
       setSelectedKey([foundKey]);
+    } else {
+      setSelectedKey([]);
     }
-  }, [role]);
+  }, [location.pathname, role]);
 
   const handleMenuClick = ({ key }: { key: string }) => {
     const selectedItem = menuByRole[role].find((item) => item.key === key);
