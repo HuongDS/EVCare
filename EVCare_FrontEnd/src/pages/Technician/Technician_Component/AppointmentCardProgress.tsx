@@ -152,6 +152,8 @@ const AppointmentCardProgress: React.FC<Props> = ({
   onStatusChange,
   onPartsUpdated,
 }) => {
+  const notification = useNotification();
+
   const [currentStatus, setCurrentStatus] =
     useState<TechnicianWorkingSessionEnum>(
       data.status as TechnicianWorkingSessionEnum

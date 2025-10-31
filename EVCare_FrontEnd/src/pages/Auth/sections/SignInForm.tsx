@@ -5,6 +5,10 @@ import { FieldGroup, SubmitBtn } from "../Authentication.styled";
 import { Link } from "react-router";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
 interface SignInProps {
   email: string;
   setEmail: (v: string) => void;
@@ -15,6 +19,14 @@ interface SignInProps {
   handleIsForgot: () => void;
 }
 
+//validate các field
+const signInSchema = z.object({
+  email: z.string().min(1, "Email is required").email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+type SignInFormData = z.infer<typeof signInSchema>;
+
 export default function SignInForm({
   email,
   setEmail,
@@ -24,15 +36,36 @@ export default function SignInForm({
   handleIsForgot,
   disable,
 }: SignInProps) {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit: SubmitHandler<SignInFormData> = () => {
+    handleLogin();
+  };
   return (
     <>
       <FieldGroup>
-        <TextFieldWithIcon
-          required={true}
-          icon={<HiOutlineMail />}
-          type="Email"
-          text={email}
-          setText={setEmail}
+        <Controller
+          name="email"
+          control={control}
+          render={({ field }) => (
+            <TextFieldWithIcon
+              required={true}
+              icon={<HiOutlineMail />}
+              type="Email"
+              text={field.value}
+              setText={field.onChange}
+            />
+          )}
         />
         <TextFieldWithIcon
           required={true}
@@ -57,7 +90,7 @@ export default function SignInForm({
       {disable ? (
         <SpinnerComponent />
       ) : (
-        <SubmitBtn type="button" onClick={handleLogin}>
+        <SubmitBtn type="submit" onClick={handleLogin}>
           Sign In
         </SubmitBtn>
       )}

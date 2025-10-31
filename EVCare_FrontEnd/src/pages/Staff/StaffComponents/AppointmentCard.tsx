@@ -3,7 +3,7 @@ import StatusTag from "../../../components/StatusTags/StatusTag";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 
 import { formatDate } from "../../../utils/formatDate";
-import ButtonAction from "../../../components/Button/ReviewButton";
+import ButtonAction from "../../../components/Button/ButtonAction";
 import { TriangleAlert } from "lucide-react";
 import type {
   TechnicianModel,
@@ -46,7 +46,9 @@ export default function AppointmentCard({
         <InformationStyled>
           <ImageStyled>
             {data.appointmentImages && data.appointmentImages.length > 0 ? (
-              data.appointmentImages.slice(0, 1).map((img, i) => <img src={img} key={i} />)
+              data.appointmentImages
+                .slice(0, 1)
+                .map((img, i) => <img src={img} key={i} />)
             ) : (
               <img
                 src="https://i.pinimg.com/736x/79/74/12/797412081b120609d902b4966fa435b7.jpg"
@@ -85,12 +87,22 @@ export default function AppointmentCard({
           </GroupFiled>
           <GroupButtonStyled>
             {data.status === "Done" ? (
-              <ButtonAction text="View Details" color="white" backgroundColor="#1da1f2" action={onOpenProgress} />
+              <ButtonAction
+                text="View Details"
+                color="white"
+                backgroundColor="#00AD4E"
+                action={onOpenProgress}
+              />
             ) : data.status !== "Pending" && data.status !== "Canceled" ? (
               data.status === "AddingPart" ? (
                 <WaitingText>Technicians are adding parts...</WaitingText>
               ) : (
-                <ButtonAction text="Progress" color="white" backgroundColor="#00AD4E" action={onOpenProgress} />
+                <ButtonAction
+                  text="Progress"
+                  color="white"
+                  backgroundColor="#00AD4E"
+                  action={onOpenProgress}
+                />
               )
             ) : undefined}
             {(data.status === "AddingPart" || data.status === "InProgress") && (
@@ -117,7 +129,8 @@ const ContainerStyled = styled.div`
   font-family: "outfit", sans-serif;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   &:hover {
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+      rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
   }
 `;
 const HeaderStyled = styled.div`

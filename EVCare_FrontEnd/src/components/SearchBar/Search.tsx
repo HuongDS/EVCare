@@ -51,11 +51,9 @@ const StyledWrapper = styled.div`
     width: 100%;
     height: 44px;
     padding-left: 2.75rem;
-
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid #00ad4e;
     border-radius: 12px;
-    color: #ffffff;
+    color: #686868;
 
     outline: none;
     transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
@@ -64,12 +62,12 @@ const StyledWrapper = styled.div`
   }
 
   .input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: #00ad4e;
   }
 
   .input:hover {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: white;
+    border-color: #00ad4e;
   }
 
   .input:active {
@@ -77,7 +75,6 @@ const StyledWrapper = styled.div`
   }
 
   .input:focus {
-    background: rgba(0, 0, 0, 0.25);
     border-color: #00ad4e;
     box-shadow: 0 0 15px rgba(0, 173, 78, 0.4);
   }
@@ -85,7 +82,7 @@ const StyledWrapper = styled.div`
   .search-icon {
     position: absolute;
     left: 1rem;
-    fill: rgba(255, 255, 255, 0.6);
+    fill: #00ad4e;
     width: 1.15rem;
     height: 1.15rem;
     pointer-events: none;

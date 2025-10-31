@@ -16,10 +16,10 @@ export type PartCategoryViewModel<T> = {
   damagedPartViewModels: T[];
 };
 
-export type DamagedPartViewModels = {
+export type PartDamagedModel = {
   id: number;
   partCategoryId: number;
   partName: string;
-  damageLevel: "Minor";
+  damageLevel: string;
   nodeName: string;
 };

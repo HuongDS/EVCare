@@ -16,14 +16,16 @@ import type {
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import PaymentPage from "./Appointment_Payment";
 import { InvoicePage } from "./Appointment_Invoice";
+import NextMaintenance from "./NextMaintenance";
 
 const ModalStyled = styled(Modal)`
   display: flex;
   justify-content: center;
-  top: 2%;
+  top: 2.5%;
   .ant-modal-content {
     width: 1000px !important;
-    height: 95vh !important;
+    max-height: 94vh;
+    overflow: hidden;
   }
 `;
 
@@ -56,6 +58,7 @@ export default function Appoinment_Progress_Modal({
             close={close}
           />
         );
+
       case 1:
         return <AssignTechnicianPage data={data} currentStep={currentStep} />;
       case 2:
@@ -68,6 +71,8 @@ export default function Appoinment_Progress_Modal({
         );
       case 3:
         return <PaymentPage data={data} currentStep={currentStep} />;
+      case 4:
+        return <NextMaintenance data={data} currentStep={currentStep} />;
       case 5:
         return <InvoicePage data={data} />;
     }
@@ -76,7 +81,7 @@ export default function Appoinment_Progress_Modal({
   return (
     <ModalStyled open={show} onCancel={close} footer={null}>
       <ProgressSteps steps={stepNames} currentStep={currentStep}>
-        <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
+        <div style={{ maxHeight: "80vh", overflowY: "auto" }}>
           {renderContent()}
         </div>
       </ProgressSteps>
