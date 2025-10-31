@@ -89,10 +89,10 @@ namespace Application.Hubs
             await Clients.User(counterPart.ToString()).SendAsync("ReadReceipt", new { conversationId, readerId = userId, upToMessageId });
         }
 
-        public async Task StartConsultation()
+        public async Task StartConsultation(int appointmentId)
         {
             var customerId = Context.UserIdentifier;
-            var conversation = await _conversationService.StartConsultationAsync(customerId);
+            var conversation = await _conversationService.StartConsultationAsync(customerId, appointmentId);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, conversation.Id.ToString());
 
