@@ -594,4 +594,136 @@ export const WidgetChatStyleWrapper = styled.div`
       transform: translateY(0);
     }
   }
+
+  .custom-modal-body,
+  .custom-modal-body * {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  }
+
+  .custom-modal-body {
+    padding: 1.5rem 0 0.5rem;
+  }
+
+  .custom-modal-alert {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    margin-bottom: 1.5rem;
+  }
+  .custom-modal-alert .alert-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: #065f46;
+    background-color: #bbf7d0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    font-style: italic;
+  }
+  .custom-modal-alert .alert-content {
+    color: #065f46;
+  }
+  .custom-modal-alert .alert-title {
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+  }
+  .custom-modal-alert .alert-list {
+    margin: 0;
+    padding-left: 20px;
+  }
+  .custom-modal-alert .alert-list li {
+    font-size: 0.875rem;
+  }
+
+  .custom-modal-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 1rem;
+  }
+
+  .custom-radio-list {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+  }
+
+  .custom-radio-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f3f4f6;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  .custom-radio-item:last-child {
+    border-bottom: none;
+  }
+  .custom-radio-item:hover {
+    background-color: #f9fafb;
+  }
+
+  .custom-radio-item .radio-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #d1d5db; /* Viền xám */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease;
+  }
+  .custom-radio-item .radio-icon .radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+  }
+
+  .custom-radio-item.selected {
+    background-color: #f0fdf4;
+    border-left: 4px solid #00ad4e;
+    padding-left: 12px;
+  }
+  .custom-radio-item.selected .radio-icon {
+    border-color: #00ad4e;
+  }
+  .custom-radio-item.selected .radio-icon .radio-dot {
+    background-color: #00ad4e;
+  }
+
+  .custom-radio-item .radio-content {
+    display: flex;
+    flex-direction: column;
+  }
+  .custom-radio-item .radio-title {
+    font-weight: 600;
+    color: #1f2937;
+  }
+  .custom-radio-item .radio-status {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+
+  .custom-empty-text {
+    color: #6b7280;
+    font-style: italic;
+    padding: 1rem;
+    text-align: center;
+  }
 `;

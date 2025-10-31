@@ -9,7 +9,7 @@ export async function listConversations() {
   return response.data;
 }
 
-export async function getHistory(conversationId: string, skip = 0, take = 30) {
+export async function getHistory(conversationId: string, skip = 0, take = 1000) {
   const response = await api.get<HistoryMessage[]>(`/api/Chat/history/${conversationId}`, {
     params: {
       skip: skip,
@@ -21,10 +21,11 @@ export async function getHistory(conversationId: string, skip = 0, take = 30) {
 
 export async function startConsultation(appointmentId: number) {
   try {
-    const response = await api.post<{ conversationId: string; assignedTo: string }>(
-      "/api/Chat/consultations",
-      appointmentId
-    );
+    const response = await api.post<{ conversationId: string; assignedTo: string }>("/api/Chat/consultations", null, {
+      params: {
+        appointmentId: appointmentId,
+      },
+    });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
