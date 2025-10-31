@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import styled from "styled-components";
 
@@ -10,11 +10,13 @@ interface SortDateButtonProps {
 }
 
 export const SortDateButton = ({ onSort, disabled }: SortDateButtonProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+  useEffect(() => {
+    onSort(sortOrder);
+  }, []);
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const buttonStyle: React.CSSProperties = {};
-
-  const [isHovered, setIsHovered] = useState(false);
 
   const dynamicStyle: React.CSSProperties = {
     ...buttonStyle,
@@ -25,14 +27,8 @@ export const SortDateButton = ({ onSort, disabled }: SortDateButtonProps) => {
   };
 
   const handleClick = () => {
-    let newOrder: SortOrder;
-
-    if (sortOrder === "desc") {
-      newOrder = "asc";
-    } else {
-      newOrder = "desc";
-    }
-
+    if (disabled) return;
+    const newOrder: SortOrder = sortOrder === "desc" ? "asc" : "desc";
     setSortOrder(newOrder);
     onSort(newOrder);
   };
