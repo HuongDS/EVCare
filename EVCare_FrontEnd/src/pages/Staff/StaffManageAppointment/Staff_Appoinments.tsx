@@ -20,6 +20,15 @@ import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import {
+  useAppDispatch,
+  useAppSelector,
+  type RootState,
+} from "../../../states/store";
+// import Test from "../../../components/Test";
+import Model3dViewer from "../../Model3d/Model3dViewer";
+import { openModel3d } from "../../../states/uiSlice";
+import ShowButton from "../../../components/Button/ShowButton";
 
 export default function Staff_Appoinments() {
   const queryClient = useQueryClient();
@@ -34,6 +43,10 @@ export default function Staff_Appoinments() {
     useState<StaffAppointmentsDto<TechnicianModel<TechnicianSkills>> | null>(
       null
     );
+
+  const isOpen3dModel = useAppSelector(
+    (state: RootState) => state.ui.model3dOpen
+  );
 
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showReassignModal, setShowReassignModal] = useState(false);
@@ -116,75 +129,86 @@ export default function Staff_Appoinments() {
     setSortOrder(v);
   };
 
-  return (
-    <>
-      <AppoitmentWrapper>
-        <TitleWrapper>
-          <h2>Appoinments</h2>
-          <SearchBar
-            placeholder="Search appointments..."
-            handleSearchValue={handleSearch}
+  const dispatch = useAppDispatch();
+
+  if (isOpen3dModel) {
+    return <Model3dViewer data={selectedAppointment || undefined} />;
+  } else {
+    return (
+      <>
+        <AppoitmentWrapper>
+          <TitleWrapper>
+            <h2>Appoinments</h2>
+            <SearchBar
+              placeholder="Search appointments..."
+              handleSearchValue={handleSearch}
+            />
+          </TitleWrapper>
+          <SortTable
+            sortName={sortName}
+            setBeginDate={setBeginTime}
+            setEndDate={setEndTime}
+            setSortBy={setSortBy}
+            setSortOrder={handleSortByDate}
+            disabled={appointments?.data?.items?.length === 0}
           />
-        </TitleWrapper>
-        <SortTable
-          sortName={sortName}
-          setBeginDate={setBeginTime}
-          setEndDate={setEndTime}
-          setSortBy={setSortBy}
-          setSortOrder={handleSortByDate}
-          disabled={appointments?.data?.items?.length === 0}
-        />
-        <SpinnerStyled>{isLoading && <SpinnerComponent />}</SpinnerStyled>
-        <ListAppointmentStyled>
-          {appointments?.data?.items?.length !== 0 ? (
-            appointments?.data?.items?.map(
-              (
-                item: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
-              ) => (
-                <AppointmentCard
-                  key={item.id}
-                  data={item}
-                  onOpenProgress={() => handleOpenProgress(item)}
-                  hasTechnicianOnleave={checkTechnicianOnleave(item.id)}
-                  onOpenReassign={() => handleOpenReassign(item)}
-                />
+          <SpinnerStyled>{isLoading && <SpinnerComponent />}</SpinnerStyled>
+          <ListAppointmentStyled>
+            {appointments?.data?.items?.length !== 0 ? (
+              appointments?.data?.items?.map(
+                (
+                  item: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
+                ) => (
+                  <AppointmentCard
+                    key={item.id}
+                    data={item}
+                    onOpenProgress={() => handleOpenProgress(item)}
+                    hasTechnicianOnleave={checkTechnicianOnleave(item.id)}
+                    onOpenReassign={() => handleOpenReassign(item)}
+                  />
+                )
               )
-            )
-          ) : (
-            <NOT_FOUND_ITEMS
-              icon={<i className="bi bi-exclamation-circle" />}
-              message={LIST_APPOINTMENTS_MESSAGE.EMPTY_PENDING(sortBy)}
-            />
-          )}
+            ) : (
+              <NOT_FOUND_ITEMS
+                icon={<i className="bi bi-exclamation-circle" />}
+                message={LIST_APPOINTMENTS_MESSAGE.EMPTY_PENDING(sortBy)}
+              />
+            )}
 
-          {!isLoading && (
-            <Pagination
-              pageIndex={currenPage}
-              pageSize={5}
-              totalItems={appointments?.data?.totalItems || 1}
-              totalPage={appointments?.data?.totalPages || 1}
-              onPageChange={onPageChange}
+            <ShowButton
+              onclick={() => dispatch(openModel3d())}
+              text="Model 3D"
             />
-          )}
-        </ListAppointmentStyled>
-      </AppoitmentWrapper>
-      {showProgressModal && selectedAppointment && (
-        <Appoinment_Progress_Modal
-          show={showProgressModal}
-          close={handleCloseModal}
-          data={selectedAppointment}
-        />
-      )}
 
-      {showReassignModal && selectedAppointment && (
-        <Appointment_Reassign
-          show={showReassignModal}
-          close={handleCloseModal}
-          data={selectedAppointment}
-        />
-      )}
-    </>
-  );
+            {!isLoading && (
+              <Pagination
+                pageIndex={currenPage}
+                pageSize={5}
+                totalItems={appointments?.data?.totalItems || 1}
+                totalPage={appointments?.data?.totalPages || 1}
+                onPageChange={onPageChange}
+              />
+            )}
+          </ListAppointmentStyled>
+        </AppoitmentWrapper>
+        {showProgressModal && selectedAppointment && (
+          <Appoinment_Progress_Modal
+            show={showProgressModal}
+            close={handleCloseModal}
+            data={selectedAppointment}
+          />
+        )}
+
+        {showReassignModal && selectedAppointment && (
+          <Appointment_Reassign
+            show={showReassignModal}
+            close={handleCloseModal}
+            data={selectedAppointment}
+          />
+        )}
+      </>
+    );
+  }
 }
 
 const AppoitmentWrapper = styled.div``;
