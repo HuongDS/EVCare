@@ -30,6 +30,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
   const [allAppointments, setAllAppointments] = useState<AppointmentViewDetailModel[]>([]);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
 
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
   const role = useSelector((state: RootState) => state.auth.user?.role);
@@ -81,6 +82,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
       setConversations(newList);
       setModalOpen(false);
       setSelectedId(conversationId);
+      setSelectedConv(newList.find((conv) => conv.id === conversationId) || null);
       setView("chat");
     } catch (error) {
       notification.error({
@@ -98,6 +100,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
       setConversations(newList);
       setModalOpen(false);
       setSelectedId(response.data ?? "");
+      setSelectedConv(newList.find((conv) => conv.id === response.data) || null);
       setView("chat");
     } catch (error) {
       notification.error({
@@ -221,6 +224,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
             onBack={handleBackToList}
             isWidgetMode={isWidgetMode}
             setLastMessage={handleNewMessage}
+            selectedConversation={selectedConv}
           />
         );
       default:
@@ -232,14 +236,17 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
     setConversations((prev) => {
       const conTarget = prev.find((c) => c.id === conversationId);
       if (!conTarget) return prev;
-      conTarget.lastMessage = {
-        text: newMessage.text,
-        sentAt: newMessage.sentAt,
-        senderId: newMessage.senderId,
+      const update = {
+        ...conTarget,
+        lastMessage: {
+          text: newMessage.text,
+          sentAt: newMessage.sentAt,
+          senderId: newMessage.senderId,
+        },
       };
 
       const oldConvo = prev.filter((c) => c.id !== conversationId);
-      return [conTarget, ...oldConvo];
+      return [update, ...oldConvo];
     });
   };
 
