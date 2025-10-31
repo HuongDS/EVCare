@@ -125,7 +125,7 @@ namespace API.Controllers
 
 
         [HttpPut("staff/update")]
-        //[Authorize(Roles = "Staff")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> UpdateVehicleForStaff(VehicleStaffUpdateModel model)
         {
             try
