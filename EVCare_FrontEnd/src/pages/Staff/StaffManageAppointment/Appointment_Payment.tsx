@@ -54,7 +54,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
         description: SUCCESS_MESSAGE.PAID_SUCCESSFULLY,
         showProgress: true,
       });
-      dispatch(setStep({ id: data.id, step: currentStep + 2 }));
+      dispatch(setStep({ id: data.id, step: currentStep + 1 }));
     }
   });
 
