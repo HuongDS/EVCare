@@ -31,9 +31,10 @@ import {
   MSG_TITLE,
   SUCCESS_MESSAGE,
 } from "../../../constants/messages/Message";
-import { openModel3d } from "../../../states/uiSlice";
+import { closeModel3d, openModel3d } from "../../../states/uiSlice";
 import ReFreshButton from "../../../components/Button/ReFreshButton";
 import ShowButton from "../../../components/Button/ShowButton";
+import { useLocation } from "react-router";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -55,6 +56,12 @@ export default function Appointment_Part_Tracking({
   const [modalMessage, setModalMessage] = useState("");
   const [confirm, setConfirm] = useState(false);
   const notification = useNotification();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    dispatch(closeModel3d());
+  }, [location.pathname, dispatch]);
 
   //gọi hàm để lấy order detail
   const { data: order, isSuccess } = useGetOrderDetail(data.orderId);
