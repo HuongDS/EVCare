@@ -3,4 +3,5 @@ export type UIState = {
   createAppointmentFormOpen: boolean;
   actionAfterLogin: string | null;
   messagePopUpOpen: boolean;
+  model3dOpen: boolean;
 };
