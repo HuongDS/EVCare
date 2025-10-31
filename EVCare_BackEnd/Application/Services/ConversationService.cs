@@ -53,7 +53,7 @@ namespace Application.Services
             return newConversation;
         }
 
-        public async Task<Conversation> StartConsultationAsync(string customerAccountId)
+        public async Task<Conversation> StartConsultationAsync(string customerAccountId, int appointmentId)
         {
             var staffId = await _route.FindAvailableAsync(customerAccountId);
             if (staffId == null)
