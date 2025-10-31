@@ -32,13 +32,18 @@ namespace Application.Services
             return value.HasValue ? JsonSerializer.Deserialize<T>(value!) : null;
         }
 
-        public async Task SaveDate(Invoice invoice,string orderCode)
+        public async Task SaveDate(Invoice invoice, string orderCode)
         {
             await _db.StringSetAsync(
                 orderCode,
-               JsonSerializer.Serialize( invoice ),
+               JsonSerializer.Serialize(invoice),
                TimeSpan.FromMinutes(5)
    );
+        }
+        public async Task<bool> SetObjectDataAsync<T>(string key, T value, TimeSpan expiry) where T : class
+        {
+            var jsonValue = JsonSerializer.Serialize(value);
+            return await _db.StringSetAsync(key, jsonValue, expiry);
         }
     }
 }

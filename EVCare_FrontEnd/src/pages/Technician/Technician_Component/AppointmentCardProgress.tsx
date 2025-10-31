@@ -13,6 +13,7 @@ import {
   damageColorMap,
 } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
+import { getTechnicianAddedParts } from "../../../services/getTechnicianOrder";
 
 const CardContainer = styled.div`
   width: 100%;
@@ -160,6 +161,12 @@ const AppointmentCardProgress: React.FC<Props> = ({
   const [damageLevels, setDamageLevels] = useState<
     Record<number, DamageLevelEnum>
   >({});
+  const notification = useNotification();
+
+  const { data: addedPartsResponse, isLoading: isLoadingParts } =
+    getTechnicianAddedParts(data.orderId);
+
+  const parts: any[] = addedPartsResponse?.data ?? [];
 
   useEffect(() => {
     const fetchDamageLevels = async () => {
@@ -270,20 +277,23 @@ const AppointmentCardProgress: React.FC<Props> = ({
         <SectionContainer>
           <SectionTitle>Parts</SectionTitle>
           <ListWrapper>
-            {data.parts?.length ? (
+            {isLoadingParts ? (
+              <div className="empty">Loading parts...</div>
+            ) : parts.length > 0 ? (
               <ul>
-                {data.parts.map((p, idx) => (
-                  <PartItem key={idx}>
-                    {p.imageUrl && <img src={p.imageUrl} alt={p.name} />}
+                {parts.map((p) => (
+                  <PartItem key={p.partID}>
                     <span>
-                      {p.name} × {p.quantity} — {p.price.toLocaleString()}₫
+                      {p.partName} × {p.quantity} — {p.price.toLocaleString()}₫
                     </span>
                     <DamageLevelBadgeStyled
-                      $level={damageLevels[p.id] ?? DamageLevelEnum.NotAssessed}
+                      $level={
+                        damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed
+                      }
                     >
                       {
                         DamageLevelLabels[
-                          damageLevels[p.id] ?? DamageLevelEnum.NotAssessed
+                          damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed
                         ]
                       }
                     </DamageLevelBadgeStyled>

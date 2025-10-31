@@ -23,7 +23,7 @@ namespace Application.Services
         {
             _configuration = configuration;
         }
-        public string CreatePaymentUrl(HttpContext context, InvoiceCreateModel model)
+        public string CreatePaymentUrl(HttpContext context, InvoiceCreateModel model, long? orderCode)
         {
             var tick = DateTime.Now.Ticks.ToString();
             var vnpay = new VnPayLibrary();
@@ -42,7 +42,7 @@ namespace Application.Services
             vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + model.OrderId);
             vnpay.AddRequestData("vnp_OrderType", "other");
             vnpay.AddRequestData("vnp_ReturnUrl", _configuration["VnPay:PaymentBackReturnUrl"]);
-            vnpay.AddRequestData("vnp_TxnRef", $"{model.OrderId.ToString()}-{tick}"); 
+            vnpay.AddRequestData("vnp_TxnRef", $"{orderCode.ToString()}"); 
             var returnUrl = vnpay.CreateRequestUrl(_configuration["VnPay:BaseUrl"], _configuration["VnPay:HashSecret"]);
             return returnUrl;
 
@@ -59,6 +59,7 @@ namespace Application.Services
                 }
             }
             var vnp_OrderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef").Split("-")[0]);
+            var vnp_txnRef = vnpay.GetResponseData("vnp_TxnRef");
             var vnp_TrasactionNo = Convert.ToDecimal(vnpay.GetResponseData("vnp_TransactionNo"));
             var vnp_SecureHash = collection.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
             var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
@@ -80,7 +81,8 @@ namespace Application.Services
                 OrderId = vnp_OrderId.ToString(),
                 TransactionId = vnp_TrasactionNo.ToString(),
                 Token = vnp_SecureHash,
-                VnPayResponseCode = vnp_ResponseCode
+                VnPayResponseCode = vnp_ResponseCode,
+                OrderCode  = long.Parse(vnp_txnRef)
             };
         }
     }

@@ -85,18 +85,15 @@ namespace Application.Services
 
         public async Task<int> UpdateVehicleStaff(VehicleStaffUpdateModel model)
         {
-            try
-            {
-                var vehicle = await _vehicleRepository.GetByIdAsync(model.Id);
-                vehicle = _mapper.Map(model, vehicle);
+            
+            var vehicle = await _vehicleRepository.GetByIdAsync(model.Id);
+             _mapper.Map(model, vehicle);
+            vehicle.Last_Appointment = DateTime.Now;
+            vehicle.NextServiceDate = DateTime.Now.AddMonths(model.ReminderIntervalMonths);
 
-                var createdVehicle = await _vehicleRepository.UpdateAsync(vehicle);
-                return createdVehicle.Id;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var createdVehicle = await _vehicleRepository.UpdateAsync(vehicle);
+            return createdVehicle.Id;
+           
         }
         public async Task SoftDeleteVehicle(int vehicleId)
         {

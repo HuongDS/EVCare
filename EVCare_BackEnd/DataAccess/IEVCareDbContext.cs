@@ -42,7 +42,7 @@ namespace DataAccess
         public DbSet<Order> Orders { get; set; }
         public DbSet<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }
         public DbSet<OrderPart> OrderParts { get; set; }
-        public DbSet<Alert> Alerts { get; set; }
+     
         public DbSet<Invoice> Invoices { get; set; }
         DatabaseFacade Database { get; }
         public Task<int> SaveChangesAsync();

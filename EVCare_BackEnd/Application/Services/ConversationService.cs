@@ -14,11 +14,13 @@ namespace Application.Services
     {
         private readonly IMongoCollection<Conversation> _conversations;
         private readonly IStaffRoutingService _route;
+        private readonly IAccountService _accountService;
 
-        public ConversationService(IMongoDatabase db, IStaffRoutingService route)
+        public ConversationService(IMongoDatabase db, IStaffRoutingService route, IAccountService accountService)
         {
             _conversations = db.GetCollection<Conversation>("conversations");
             _route = route;
+            _accountService = accountService;
         }
 
         public async Task<Conversation> CreateOrGetConsultationAsync(string customerAccountId, string staffAccountId)
@@ -34,13 +36,15 @@ namespace Application.Services
             var existed = await _conversations.Find(conversation).FirstOrDefaultAsync();
             if (existed != null) return existed;
 
+            var customerInfo = await _accountService.GetAccountById(int.Parse(customerAccountId));
+
             var newConversation = new Conversation
             {
                 Type = type,
                 Participants = new List<Participant>
                 {
-                    new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer },
-                    new Participant { AccountId = staffAccountId, Role = DataAccess.Enums.RoleEnum.Staff }
+                    new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer, Name = customerInfo.First_Name + customerInfo.Last_Name, Phone = customerInfo.Phone },
+                    new Participant { AccountId = staffAccountId, Role = DataAccess.Enums.RoleEnum.Staff}
                 },
                 Unread = new Dictionary<string, int>
                 {
@@ -49,13 +53,19 @@ namespace Application.Services
                 },
             };
 
+            if (staffAccountId != "AI_BOT" && staffAccountId != "0")
+            {
+                var staffInfo = await _accountService.GetAccountById(int.Parse(staffAccountId));
+                newConversation.Participants[1].Name = staffInfo.First_Name + staffInfo.Last_Name;
+            }
+
             await _conversations.InsertOneAsync(newConversation);
             return newConversation;
         }
 
-        public async Task<Conversation> StartConsultationAsync(string customerAccountId)
+        public async Task<Conversation> StartConsultationAsync(string customerAccountId, int appointmentId)
         {
-            var staffId = await _route.FindAvailableAsync(customerAccountId);
+            var staffId = await _route.FindAvailableAsync(customerAccountId, appointmentId);
             if (staffId == null)
             {
                 staffId = "AI_BOT";
@@ -63,24 +73,40 @@ namespace Application.Services
 
             var type = staffId == "AI_BOT" ? "AI" : "consultation";
 
-            var conversation = new Conversation
+            var conversation = Builders<Conversation>.Filter.And(
+                   Builders<Conversation>.Filter.Eq(c => c.Type, type),
+                   Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == customerAccountId),
+                   Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == staffId)
+               );
+
+            var existed = await _conversations.Find(conversation).FirstOrDefaultAsync();
+            if (existed != null) return existed;
+
+            var customerInfo = await _accountService.GetAccountById(int.Parse(customerAccountId));
+
+            var newConversation = new Conversation
             {
                 Type = type,
                 Participants = new List<Participant>
                 {
-                    new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer },
-                    new Participant { AccountId = staffId, Role = DataAccess.Enums.RoleEnum.Staff }
+                    new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer, Name = customerInfo.First_Name + customerInfo.Last_Name, Phone = customerInfo.Phone },
+                    new Participant { AccountId = staffId, Role = DataAccess.Enums.RoleEnum.Staff, Name = "EVCare Assistant"}
                 },
                 Unread = new Dictionary<string, int>
                 {
-                    { customerAccountId.ToString(), 0 },
+                     { customerAccountId.ToString(), 0 },
                     { staffId.ToString(), 0 }
                 },
-                AssignedTo = staffId
             };
 
-            await _conversations.InsertOneAsync(conversation);
-            return conversation;
+            if (staffId != "AI_BOT" && staffId != "0")
+            {
+                var staffInfo = await _accountService.GetAccountById(int.Parse(staffId));
+                newConversation.Participants[1].Name = staffInfo.First_Name + staffInfo.Last_Name;
+            }
+
+            await _conversations.InsertOneAsync(newConversation);
+            return newConversation;
         }
 
         public async Task<(List<Conversation>, int, int)> ListMineAsync(string accountId, int pageSize, int pageIndex)

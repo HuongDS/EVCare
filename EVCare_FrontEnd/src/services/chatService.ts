@@ -9,7 +9,7 @@ export async function listConversations() {
   return response.data;
 }
 
-export async function getHistory(conversationId: string, skip = 0, take = 30) {
+export async function getHistory(conversationId: string, skip = 0, take = 1000) {
   const response = await api.get<HistoryMessage[]>(`/api/Chat/history/${conversationId}`, {
     params: {
       skip: skip,
@@ -19,9 +19,13 @@ export async function getHistory(conversationId: string, skip = 0, take = 30) {
   return response.data;
 }
 
-export async function startConsultation() {
+export async function startConsultation(appointmentId: number) {
   try {
-    const response = await api.post<{ conversationId: string; assignedTo: string }>("/api/Chat/consultations");
+    const response = await api.post<{ conversationId: string; assignedTo: string }>("/api/Chat/consultations", null, {
+      params: {
+        appointmentId: appointmentId,
+      },
+    });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -29,16 +33,6 @@ export async function startConsultation() {
     }
     throw new Error("An unexpected error occurred");
   }
-}
-
-export async function checkUserHasAppointment() {
-  // Giả lập API call
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  // !! QUAN TRỌNG:
-  // Thay 'true' bằng logic thật của bạn để kiểm tra
-  // return true; // Tạm thời cho phép chat
-  return false; // Tạm thời KHÔNG cho phép chat
 }
 
 export async function startChatWithAi() {

@@ -99,11 +99,7 @@ namespace Application.Services
                     await _orderRepository.UpdateAsync(order);
                     var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(model.OrderId);
                     appointment.Status = DataAccess.Enums.AppointmentStatusEnum.ReadyForPickup;
-                    appointment.Alerts.Add(new Alert
-                    {
-                        Message = "Your Appointment has done",
-                        Is_Read = false,
-                    });
+                   
                     await _appointmentRepository.UpdateAsync(appointment);
 
                     if(await _appointmentRepository.CheckAllReadyForPickup(appointment.VehicleId))

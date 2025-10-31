@@ -21,15 +21,21 @@ namespace Application.Services
         {
             _dbContext = dbContext;
         }
-        public async Task<string?> FindAvailableAsync(string customerAccountId)
+        public async Task<string?> FindAvailableAsync(string customerAccountId, int appointmentId)
         {
-            var appointment = await _dbContext.Appointments.FirstOrDefaultAsync(a => a.CustomerId.ToString() == customerAccountId && a.Status != AppointmentStatusEnum.Pending && a.Status != AppointmentStatusEnum.Confirmed);
+            var cus = await _dbContext.Customers.FirstOrDefaultAsync(c => c.AccountId.ToString() == customerAccountId);
+            var appointment = await _dbContext.Appointments
+                .FirstOrDefaultAsync(a => a.CustomerId == cus.Id
+                                        && a.Id == appointmentId
+                                        && a.Status != AppointmentStatusEnum.Pending
+                                        && a.Status != AppointmentStatusEnum.Confirmed
+                                        && a.Status != AppointmentStatusEnum.Canceled);
             if (appointment is null) throw new Exception(Application.Infrastructures.Message.APPOINTMENT_NOT_FOUND);
 
             var candidate = await _dbContext.Employees.FirstOrDefaultAsync(a => a.Id == appointment.EmployeeId);
             if (candidate is null) return null;
 
-            return candidate.Id.ToString();
+            return candidate.AccountId.ToString();
         }
     }
 }

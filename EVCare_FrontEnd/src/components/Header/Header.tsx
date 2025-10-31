@@ -95,10 +95,7 @@ export default function Header() {
         </div>
       ) : (
         <Buttons>
-          <button
-            className="btn btn-fill"
-            onClick={() => dispatch(openLogin())}
-          >
+          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
             Get Started
           </button>
         </Buttons>

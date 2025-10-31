@@ -60,12 +60,12 @@ namespace API.Controllers
 
         [HttpPost("consultations")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> StartConsultation()
+        public async Task<IActionResult> StartConsultation(int appointmentId)
         {
             try
             {
                 var customerAccountId = HttpContext.Items["AccountId"];
-                var c = await _conversationService.StartConsultationAsync(customerAccountId.ToString());
+                var c = await _conversationService.StartConsultationAsync(customerAccountId.ToString(), appointmentId);
                 return Ok(new { conversationId = c.Id.ToString(), assignedTo = c.AssignedTo });
             }
             catch (Exception ex)
@@ -81,7 +81,7 @@ namespace API.Controllers
 
         [HttpGet("conversations")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> List(int pageIndex = 1, int pageSize = 20)
+        public async Task<IActionResult> List(int pageIndex = 1, int pageSize = 1000)
         {
             var accountId = HttpContext.Items["AccountId"];
             var (list, totalPages, totalItems) = await _conversationService.ListMineAsync(accountId.ToString(), pageSize, pageIndex);

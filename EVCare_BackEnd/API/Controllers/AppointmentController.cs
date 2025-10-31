@@ -26,23 +26,24 @@ namespace API.Controllers
         private readonly IAppointmentService _appointmentService;
         private readonly INotificationServices _notificationServices;
         private readonly ITokenServices _tokenServices;
-        private readonly IAlertServices _alertServices;
         private readonly OnAppointmentConfirmHandler _onAppointmentConfirmHandler;
 
         public AppointmentController(IAppointmentService appointmentService, INotificationServices notificationServices,
-            ITokenServices tokenServices, IAlertServices alertServices,
+            ITokenServices tokenServices,
             OnAppointmentConfirmHandler onAppointmentConfirmHandler) {
             _appointmentService = appointmentService;
             _notificationServices = notificationServices;
             _tokenServices = tokenServices;
-            _alertServices = alertServices;
+           
             _onAppointmentConfirmHandler = onAppointmentConfirmHandler;
         }
         [Authorize(Roles = "Staff")]
         [HttpPost("staff")]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
         public async Task<IActionResult> CreateAppointment(AppointmentCreateModel model) {
             try {
-                var appointmentId = await _appointmentService.CreateAppointment(model);
+                int employeeId = (int)HttpContext.Items["EmployeeId"];
+                var appointmentId = await _appointmentService.CreateAppointmentForStaff(model,employeeId);
                 return Ok(new
                 {
                     StatusCode = HttpStatus.CREATED,
@@ -361,11 +362,7 @@ namespace API.Controllers
                 status = AppointmentStatusEnum.Confirmed
             });
             await _onAppointmentConfirmHandler.HandleAsync();
-            await _alertServices.AddConfirmAlertAsync(new DataAccess.Dtos.Alerts.AlertCreateDto
-            {
-                appointmentId = appointmentId,
-                message = $"New appointment on {appointment.AppointmentDate.ToString("dd/mm/yyyy")} has been confirmed."
-            });
+            
             return Ok(res);
         }
 
@@ -406,11 +403,7 @@ namespace API.Controllers
                 status = AppointmentStatusEnum.Canceled
             });
             await _onAppointmentConfirmHandler.HandleAsync();
-            await _alertServices.AddConfirmAlertAsync(new DataAccess.Dtos.Alerts.AlertCreateDto
-            {
-                appointmentId = appointmentId,
-                message = $"New appointment on {appointment.AppointmentDate.ToString("dd/mm/yyyy")} has been canceled."
-            });
+           
             return Ok(res);
         }
 
