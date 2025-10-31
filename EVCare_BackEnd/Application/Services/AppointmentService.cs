@@ -44,7 +44,7 @@ namespace Application.Services
                 throw new Exception("This day is fully booked");
             }
             var appointment = _mapper.Map<Appointment>(model);
-            appointment.Status = AppointmentStatusEnum.Confirmed;
+            appointment.Status = AppointmentStatusEnum.Pending;
             await _appointmentRepository.AddAsync(appointment);
 
             return appointment.Id;
@@ -301,6 +301,14 @@ namespace Application.Services
 
         public async Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId) {
             return await _appointmentRepository.GetVehicleByAppointmentId(appointmentId);
+        }
+
+        public async Task<int> CreateAppointmentForStaff(AppointmentCreateModel model, int employeeId) {
+            
+            var entity = _mapper.Map<Appointment>(model);
+            entity.Status = AppointmentStatusEnum.CheckedIn;
+            entity.EmployeeId = employeeId;
+            return (await _appointmentRepository.AddAsync(entity)).Id;
         }
     }
 }

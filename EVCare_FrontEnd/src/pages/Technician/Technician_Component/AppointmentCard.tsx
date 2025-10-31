@@ -13,6 +13,8 @@ import {
 } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import { useNotification } from "../../../context/useNotification";
+import { getTechnicianAddedParts } from "../../../services/getTechnicianOrder";
+
 // --- Styled Components ---
 const CardContainer = styled.div`
   width: 100%;
@@ -159,6 +161,12 @@ const AppointmentCard: React.FC<Props> = ({
   const [damageLevels, setDamageLevels] = useState<
     Record<number, DamageLevelEnum>
   >({});
+  const notification = useNotification();
+
+  const { data: addedPartsResponse, isLoading: isLoadingParts } =
+    getTechnicianAddedParts(data.orderId);
+
+  const parts: any[] = addedPartsResponse?.data ?? [];
 
   useEffect(() => {
     const fetchDamageLevels = async () => {
@@ -269,23 +277,28 @@ const AppointmentCard: React.FC<Props> = ({
         <SectionBox>
           <SectionTitle>Parts</SectionTitle>
           <ListWrapper>
-            {data.parts?.length ? (
+            {isLoadingParts ? (
+              <div className="empty">Loading parts...</div>
+            ) : parts.length > 0 ? (
               <ul>
-                {data.parts.map((p, idx) => {
-                  const damage =
-                    damageLevels[p.id] ?? DamageLevelEnum.NotAssessed;
-                  return (
-                    <PartItem key={idx}>
-                      {p.imageUrl && <img src={p.imageUrl} alt={p.name} />}
-                      <span>
-                        {p.name} × {p.quantity} — {p.price.toLocaleString()}₫
-                      </span>
-                      <DamageLevelBadgeStyled $level={damage}>
-                        {DamageLevelLabels[damage]}
-                      </DamageLevelBadgeStyled>
-                    </PartItem>
-                  );
-                })}
+                {parts.map((p) => (
+                  <PartItem key={p.partID}>
+                    <span>
+                      {p.partName} × {p.quantity} — {p.price.toLocaleString()}₫
+                    </span>
+                    <DamageLevelBadgeStyled
+                      $level={
+                        damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed
+                      }
+                    >
+                      {
+                        DamageLevelLabels[
+                          damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed
+                        ]
+                      }
+                    </DamageLevelBadgeStyled>
+                  </PartItem>
+                ))}
               </ul>
             ) : (
               <div className="empty">No parts</div>

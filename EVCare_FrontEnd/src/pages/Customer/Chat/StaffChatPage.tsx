@@ -9,6 +9,7 @@ import { getChatConnection } from "../../../signalr/chatConnection";
 import { CustomerServiceOutlined, BellOutlined } from "@ant-design/icons";
 import { listConversations } from "../../../services/chatService";
 import { StaffChatStyleWrapper } from "./StaffChat.styled";
+import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
 
 const { Sider, Content } = Layout;
 
@@ -18,6 +19,7 @@ export const StaffChatPage = () => {
   const connection = getChatConnection();
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
   const [loading, setLoading] = useState(true);
+  const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -45,6 +47,30 @@ export const StaffChatPage = () => {
     });
   }, [connection]);
 
+  const handleNewMessage = (conversationId: string, newMessage: HistoryMessage) => {
+    setConversations((prev) => {
+      const conTarget = prev.find((c) => c.id === conversationId);
+      if (!conTarget) return prev;
+      const update = {
+        ...conTarget,
+        lastMessage: {
+          text: newMessage.text,
+          sentAt: newMessage.sentAt,
+          senderId: newMessage.senderId,
+        },
+      };
+
+      const oldConvo = prev.filter((c) => c.id !== conversationId);
+      return [update, ...oldConvo];
+    });
+  };
+
+  const handleSelectConversation = (conversationId: string) => {
+    setSelected(conversationId);
+    const conv = conversations.find((c) => c.id === conversationId) || null;
+    setSelectedConv(conv);
+  };
+
   return (
     <StaffChatStyleWrapper className="chat-fullpage-mode" style={{ height: "100%" }}>
       <Layout className="chat-layout" style={{ height: "100%" }}>
@@ -54,11 +80,11 @@ export const StaffChatPage = () => {
             <div className="staff-chat-header">
               <h2 className="staff-chat-title">
                 <CustomerServiceOutlined />
-                Hỗ trợ khách hàng
+                Customer support
               </h2>
               <div className="staff-status-indicator">
                 <Badge status="processing" />
-                <span>Sẵn sàng hỗ trợ</span>
+                <span>Ready to support</span>
               </div>
             </div>
 
@@ -76,7 +102,7 @@ export const StaffChatPage = () => {
                   accountId={accountId?.toString() || ""}
                   conversations={conversations}
                   selectedId={selected}
-                  onSelect={(c) => setSelected(c.id)}
+                  onSelect={(c) => handleSelectConversation(c.id)}
                 />
               )}
             </div>
@@ -89,7 +115,9 @@ export const StaffChatPage = () => {
               <ChatWindow
                 accountId={accountId?.toString() || ""}
                 conversationId={selected}
-                isWidgetMode={false} /* 2. BÁO CHO NÓ BIẾT ĐÂY LÀ TRANG STAFF */
+                isWidgetMode={false}
+                setLastMessage={handleNewMessage}
+                selectedConversation={selectedConv}
               />
             </div>
           ) : (
@@ -97,9 +125,9 @@ export const StaffChatPage = () => {
               <div className="chat-welcome-icon-wrapper">
                 <CustomerServiceOutlined className="chat-welcome-icon" />
               </div>
-              <h3 className="chat-welcome-title">Sẵn sàng hỗ trợ</h3>
+              <h3 className="chat-welcome-title">Ready to support</h3>
               <p className="chat-welcome-description">
-                Đang chờ khách hàng bắt đầu tư vấn. Hãy chọn một cuộc trò chuyện từ danh sách bên trái.
+                Waiting for the customer to start a consultation. Please select a conversation from the left list.
               </p>
             </div>
           )}

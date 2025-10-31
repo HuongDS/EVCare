@@ -1,83 +1,88 @@
-// ChatPage.tsx
 import { useEffect, useState } from "react";
-import { Button, Modal, Input, Spin, Tooltip } from "antd";
-import {
-  MessageOutlined,
-  PlusOutlined,
-  RobotOutlined,
-  UserSwitchOutlined,
-  ArrowLeftOutlined, // <-- Thêm icon Back
-} from "@ant-design/icons";
+import { Button, Modal, Spin, Tooltip } from "antd";
+import { MessageOutlined, PlusOutlined, RobotOutlined, UserSwitchOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import type { Conversation } from "../../../models/Message/Conversation";
-import {
-  listConversations,
-  startConsultation,
-  checkUserHasAppointment,
-  startChatWithAi,
-} from "../../../services/chatService";
+import { listConversations, startConsultation, startChatWithAi } from "../../../services/chatService";
 import { ChatSidebar } from "./ChatSideBar";
 import { ChatWindow } from "./ChatWindow";
 import type { RootState } from "../../../states/store";
 import { useSelector } from "react-redux";
-import { RoleEnum } from "../../../models/enums";
+import { AppointmentStatusEnum, RoleEnum } from "../../../models/enums";
 import { WidgetChatStyleWrapper } from "./WidgetChat.styled";
 import { useNotification } from "../../../context/useNotification";
-
-// const { Sider, Content } = Layout; // <-- KHÔNG CẦN Sider/Content nữa
+import { getCustomerAppointment } from "../../../services/appointmentServiceApi";
+import type { AppointmentViewDetailModel } from "../../../models/AppointmentsModel/AppointmentViewDetailModel";
+import { formatDate } from "../../../utils/formatDate";
+import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
 
 interface ChatPageProps {
   isWidgetMode?: boolean;
 }
 
-// Định nghĩa các view
 type ChatView = "loading" | "list" | "chat" | "new_choice";
 
 export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedId, setSelectedId] = useState(""); // ID của chat đang chọn
-  const [view, setView] = useState<ChatView>("loading"); // State quản lý view
+  const [selectedId, setSelectedId] = useState("");
+  const [view, setView] = useState<ChatView>("loading");
   const [modalOpen, setModalOpen] = useState(false);
-  const [consultTopic, setConsultTopic] = useState("");
   const [hasAppointment, setHasAppointment] = useState(false);
+  const [allAppointments, setAllAppointments] = useState<AppointmentViewDetailModel[]>([]);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
 
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
   const role = useSelector((state: RootState) => state.auth.user?.role);
 
   const notification = useNotification();
 
-  // Load ban đầu
   useEffect(() => {
     (async () => {
       setView("loading");
       try {
-        const [list, hasAppt] = await Promise.all([listConversations(), checkUserHasAppointment()]);
+        const [list, appointments] = await Promise.all([listConversations(), getCustomerAppointment()]);
         setConversations(list);
-        setHasAppointment(hasAppt);
+        const hasAppt = appointments.data?.filter(
+          (a) =>
+            a.status !== AppointmentStatusEnum.PENDING &&
+            a.status !== AppointmentStatusEnum.CANCELED &&
+            a.status !== AppointmentStatusEnum.CONFIRMED
+        );
+        setHasAppointment((hasAppt && hasAppt.length > 0) || false);
+        setAllAppointments(hasAppt || []);
 
-        // Quyết định view ban đầu
         if (list && list.length > 0) {
-          setView("list"); // Có hội thoại -> vào danh sách
+          setView("list");
         } else {
-          setView("new_choice"); // Chưa có -> vào màn hình chọn
+          setView("new_choice");
         }
       } catch (error) {
-        console.error("Failed to load chat data:", error);
+        notification.error({ message: "Failed to load chat data:", description: (error as Error).message });
         setView("new_choice");
       }
     })();
   }, []);
 
-  // Hàm bắt đầu chat (nhân viên)
+  const handleOpenStaffModal = () => {
+    setSelectedAppointmentId(0);
+    setModalOpen(true);
+  };
+
   const handleStartStaffConsult = async () => {
+    if (selectedAppointmentId === 0) {
+      notification.error({ message: "Error", description: "Please select an appointment to consult." });
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const { conversationId } = await startConsultation();
+      const { conversationId } = await startConsultation(selectedAppointmentId);
       const newList = await listConversations();
       setConversations(newList);
       setModalOpen(false);
-      setConsultTopic("");
-
-      // Chuyển view
       setSelectedId(conversationId);
+      setSelectedConv(newList.find((conv) => conv.id === conversationId) || null);
       setView("chat");
     } catch (error) {
       notification.error({
@@ -85,6 +90,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
         description: (error as Error).message || "Failed to start consultation",
       });
     }
+    setIsLoading(false);
   };
 
   const handleStartAIChat = async () => {
@@ -93,8 +99,8 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
       const newList = await listConversations();
       setConversations(newList);
       setModalOpen(false);
-      setConsultTopic("");
       setSelectedId(response.data ?? "");
+      setSelectedConv(newList.find((conv) => conv.id === response.data) || null);
       setView("chat");
     } catch (error) {
       notification.error({
@@ -102,11 +108,8 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
         description: (error as Error).message || "Failed to start consultation",
       });
     }
-    // setSelectedId("AI_CONVERSATION_ID");
-    // setView("chat");
   };
 
-  // === Các hàm điều hướng ===
   const handleSelectConversation = (conv: Conversation) => {
     setSelectedId(conv.id);
     setView("chat");
@@ -121,7 +124,6 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
     setView("new_choice");
   };
 
-  // === Các component con render view ===
   const LoadingState = () => (
     <div
       className="chat-loading"
@@ -131,10 +133,8 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
     </div>
   );
 
-  // Màn hình Lựa chọn (Welcome)
   const WelcomeAndChoiceState = () => (
     <div className="chat-welcome-state">
-      {/* Nút back, chỉ hiện khi có ds chat và ở chế độ widget */}
       {isWidgetMode && conversations.length > 0 && (
         <Button
           className="chat-header-back-btn"
@@ -147,47 +147,52 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
       <div className="chat-welcome-icon-wrapper">
         <MessageOutlined className="chat-welcome-icon" />
       </div>
-      <h3 className="chat-welcome-title">Chào mừng đến EVCare</h3>
-      <p className="chat-welcome-description">Bạn cần hỗ trợ? Vui lòng chọn một hình thức tư vấn:</p>
+      <h3 className="chat-welcome-title">Welcome to EVCare</h3>
+      <p className="chat-welcome-description">Need help? Please select a consultation type:</p>
       <div className="chat-choice-buttons">
         <Button icon={<RobotOutlined />} size="large" className="btn-choice-ai" onClick={handleStartAIChat}>
-          Chat với AI
+          Chat with AI
         </Button>
-        <Tooltip title={!hasAppointment ? "Bạn cần đặt lịch hẹn trước để chat với nhân viên" : ""}>
+        <Tooltip
+          title={
+            !hasAppointment
+              ? "You need to have at least 1 appointment (other status than pending, confirmed or cancel) to be able to contact the staff in charge of that appointment."
+              : ""
+          }
+        >
           <Button
             icon={<UserSwitchOutlined />}
             size="large"
             type="primary"
             className="btn-choice-staff"
-            onClick={() => setModalOpen(true)}
+            onClick={() => handleOpenStaffModal()}
             disabled={!hasAppointment}
           >
-            Gặp nhân viên tư vấn
+            Meet with a consultant
           </Button>
         </Tooltip>
       </div>
     </div>
   );
 
-  // Màn hình Danh sách hội thoại
   const ConversationListState = () => (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <div className="chat-sidebar-header">
         <h2 className="chat-sidebar-title">
           <MessageOutlined />
-          <span>Tin nhắn</span>
+          <span>Messages</span>
         </h2>
         {role === RoleEnum.CUSTOMER && (
-          <Tooltip title="Tư vấn mới">
+          <Tooltip title="New Consultation">
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={handleGoToNewChoice} // Bấm + ra màn hình lựa chọn
+              onClick={handleGoToNewChoice}
               className="btn-new-chat-widget"
               shape={isWidgetMode ? "circle" : "default"}
               size={isWidgetMode ? "middle" : "large"}
             >
-              {!isWidgetMode && "Tư vấn mới"}
+              {!isWidgetMode && "New Consultation"}
             </Button>
           </Tooltip>
         )}
@@ -196,14 +201,13 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
         <ChatSidebar
           accountId={accountId?.toString() ?? ""}
           conversations={conversations}
-          selectedId={selectedId} // Chỉ dùng để highlight
-          onSelect={handleSelectConversation} // Bấm item -> chuyển view
+          selectedId={selectedId}
+          onSelect={handleSelectConversation}
         />
       </div>
     </div>
   );
 
-  // === Render chính ===
   const renderView = () => {
     switch (view) {
       case "loading":
@@ -217,13 +221,33 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
           <ChatWindow
             accountId={accountId?.toString() ?? ""}
             conversationId={selectedId}
-            onBack={handleBackToList} // Prop để quay lại
-            isWidgetMode={isWidgetMode} // Prop để biết có hiện nút back ko
+            onBack={handleBackToList}
+            isWidgetMode={isWidgetMode}
+            setLastMessage={handleNewMessage}
+            selectedConversation={selectedConv}
           />
         );
       default:
         return <WelcomeAndChoiceState />;
     }
+  };
+
+  const handleNewMessage = (conversationId: string, newMessage: HistoryMessage) => {
+    setConversations((prev) => {
+      const conTarget = prev.find((c) => c.id === conversationId);
+      if (!conTarget) return prev;
+      const update = {
+        ...conTarget,
+        lastMessage: {
+          text: newMessage.text,
+          sentAt: newMessage.sentAt,
+          senderId: newMessage.senderId,
+        },
+      };
+
+      const oldConvo = prev.filter((c) => c.id !== conversationId);
+      return [update, ...oldConvo];
+    });
   };
 
   return (
@@ -235,39 +259,71 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
         {renderView()}
       </div>
 
-      {/* Modal vẫn giữ nguyên */}
       <Modal
         className="consultation-modal"
         title={
           <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1.125rem", fontWeight: 600 }}>
             <UserSwitchOutlined style={{ color: "#00ad4e" }} />
-            <span>Bắt đầu tư vấn (Nhân viên)</span>
+            <span>Start Consultation (Staff)</span>
           </div>
         }
         open={modalOpen}
         onCancel={() => {
           setModalOpen(false);
-          setConsultTopic("");
         }}
         onOk={handleStartStaffConsult}
-        okText="Bắt đầu ngay"
-        cancelText="Hủy"
+        okText="Start"
+        cancelText="Cancel"
         okButtonProps={{
           className: "btn-send-message",
           size: "large",
+          loading: isLoading,
+          disabled: selectedAppointmentId === 0,
         }}
         cancelButtonProps={{ size: "large" }}
       >
-        <div style={{ padding: "1.5rem 0 0.5rem" }}>
-          <label className="consultation-modal-label">Chủ đề tư vấn (tùy chọn)</label>
-          <Input.TextArea
-            placeholder="Ví dụ: Tư vấn về sản phẩm, hỗ trợ kỹ thuật..."
-            value={consultTopic}
-            onChange={(e) => setConsultTopic(e.target.value)}
-            autoSize={{ minRows: 3, maxRows: 6 }}
-            className="rounded-lg"
-          />
-        </div>
+        <WidgetChatStyleWrapper>
+          <Spin spinning={isLoading}>
+            <div className="custom-modal-body">
+              <div className="custom-modal-alert">
+                <span className="alert-icon">i</span>
+                <div className="alert-content">
+                  <p className="alert-title">Staff Chat Policy</p>
+                  <ul className="alert-list">
+                    <li>We only support direct chat with staff for appointments that are in progress or completed.</li>
+                    <li>Other appointments (Pending, Canceled...) will be advised by AI.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <label className="custom-modal-label">Please select an appointment to start:</label>
+
+              {allAppointments.length > 0 ? (
+                <div className="custom-radio-list">
+                  {allAppointments.map((appt: AppointmentViewDetailModel) => (
+                    <div
+                      key={appt.id}
+                      className={`custom-radio-item ${selectedAppointmentId === appt.id ? "selected" : ""}`}
+                      onClick={() => setSelectedAppointmentId(appt.id)}
+                    >
+                      <div className="radio-icon">
+                        <div className="radio-dot"></div>
+                      </div>
+                      <div className="radio-content">
+                        <span className="radio-title">{`Appointment #${appt.id} | Time & Date: ${formatDate(
+                          appt.appointmentDate.toString()
+                        )}`}</span>
+                        <span className="radio-status">(Status: {appt.status})</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="custom-empty-text">You don't have any valid appointments to start a chat with.</p>
+              )}
+            </div>
+          </Spin>
+        </WidgetChatStyleWrapper>
       </Modal>
     </WidgetChatStyleWrapper>
   );

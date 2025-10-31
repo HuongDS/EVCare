@@ -135,5 +135,20 @@ namespace DataAccess.Repositories
                 .FirstOrDefaultAsync();
             return employee;
         }
+
+        public async Task<EmployeeCustomerViewModel> GetEmployeeDetailsByIdAsync(int employeeId) {
+            return await _dbContext.Employees
+                .AsNoTracking()
+                .Where(e => e.Id == employeeId)
+                .Include(e => e.Account)
+                .Select(e => new EmployeeCustomerViewModel {
+                    Id = e.Id,
+                    Name = e.Account.First_Name + " " + e.Account.Last_Name,
+                    Email = e.Account.Email,
+                    PhoneNumber = e.Account.Phone,
+                    StatusEnum = e.Status
+                })
+                .FirstOrDefaultAsync();
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace DataAccess
         public DbSet<PartHistory>  PartHistories { get; set; }
         public DbSet<VehiclePartCompatibility> VehiclePartCompatibilities { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<Alert> Alerts { get; set; }
+        
         public DbSet<Appointmentimage> AppointmentImages { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -69,7 +69,6 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new TechnicianWorkingSessionConfiguration());
             modelBuilder.ApplyConfiguration(new OrderPartConfiguration());
-            modelBuilder.ApplyConfiguration(new AlertConfiguration());
             modelBuilder.ApplyConfiguration(new AppointmentImageConfiguration());
             modelBuilder.ApplyConfiguration(new InvoiceConfiguration());
             modelBuilder.ApplyConfiguration(new PartHistoryConfiguration());

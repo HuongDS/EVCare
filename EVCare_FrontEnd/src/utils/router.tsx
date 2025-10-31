@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import SpinnerComponent from "../components/SpinnerComponent";
 import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
+import PublicRoute from "../components/Authorazitons/PublicRoute";
 import { RoleEnum } from "../models/enums";
 const Layout = lazy(() => import("../components/Layouts/CustomerLayout"));
 const AdminLayout = lazy(
@@ -84,6 +85,9 @@ const StaffChatPage = lazy(() =>
     default: module.StaffChatPage,
   }))
 );
+const Admin_Applications = lazy(
+  () => import("../pages/Admin/AdminAplication/Admin_Applications")
+);
 
 import {
   LazyOrder,
@@ -106,65 +110,84 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <SuspenseWrapper>
-        <Layout />
+                <Layout />     {" "}
       </SuspenseWrapper>
     ),
     children: [
+      // PUBLIC & CUSTOMER ROUTES
       {
         index: true,
         element: (
-          <SuspenseWrapper>
-            <HomePage />
-          </SuspenseWrapper>
+          <PublicRoute>
+             
+            <SuspenseWrapper>
+                            <HomePage /> 
+            </SuspenseWrapper>
+          </PublicRoute>
         ),
       },
       {
         path: "service",
         element: (
-          <SuspenseWrapper>
-            <ServiceList />
-          </SuspenseWrapper>
+          <PublicRoute>
+             
+            <SuspenseWrapper>
+                            <ServiceList /> 
+            </SuspenseWrapper>
+          </PublicRoute>
         ),
       },
       {
         path: "about",
         element: (
-          <SuspenseWrapper>
-            <AboutUs />
-          </SuspenseWrapper>
+          <PublicRoute>
+             
+            <SuspenseWrapper>
+                            <AboutUs /> 
+            </SuspenseWrapper>
+          </PublicRoute>
         ),
       },
       {
         path: "policy",
         element: (
-          <SuspenseWrapper>
-            <PolicyPage />
-          </SuspenseWrapper>
+          <PublicRoute>
+             
+            <SuspenseWrapper>
+                            <PolicyPage /> 
+            </SuspenseWrapper>
+          </PublicRoute>
         ),
       },
       {
         path: "contact",
         element: (
-          <SuspenseWrapper>
-            <ContactUs />
-          </SuspenseWrapper>
+          <PublicRoute>
+             
+            <SuspenseWrapper>
+                            <ContactUs /> 
+            </SuspenseWrapper>
+          </PublicRoute>
         ),
       },
       {
         path: "review",
         element: (
-          <SuspenseWrapper>
-            <Review />
-          </SuspenseWrapper>
+          <PublicRoute>
+             
+            <SuspenseWrapper>
+                            <Review /> 
+            </SuspenseWrapper>
+          </PublicRoute>
         ),
-      },
-      // CUSTOMER ROUTES
+      }, // CUSTOMER ONLY ROUTES
       {
         path: "appointmentHistory",
         element: (
           <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
+             
             <SuspenseWrapper>
-              <OrderList />
+                            <OrderList /> 
             </SuspenseWrapper>
           </ProtectedRoute>
         ),
@@ -173,7 +196,7 @@ const router = createBrowserRouter([
             path: "appointmentDetail",
             element: (
               <SuspenseWrapper>
-                <AppointmentList />
+                                <AppointmentList />   
               </SuspenseWrapper>
             ),
           },
@@ -181,12 +204,22 @@ const router = createBrowserRouter([
             path: "rating",
             element: (
               <SuspenseWrapper>
-                <Rating />
+                                <Rating />   
               </SuspenseWrapper>
             ),
           },
         ],
       },
+      {
+        path: "chat-with-staff",
+        element: (
+          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
+            <SuspenseWrapper>
+              <ChatPage />
+            </SuspenseWrapper>
+          </ProtectedRoute>
+        ),
+      }, // ALL LOGGED-IN ROLES
       {
         path: "account-information",
         element: (
@@ -199,40 +232,30 @@ const router = createBrowserRouter([
             ]}
           >
             <SuspenseWrapper>
-              <UserProfilePage />
+                            <UserProfilePage /> 
             </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },
-
       {
         path: "test",
         element: (
           <SuspenseWrapper>
-            <Test />
+                        <Test />         {" "}
           </SuspenseWrapper>
         ),
       },
-      {
-        path: "chat-with-staff",
-        element: (
-          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
-            <SuspenseWrapper>
-              <ChatPage />
-            </SuspenseWrapper>
-          </ProtectedRoute>
-        ),
-      },
     ],
-  },
-  // ADMIN ROUTES
+  }, // ADMIN ROUTES
   {
     path: "/admin",
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.ADMIN]}>
+               {" "}
         <SuspenseWrapper>
-          <AdminLayout />
+                    <AdminLayout />       {" "}
         </SuspenseWrapper>
+             {" "}
       </ProtectedRoute>
     ),
     children: [
@@ -240,7 +263,7 @@ const router = createBrowserRouter([
         path: "general",
         element: (
           <SuspenseWrapper>
-            <Admin_General />
+                        <Admin_General />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -248,7 +271,7 @@ const router = createBrowserRouter([
         path: "manage-customers-and-vehicles",
         element: (
           <SuspenseWrapper>
-            <Admin_Customer_Vehicle />
+                        <Admin_Customer_Vehicle />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -256,7 +279,7 @@ const router = createBrowserRouter([
         path: "manage-employees",
         element: (
           <SuspenseWrapper>
-            <Admin_Manage_Employee />
+                        <Admin_Manage_Employee />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -264,7 +287,7 @@ const router = createBrowserRouter([
         path: "add-employee",
         element: (
           <SuspenseWrapper>
-            <AddEmployee />
+                        <AddEmployee />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -272,7 +295,7 @@ const router = createBrowserRouter([
         path: "manage-parts",
         element: (
           <SuspenseWrapper>
-            <Admin_Part />
+                        <Admin_Part />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -280,23 +303,15 @@ const router = createBrowserRouter([
         path: "manage-services",
         element: (
           <SuspenseWrapper>
-            <Admin_Service />
+                        <Admin_Service />  M        {" "}
           </SuspenseWrapper>
         ),
       },
-      // {
-      //   path: "applications",
-      //   element: (
-      //     <SuspenseWrapper>
-      //       <Admin_Applications />
-      //     </SuspenseWrapper>
-      //   ),
-      // },
       {
         path: "categories",
         element: (
           <SuspenseWrapper>
-            <Admin_Category />
+                        <Admin_Category />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -304,20 +319,21 @@ const router = createBrowserRouter([
         path: "center-information",
         element: (
           <SuspenseWrapper>
-            <AdminServiceCenter />
+                        <AdminServiceCenter />         {" "}
           </SuspenseWrapper>
         ),
       },
     ],
-  },
-  // STAFF ROUTES
+  }, // STAFF ROUTES
   {
     path: "/staff",
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.STAFF]}>
+               {" "}
         <SuspenseWrapper>
-          <StaffLayout />
+                    <StaffLayout />       {" "}
         </SuspenseWrapper>
+             {" "}
       </ProtectedRoute>
     ),
     children: [
@@ -326,7 +342,7 @@ const router = createBrowserRouter([
         path: "general",
         element: (
           <SuspenseWrapper>
-            <Staff_General />
+                        <Staff_General />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -334,7 +350,7 @@ const router = createBrowserRouter([
         path: "inventory",
         element: (
           <SuspenseWrapper>
-            <Staff_Inventory />
+                        <Staff_Inventory />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -342,7 +358,7 @@ const router = createBrowserRouter([
         path: "technicians",
         element: (
           <SuspenseWrapper>
-            <Manage_Technicians />
+                        <Manage_Technicians />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -350,7 +366,7 @@ const router = createBrowserRouter([
         path: "customers",
         element: (
           <SuspenseWrapper>
-            <Manage_Customer />
+                        <Manage_Customer />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -358,7 +374,7 @@ const router = createBrowserRouter([
         path: "appointments",
         element: (
           <SuspenseWrapper>
-            <Staff_Appoinments />
+                        <Staff_Appoinments />         {" "}
           </SuspenseWrapper>
         ),
       },
@@ -366,20 +382,21 @@ const router = createBrowserRouter([
         path: "chat-with-customer",
         element: (
           <SuspenseWrapper>
-            <StaffChatPage />
+                        <StaffChatPage />         {" "}
           </SuspenseWrapper>
         ),
       },
     ],
-  },
-  // TECHINICIAN ROUTES
+  }, // TECHNICIAN ROUTES
   {
     path: "/technician",
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
+               {" "}
         <SuspenseWrapper>
-          <TechnicianDefaultLayout />
+                    <TechnicianDefaultLayout />       {" "}
         </SuspenseWrapper>
+             {" "}
       </ProtectedRoute>
     ),
     children: [
@@ -394,19 +411,20 @@ const router = createBrowserRouter([
     path: "/technician/order",
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
+               {" "}
         <SuspenseWrapper>
-          <TechnicianOrderLayout />
+                    <TechnicianOrderLayout />       {" "}
         </SuspenseWrapper>
+             {" "}
       </ProtectedRoute>
     ),
     children: [{ path: "", element: <LazyOrder /> }],
-  },
-  // Test route
+  }, // OTHER ROUTES
   {
     path: "/test",
     element: (
       <SuspenseWrapper>
-        <Test />
+                <Test />     {" "}
       </SuspenseWrapper>
     ),
   },
@@ -414,7 +432,7 @@ const router = createBrowserRouter([
     path: "/*",
     element: (
       <SuspenseWrapper>
-        <PageNotFound />
+                <PageNotFound />     {" "}
       </SuspenseWrapper>
     ),
   },

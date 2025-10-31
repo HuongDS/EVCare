@@ -79,7 +79,7 @@ export default function ApplicationForm({
           showProgress: true,
         });
         queryClient.invalidateQueries({ queryKey: ["myApplications"] });
-        onSuccess?.(res.data); // ✅ gọi callback thành công
+        onSuccess?.(res.data);
         setTimeout(() => resetForm(), 1500);
       } else {
         setLocalStatus("error");
@@ -88,7 +88,7 @@ export default function ApplicationForm({
           description: res.message || "Failed to send application.",
           showProgress: true,
         });
-        onError?.(res.message || "Failed to send application."); // ✅ gọi callback lỗi
+        onError?.(res.message || "Failed to send application.");
       }
     },
     onError: (error: unknown) => {

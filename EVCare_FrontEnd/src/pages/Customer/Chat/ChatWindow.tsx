@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Input, Button, Avatar, Spin, message, Tooltip } from "antd";
+import { Input, Button, Avatar, Spin } from "antd";
 import { useChat } from "../../../hooks/useChat";
 import { SendOutlined, UserOutlined, SmileOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { getHistory } from "../../../services/chatService";
@@ -7,16 +7,29 @@ import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
 import { RoleEnum } from "../../../models/enums";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../states/store";
+import type { Conversation } from "../../../models/Message/Conversation";
+// import { RoleEnum } from "../../../models/enums";
+// import { useSelector } from "react-redux";
+// import type { RootState } from "../../../states/store";
 
 interface ChatWindowProps {
   conversationId: string;
   accountId: string;
   onBack?: () => void;
   isWidgetMode?: boolean;
+  setLastMessage?: (conversationId: string, newMessage: HistoryMessage) => void;
+  selectedConversation: Conversation | null;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountId, isWidgetMode, onBack }) => {
-  const { messages, send, startTyping, stopTyping } = useChat(conversationId);
+export const ChatWindow: React.FC<ChatWindowProps> = ({
+  conversationId,
+  accountId,
+  isWidgetMode,
+  onBack,
+  setLastMessage,
+  selectedConversation,
+}) => {
+  const { messages, send } = useChat(conversationId);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<HistoryMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,9 +47,24 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    await send(input);
     setInput("");
+    await send(input);
   };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const newMessage = messages[messages.length - 1];
+      const lastMsg: HistoryMessage = {
+        id: newMessage.id.toString(),
+        text: newMessage.text ?? "",
+        senderId: newMessage.senderId.toString(),
+        sentAt: newMessage.sentAt ?? "",
+        attachments: newMessage.attachments ?? [],
+        receiverId: newMessage.receiverId?.toString() ?? "",
+      };
+      setLastMessage && setLastMessage(conversationId, lastMsg);
+    }
+  }, [messages, conversationId, setLastMessage, send]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -50,15 +78,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
 
   const allMessages = [...history, ...messages];
 
-  const handleEndConversation = () => {
-    // TODO: Gọi API hoặc SignalR để kết thúc cuộc trò chuyện này
-    console.log("End conversation:", conversationId);
-    message.info("Conversation ended.");
-  };
+  // const handleEndConversation = () => {
+  //   // TODO: Gọi API hoặc SignalR để kết thúc cuộc trò chuyện này
+  //   console.log("End conversation:", conversationId);
+  //   message.info("Conversation ended.");
+  // };
 
   return (
     <div className="chat-window">
-      {/* Chat Header */}
       <div className="chat-header">
         {isWidgetMode && onBack && (
           <Button
@@ -72,12 +99,16 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
         <div className="chat-header-content">
           <Avatar size={40} icon={<UserOutlined />} className="chat-header-avatar" />
           <div>
-            <h3 className="chat-header-title">Conversation</h3>
+            <h3 className="chat-header-title">
+              {role === RoleEnum.STAFF
+                ? `Customer #${selectedConversation?.participants[0]?.name}`
+                : `Staff #${selectedConversation?.participants[1]?.name}`}
+            </h3>
             <p className="chat-header-status">Active</p>
           </div>
         </div>
 
-        {role === RoleEnum.STAFF && (
+        {/* {role === RoleEnum.STAFF && (
           <Tooltip title="End conversation">
             <Button
               className="btn-end-conversation"
@@ -87,7 +118,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
               onClick={handleEndConversation}
             />
           </Tooltip>
-        )}
+        )} */}
       </div>
 
       {/* Messages Area */}
@@ -99,7 +130,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
         ) : allMessages.length === 0 ? (
           <div className="chat-empty-state">
             <SmileOutlined className="chat-empty-icon" />
-            <p>Bắt đầu cuộc trò chuyện của bạn</p>
+            <p>Start your conversation</p>
           </div>
         ) : (
           <>
@@ -145,9 +176,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
                   handleSend();
                 }
               }}
-              onFocus={startTyping}
-              onBlur={stopTyping}
-              placeholder="Nhập tin nhắn của bạn..."
+              placeholder="Input your message..."
             />
           </div>
           <Button
@@ -158,7 +187,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, accountI
             className="btn-send-message"
             size="large"
           >
-            Gửi
+            Send
           </Button>
         </div>
       </div>

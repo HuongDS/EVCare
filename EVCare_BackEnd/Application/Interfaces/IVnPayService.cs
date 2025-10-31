@@ -11,7 +11,7 @@ namespace Application.Interfaces
 {
     public interface IVnPayService
     {
-        public string CreatePaymentUrl(HttpContext context,InvoiceCreateModel model);
+        public string CreatePaymentUrl(HttpContext context,InvoiceCreateModel model, long? orderCode);
         VnPaymentResponseModel PaymentExecute(IQueryCollection collection);
     }
 }

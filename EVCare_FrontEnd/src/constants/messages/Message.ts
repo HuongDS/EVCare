@@ -98,3 +98,7 @@ export const APPOINTMENT_MESSAGE = {
   APPOINTMENT_CHECKIN_FAIL:
     "Oops! You can only check in on customer's appointment day.",
 };
+
+export const FORM_MESSAGES = {
+  NAME: "Please enter your name.",
+};

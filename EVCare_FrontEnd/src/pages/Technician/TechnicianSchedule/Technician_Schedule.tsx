@@ -46,23 +46,34 @@ const TechnicianSchedule: React.FC = () => {
         TechnicianWorkingSessionEnum.PENDING,
         TechnicianWorkingSessionEnum.INPROGRESS,
         TechnicianWorkingSessionEnum.ADDING_PART,
-      ];
+        TechnicianWorkingSessionEnum.CONFIRM,
+        TechnicianWorkingSessionEnum.COMPLETED,
+        TechnicianWorkingSessionEnum.CANCELED,
+      ].map(String);
 
-      const appointmentRes = await getTechnicianAppointments({
-        Status: activeStatuses.join(","),
-        PageSize: 100,
-        PageIndex: 1,
-      });
+      const results = await Promise.all(
+        activeStatuses.map((status) =>
+          getTechnicianAppointments({
+            Status: status,
+            PageSize: 100,
+            PageIndex: 1,
+          }).catch(() => {
+            return { items: [] };
+          })
+        )
+      );
 
-      const mappedAppointments: SimpleAppointment[] = (
-        appointmentRes.items ?? []
-      ).map((a) => ({
-        id: a.id,
-        appointmentDate: a.appointmentDate,
-        status: a.status,
-        vehicleModel: a.vehicleModel,
-        extraProps: { ...a },
-      }));
+      const allAppointments = results.flatMap((res) => res.items ?? []);
+
+      const mappedAppointments: SimpleAppointment[] = allAppointments.map(
+        (a) => ({
+          id: a.id,
+          appointmentDate: a.appointmentDate,
+          status: a.status,
+          vehicleModel: a.vehicleModel,
+          extraProps: { ...a },
+        })
+      );
 
       setAppointments(mappedAppointments);
 
@@ -79,7 +90,7 @@ const TechnicianSchedule: React.FC = () => {
           dateTime: dayjs(d.dateTime),
         }))
       );
-    } catch (err: unknown) {
+    } catch (err) {
       console.error(err);
       setError((err as Error)?.message || "Failed to load schedule data");
     } finally {
@@ -91,14 +102,14 @@ const TechnicianSchedule: React.FC = () => {
     ...appointments.map((a) => ({
       title: `ID: ${a.id}\n${a.vehicleModel}\n${a.status}`,
       start: dayjs(a.appointmentDate).toDate(),
-      className: "appointment",
+      className: `appointment ${a.status?.toLowerCase()}`,
       extendedProps: a.extraProps,
     })),
     ...applications.map((d) => ({
       title: "Day Off",
       start: d,
       className: "dayOff",
-      extendedProps: { reason: "Ngày nghỉ" },
+      extendedProps: { reason: "Day Off" },
     })),
     ...blockedDates.map((d) => ({
       title: d.reason || "Blocked",
@@ -121,8 +132,10 @@ const TechnicianSchedule: React.FC = () => {
   return (
     <ScheduleWrapper>
       <ScheduleTitle>Technician Schedule</ScheduleTitle>
+
       {loading && <div>Loading...</div>}
       {error && <ErrorMessage>{error}</ErrorMessage>}
+
       {!loading && !error && (
         <CalendarContainer>
           <LazyPerformanceSchedule
