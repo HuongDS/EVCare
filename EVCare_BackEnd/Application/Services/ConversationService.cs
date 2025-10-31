@@ -55,7 +55,7 @@ namespace Application.Services
 
         public async Task<Conversation> StartConsultationAsync(string customerAccountId, int appointmentId)
         {
-            var staffId = await _route.FindAvailableAsync(customerAccountId);
+            var staffId = await _route.FindAvailableAsync(customerAccountId, appointmentId);
             if (staffId == null)
             {
                 staffId = "AI_BOT";
