@@ -78,12 +78,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
   const allMessages = [...history, ...messages];
 
-  // const handleEndConversation = () => {
-  //   // TODO: Gọi API hoặc SignalR để kết thúc cuộc trò chuyện này
-  //   console.log("End conversation:", conversationId);
-  //   message.info("Conversation ended.");
-  // };
-
   return (
     <div className="chat-window">
       <div className="chat-header">
