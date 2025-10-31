@@ -75,7 +75,7 @@ namespace Application.Services
                 data = null
             };
         }
-        public async Task<RegisterRequestDto> ValidateInfo(RegisterRequestDto data)
+        public virtual async Task<RegisterRequestDto> ValidateInfo(RegisterRequestDto data)
         {
             var checkEmailExist = await _accountRepository.GetAccountByEmail(data.email);
             var checkPhoneExist = await _accountRepository.GetAccountByPhoneAsync(data.phone);

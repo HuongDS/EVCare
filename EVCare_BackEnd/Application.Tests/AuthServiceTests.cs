@@ -1,13 +1,14 @@
-﻿using Application.Interfaces;
+﻿using System.Threading.Tasks;
+using Application.Infrastructures;
+using Application.Interfaces;
 using Application.Services;
-using Microsoft.Extensions.Configuration;
-using DataAccess.Dtos.Register;
-using DataAccess.Interfaces;
-using Moq;
-using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
-using Application.Infrastructures;
+using DataAccess.Dtos.Accounts;
+using DataAccess.Dtos.Register;
+using DataAccess.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Moq;
 
 namespace Application.Tests {
     public class AuthServiceTests {
@@ -193,7 +194,50 @@ namespace Application.Tests {
             var exception = await Assert.ThrowsAsync<Exception>(
                 async () => await authService.ValidateInfo(inputRegister));
             Assert.Equal(Message.INVALID_PHONE, exception.Message);
-        } 
-    
+        }
+
+        [Fact]
+        public async Task RegisterAccountAsync_WithValidData_ReturnsAccount() {
+            //Arrange
+            var inputRegister = new RegisterRequestDto
+            {
+                
+                email = "abc@gmail.com",
+                firstName = "Sanh",
+                lastName = "Nguyen",
+                password = "12345678@s",
+                phone = "0908249649"
+            };
+           
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(a => a.AddAsync(It.IsAny<DataAccess.Entities.Account>()))
+                .ReturnsAsync((DataAccess.Entities.Account acc) => acc);
+            accountRepositoryMock.Setup(a=>a.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(new DataAccess.Entities.Account
+                {
+                    Create_At = DateTime.Now,
+                    Id = 1000
+
+                });
+            var authServiceMock = new Mock<AuthServices>(
+                    accountRepositoryMock.Object,
+                    _fixture.Create<ITokenServices>(),
+                    _fixture.Create<IConfiguration>(),
+                    _fixture.Create<IRefreshTokenRepository>(),
+                    _fixture.Create<ICustomerRepository>(),
+                    _fixture.Create<IOtpServices>(),
+                    _fixture.Create<IEmployeeRepository>(),
+                    _fixture.Create<ITechnicianRepository>()
+                );
+            
+            authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
+                .ReturnsAsync(inputRegister);
+            var authService = authServiceMock.Object;
+            //Act
+            var result = await authService.RegisterAccountAsync(inputRegister);
+            //Assert
+            Assert.NotNull(result);
+            Assert.True(result.accountId > 0);
+        }
     }
 }
