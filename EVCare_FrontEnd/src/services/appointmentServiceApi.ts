@@ -7,6 +7,7 @@ import type {
   RemindSchedulePayload,
   ResponseDto,
   StaffAppointmentsDto,
+  StaffCreateAppointmentPayload,
 } from "../models/AppointmentsModel/Staff_Appointments_Model";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -296,6 +297,28 @@ export const useEnterRemindSchedule = () => {
       try {
         const response = await api.put<ResponseDto<number>>(
           "/api/Vehicle/staff/update",
+          payload
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg = error.response?.data.message || error.message;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+//[STAFF] - Tạo 1 appointment mới
+export const useStaffCreateAppointment = () => {
+  return useMutation({
+    mutationFn: async (payload: StaffCreateAppointmentPayload) => {
+      try {
+        const response = await api.post<number>(
+          "/api/Appointment/staff",
           payload
         );
         return response.data;

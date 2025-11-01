@@ -153,7 +153,7 @@ export default function Staff_Appoinments() {
                 handleSearchValue={handleSearch}
               />
               <ShowButton
-                text="+ CREATE AN ORDER"
+                text="+ CREATE AN APPOINTMENT"
                 onclick={() => setIsCreating(true)}
                 height="44px"
               />

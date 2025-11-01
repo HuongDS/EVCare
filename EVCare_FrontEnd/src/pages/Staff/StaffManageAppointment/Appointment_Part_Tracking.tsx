@@ -207,11 +207,12 @@ export default function Appointment_Part_Tracking({
         <Card>
           <SectionTitle>
             Order Parts ({parts.length})
-            <div>
+            <div style={{ display: "flex", gap: "5px" }}>
               <ReFreshButton action={RefreshOrderDetail} />
               <ShowButton
                 onclick={() => dispatch(openModel3d())}
                 text="Model 3D"
+                height="40px"
               />
             </div>
           </SectionTitle>

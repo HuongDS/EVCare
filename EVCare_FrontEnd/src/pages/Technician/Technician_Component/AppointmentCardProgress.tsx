@@ -161,7 +161,6 @@ const AppointmentCardProgress: React.FC<Props> = ({
   const [damageLevels, setDamageLevels] = useState<
     Record<number, DamageLevelEnum>
   >({});
-  const notification = useNotification();
 
   const { data: addedPartsResponse, isLoading: isLoadingParts } =
     getTechnicianAddedParts(data.orderId);

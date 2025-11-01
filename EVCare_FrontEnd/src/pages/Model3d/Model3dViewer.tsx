@@ -27,10 +27,13 @@ export default function Model3dViewer({ data }: Model3dProps) {
     error,
     isLoading,
   } = useGetPartDamage(data?.id || 0);
+  const dispatch = useAppDispatch();
   const [selectedPart, setSelectedPart] = useState<PartDamagedModel | null>(
     null
   );
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  // console.log(apiResponse?.data.vehicleModel3DUrl);
 
   if (isLoading) {
     return (
@@ -47,8 +50,6 @@ export default function Model3dViewer({ data }: Model3dProps) {
       </LoadingOverlay>
     );
   }
-
-  const dispatch = useAppDispatch();
 
   if (error || !apiResponse?.data || !apiResponse.data.vehicleModel3DUrl) {
     return (
