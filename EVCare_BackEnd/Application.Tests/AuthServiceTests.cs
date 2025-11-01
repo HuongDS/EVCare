@@ -231,7 +231,9 @@ namespace Application.Tests {
                     _fixture.Create<ICustomerRepository>(),
                     _fixture.Create<IOtpServices>(),
                     _fixture.Create<IEmployeeRepository>(),
-                    _fixture.Create<ITechnicianRepository>()
+                    _fixture.Create<ITechnicianRepository>(),
+                    _fixture.Create<IGoogleValidator>()
+                   
                 );
 
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
@@ -256,7 +258,8 @@ namespace Application.Tests {
                    _fixture.Create<ICustomerRepository>(),
                    _fixture.Create<IOtpServices>(),
                    _fixture.Create<IEmployeeRepository>(),
-                   _fixture.Create<ITechnicianRepository>()
+                   _fixture.Create<ITechnicianRepository>(),
+                     _fixture.Create<IGoogleValidator>()
                );
 
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
@@ -313,7 +316,8 @@ namespace Application.Tests {
                    _fixture.Create<ICustomerRepository>(),
                    otpServiceMock.Object,
                    _fixture.Create<IEmployeeRepository>(),
-                   _fixture.Create<ITechnicianRepository>()
+                   _fixture.Create<ITechnicianRepository>(),
+                     _fixture.Create<IGoogleValidator>()
                );
             authServiceMock.Setup(a => a.ValidateInfo(model))
                 .ReturnsAsync(model);
@@ -337,7 +341,8 @@ namespace Application.Tests {
                  _fixture.Create<ICustomerRepository>(),
                  _fixture.Create<IOtpServices>(),
                  _fixture.Create<IEmployeeRepository>(),
-                 _fixture.Create<ITechnicianRepository>()
+                 _fixture.Create<ITechnicianRepository>(),
+                   _fixture.Create<IGoogleValidator>()
              );
             authServiceMock.Setup(a => a.ValidateInfo(model))
                 .ThrowsAsync(new Exception("Invalid data"));
@@ -383,7 +388,8 @@ namespace Application.Tests {
                   _fixture.Create<ICustomerRepository>(),
                   _fixture.Create<IOtpServices>(),
                   _fixture.Create<IEmployeeRepository>(),
-                  _fixture.Create<ITechnicianRepository>()
+                  _fixture.Create<ITechnicianRepository>(),
+                    _fixture.Create<IGoogleValidator>()
               )
             {
                 CallBase = true
@@ -432,7 +438,8 @@ namespace Application.Tests {
                 _fixture.Create<ICustomerRepository>(),
                 _fixture.Create<IOtpServices>(),
                 _fixture.Create<IEmployeeRepository>(),
-                _fixture.Create<ITechnicianRepository>()
+                _fixture.Create<ITechnicianRepository>(),
+                _fixture.Create<IGoogleValidator>()
             );
             authServiceMock.Setup(
                 t => t.GenerateTokenAsync(It.IsAny<Account>(),
