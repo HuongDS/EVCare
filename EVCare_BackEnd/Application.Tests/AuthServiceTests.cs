@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Application.Dtos;
+using Application.Dtos.Login;
 using Application.Infrastructures;
 using Application.Interfaces;
 using Application.Services;
@@ -20,11 +22,12 @@ namespace Application.Tests {
 
             _fixture = new Fixture()
                 .Customize(new AutoMoqCustomization { ConfigureMembers = false });
+         
 
         }
 
         [Theory]
-        [InlineAutoData("abc@gmail.com","0908249649","StrongPass1@")]
+        [InlineAutoData("abc@gmail.com", "0908249649", "StrongPass1@")]
         public async Task ValidateInfo_WithValidData_ReturnsSuccessResult(
             string email,
             string phone,
@@ -50,11 +53,11 @@ namespace Application.Tests {
             Assert.Equal(result, inputRegister);
 
         }
-        [Theory,AutoData]
+        [Theory, AutoData]
         public async Task ValidateInfo_WithExistingEmailAndEmailIsActive_ReturnsThrowException(
             RegisterRequestDto inputRegister) {
             //Arrange
-           
+
             var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
             accountRepositoryMock.Setup(a => a.GetAccountByEmail(It.IsAny<string>()))
                 .ReturnsAsync(new DataAccess.Entities.Account
@@ -264,7 +267,7 @@ namespace Application.Tests {
         [Fact]
         public async void SetRefreshCookie_WithValidData_SetsCookie() {
 
-           
+
             var cookieName = "RefreshTokenCookie";
             var refreshValue = "refresh_abc123";
             var expires = DateTime.UtcNow.AddDays(7);
@@ -273,14 +276,14 @@ namespace Application.Tests {
             configMock.SetupGet(c => c["Cookies:RefreshTokenName"]).Returns(cookieName);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Response.Body = new MemoryStream(); 
+            httpContext.Response.Body = new MemoryStream();
 
             var authService = _fixture.Create<AuthServices>();
 
-           
+
             authService.SetRefreshCookie(httpContext, refreshValue, expires);
 
-           
+
             var setCookieHeader = httpContext.Response.Headers["Set-Cookie"].ToString();
 
             Assert.Contains($"{cookieName}={refreshValue}", setCookieHeader);
@@ -292,8 +295,8 @@ namespace Application.Tests {
 
         }
 
-        [Theory,AutoData]
-        public async  void RegisterAsync_WihtValidData_ReturnsResponeDto(RegisterRequestDto model) {
+        [Theory, AutoData]
+        public async void RegisterAsync_WihtValidData_ReturnsResponeDto(RegisterRequestDto model) {
 
             var otpServiceMock = _fixture.Freeze<Mock<IOtpServices>>();
             otpServiceMock.Setup(o => o.SaveOtpAsync(model));
@@ -320,7 +323,7 @@ namespace Application.Tests {
 
         }
 
-        [Theory,AutoData]
+        [Theory, AutoData]
         public async void RegisterAsync_WithInvalidData_ThrowException(RegisterRequestDto model) {
             var authServiceMock = new Mock<AuthServices>(
                  _fixture.Create<IAccountRepository>(),
@@ -336,11 +339,50 @@ namespace Application.Tests {
                 .ThrowsAsync(new Exception("Invalid data"));
             var authService = authServiceMock.Object;
             var resultException = await Assert
-                .ThrowsAsync<Exception>( async()=> await authService.RegisterAsync(model));
+                .ThrowsAsync<Exception>(async () => await authService.RegisterAsync(model));
             Assert.NotNull(resultException);
             Assert.Equal(resultException.Message, "Invalid data");
 
         }
 
+        [Fact]
+        public async void GenerateTokenAsync_WithValidAccount_ReturnsTokenDto(
+           ) {
+            var account = new DataAccess.Entities.Account();
+            var response = new ResponseDto<LoginResponseDto>();
+            var context = new DefaultHttpContext();
+
+
+            //Arrange
+            var tokenServiceMock = _fixture.Freeze<Mock<ITokenServices>>();
+            tokenServiceMock.Setup(t => t.GenerateAccessToken(account))
+                .Returns("access_token_123");
+            tokenServiceMock.Setup(t => t.GenerateRefreshToken())
+                .Returns("refresh_token_456");
+            tokenServiceMock.Setup(t => t.HashToken(It.IsAny<string>()))
+                .Returns("hashed_refresh_token_456");
+            tokenServiceMock.Setup(t => t.GetExpireDays())
+                .Returns(DateTime.UtcNow.AddDays(7));
+           var authServiceMock = new Mock<AuthServices>(
+                 _fixture.Create<IAccountRepository>(),
+                 tokenServiceMock.Object,
+                 _fixture.Create<IConfiguration>(),
+                 _fixture.Create<IRefreshTokenRepository>(),
+                 _fixture.Create<ICustomerRepository>(),
+                 _fixture.Create<IOtpServices>(),
+                 _fixture.Create<IEmployeeRepository>(),
+                 _fixture.Create<ITechnicianRepository>()
+             );
+            authServiceMock.Setup(t=>t.SetRefreshCookie(context, It.IsAny<string>(), It.IsAny<DateTime>()));
+            var result = await authServiceMock.Object.GenerateTokenAsync(account,response,context);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(result.statusCode, 200);
+            Assert.Equal(result.message, Message.LOGIN_SUCCESS);
+            Assert.Equal("access_token_123", result.data.accessToken);
+           
+
+        }
     }
   }

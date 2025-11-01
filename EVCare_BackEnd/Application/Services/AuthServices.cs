@@ -381,7 +381,7 @@ namespace Application.Services
             };
             return response;
         }
-        public void SetRefreshCookie(HttpContext context, string refresh, DateTime expires)
+        public virtual void  SetRefreshCookie(HttpContext context, string refresh, DateTime expires)
         {
             var cookieName = _configuration["Cookies:RefreshTokenName"];
             context.Response.Cookies.Append(cookieName, refresh, new CookieOptions
