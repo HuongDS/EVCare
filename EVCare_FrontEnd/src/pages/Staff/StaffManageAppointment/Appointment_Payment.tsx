@@ -19,8 +19,6 @@ import type {
 import { usePayByPayOS } from "../../../services/PaymentServiceApi";
 import { handleError } from "../../../utils/errorHandler";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { useAppDispatch } from "../../../states/store";
-import { setStep } from "../../../states/appointmentSlice";
 import { useQueryClient } from "@tanstack/react-query";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import CancelPaymentButton from "../StaffComponents/CancelPaymentButton";
@@ -34,16 +32,16 @@ import { useNotification } from "../../../context/useNotification";
 interface PaymentPageProps {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
   currentStep: number;
+  onPaymentSuccess: () => void;
 }
 
-const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
+const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
   const [paymentMethod, setPaymentMethod] = useState<
     "VnPay" | "PayOs" | "Cash"
   >();
   const [vnPayPending, setVnPayPending] = useState(false);
   const [qrcode, setQrCode] = useState("");
   const { data: orderDetail } = useGetOrderDetail(data.orderId);
-  const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const notification = useNotification();
 
@@ -54,7 +52,7 @@ const PaymentPage = ({ data, currentStep }: PaymentPageProps) => {
         description: SUCCESS_MESSAGE.PAID_SUCCESSFULLY,
         showProgress: true,
       });
-      dispatch(setStep({ id: data.id, step: currentStep + 1 }));
+      onPaymentSuccess();
     }
   });
 
