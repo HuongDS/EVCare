@@ -3,10 +3,11 @@ export const ERROR_MESSAGE = {
   LOGIN_FAILED: "Login failed! Try again.",
   SOME_THING_WENT_WRONG: "Something went wrong!",
   OTP_WRONG: "WRONG OTP! PLEASE TRY AGAIN!",
-  PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME: "Password must be same!",
+  PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME: "Mismatch password!",
   INVALID_EMAIL: "Email is not valid.",
   INVALID_PASSWORD:
     "Password is too weak. It must be at least 8 characters, at least 1 letter, 1 number and 1 special character.",
+  INVALID_PASSWORD_LOGIN: "Password must be at least 8 characters",
   INVALID_PHONE: "Phone number is not valid.",
   THIS_FIELD_IS_REQUIRED: "This field can not be empty!",
   NO_ACCESS_TOKEN_FROM_REFRESH: "No AccessToken from refresh.",
@@ -97,6 +98,7 @@ export const APPOINTMENT_MESSAGE = {
   APPOINTMENT_CANCEL_FAIL: "Failed to cancel this appointment",
   APPOINTMENT_CHECKIN_FAIL:
     "Oops! You can only check in on customer's appointment day.",
+  CREATE_APPOINTMENT_SUCCESS: "Appointment is created successfully",
 };
 
 export const FORM_MESSAGES = {
