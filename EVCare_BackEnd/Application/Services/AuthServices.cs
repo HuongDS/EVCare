@@ -41,11 +41,13 @@ namespace Application.Services
         private readonly IOtpServices _otpServices;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ITechnicianRepository _technicianRepository;
+        private readonly IGoogleValidator _googleValidator;
 
         public AuthServices(IAccountRepository accountRepository, ITokenServices tokenServices
             , IConfiguration configuration, IRefreshTokenRepository refreshTokenRepository,
             ICustomerRepository customerRepository, IOtpServices otpServices,
-            IEmployeeRepository employeeRepository, ITechnicianRepository technicianRepository)
+            IEmployeeRepository employeeRepository, ITechnicianRepository technicianRepository
+            ,IGoogleValidator googleValidator)
         {
             this._accountRepository = accountRepository;
             this._tokenServices = tokenServices;
@@ -55,6 +57,7 @@ namespace Application.Services
             this._otpServices = otpServices;
             this._employeeRepository = employeeRepository;
             this._technicianRepository = technicianRepository;
+            this._googleValidator = googleValidator;
         }
         public async Task<ResponseDto<RegisterResponseDto>> RegisterAsync(RegisterRequestDto data)
         {
@@ -241,7 +244,7 @@ namespace Application.Services
         }
         public async Task<ResponseDto<LoginResponseDto>> LoginGoogleAsync(string idToken, HttpContext context)
         {
-            var payload = await Google.Apis.Auth.GoogleJsonWebSignature.ValidateAsync(idToken);
+            var payload = await _googleValidator.ValidateAsync(idToken);
             if (payload is null || string.IsNullOrEmpty(payload.Email))
             {
                 throw new Exception(Message.LOGIN_FAILED);
@@ -281,7 +284,7 @@ namespace Application.Services
             return await GenerateTokenAsync(account, new ResponseDto<LoginResponseDto>(), context);
 
         }
-        public async Task<ResponseDto<LoginResponseDto>> GenerateTokenAsync(DataAccess.Entities.Account account, ResponseDto<LoginResponseDto> response, HttpContext context)
+        public virtual async  Task<ResponseDto<LoginResponseDto>> GenerateTokenAsync(DataAccess.Entities.Account account, ResponseDto<LoginResponseDto> response, HttpContext context)
         {
             await _refreshTokenRepository.RevokeAllAsyncByAccountId(account.Id);
 
@@ -381,7 +384,7 @@ namespace Application.Services
             };
             return response;
         }
-        public void SetRefreshCookie(HttpContext context, string refresh, DateTime expires)
+        public virtual void  SetRefreshCookie(HttpContext context, string refresh, DateTime expires)
         {
             var cookieName = _configuration["Cookies:RefreshTokenName"];
             context.Response.Cookies.Append(cookieName, refresh, new CookieOptions
