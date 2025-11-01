@@ -57,7 +57,7 @@ namespace Application.Services
             this._otpServices = otpServices;
             this._employeeRepository = employeeRepository;
             this._technicianRepository = technicianRepository;
-            this._googleValidator = googleValidator;
+            _googleValidator = googleValidator;
         }
         public async Task<ResponseDto<RegisterResponseDto>> RegisterAsync(RegisterRequestDto data)
         {
@@ -253,12 +253,7 @@ namespace Application.Services
             var email = payload.Email;
             var first_name = payload.GivenName;
             var last_name = payload.FamilyName;
-
             var account = await _accountRepository.GetAccountByEmail(email);
-            if (account.Deleted_At != DateTime.MinValue)
-            {
-                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
-            }
             if (account is null)
             {
                 var defaultPassword = _configuration["DefaultPassword:Google"] ?? "12345678@sa";
@@ -280,6 +275,9 @@ namespace Application.Services
                 {
                     accountId = account.Id,
                 });
+            }
+            if (account.Deleted_At != DateTime.MinValue) {
+                throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
             }
             return await GenerateTokenAsync(account, new ResponseDto<LoginResponseDto>(), context);
 
