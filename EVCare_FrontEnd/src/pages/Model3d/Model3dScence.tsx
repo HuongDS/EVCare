@@ -77,7 +77,7 @@ export function Model3dScence({
   // Render tất cả mesh (trừ hidden)
   return (
     <Bounds>
-      <group scale={[105, 105, 105]} {...props} dispose={null}>
+      <group scale={[0.005, 0.005, 0.005]} {...props} dispose={null}>
         {Object.entries(nodes).map(([name, mesh]) => {
           if (!(mesh instanceof THREE.Mesh)) return null;
           if (hiddenMeshes.includes(name)) return null;
