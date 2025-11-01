@@ -281,7 +281,7 @@ namespace Application.Services
             return await GenerateTokenAsync(account, new ResponseDto<LoginResponseDto>(), context);
 
         }
-        public async Task<ResponseDto<LoginResponseDto>> GenerateTokenAsync(DataAccess.Entities.Account account, ResponseDto<LoginResponseDto> response, HttpContext context)
+        public virtual async  Task<ResponseDto<LoginResponseDto>> GenerateTokenAsync(DataAccess.Entities.Account account, ResponseDto<LoginResponseDto> response, HttpContext context)
         {
             await _refreshTokenRepository.RevokeAllAsyncByAccountId(account.Id);
 
