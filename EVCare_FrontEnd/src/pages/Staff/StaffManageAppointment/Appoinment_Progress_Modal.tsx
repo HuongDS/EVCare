@@ -17,6 +17,8 @@ import type {
 import PaymentPage from "./Appointment_Payment";
 import { InvoicePage } from "./Appointment_Invoice";
 import NextMaintenance from "./NextMaintenance";
+import { useState } from "react";
+import MainteningPage from "./MainteningPage";
 
 const ModalStyled = styled(Modal)`
   display: flex;
@@ -48,6 +50,14 @@ export default function Appoinment_Progress_Modal({
     return savedStep ?? getAppointmentStepFromStatus(data.status);
   });
 
+  const [subPage, setSubPage] = useState<"payment" | "nextMaintenance" | null>(
+    null
+  );
+
+  const handleNextPage = () => {
+    setSubPage("nextMaintenance");
+  };
+
   const renderContent = () => {
     switch (currentStep) {
       case 0:
@@ -70,9 +80,18 @@ export default function Appoinment_Progress_Modal({
           />
         );
       case 3:
-        return <PaymentPage data={data} currentStep={currentStep} />;
+        return <MainteningPage />;
       case 4:
-        return <NextMaintenance data={data} currentStep={currentStep} />;
+        if (subPage === "nextMaintenance") {
+          return <NextMaintenance data={data} currentStep={currentStep} />;
+        }
+        return (
+          <PaymentPage
+            data={data}
+            currentStep={currentStep}
+            onPaymentSuccess={handleNextPage}
+          />
+        );
       case 5:
         return <InvoicePage data={data} />;
     }
