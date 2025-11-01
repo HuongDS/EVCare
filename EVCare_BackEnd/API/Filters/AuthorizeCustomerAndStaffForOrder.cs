@@ -9,7 +9,7 @@ namespace API.Filters {
         }
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) {
             var userRole = context.HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-            if (userRole == "Staff") {
+            if (userRole == "Staff" || userRole == "Technician") {
                 await next();
             }
             else {
