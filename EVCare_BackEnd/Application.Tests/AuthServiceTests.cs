@@ -4,6 +4,7 @@ using Application.Interfaces;
 using Application.Services;
 using AutoFixture;
 using AutoFixture.AutoMoq;
+using AutoFixture.Xunit2;
 using DataAccess.Dtos.Accounts;
 using DataAccess.Dtos.Register;
 using DataAccess.Interfaces;
@@ -17,22 +18,23 @@ namespace Application.Tests {
         private readonly IFixture _fixture;
         public AuthServiceTests() {
 
-            _fixture = new Fixture().Customize(new AutoMoqCustomization { ConfigureMembers = false });
+            _fixture = new Fixture()
+                .Customize(new AutoMoqCustomization { ConfigureMembers = false });
 
         }
 
-        [Fact]
-        //methodname_condition_expectedResult
-        public async Task ValidateInfo_WithValidData_ReturnsSuccessResult() {
+        [Theory]
+        [InlineAutoData("abc@gmail.com","0908249649","StrongPass1@")]
+        public async Task ValidateInfo_WithValidData_ReturnsSuccessResult(
+            string email,
+            string phone,
+            string password,
+            RegisterRequestDto inputRegister) {
             //Arrange
-            var inputRegister = new RegisterRequestDto
-            {
-                email = "abc@gmail.com",
-                firstName = "Sanh",
-                lastName = "Nguyen",
-                password = "12345678@s",
-                phone = "0908249649"
-            };
+            inputRegister.email = email;
+            inputRegister.phone = phone;
+            inputRegister.password = password;
+
             var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
             accountRepositoryMock.Setup(r => r.GetAccountByEmail(It.IsAny<string>()))
                 .ReturnsAsync(() => null);
@@ -48,17 +50,11 @@ namespace Application.Tests {
             Assert.Equal(result, inputRegister);
 
         }
-        [Fact]
-        public async Task ValidateInfo_WithExistingEmailAndEmailIsActive_ReturnsThrowException() {
+        [Theory,AutoData]
+        public async Task ValidateInfo_WithExistingEmailAndEmailIsActive_ReturnsThrowException(
+            RegisterRequestDto inputRegister) {
             //Arrange
-            var inputRegister = new RegisterRequestDto
-            {
-                email = "abc@gmail.com",
-                firstName = "Sanh",
-                lastName = "Nguyen",
-                password = "12345678@s",
-                phone = "0908249649"
-            };
+           
             var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
             accountRepositoryMock.Setup(a => a.GetAccountByEmail(It.IsAny<string>()))
                 .ReturnsAsync(new DataAccess.Entities.Account
@@ -295,5 +291,56 @@ namespace Application.Tests {
             Assert.Contains($"expires={expectedExpires}", setCookieHeader.ToLower());
 
         }
+
+        [Theory,AutoData]
+        public async  void RegisterAsync_WihtValidData_ReturnsResponeDto(RegisterRequestDto model) {
+
+            var otpServiceMock = _fixture.Freeze<Mock<IOtpServices>>();
+            otpServiceMock.Setup(o => o.SaveOtpAsync(model));
+
+            var authServiceMock = new Mock<AuthServices>(
+                   _fixture.Create<IAccountRepository>(),
+                   _fixture.Create<ITokenServices>(),
+                   _fixture.Create<IConfiguration>(),
+                   _fixture.Create<IRefreshTokenRepository>(),
+                   _fixture.Create<ICustomerRepository>(),
+                   otpServiceMock.Object,
+                   _fixture.Create<IEmployeeRepository>(),
+                   _fixture.Create<ITechnicianRepository>()
+               );
+            authServiceMock.Setup(a => a.ValidateInfo(model))
+                .ReturnsAsync(model);
+
+            var result = await authServiceMock.Object.RegisterAsync(model);
+            Assert.NotNull(result);
+            Assert.Equal(result.statusCode, 201);
+            Assert.Equal(result.message, Message.OTP_HAS_BEEN_SENT);
+
+
+
+        }
+
+        [Theory,AutoData]
+        public async void RegisterAsync_WithInvalidData_ThrowException(RegisterRequestDto model) {
+            var authServiceMock = new Mock<AuthServices>(
+                 _fixture.Create<IAccountRepository>(),
+                 _fixture.Create<ITokenServices>(),
+                 _fixture.Create<IConfiguration>(),
+                 _fixture.Create<IRefreshTokenRepository>(),
+                 _fixture.Create<ICustomerRepository>(),
+                 _fixture.Create<IOtpServices>(),
+                 _fixture.Create<IEmployeeRepository>(),
+                 _fixture.Create<ITechnicianRepository>()
+             );
+            authServiceMock.Setup(a => a.ValidateInfo(model))
+                .ThrowsAsync(new Exception("Invalid data"));
+            var authService = authServiceMock.Object;
+            var resultException = await Assert
+                .ThrowsAsync<Exception>( async()=> await authService.RegisterAsync(model));
+            Assert.NotNull(resultException);
+            Assert.Equal(resultException.Message, "Invalid data");
+
+        }
+
     }
   }
