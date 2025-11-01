@@ -65,3 +65,13 @@ export type RemindSchedulePayload = {
   id?: number;
   reminderIntervalMonths?: number;
 };
+
+//Payload tạo appointment
+export type StaffCreateAppointmentPayload = {
+  customerId: number;
+  vehicleId: number;
+  note: string;
+  appointment_Date: any;
+  imagesUrls: string[];
+  serviceIds: number[];
+};
