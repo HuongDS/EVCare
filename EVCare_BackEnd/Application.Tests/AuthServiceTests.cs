@@ -1,12 +1,20 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Application.Dtos;
+using Application.Dtos.Login;
 using Application.Infrastructures;
 using Application.Interfaces;
 using Application.Services;
 using AutoFixture;
 using AutoFixture.AutoMoq;
+using AutoFixture.Xunit2;
+using BCrypt.Net;
 using DataAccess.Dtos.Accounts;
 using DataAccess.Dtos.Register;
+using DataAccess.Entities;
 using DataAccess.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.Extensions.Configuration;
 using Moq;
 
@@ -16,22 +24,24 @@ namespace Application.Tests {
         private readonly IFixture _fixture;
         public AuthServiceTests() {
 
-            _fixture = new Fixture().Customize(new AutoMoqCustomization { ConfigureMembers = false });
+            _fixture = new Fixture()
+                .Customize(new AutoMoqCustomization { ConfigureMembers = false });
+
 
         }
 
-        [Fact]
-        //methodname_condition_expectedResult
-        public async Task ValidateInfo_WithValidData_ReturnsSuccessResult() {
+        [Theory]
+        [InlineAutoData("abc@gmail.com", "0908249649", "StrongPass1@")]
+        public async Task ValidateInfo_WithValidData_ReturnsSuccessResult(
+            string email,
+            string phone,
+            string password,
+            RegisterRequestDto inputRegister) {
             //Arrange
-            var inputRegister = new RegisterRequestDto
-            {
-                email = "abc@gmail.com",
-                firstName = "Sanh",
-                lastName = "Nguyen",
-                password = "12345678@s",
-                phone = "0908249649"
-            };
+            inputRegister.email = email;
+            inputRegister.phone = phone;
+            inputRegister.password = password;
+
             var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
             accountRepositoryMock.Setup(r => r.GetAccountByEmail(It.IsAny<string>()))
                 .ReturnsAsync(() => null);
@@ -47,17 +57,11 @@ namespace Application.Tests {
             Assert.Equal(result, inputRegister);
 
         }
-        [Fact]
-        public async Task ValidateInfo_WithExistingEmailAndEmailIsActive_ReturnsThrowException() {
+        [Theory, AutoData]
+        public async Task ValidateInfo_WithExistingEmailAndEmailIsActive_ReturnsThrowException(
+            RegisterRequestDto inputRegister) {
             //Arrange
-            var inputRegister = new RegisterRequestDto
-            {
-                email = "abc@gmail.com",
-                firstName = "Sanh",
-                lastName = "Nguyen",
-                password = "12345678@s",
-                phone = "0908249649"
-            };
+
             var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
             accountRepositoryMock.Setup(a => a.GetAccountByEmail(It.IsAny<string>()))
                 .ReturnsAsync(new DataAccess.Entities.Account
@@ -227,7 +231,9 @@ namespace Application.Tests {
                     _fixture.Create<ICustomerRepository>(),
                     _fixture.Create<IOtpServices>(),
                     _fixture.Create<IEmployeeRepository>(),
-                    _fixture.Create<ITechnicianRepository>()
+                    _fixture.Create<ITechnicianRepository>(),
+                    _fixture.Create<IGoogleValidator>()
+                   
                 );
 
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
@@ -242,8 +248,8 @@ namespace Application.Tests {
 
         [Fact]
         public async Task RegisterAccountAsync_WithInvalidData_ThrowsException() {
-           
-         
+
+
             var authServiceMock = new Mock<AuthServices>(
                    _fixture.Create<IAccountRepository>(),
                    _fixture.Create<ITokenServices>(),
@@ -252,7 +258,8 @@ namespace Application.Tests {
                    _fixture.Create<ICustomerRepository>(),
                    _fixture.Create<IOtpServices>(),
                    _fixture.Create<IEmployeeRepository>(),
-                   _fixture.Create<ITechnicianRepository>()
+                   _fixture.Create<ITechnicianRepository>(),
+                     _fixture.Create<IGoogleValidator>()
                );
 
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
@@ -262,7 +269,268 @@ namespace Application.Tests {
                 async () => await authService.RegisterAccountAsync(new RegisterRequestDto()));
             Assert.Equal("Data invalid", resultException.Message);
 
-        } 
-    
+        }
+
+        [Fact]
+        public async Task SetRefreshCookie_WithValidData_SetsCookie() {
+
+
+            var cookieName = "RefreshTokenCookie";
+            var refreshValue = "refresh_abc123";
+            var expires = DateTime.UtcNow.AddDays(7);
+
+            var configMock = _fixture.Freeze<Mock<IConfiguration>>();
+            configMock.SetupGet(c => c["Cookies:RefreshTokenName"]).Returns(cookieName);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Response.Body = new MemoryStream();
+
+            var authService = _fixture.Create<AuthServices>();
+
+
+            authService.SetRefreshCookie(httpContext, refreshValue, expires);
+
+
+            var setCookieHeader = httpContext.Response.Headers["Set-Cookie"].ToString();
+
+            Assert.Contains($"{cookieName}={refreshValue}", setCookieHeader);
+            Assert.Contains("httponly", setCookieHeader.ToLower());
+            Assert.Contains("secure", setCookieHeader.ToLower());
+            Assert.Contains("samesite=none", setCookieHeader.ToLower());
+            var expectedExpires = expires.ToUniversalTime().ToString("R").ToLower();
+            Assert.Contains($"expires={expectedExpires}", setCookieHeader.ToLower());
+
+        }
+
+        [Theory, AutoData]
+        public async Task RegisterAsync_WihtValidData_ReturnsResponeDto(RegisterRequestDto model) {
+
+            var otpServiceMock = _fixture.Freeze<Mock<IOtpServices>>();
+            otpServiceMock.Setup(o => o.SaveOtpAsync(model));
+
+            var authServiceMock = new Mock<AuthServices>(
+                   _fixture.Create<IAccountRepository>(),
+                   _fixture.Create<ITokenServices>(),
+                   _fixture.Create<IConfiguration>(),
+                   _fixture.Create<IRefreshTokenRepository>(),
+                   _fixture.Create<ICustomerRepository>(),
+                   otpServiceMock.Object,
+                   _fixture.Create<IEmployeeRepository>(),
+                   _fixture.Create<ITechnicianRepository>(),
+                     _fixture.Create<IGoogleValidator>()
+               );
+            authServiceMock.Setup(a => a.ValidateInfo(model))
+                .ReturnsAsync(model);
+
+            var result = await authServiceMock.Object.RegisterAsync(model);
+            Assert.NotNull(result);
+            Assert.Equal(result.statusCode, 201);
+            Assert.Equal(result.message, Message.OTP_HAS_BEEN_SENT);
+
+
+
+        }
+
+        [Theory, AutoData]
+        public async Task RegisterAsync_WithInvalidData_ThrowException(RegisterRequestDto model) {
+            var authServiceMock = new Mock<AuthServices>(
+                 _fixture.Create<IAccountRepository>(),
+                 _fixture.Create<ITokenServices>(),
+                 _fixture.Create<IConfiguration>(),
+                 _fixture.Create<IRefreshTokenRepository>(),
+                 _fixture.Create<ICustomerRepository>(),
+                 _fixture.Create<IOtpServices>(),
+                 _fixture.Create<IEmployeeRepository>(),
+                 _fixture.Create<ITechnicianRepository>(),
+                   _fixture.Create<IGoogleValidator>()
+             );
+            authServiceMock.Setup(a => a.ValidateInfo(model))
+                .ThrowsAsync(new Exception("Invalid data"));
+            var authService = authServiceMock.Object;
+            var resultException = await Assert
+                .ThrowsAsync<Exception>(async () => await authService.RegisterAsync(model));
+            Assert.NotNull(resultException);
+            Assert.Equal(resultException.Message, "Invalid data");
+
+        }
+
+        [Fact]
+        public async Task GenerateTokenAsync_WithValidAccount_ReturnsTokenDto(
+           ) {
+            var account = new DataAccess.Entities.Account();
+            var response = new ResponseDto<LoginResponseDto>();
+            var context = new DefaultHttpContext();
+
+
+            //Arrange
+            var tokenServiceMock = _fixture.Freeze<Mock<ITokenServices>>();
+            tokenServiceMock.Setup(t => t.GenerateAccessToken(account))
+                .Returns("access_token_123");
+            tokenServiceMock.Setup(t => t.GenerateRefreshToken())
+                .Returns("refresh_token_456");
+            tokenServiceMock.Setup(t => t.HashToken(It.IsAny<string>()))
+                .Returns("hashed_refresh_token_456");
+            tokenServiceMock.Setup(t => t.GetExpireDays())
+                .Returns(DateTime.UtcNow.AddDays(7));
+            var refreshRepoMock = _fixture.Freeze<Mock<IRefreshTokenRepository>>();
+            refreshRepoMock.Setup(r => r.RevokeAllAsyncByAccountId(It.IsAny<int>()))
+                .Returns(Task.CompletedTask);
+            refreshRepoMock.Setup(r => r.AddAsync(It.IsAny<RefreshToken>()))
+                .ReturnsAsync(new RefreshToken { Id = 10000 });
+
+            var configMock = new Mock<IConfiguration>();
+            configMock.Setup(c => c["Cookies:RefreshTokenName"]).Returns("refreshToken");
+            var authServiceMock = new Mock<AuthServices>(
+                  _fixture.Create<IAccountRepository>(),
+                  tokenServiceMock.Object,
+                  configMock.Object,
+                  refreshRepoMock.Object,
+                  _fixture.Create<ICustomerRepository>(),
+                  _fixture.Create<IOtpServices>(),
+                  _fixture.Create<IEmployeeRepository>(),
+                  _fixture.Create<ITechnicianRepository>(),
+                    _fixture.Create<IGoogleValidator>()
+              )
+            {
+                CallBase = true
+            };
+            ;
+            authServiceMock.Setup(t => t.SetRefreshCookie(context, It.IsAny<string>(), It.IsAny<DateTime>()));
+            var result = await authServiceMock.Object.GenerateTokenAsync(account, response, context);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(200, result.statusCode);
+            Assert.Equal(Message.LOGIN_SUCCESS, result.message);
+            Assert.Equal("access_token_123", result.data.accessToken);
+
+
+        }
+
+        [Fact]
+        public async Task LoginAsync_WithValidData_ReturnsResponseDto(
+           ) {
+            //Arrange
+            var loginRequestDto = new LoginRequestDto
+            {
+                email = "test@gmail.com",
+                password = "ValidPass1@"
+
+            };
+            var account = new Account
+            {
+                Email = loginRequestDto.email,
+                Hash_Password = BCrypt.Net.BCrypt.HashPassword(loginRequestDto.password),
+                Deleted_At = DateTime.MinValue
+            };
+
+            var context = new DefaultHttpContext();
+
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(t => t.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(account);
+
+            var authServiceMock = new Mock<AuthServices>(
+                accountRepositoryMock.Object,
+                _fixture.Create<ITokenServices>(),
+                _fixture.Create<IConfiguration>(),
+                _fixture.Create<IRefreshTokenRepository>(),
+                _fixture.Create<ICustomerRepository>(),
+                _fixture.Create<IOtpServices>(),
+                _fixture.Create<IEmployeeRepository>(),
+                _fixture.Create<ITechnicianRepository>(),
+                _fixture.Create<IGoogleValidator>()
+            );
+            authServiceMock.Setup(
+                t => t.GenerateTokenAsync(It.IsAny<Account>(),
+                                        It.IsAny<ResponseDto<LoginResponseDto>>(),
+                                        It.IsAny<HttpContext>())
+                ).ReturnsAsync(new ResponseDto<LoginResponseDto>
+                {
+                    data = new LoginResponseDto
+                    {
+                        accessToken = "abc"
+                    },
+                    statusCode = 200,
+                    message = "Oke tui da test rui nha"
+                });
+            var result = await authServiceMock.Object.LoginAsync(loginRequestDto, context);
+            Assert.NotNull(result);
+            Assert.Equal(result.data.accessToken, "abc");
+
+        }
+
+        [Theory, AutoData]
+        public async Task LoginAsync_WithNonExitingEmail_ThrowsException(
+            LoginRequestDto loginRequestDto
+            ) {
+            //Arrange
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(t => t.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(() => null);
+            var authService = _fixture.Create<AuthServices>();
+
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.LoginAsync(loginRequestDto, new DefaultHttpContext()));
+            Assert.Equal(Message.ACCOUNT_NOT_FOUND, exception.Message);
+        }
+        [Theory, AutoData]
+        public async Task LoginAsync_WithWrongPassword_ThrowsException(
+            LoginRequestDto loginRequestDto
+            ) {
+            //Arrange
+            var account = new Account
+            {
+                Email = loginRequestDto.email,
+                Hash_Password = BCrypt.Net.BCrypt.HashPassword("DifferentPass1@"),
+                Deleted_At = DateTime.MinValue
+            };
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(t => t.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(account);
+            var authService = _fixture.Create<AuthServices>();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.LoginAsync(loginRequestDto, new DefaultHttpContext()));
+            Assert.Equal(Message.LOGIN_FAILED, exception.Message);
+
+        }
+        [Theory, AutoData]
+        public async Task LoginAsync_WithBannedAccount_ThrowsException(LoginRequestDto model) {
+            //Arrange
+            var account = new Account
+            {
+                Email = model.email,
+                Hash_Password = BCrypt.Net.BCrypt.HashPassword(model.password),
+                Deleted_At = DateTime.Now.AddDays(-1)
+            };
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(t => t.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(account);
+            var authService = _fixture.Create<AuthServices>();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.LoginAsync(model, new DefaultHttpContext()));
+            Assert.Equal(Message.ACCOUNT_HAS_BEEN_DISABLED, exception.Message);
+        }
+        [Fact]
+        public async Task LogoutAsync_WithVaildRefereshToken_RevokesToken() {
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers["Cookie"] = "refreshToken=raw_refresh_token";
+            var configMock = _fixture.Freeze<Mock<IConfiguration>>();
+            configMock.Setup(c => c["Cookies:RefreshTokenName"]).Returns("refreshToken");
+            var refreshTokenRepositoryMock = _fixture.Freeze<Mock<IRefreshTokenRepository>>();
+            refreshTokenRepositoryMock.Setup(r => r.RevokeByHashAsync(It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+            var tokenServiceMock = _fixture.Freeze<Mock<ITokenServices>>();
+            tokenServiceMock.Setup(t => t.HashToken(It.IsAny<string>()))
+                .Returns("hashed_refresh_token_456");
+            var authService = _fixture.Create<AuthServices>();
+             
+            await authService.LogoutAsync(context);
+            refreshTokenRepositoryMock.Verify(r => r.RevokeByHashAsync("hashed_refresh_token_456"), Times.Once);
+            Assert.False(context.Response.Headers.ContainsKey("refreshToken"));
+
+        }
     }
+    
 }
