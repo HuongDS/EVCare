@@ -112,7 +112,7 @@ namespace API.Controllers
             }
         }
         [HttpGet("get-order-detail/{orderId}")]
-        [Authorize(Roles = "Staff,Customer")]
+        [Authorize(Roles = "Staff,Customer,Technician")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
         [ServiceFilter(typeof(AuthorizeCustomerAndStaffForOrder))]
 
