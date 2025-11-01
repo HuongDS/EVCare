@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Application.Dtos;
 using Application.Dtos.Login;
 using Application.Infrastructures;
@@ -503,5 +504,26 @@ namespace Application.Tests {
                 async () => await authService.LoginAsync(model, new DefaultHttpContext()));
             Assert.Equal(Message.ACCOUNT_HAS_BEEN_DISABLED, exception.Message);
         }
+        [Fact]
+        public async Task LogoutAsync_WithVaildRefereshToken_RevokesToken() {
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers["Cookie"] = "refreshToken=raw_refresh_token";
+            var configMock = _fixture.Freeze<Mock<IConfiguration>>();
+            configMock.Setup(c => c["Cookies:RefreshTokenName"]).Returns("refreshToken");
+            var refreshTokenRepositoryMock = _fixture.Freeze<Mock<IRefreshTokenRepository>>();
+            refreshTokenRepositoryMock.Setup(r => r.RevokeByHashAsync(It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+            var tokenServiceMock = _fixture.Freeze<Mock<ITokenServices>>();
+            tokenServiceMock.Setup(t => t.HashToken(It.IsAny<string>()))
+                .Returns("hashed_refresh_token_456");
+            var authService = _fixture.Create<AuthServices>();
+             
+            await authService.LogoutAsync(context);
+            refreshTokenRepositoryMock.Verify(r => r.RevokeByHashAsync("hashed_refresh_token_456"), Times.Once);
+            Assert.False(context.Response.Headers.ContainsKey("refreshToken"));
+
+        }
     }
+    
 }
