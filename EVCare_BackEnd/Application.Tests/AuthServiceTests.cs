@@ -385,7 +385,7 @@ namespace Application.Tests {
                   _fixture.Create<ITechnicianRepository>()
               )
             {
-                CallBase = true                   
+                CallBase = true
             };
             ;
             authServiceMock.Setup(t => t.SetRefreshCookie(context, It.IsAny<string>(), It.IsAny<DateTime>()));
@@ -402,7 +402,6 @@ namespace Application.Tests {
 
         [Fact]
         public async Task LoginAsync_WithValidData_ReturnsResponseDto(
-           
            ) {
             //Arrange
             var loginRequestDto = new LoginRequestDto
@@ -421,7 +420,7 @@ namespace Application.Tests {
             var context = new DefaultHttpContext();
 
             var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
-            accountRepositoryMock.Setup(t=>t.GetAccountByEmail(It.IsAny<string>()))
+            accountRepositoryMock.Setup(t => t.GetAccountByEmail(It.IsAny<string>()))
                 .ReturnsAsync(account);
 
             var authServiceMock = new Mock<AuthServices>(
@@ -440,8 +439,9 @@ namespace Application.Tests {
                                         It.IsAny<HttpContext>())
                 ).ReturnsAsync(new ResponseDto<LoginResponseDto>
                 {
-                    data = new LoginResponseDto {
-                         accessToken = "abc"
+                    data = new LoginResponseDto
+                    {
+                        accessToken = "abc"
                     },
                     statusCode = 200,
                     message = "Oke tui da test rui nha"
@@ -451,5 +451,57 @@ namespace Application.Tests {
             Assert.Equal(result.data.accessToken, "abc");
 
         }
+
+        [Theory, AutoData]
+        public async Task LoginAsync_WithNonExitingEmail_ThrowsException(
+            LoginRequestDto loginRequestDto
+            ) {
+            //Arrange
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(t => t.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(() => null);
+            var authService = _fixture.Create<AuthServices>();
+
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.LoginAsync(loginRequestDto, new DefaultHttpContext()));
+            Assert.Equal(Message.ACCOUNT_NOT_FOUND, exception.Message);
+        }
+        [Theory, AutoData]
+        public async Task LoginAsync_WithWrongPassword_ThrowsException(
+            LoginRequestDto loginRequestDto
+            ) {
+            //Arrange
+            var account = new Account
+            {
+                Email = loginRequestDto.email,
+                Hash_Password = BCrypt.Net.BCrypt.HashPassword("DifferentPass1@"),
+                Deleted_At = DateTime.MinValue
+            };
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(t => t.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(account);
+            var authService = _fixture.Create<AuthServices>();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.LoginAsync(loginRequestDto, new DefaultHttpContext()));
+            Assert.Equal(Message.LOGIN_FAILED, exception.Message);
+
+        }
+        [Theory, AutoData]
+        public async Task LoginAsync_WithBannedAccount_ThrowsException(LoginRequestDto model) {
+            //Arrange
+            var account = new Account
+            {
+                Email = model.email,
+                Hash_Password = BCrypt.Net.BCrypt.HashPassword(model.password),
+                Deleted_At = DateTime.Now.AddDays(-1)
+            };
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(t => t.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(account);
+            var authService = _fixture.Create<AuthServices>();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.LoginAsync(model, new DefaultHttpContext()));
+            Assert.Equal(Message.ACCOUNT_HAS_BEEN_DISABLED, exception.Message);
+        }
     }
-  }
+}
