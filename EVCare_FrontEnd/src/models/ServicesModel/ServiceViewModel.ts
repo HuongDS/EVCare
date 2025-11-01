@@ -6,3 +6,11 @@ export type Service = {
   isDeleted: boolean;
   serviceCategoryId: number;
 };
+
+export type GetServiceParams = {
+  keyword?: string;
+  pageSize?: number;
+  pageIndex?: number;
+  sortField?: string;
+  sortOrder?: string;
+};

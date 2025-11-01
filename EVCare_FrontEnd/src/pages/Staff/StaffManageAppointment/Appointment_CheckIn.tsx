@@ -138,7 +138,6 @@ export default function Appointment_CheckIn({
         </Header>
 
         <MainContent>
-          {/* Customer Information */}
           <Card>
             <CardTitle>
               <User size={20} />
@@ -172,7 +171,6 @@ export default function Appointment_CheckIn({
             </InfoGrid>
           </Card>
 
-          {/* Services */}
           <Card>
             <CardTitle>
               <Wrench size={20} />
@@ -189,7 +187,6 @@ export default function Appointment_CheckIn({
             </ServicesList>
           </Card>
 
-          {/* Vehicle Images */}
           {data?.appointmentImages && data.appointmentImages.length > 0 && (
             <Card>
               <CardTitle>
@@ -207,7 +204,6 @@ export default function Appointment_CheckIn({
             </Card>
           )}
 
-          {/* Notes */}
           {data.note && (
             <Card>
               <CardTitle>

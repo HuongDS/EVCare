@@ -119,7 +119,6 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
         </Header>
 
         <MainContent>
-          {/* Customer Info */}
           <StyledCard title="Customer Information" size="small">
             <InfoGrid>
               <InfoItem>
@@ -151,7 +150,6 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
             </InfoGrid>
           </StyledCard>
 
-          {/* Parts & Total */}
           <StyledCard title="Order Summary" size="small">
             <TableSection>
               <Table>
@@ -195,7 +193,6 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
             </TotalRow>
           </StyledCard>
 
-          {/* Payment Methods */}
           <StyledCard title="Select Payment Method" size="small">
             <PaymentButtons>
               <PaymentBtn
@@ -227,7 +224,6 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
               </PaymentBtn>
             </PaymentButtons>
 
-            {/* QR Code Display */}
             {paymentMethod === "PayOs" && (
               <QRSection>
                 {isPending ? <SpinnerComponent /> : <iframe src={qrcode} />}
