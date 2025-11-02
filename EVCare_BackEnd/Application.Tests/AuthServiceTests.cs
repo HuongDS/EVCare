@@ -12,6 +12,7 @@ using BCrypt.Net;
 using DataAccess.Dtos.Accounts;
 using DataAccess.Dtos.Register;
 using DataAccess.Entities;
+using DataAccess.Enums;
 using DataAccess.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
@@ -233,8 +234,9 @@ namespace Application.Tests {
                     _fixture.Create<IEmployeeRepository>(),
                     _fixture.Create<ITechnicianRepository>(),
                     _fixture.Create<IGoogleValidator>()
-                   
-                );
+
+                )
+            { CallBase = true};
 
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
                 .ReturnsAsync(inputRegister);
@@ -260,7 +262,8 @@ namespace Application.Tests {
                    _fixture.Create<IEmployeeRepository>(),
                    _fixture.Create<ITechnicianRepository>(),
                      _fixture.Create<IGoogleValidator>()
-               );
+               )
+            { CallBase = true};
 
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
                 .ThrowsAsync(new Exception("Data invalid"));
@@ -525,12 +528,222 @@ namespace Application.Tests {
             tokenServiceMock.Setup(t => t.HashToken(It.IsAny<string>()))
                 .Returns("hashed_refresh_token_456");
             var authService = _fixture.Create<AuthServices>();
-             
+
             await authService.LogoutAsync(context);
             refreshTokenRepositoryMock.Verify(r => r.RevokeByHashAsync("hashed_refresh_token_456"), Times.Once);
             Assert.False(context.Response.Headers.ContainsKey("refreshToken"));
 
         }
+
+        [Fact]
+        public async Task LoginGoogleAsync_WithInvalidToken_ThrowsException() {
+            //Arrange
+            var googleToken = "invalid_google_token";
+            var googleValidatorMock = _fixture.Freeze<Mock<IGoogleValidator>>();
+            googleValidatorMock.Setup(g => g.ValidateAsync(It.IsAny<string>()))
+                .ReturnsAsync(() => null);
+            var authService = _fixture.Create<AuthServices>();
+            var context = new DefaultHttpContext();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.LoginGoogleAsync(googleToken, context));
+            Assert.Equal(Message.LOGIN_FAILED, exception.Message);
+        }
+        [Fact]
+        public async Task LoginGoogleAsync_WithEmptyEmail_ThrowsException() {
+           
+            var payload = new Google.Apis.Auth.GoogleJsonWebSignature.Payload
+            {
+                Email=""
+            };
+            var googleValidatorMock = _fixture.Freeze<Mock<IGoogleValidator>>();
+            googleValidatorMock.Setup(g => g.ValidateAsync(It.IsAny<string>()))
+                .ReturnsAsync(payload);
+            var authService = _fixture.Create<AuthServices>();
+            var context = new DefaultHttpContext();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.LoginGoogleAsync(It.IsAny<string>(), context));
+            Assert.Equal(Message.LOGIN_FAILED, exception.Message);
+        }
+        [Fact]
+        public async Task LoginGoogleAsync_WithNullEmail_ThrowsException() {
+
+            var payload = new Google.Apis.Auth.GoogleJsonWebSignature.Payload
+            {
+               Email = null
+            };
+            var googleValidatorMock = _fixture.Freeze<Mock<IGoogleValidator>>();
+            googleValidatorMock.Setup(g => g.ValidateAsync(It.IsAny<string>()))
+                .ReturnsAsync(payload);
+            var authService = _fixture.Create<AuthServices>();
+            var context = new DefaultHttpContext();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.LoginGoogleAsync(It.IsAny<string>(), context));
+            Assert.Equal(Message.LOGIN_FAILED, exception.Message);
+        }
+        [Fact]
+        public async Task LoginGoogleAsync_WithValidTokenAndAccountIsNotBanned_ReturnsResponseDto() {
+            //Arrange
+            var googleEmail = "validToken";
+            var payload = new Google.Apis.Auth.GoogleJsonWebSignature.Payload
+            {
+                Email = googleEmail,
+                GivenName = "FirstName",
+                FamilyName = "LastName"
+
+            };
+            var newAccount = new DataAccess.Entities.Account
+            {
+                Id = 1,
+                Email = "test@gmail.com",
+                First_Name = "Sanh",
+                Last_Name = "Nguyen",
+                Hash_Password = "hash",
+                Create_At = DateTime.UtcNow,
+                Updated_At = DateTime.UtcNow,
+                Deleted_At =DateTime.MinValue,
+                Role = RoleEnum.Customer
+            };
+            var googleValidatorMock = _fixture.Freeze<Mock<IGoogleValidator>>();
+            googleValidatorMock.Setup(g => g.ValidateAsync(It.IsAny<string>()))
+                .ReturnsAsync(payload);
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.SetupSequence(a => a.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(() => null)
+                .ReturnsAsync(newAccount);
+            accountRepositoryMock.Setup(a => a.AddAsync(It.IsAny<Account>()));
+            var authServiceMock = new Mock<AuthServices>(
+                accountRepositoryMock.Object,
+                _fixture.Create<ITokenServices>(),
+                _fixture.Create<IConfiguration>(),
+                _fixture.Create<IRefreshTokenRepository>(),
+                _fixture.Create<ICustomerRepository>(),
+                _fixture.Create<IOtpServices>(),
+                _fixture.Create<IEmployeeRepository>(),
+                _fixture.Create<ITechnicianRepository>(),
+                googleValidatorMock.Object
+            )
+            { CallBase = true};
+            authServiceMock.Setup(t => t.RegisterCustomerAsync(It.IsAny<AccountResponseDto>()))
+                .Returns(Task.CompletedTask);
+            authServiceMock.Setup(t=>t.GenerateTokenAsync(It.IsAny<Account>(),
+                                        It.IsAny<ResponseDto<LoginResponseDto>>(),
+                                        It.IsAny<HttpContext>()))
+                .ReturnsAsync(new ResponseDto<LoginResponseDto>
+                {
+                    data = new LoginResponseDto
+                    {
+                        accessToken = "abc"
+                    },
+                    statusCode = 200,
+                    message = "Oke tui da test rui nha"
+                });
+            var context = new DefaultHttpContext();
+            var result = await authServiceMock.Object.LoginGoogleAsync("valid_google_token", context);
+            Assert.NotNull(result);
+            Assert.Equal("abc",result?.data?.accessToken);
+        }
+
+        [Fact]
+        public async Task LoginGoogleAsync_WithValidTokenAndAccountIsBanned_ThrowsException() {
+            var googleEmail = "validToken";
+            var payload = new Google.Apis.Auth.GoogleJsonWebSignature.Payload
+            {
+                Email = googleEmail,
+                GivenName = "FirstName",
+                FamilyName = "LastName"
+
+            };
+            var newAccount = new DataAccess.Entities.Account
+            {
+                Id = 1,
+                Email = "test@gmail.com",
+                First_Name = "Sanh",
+                Last_Name = "Nguyen",
+                Hash_Password = "hash",
+                Create_At = DateTime.UtcNow,
+                Updated_At = DateTime.UtcNow,
+                Deleted_At = DateTime.UtcNow,
+                Role = RoleEnum.Customer
+            };
+            var googleValidatorMock = _fixture.Freeze<Mock<IGoogleValidator>>();
+            googleValidatorMock.Setup(g => g.ValidateAsync(It.IsAny<string>()))
+                .ReturnsAsync(payload);
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.SetupSequence(a => a.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(() => null)
+                .ReturnsAsync(newAccount);
+            accountRepositoryMock.Setup(a => a.AddAsync(It.IsAny<Account>()));
+            var authServiceMock = new Mock<AuthServices>(
+                accountRepositoryMock.Object,
+                _fixture.Create<ITokenServices>(),
+                _fixture.Create<IConfiguration>(),
+                _fixture.Create<IRefreshTokenRepository>(),
+                _fixture.Create<ICustomerRepository>(),
+                _fixture.Create<IOtpServices>(),
+                _fixture.Create<IEmployeeRepository>(),
+                _fixture.Create<ITechnicianRepository>(),
+                googleValidatorMock.Object
+            )
+            { CallBase = true };
+            authServiceMock.Setup(t => t.RegisterCustomerAsync(It.IsAny<AccountResponseDto>()))
+                .Returns(Task.CompletedTask);
+           
+            var context = new DefaultHttpContext();
+            var result  = await Assert.ThrowsAsync<Exception>(
+                async () => await authServiceMock.Object.LoginGoogleAsync("valid_google_token", context));
+            Assert.Equal(Message.ACCOUNT_HAS_BEEN_DISABLED, result.Message);
+        }
+
+        [Theory,AutoData]
+        public async Task VerifyRegisterAsync_WithInvalidEmail_ThrowsException(string email) {
+            //Arrange
+            var otpServiceMock = _fixture.Freeze<Mock<IOtpServices>>();
+            otpServiceMock.Setup(o => o.GetObjectData<RegisterRequestDto>(It.IsAny<string>()))
+                .ReturnsAsync(() => null);
+            var authService = _fixture.Create<AuthServices>();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.VerifyRegisterAsync(email));
+            Assert.Equal(Message.OTP_INVALID, exception.Message);
+        }
+        [Theory, AutoData]
+        public async Task VerifyRegisterAsync_WithValidEmail_ThrowsException(string email) {
+            //Arrange
+            var otpServiceMock = _fixture.Freeze<Mock<IOtpServices>>();
+            otpServiceMock.Setup(o => o.GetObjectData<RegisterRequestDto>(It.IsAny<string>()))
+                .ReturnsAsync(new RegisterRequestDto
+                {
+                    email = email,
+                    firstName = "Test",
+                    lastName = "User",
+                    phone = "0908249649",
+                    password = "ValidPass1@"
+                });
+            
+            var authServiceMock = new Mock<AuthServices>(
+                _fixture.Create<IAccountRepository>(),
+                _fixture.Create<ITokenServices>(),
+                _fixture.Create<IConfiguration>(),
+                _fixture.Create<IRefreshTokenRepository>(),
+                _fixture.Create<ICustomerRepository>(),
+                otpServiceMock.Object,
+                _fixture.Create<IEmployeeRepository>(),
+                _fixture.Create<ITechnicianRepository>(),
+                _fixture.Create<IGoogleValidator>()
+            )
+            { CallBase = true};
+            authServiceMock.Setup(a => a.RegisterAccountAsync(It.IsAny<RegisterRequestDto>()))
+                .ReturnsAsync(new AccountResponseDto
+                {
+                    accountId = 1000
+                   
+                });
+            var authService = authServiceMock.Object;
+            var result = await authService.VerifyRegisterAsync(email);
+            Assert.NotNull(result);
+            Assert.Equal(1000, result.accountId);
+
+        }
+
     }
     
 }
