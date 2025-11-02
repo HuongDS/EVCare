@@ -200,7 +200,7 @@ namespace Application.Services
                     invoice.Customer = null;
                     invoice.Order = null;
                     invoice.Status = PaymentStatusEnum.Completed;
-                    invoice.Updated_At = DateTime.Now;
+                    invoice.Updated_At = DateTime.UtcNow.AddHours(7);
                     invoice.OrderCode = orderCode;
                     var order = await _orderRepository.GetByIdAsync(invoice.OrderId);
                     order.Status = OrderStatusEnum.Completed;
