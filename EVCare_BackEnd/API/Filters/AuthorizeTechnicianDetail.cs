@@ -30,7 +30,12 @@ namespace API.Filters
                     var currentTechnicianId = await _technicianRepository.GetTechnicianIdByAccountId(userId);
                     if(currentTechnicianId != technicianId)
                     {
-                        context.Result = new ForbidResult("You are not authorized!");
+                        context.Result = new ObjectResult(new
+                        {
+                            message = "You are not authorized to access this resource." ,
+                            statusCode = StatusCodes.Status403Forbidden
+                        });
+
                     }
                     else
                     {
