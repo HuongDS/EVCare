@@ -89,6 +89,8 @@ const Admin_Applications = lazy(
   () => import("../pages/Admin/AdminAplication/Admin_Applications")
 );
 
+const CancelPage = lazy(() => import("../pages/Users/CancelPage/CancelPage"));
+const ThankYouPage = lazy(() => import("../pages/Users/ThankYou/ThankYou"));
 import {
   LazyOrder,
   LazyHistory,
@@ -409,7 +411,23 @@ const router = createBrowserRouter([
     path: "/test",
     element: (
       <SuspenseWrapper>
-        <Test />
+        <Test />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: "/ThankYou",
+    element: (
+      <SuspenseWrapper>
+        <ThankYouPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: "/Cancel",
+    element: (
+      <SuspenseWrapper>
+        <CancelPage />
       </SuspenseWrapper>
     ),
   },
