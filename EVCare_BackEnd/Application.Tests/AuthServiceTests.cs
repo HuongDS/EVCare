@@ -235,7 +235,8 @@ namespace Application.Tests {
                     _fixture.Create<ITechnicianRepository>(),
                     _fixture.Create<IGoogleValidator>()
 
-                );
+                )
+            { CallBase = true};
 
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
                 .ReturnsAsync(inputRegister);
@@ -261,7 +262,8 @@ namespace Application.Tests {
                    _fixture.Create<IEmployeeRepository>(),
                    _fixture.Create<ITechnicianRepository>(),
                      _fixture.Create<IGoogleValidator>()
-               );
+               )
+            { CallBase = true};
 
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
                 .ThrowsAsync(new Exception("Data invalid"));
@@ -692,6 +694,55 @@ namespace Application.Tests {
             Assert.Equal(Message.ACCOUNT_HAS_BEEN_DISABLED, result.Message);
         }
 
+        [Theory,AutoData]
+        public async Task VerifyRegisterAsync_WithInvalidEmail_ThrowsException(string email) {
+            //Arrange
+            var otpServiceMock = _fixture.Freeze<Mock<IOtpServices>>();
+            otpServiceMock.Setup(o => o.GetObjectData<RegisterRequestDto>(It.IsAny<string>()))
+                .ReturnsAsync(() => null);
+            var authService = _fixture.Create<AuthServices>();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.VerifyRegisterAsync(email));
+            Assert.Equal(Message.OTP_INVALID, exception.Message);
+        }
+        [Theory, AutoData]
+        public async Task VerifyRegisterAsync_WithValidEmail_ThrowsException(string email) {
+            //Arrange
+            var otpServiceMock = _fixture.Freeze<Mock<IOtpServices>>();
+            otpServiceMock.Setup(o => o.GetObjectData<RegisterRequestDto>(It.IsAny<string>()))
+                .ReturnsAsync(new RegisterRequestDto
+                {
+                    email = email,
+                    firstName = "Test",
+                    lastName = "User",
+                    phone = "0908249649",
+                    password = "ValidPass1@"
+                });
+            
+            var authServiceMock = new Mock<AuthServices>(
+                _fixture.Create<IAccountRepository>(),
+                _fixture.Create<ITokenServices>(),
+                _fixture.Create<IConfiguration>(),
+                _fixture.Create<IRefreshTokenRepository>(),
+                _fixture.Create<ICustomerRepository>(),
+                otpServiceMock.Object,
+                _fixture.Create<IEmployeeRepository>(),
+                _fixture.Create<ITechnicianRepository>(),
+                _fixture.Create<IGoogleValidator>()
+            )
+            { CallBase = true};
+            authServiceMock.Setup(a => a.RegisterAccountAsync(It.IsAny<RegisterRequestDto>()))
+                .ReturnsAsync(new AccountResponseDto
+                {
+                    accountId = 1000
+                   
+                });
+            var authService = authServiceMock.Object;
+            var result = await authService.VerifyRegisterAsync(email);
+            Assert.NotNull(result);
+            Assert.Equal(1000, result.accountId);
+
+        }
 
     }
     

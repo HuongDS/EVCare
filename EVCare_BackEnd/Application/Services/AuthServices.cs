@@ -117,7 +117,7 @@ namespace Application.Services
                 return await RegisterAccountAsync(data);
             }
         }
-        public async Task<AccountResponseDto> RegisterAccountAsync(RegisterRequestDto data)
+        public virtual async Task<AccountResponseDto> RegisterAccountAsync(RegisterRequestDto data)
         {
             try
             {
