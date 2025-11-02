@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SortTable from "../Technician_Component/SortTable";
-
 import {
   AppointmentWrapper,
   TitleWrapper,
@@ -11,9 +10,10 @@ import {
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
+import { updateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
 import { CardListSection } from "../Technician_Component/CardListSection";
 
-export default function Technician_General() {
+export default function Technician_MyJob() {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -34,19 +34,41 @@ export default function Technician_General() {
       setIsLoading(true);
       setIsError(false);
       setFade(true);
+
       try {
+        // 🔹 Gọi API lấy danh sách appointment theo trạng thái
         const data = await getTechnicianAppointments({
           Status: statusToFetch,
           PageSize: 1000,
           PageIndex: 1,
         });
-        setAppointments(data.items ?? []);
+
+        const list = data.items ?? [];
+
+        // ✅ Nếu đang ở tab PENDING mà có 1 appointment, auto đổi sang ADDING_PART
+        if (
+          statusToFetch === TechnicianWorkingSessionEnum.PENDING &&
+          list.length > 0
+        ) {
+          const pendingAppointment = list[0]; // chỉ lấy 1 cái duy nhất
+          await updateTechnicianWorkingSession({
+            orderId: pendingAppointment.orderId,
+            status: TechnicianWorkingSessionEnum.ADDING_PART,
+          });
+
+          console.log("✅ Appointment moved to ADDING_PART");
+
+          setActiveStatus(TechnicianWorkingSessionEnum.ADDING_PART);
+          await fetchAppointments(TechnicianWorkingSessionEnum.ADDING_PART);
+          return;
+        }
+
+        setAppointments(list);
       } catch (e) {
         console.error("Failed to fetch appointments", e);
         setIsError(true);
       } finally {
         setTimeout(() => setFade(false), 80);
-
         setIsLoading(false);
       }
     },
@@ -60,7 +82,6 @@ export default function Technician_General() {
       fetchAppointments(TechnicianWorkingSessionEnum.ADDING_PART);
       navigate(location.pathname, { replace: true, state: {} });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.key]);
 
   useEffect(() => {
@@ -88,7 +109,6 @@ export default function Technician_General() {
   };
 
   const sortName: TechnicianWorkingSessionEnum[] = [
-    TechnicianWorkingSessionEnum.PENDING,
     TechnicianWorkingSessionEnum.ADDING_PART,
     TechnicianWorkingSessionEnum.CONFIRM,
     TechnicianWorkingSessionEnum.INPROGRESS,
