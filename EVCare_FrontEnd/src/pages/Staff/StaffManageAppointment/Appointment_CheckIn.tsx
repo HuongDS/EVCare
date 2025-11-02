@@ -1,10 +1,7 @@
 import styled from "styled-components";
-import TextAreaDisabled from "../../../components/TextField/TextAreaDisabled";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
-import ButtonAction from "../../../components/Button/ReviewButton";
 import { useAppDispatch } from "../../../states/store";
 import { setStep } from "../../../states/appointmentSlice";
-// import { changeAppointmentStatus } from "../../../services/appointmentServiceApi";
 import { CreateNewOrder } from "../../../services/orderServiceApi";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
@@ -20,6 +17,16 @@ import FailedModal from "../../../components/StatusModal/FailModal";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
 import { APPOINTMENT_MESSAGE } from "../../../constants/messages/Message";
 import { useChangeAppointmentStatus } from "../../../services/appointmentServiceApi";
+import {
+  User,
+  Car,
+  Phone,
+  FileText,
+  CheckCircle,
+  XCircle,
+  Image as ImageIcon,
+  Wrench,
+} from "lucide-react";
 
 interface Props {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -36,7 +43,7 @@ export default function Appointment_CheckIn({
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [confirm, setConfirm] = useState(false);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState("Check In");
   const dispatch = useAppDispatch();
   const { mutateAsync: newOrder } = CreateNewOrder();
   const { mutateAsync: appointmentStatus, isPending } =
@@ -52,8 +59,8 @@ export default function Appointment_CheckIn({
       await appointmentStatus(changeStatus);
       return true;
     } catch (error) {
-      setTitle("Appointment Status");
-      setModalMessage(String(error));
+      setTitle("Check In Failed");
+      setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_FAIL);
       setIsErrorModalOpen(true);
       return false;
     }
@@ -116,74 +123,119 @@ export default function Appointment_CheckIn({
   const handleCloseModal = () => {
     setIsErrorModalOpen(false);
   };
+
   return (
-    <>
-      <CheckInWrapper>
-        <CustomerInformation>
-          <h5>
-            Appointment ID: <span>#{data.id}</span>
-          </h5>
-          <GroupField>
-            <div>Customer Name</div>
-            <p>{data.customerName}</p>
-          </GroupField>
-          <GroupField>
-            <div>Vehicle Model</div>
-            <p>{data.vehicleModel}</p>
-          </GroupField>
-          <GroupField>
-            <div>License Plate</div>
-            <p>{data.licensePlate}</p>
-          </GroupField>
-          <GroupField>
-            <div>Phone Number</div>
-            <p>{data.phoneNumber ?? "default"}</p>
-          </GroupField>
-        </CustomerInformation>
+    <PageContainer>
+      <ContentWrapper>
+        <Header>
+          <HeaderIcon>
+            <CheckCircle size={36} />
+          </HeaderIcon>
+          <HeaderText>
+            <h1>Check-In Appointment</h1>
+            <AppointmentId>Appointment #{data.id}</AppointmentId>
+          </HeaderText>
+        </Header>
 
-        <ServiceGroup>
-          <h5>Services</h5>
-          <Services>
-            {data.services.map((service, index) => (
-              <p key={index}>
-                {index + 1}. {service.name}
-              </p>
-            ))}
-          </Services>
-        </ServiceGroup>
+        <MainContent>
+          <Card>
+            <CardTitle>
+              <User size={20} />
+              Customer Information
+            </CardTitle>
 
-        <ImageGroup>
-          {data?.appointmentImages?.map((img, i) => (
-            <Zoom key={i}>
-              <img src={img} alt={`image ${i + 1}`} key={i} />
-            </Zoom>
-          ))}
-        </ImageGroup>
+            <InfoGrid>
+              <InfoItem>
+                <InfoLabel>Customer Name</InfoLabel>
+                <InfoValue>{data.customerName}</InfoValue>
+              </InfoItem>
 
-        <TextAreaContainer>
-          <TextAreaDisabled value={data.note} />
-        </TextAreaContainer>
-      </CheckInWrapper>
-      <ButtonWapper>
-        {isPending ? (
-          <SpinnerComponent />
-        ) : (
-          <>
-            <ButtonAction
-              text="Cancel"
-              color="red"
-              backgroundColor="#f1f1f1"
-              action={() => setConfirm(true)}
-            />
-            <ButtonAction
-              text="Check In"
-              color="white"
-              backgroundColor="#00AD4E"
-              action={() => handleCheckIn("CheckedIn")}
-            />
-          </>
-        )}
-      </ButtonWapper>
+              <InfoItem>
+                <InfoLabel>
+                  <Phone size={14} /> Phone Number
+                </InfoLabel>
+                <InfoValue>{data.phoneNumber ?? "N/A"}</InfoValue>
+              </InfoItem>
+
+              <InfoItem>
+                <InfoLabel>
+                  <Car size={14} /> Vehicle Model
+                </InfoLabel>
+                <InfoValue>{data.vehicleModel}</InfoValue>
+              </InfoItem>
+
+              <InfoItem>
+                <InfoLabel>License Plate</InfoLabel>
+                <InfoValue>{data.licensePlate}</InfoValue>
+              </InfoItem>
+            </InfoGrid>
+          </Card>
+
+          <Card>
+            <CardTitle>
+              <Wrench size={20} />
+              Services Requested
+            </CardTitle>
+
+            <ServicesList>
+              {data.services.map((service, index) => (
+                <ServiceItem key={index}>
+                  <ServiceNumber>{index + 1}</ServiceNumber>
+                  <ServiceName>{service.name}</ServiceName>
+                </ServiceItem>
+              ))}
+            </ServicesList>
+          </Card>
+
+          {data?.appointmentImages && data.appointmentImages.length > 0 && (
+            <Card>
+              <CardTitle>
+                <ImageIcon size={20} />
+                Vehicle Images
+              </CardTitle>
+
+              <ImageGrid>
+                {data.appointmentImages.map((img, i) => (
+                  <Zoom key={i}>
+                    <VehicleImage src={img} alt={`Vehicle ${i + 1}`} />
+                  </Zoom>
+                ))}
+              </ImageGrid>
+            </Card>
+          )}
+
+          {data.note && (
+            <Card>
+              <CardTitle>
+                <FileText size={20} />
+                Customer Notes
+              </CardTitle>
+
+              <NotesBox>{data.note}</NotesBox>
+            </Card>
+          )}
+        </MainContent>
+
+        <ActionButtons>
+          {isPending ? (
+            <SpinnerWrapper>
+              <SpinnerComponent />
+            </SpinnerWrapper>
+          ) : (
+            <>
+              <CancelButton onClick={() => setConfirm(true)}>
+                <XCircle size={20} />
+                Cancel Appointment
+              </CancelButton>
+              <CheckInButton onClick={() => handleCheckIn("CheckedIn")}>
+                <CheckCircle size={20} />
+                Confirm Check-In
+              </CheckInButton>
+            </>
+          )}
+        </ActionButtons>
+      </ContentWrapper>
+
       {isSuccessModalOpen && (
         <SuccessModal
           header={title}
@@ -206,97 +258,311 @@ export default function Appointment_CheckIn({
           message="Do you want to cancel this appointment?"
         />
       )}
-    </>
+    </PageContainer>
   );
 }
 
-const CheckInWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(2, auto);
-  padding: 20px 30px;
+const PageContainer = styled.div`
+  max-height: 100vh;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  padding: 32px 20px;
   font-family: "Outfit", sans-serif;
+`;
+
+const ContentWrapper = styled.div`
+  max-width: 1000px;
+  margin: 0 auto;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
   gap: 20px;
-`;
+  margin-bottom: 28px;
+  background: white;
+  padding: 24px 28px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 173, 78, 0.1);
 
-const Section = styled.div`
-  border: 1px solid #ccc;
-  padding: 15px;
-  border-radius: 8px;
-  background-color: #fff;
-`;
-
-const CustomerInformation = styled(Section)`
-  grid-column: 1 / 2;
-  grid-row: 1;
-
-  h5 {
-    background-color: #f1f1f1;
-    padding: 5px 2px;
-    border-radius: 10px;
-    font-weight: bold;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
   }
 `;
 
-const GroupField = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+const HeaderIcon = styled.div`
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #00ad4e 0%, #00c853 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 173, 78, 0.3);
+`;
+
+const HeaderText = styled.div`
+  flex: 1;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #00ad4e;
+    margin: 0 0 6px 0;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 24px;
+    }
+  }
+`;
+
+const AppointmentId = styled.div`
   font-size: 16px;
-  color: #ccc;
+  color: #666;
+  font-weight: 600;
+`;
 
-  div {
-    font-style: italic;
-    color: #686868;
-  }
-  p {
-    font-weight: bold;
-    font-size: 18px;
-    color: black;
-    margin-bottom: 10px;
+const MainContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 24px;
+`;
+
+const Card = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   }
 `;
 
-const ServiceGroup = styled(Section)`
-  grid-column: 2 / 3;
-  grid-row: 1;
+const CardTitle = styled.h3`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #00ad4e;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f0f0;
 
-  h5 {
-    background-color: #f1f1f1;
-    padding: 5px 2px;
-    border-radius: 10px;
-    font-weight: bold;
+  svg {
+    color: #00ad4e;
   }
 `;
 
-const Services = styled.div`
-  max-height: 200px;
+const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+`;
+
+const InfoItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+const InfoLabel = styled.div`
+  font-size: 12px;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  svg {
+    color: #00ad4e;
+  }
+`;
+
+const InfoValue = styled.div`
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+`;
+
+const ServicesList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
   overflow-y: auto;
 
-  p {
-    font-size: 15px;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #00ad4e;
+    border-radius: 10px;
   }
 `;
 
-const ImageGroup = styled(Section)`
-  grid-column: 1 / 2;
-  grid-row: 2;
+const ServiceItem = styled.div`
   display: flex;
-  justify-content: center;
-  gap: 5%;
-  img {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fdf9;
+  border-radius: 10px;
+  border-left: 4px solid #00ad4e;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #e8f5e9;
+    transform: translateX(4px);
   }
 `;
 
-const TextAreaContainer = styled(Section)`
-  grid-column: 2 / 3;
-  grid-row: 2;
+const ServiceNumber = styled.div`
+  width: 28px;
+  height: 28px;
+  background: #00ad4e;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
 `;
 
-const ButtonWapper = styled.div`
+const ServiceName = styled.div`
+  font-size: 15px;
+  color: #333;
+  font-weight: 600;
+`;
+
+const ImageGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`;
+
+const VehicleImage = styled.img`
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #e8f5e9;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #00ad4e;
+    transform: scale(1.05);
+  }
+`;
+
+const NotesBox = styled.div`
+  padding: 16px;
+  background: #f8fdf9;
+  border: 2px solid #e8f5e9;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.6;
+  min-height: 80px;
+  white-space: pre-wrap;
+`;
+
+const ActionButtons = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const SpinnerWrapper = styled.div`
+  grid-column: 1 / -1;
   display: flex;
   justify-content: center;
-  gap: 15px;
+  padding: 20px;
+`;
+
+const CancelButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border: 2px solid #f44336;
+  background: white;
+  color: #f44336;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: "Outfit", sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #ffebee;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const CheckInButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border: none;
+  background: linear-gradient(135deg, #00ad4e 0%, #00c853 100%);
+  color: white;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: "Outfit", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 173, 78, 0.3);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 173, 78, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 `;

@@ -122,7 +122,7 @@ const router = createBrowserRouter([
         element: (
           <PublicRoute>
             <SuspenseWrapper>
-                <HomePage /> 
+              <HomePage />
             </SuspenseWrapper>
           </PublicRoute>
         ),
@@ -132,7 +132,7 @@ const router = createBrowserRouter([
         element: (
           <PublicRoute>
             <SuspenseWrapper>
-                <ServiceList /> 
+              <ServiceList />
             </SuspenseWrapper>
           </PublicRoute>
         ),
@@ -142,7 +142,7 @@ const router = createBrowserRouter([
         element: (
           <PublicRoute>
             <SuspenseWrapper>
-                <AboutUs /> 
+              <AboutUs />
             </SuspenseWrapper>
           </PublicRoute>
         ),
@@ -152,7 +152,7 @@ const router = createBrowserRouter([
         element: (
           <PublicRoute>
             <SuspenseWrapper>
-                <PolicyPage /> 
+              <PolicyPage />
             </SuspenseWrapper>
           </PublicRoute>
         ),
@@ -162,7 +162,7 @@ const router = createBrowserRouter([
         element: (
           <PublicRoute>
             <SuspenseWrapper>
-                <ContactUs /> 
+              <ContactUs />
             </SuspenseWrapper>
           </PublicRoute>
         ),
@@ -172,7 +172,7 @@ const router = createBrowserRouter([
         element: (
           <PublicRoute>
             <SuspenseWrapper>
-                <Review /> 
+              <Review />
             </SuspenseWrapper>
           </PublicRoute>
         ),
@@ -182,7 +182,7 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER]}>
             <SuspenseWrapper>
-                <OrderList /> 
+              <OrderList />
             </SuspenseWrapper>
           </ProtectedRoute>
         ),
@@ -191,7 +191,7 @@ const router = createBrowserRouter([
             path: "appointmentDetail",
             element: (
               <SuspenseWrapper>
-                    <AppointmentList />   
+                <AppointmentList />
               </SuspenseWrapper>
             ),
           },
@@ -199,7 +199,7 @@ const router = createBrowserRouter([
             path: "rating",
             element: (
               <SuspenseWrapper>
-                    <Rating />   
+                <Rating />
               </SuspenseWrapper>
             ),
           },
@@ -227,7 +227,7 @@ const router = createBrowserRouter([
             ]}
           >
             <SuspenseWrapper>
-                <UserProfilePage /> 
+              <UserProfilePage />
             </SuspenseWrapper>
           </ProtectedRoute>
         ),
@@ -247,7 +247,7 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.ADMIN]}>
         <SuspenseWrapper>
-          <AdminLayout />     
+          <AdminLayout />
         </SuspenseWrapper>
       </ProtectedRoute>
     ),
@@ -296,7 +296,7 @@ const router = createBrowserRouter([
         path: "manage-services",
         element: (
           <SuspenseWrapper>
-            <Admin_Service />
+            <Admin_Service /> M
           </SuspenseWrapper>
         ),
       },
@@ -411,7 +411,7 @@ const router = createBrowserRouter([
     path: "/test",
     element: (
       <SuspenseWrapper>
-                <Test />
+        <Test />
       </SuspenseWrapper>
     ),
   },

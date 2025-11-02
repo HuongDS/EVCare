@@ -26,7 +26,7 @@ import {
   DamageLevelLabels,
   damageColorMap,
 } from "../../../models/enums/DamageLevelEnum";
-import ButtonAction from "../../../components/Button/ReviewButton";
+import ButtonAction from "../../../components/Button/ButtonAction";
 
 interface CartModalProps {
   open: boolean;

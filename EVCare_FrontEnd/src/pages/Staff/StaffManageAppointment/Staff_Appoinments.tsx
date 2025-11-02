@@ -1,6 +1,6 @@
 import SortTable from "../StaffComponents/SortTable";
 import { AppointmentStatusEnum } from "../../../models/enums";
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import AppointmentCard from "../StaffComponents/AppointmentCard";
 import {
   useGetAllAppointments,
@@ -20,6 +20,16 @@ import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import {
+  useAppDispatch,
+  useAppSelector,
+  type RootState,
+} from "../../../states/store";
+// import Test from "../../../components/Test";
+import Model3dViewer from "../../Model3d/Model3dViewer";
+import { openModel3d } from "../../../states/uiSlice";
+import ShowButton from "../../../components/Button/ShowButton";
+import CreateAppointment from "./CreateAppointment";
 
 export default function Staff_Appoinments() {
   const queryClient = useQueryClient();
@@ -34,6 +44,11 @@ export default function Staff_Appoinments() {
     useState<StaffAppointmentsDto<TechnicianModel<TechnicianSkills>> | null>(
       null
     );
+  const [isCreating, setIsCreating] = useState(false);
+
+  const isOpen3dModel = useAppSelector(
+    (state: RootState) => state.ui.model3dOpen
+  );
 
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showReassignModal, setShowReassignModal] = useState(false);
@@ -63,7 +78,7 @@ export default function Staff_Appoinments() {
 
   //Gọi api lấy list cuộc hẹn
   const { data: appointments, isLoading } = useGetAllAppointments({
-    ...((searchValue && { customerName: searchValue }) || {}), //chỉ gửi customer name nếu nó k rỗng
+    ...((searchValue && { keyWord: searchValue }) || {}), //chỉ gửi customer name nếu nó k rỗng
     status: sortBy,
     sortField: "Appointment_Date",
     ...((beginTime && { beginTime: beginTime }) || {}),
@@ -116,75 +131,99 @@ export default function Staff_Appoinments() {
     setSortOrder(v);
   };
 
-  return (
-    <>
-      <AppoitmentWrapper>
-        <TitleWrapper>
-          <h2>Appoinments</h2>
-          <SearchBar
-            placeholder="Search appointments..."
-            handleSearchValue={handleSearch}
+  const dispatch = useAppDispatch();
+
+  if (isOpen3dModel) {
+    return <Model3dViewer data={selectedAppointment || undefined} />;
+  } else if (isCreating) {
+    return (
+      <PageTransition $isCreating={isCreating}>
+        <CreateAppointment onBack={() => setIsCreating(false)} />
+      </PageTransition>
+    );
+  } else {
+    return (
+      <PageTransition $isCreating={isCreating}>
+        <AppoitmentWrapper>
+          <TitleWrapper>
+            <h2>Appoinments</h2>
+            <ButtonGroup>
+              <SearchBar
+                placeholder="Search appointments..."
+                handleSearchValue={handleSearch}
+              />
+              <ShowButton
+                text="+ CREATE AN APPOINTMENT"
+                onclick={() => setIsCreating(true)}
+                height="44px"
+              />
+            </ButtonGroup>
+          </TitleWrapper>
+          <SortTable
+            sortName={sortName}
+            setBeginDate={setBeginTime}
+            setEndDate={setEndTime}
+            setSortBy={setSortBy}
+            setSortOrder={handleSortByDate}
+            disabled={appointments?.data?.items?.length === 0}
           />
-        </TitleWrapper>
-        <SortTable
-          sortName={sortName}
-          setBeginDate={setBeginTime}
-          setEndDate={setEndTime}
-          setSortBy={setSortBy}
-          setSortOrder={handleSortByDate}
-          disabled={appointments?.data?.items?.length === 0}
-        />
-        <SpinnerStyled>{isLoading && <SpinnerComponent />}</SpinnerStyled>
-        <ListAppointmentStyled>
-          {appointments?.data?.items?.length !== 0 ? (
-            appointments?.data?.items?.map(
-              (
-                item: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
-              ) => (
-                <AppointmentCard
-                  key={item.id}
-                  data={item}
-                  onOpenProgress={() => handleOpenProgress(item)}
-                  hasTechnicianOnleave={checkTechnicianOnleave(item.id)}
-                  onOpenReassign={() => handleOpenReassign(item)}
-                />
+          <SpinnerStyled>{isLoading && <SpinnerComponent />}</SpinnerStyled>
+          <ListAppointmentStyled>
+            {appointments?.data?.items?.length !== 0 ? (
+              appointments?.data?.items?.map(
+                (
+                  item: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
+                ) => (
+                  <AppointmentCard
+                    key={item.id}
+                    data={item}
+                    onOpenProgress={() => handleOpenProgress(item)}
+                    hasTechnicianOnleave={checkTechnicianOnleave(item.id)}
+                    onOpenReassign={() => handleOpenReassign(item)}
+                  />
+                )
               )
-            )
-          ) : (
-            <NOT_FOUND_ITEMS
-              icon={<i className="bi bi-exclamation-circle" />}
-              message={LIST_APPOINTMENTS_MESSAGE.EMPTY_PENDING(sortBy)}
-            />
-          )}
+            ) : (
+              <NOT_FOUND_ITEMS
+                icon={<i className="bi bi-exclamation-circle" />}
+                message={LIST_APPOINTMENTS_MESSAGE.EMPTY_PENDING(sortBy)}
+              />
+            )}
 
-          {!isLoading && (
-            <Pagination
-              pageIndex={currenPage}
-              pageSize={5}
-              totalItems={appointments?.data?.totalItems || 1}
-              totalPage={appointments?.data?.totalPages || 1}
-              onPageChange={onPageChange}
+            <ShowButton
+              onclick={() => dispatch(openModel3d())}
+              text="Model 3D"
             />
-          )}
-        </ListAppointmentStyled>
-      </AppoitmentWrapper>
-      {showProgressModal && selectedAppointment && (
-        <Appoinment_Progress_Modal
-          show={showProgressModal}
-          close={handleCloseModal}
-          data={selectedAppointment}
-        />
-      )}
 
-      {showReassignModal && selectedAppointment && (
-        <Appointment_Reassign
-          show={showReassignModal}
-          close={handleCloseModal}
-          data={selectedAppointment}
-        />
-      )}
-    </>
-  );
+            {!isLoading && (
+              <Pagination
+                pageIndex={currenPage}
+                pageSize={10}
+                totalItems={appointments?.data?.totalItems || 1}
+                totalPage={appointments?.data?.totalPages || 1}
+                onPageChange={onPageChange}
+              />
+            )}
+          </ListAppointmentStyled>
+        </AppoitmentWrapper>
+        {showProgressModal && selectedAppointment && (
+          <Appoinment_Progress_Modal
+            show={showProgressModal}
+            close={handleCloseModal}
+            data={selectedAppointment}
+          />
+        )}
+
+        {showReassignModal && selectedAppointment && (
+          <Appointment_Reassign
+            show={showReassignModal}
+            close={handleCloseModal}
+            data={selectedAppointment}
+          />
+        )}
+      </PageTransition>
+    );
+  }
 }
 
 const AppoitmentWrapper = styled.div``;
@@ -207,6 +246,12 @@ const TitleWrapper = styled.div`
   }
 `;
 
+const ButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
 const SpinnerStyled = styled.div`
   position: fixed;
   top: 55%;
@@ -216,4 +261,21 @@ const SpinnerStyled = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
+`;
+
+const slideIn = keyframes`
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+`;
+
+const PageTransition = styled.div<{ $isCreating: boolean }>`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: ${({ $isCreating }) =>
+    $isCreating
+      ? css`
+          ${slideIn} 1s ease forwards
+        `
+      : "none"};
 `;

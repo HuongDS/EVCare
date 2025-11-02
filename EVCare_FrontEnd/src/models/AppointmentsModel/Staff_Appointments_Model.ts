@@ -31,7 +31,7 @@ export type StaffAppointmentsDto<T> = {
 };
 
 export type GetAppointmentsParams = {
-  customerName?: string;
+  keyWord?: string;
   status?: string;
   beginTime?: string;
   endTime?: string;
@@ -58,4 +58,20 @@ export type GetAppointmentWithTechnician<T> = {
   customerEmail: string;
   services: [];
   technicians: T[];
+};
+
+//Payload nhập remind schedule
+export type RemindSchedulePayload = {
+  id?: number;
+  reminderIntervalMonths?: number;
+};
+
+//Payload tạo appointment
+export type StaffCreateAppointmentPayload = {
+  customerId: number;
+  vehicleId: number;
+  note: string;
+  appointment_Date: any;
+  imagesUrls: string[];
+  serviceIds: number[];
 };

@@ -1,4 +1,4 @@
-import { FormWrapper, SubmitBtn, Divider } from "../Authentication.styled";
+import { FormWrapper, Divider } from "../Authentication.styled";
 import GoogleButton from "../google/GoogleButton";
 import SignUpForm from "./SignUpForm";
 import SignInForm from "./SignInForm";
@@ -83,15 +83,7 @@ export default function AuthForm({
         <span>OR</span>
       </Divider>
 
-      <SubmitBtn
-        type="button"
-        style={{
-          backgroundColor: "#fff",
-          color: "black",
-        }}
-      >
-        <GoogleButton />
-      </SubmitBtn>
+      <GoogleButton />
     </FormWrapper>
   );
 }

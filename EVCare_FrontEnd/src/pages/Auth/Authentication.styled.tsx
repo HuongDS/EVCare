@@ -62,7 +62,7 @@ export const SideImage = styled.div<{ $isSignUp: boolean }>`
   }
 `;
 
-export const FormContainer = styled(Modal.Body)<{ $isSignUp: boolean }>`
+export const FormContainer = styled(Modal.Body as any)<{ $isSignUp: boolean }>`
   position: absolute;
   right: ${(p) => (p.$isSignUp ? "0" : "50%")};
   width: 50%;
@@ -70,10 +70,10 @@ export const FormContainer = styled(Modal.Body)<{ $isSignUp: boolean }>`
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   z-index: 2;
   transition: right 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  background-color: #fff; /* Đảm bảo phần form cũng có nền trắng */
+  background-color: #fff;
 
   @media (max-width: 1045px) {
     position: relative;
@@ -96,10 +96,23 @@ export const HeaderBox = styled.div`
   }
 `;
 
-export const FormWrapper = styled(Form)`
+export const FormWrapper = styled(Form as any)`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding-right: 5px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #00ad4e;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #019344;
+  }
 `;
 
 export const FieldGroup = styled.div`
@@ -108,31 +121,32 @@ export const FieldGroup = styled.div`
   gap: 1rem;
 `;
 
-export const SubmitBtn = styled.button`
-  height: 45px;
+export const SubmitBtn = styled.button<{ $disabled?: boolean }>`
+  min-height: 45px;
   border: none;
   border-radius: 20px;
   padding: 0 5px;
-  background: #00ad4e;
+  background: ${(props) => (props.$disabled ? "#ccc" : "#00ad4e")};
   color: white;
   font-weight: 600;
   font-size: 1rem;
   transition: background 0.2s;
 
   &:hover {
-    background: #019344;
+    background: ${(props) => (props.$disabled ? "#ccc" : "#019344")};
   }
 `;
 
 export const Divider = styled.div`
   text-align: center;
-  margin: 1.5rem 0;
   position: relative;
+  padding: 5px;
 
   hr {
     border: none;
     height: 1px;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(7, 0, 0, 0.1);
+    margin: 0;
   }
 
   span {
@@ -140,7 +154,7 @@ export const Divider = styled.div`
     padding: 0 0.75rem;
     font-weight: 600;
     font-size: 0.9rem;
-    color: #6b6b6b;
+    color: #686868;
     position: absolute;
     top: -0.6rem;
     left: 50%;
