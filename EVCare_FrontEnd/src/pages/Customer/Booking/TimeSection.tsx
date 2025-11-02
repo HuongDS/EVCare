@@ -29,6 +29,7 @@ interface Props {
   time: Dayjs | undefined;
   handleSelectDate: (date: Dayjs | undefined) => void;
   handleSelectTime: (time: Dayjs | undefined) => void;
+  errors?: { [key: string]: string };
 }
 
 function TimeComponent({
@@ -36,6 +37,7 @@ function TimeComponent({
   time,
   handleSelectDate,
   handleSelectTime,
+  errors,
 }: Props) {
   const [startTime, setStartTime] = useState<Dayjs | null>(null);
   const [endTime, setEndTime] = useState<Dayjs | null>(null);
@@ -167,6 +169,11 @@ function TimeComponent({
               }
             }}
           />
+          {errors?.date && (
+            <p style={{ color: "red", marginTop: "4px", marginBottom: 0 }}>
+              {errors.date}
+            </p>
+          )}
         </TimeInput>
         <TimeInput>
           <TimePicker
@@ -184,6 +191,11 @@ function TimeComponent({
             hideDisabledOptions
             disabledTime={disableTime}
           />
+          {errors?.time && (
+            <p style={{ color: "red", marginTop: "4px", marginBottom: 0 }}>
+              {errors.time}
+            </p>
+          )}
         </TimeInput>
       </TimeInputGroup>
     </FormGroup>

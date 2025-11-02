@@ -241,30 +241,29 @@ export const RightBody = styled.div`
 export const BookingFormButton = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 15px;
+  align-items: center;
 
   button {
-    width: 30%;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    background-color: #00ad4e;
+    background: #00ad4e;
     color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 16px;
     font-weight: 600;
-    transition: background 0.3s;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    writing-mode: horizontal-tb;
+    text-transform: uppercase;
 
-    &:hover {
-      background-color: #00c65e;
+    &:disabled {
+      background: #ccc;
+      cursor: not-allowed;
     }
 
-    @media (max-width: 1024px) {
-      width: 40%;
-    }
-
-    @media (max-width: 768px) {
-      width: 60%;
-      padding: 8px;
-      font-size: 14px;
+    &:hover:enabled {
+      background: #00c65e;
     }
   }
 `;

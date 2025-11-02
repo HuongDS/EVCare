@@ -174,7 +174,7 @@ export default function TechnicianOrder({
       });
       onPartsUpdated?.(currentOrderId);
       setCartOpen(false);
-      navigate("/technician", { state: { tab: "ADDING_PART" } });
+      navigate("/technician/my-jobs", { state: { tab: "ADDING_PART" } });
     } catch (err) {
       console.error(err);
       notification.error({
