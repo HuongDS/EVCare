@@ -161,98 +161,94 @@ const stepVariants: Variants = {
 
 /* ----------------- Stepper Logic ------------------ */
 interface StepperProps extends HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
-  initialStep?: number;
-  onStepChange?: (step: number) => void;
+  children: ReactNode[];
+  currentStep: number;
+  onStepChange: (step: number) => void;
+  validateStep?: (stepIndex: number) => boolean;
   onFinalStepCompleted?: () => void;
   backButtonText?: string;
   nextButtonText?: string;
-  disableStepIndicators?: boolean;
-  isNextDisabled?: boolean;
 }
 
 export default function Stepper({
   children,
-  initialStep = 1,
-  onStepChange = () => {},
-  onFinalStepCompleted = () => {},
+  currentStep,
+  onStepChange,
+  validateStep,
+  onFinalStepCompleted,
   backButtonText = "Back",
   nextButtonText = "Next",
-  disableStepIndicators = false,
-  isNextDisabled = false,
   ...rest
 }: StepperProps) {
-  const [currentStep, setCurrentStep] = useState(initialStep);
   const [direction, setDirection] = useState(0);
   const stepsArray = Children.toArray(children);
   const totalSteps = stepsArray.length;
-  const isCompleted = currentStep > totalSteps;
-  const isLastStep = currentStep === totalSteps;
+  const isCompleted = currentStep >= totalSteps;
+  const isLastStep = currentStep === totalSteps - 1;
 
-  const updateStep = (newStep: number) => {
-    setCurrentStep(newStep);
-    if (newStep > totalSteps) onFinalStepCompleted();
-    else onStepChange(newStep);
+  const handleNext = async () => {
+    const valid = validateStep ? validateStep(currentStep) : true;
+    if (!valid) return;
+
+    if (isLastStep && onFinalStepCompleted) {
+      await onFinalStepCompleted();
+    } else {
+      setDirection(1);
+      onStepChange(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setDirection(-1);
+      onStepChange(currentStep - 1);
+    }
   };
 
   return (
     <OuterContainer {...rest}>
       <StepCircleContainer>
+        {/* Step indicators */}
         <StepIndicatorRow>
           {stepsArray.map((_, index) => {
-            const stepNumber = index + 1;
-            const isNotLastStep = index < totalSteps - 1;
+            const isNotLast = index < totalSteps - 1;
             return (
-              <React.Fragment key={stepNumber}>
+              <React.Fragment key={index}>
                 <StepIndicator
-                  step={stepNumber}
-                  disableStepIndicators={disableStepIndicators}
-                  currentStep={currentStep}
-                  onClickStep={(clicked) => {
-                    setDirection(clicked > currentStep ? 1 : -1);
-                    updateStep(clicked);
+                  step={index + 1}
+                  currentStep={currentStep + 1}
+                  onClickStep={(stepNum) => {
+                    setDirection(stepNum > currentStep + 1 ? 1 : -1);
+                    onStepChange(stepNum - 1);
                   }}
                 />
-                {isNotLastStep && (
-                  <StepConnector isComplete={currentStep > stepNumber} />
+                {isNotLast && (
+                  <StepConnector isComplete={currentStep + 1 > index + 1} />
                 )}
               </React.Fragment>
             );
           })}
         </StepIndicatorRow>
 
+        {/* Step content */}
         <StepContentWrapper
           isCompleted={isCompleted}
           currentStep={currentStep}
           direction={direction}
         >
-          {stepsArray[currentStep - 1]}
+          {stepsArray[currentStep]}
         </StepContentWrapper>
 
+        {/* Navigation buttons */}
         {!isCompleted && (
           <FooterContainer>
-            <FooterNav $isFirst={currentStep === 1}>
-              {currentStep !== 1 && (
-                <BackButton
-                  onClick={() => {
-                    setDirection(-1);
-                    updateStep(currentStep - 1);
-                  }}
-                >
-                  {backButtonText}
-                </BackButton>
+            <FooterNav $isFirst={currentStep === 0}>
+              {currentStep !== 0 && (
+                <BackButton onClick={handleBack}>{backButtonText}</BackButton>
               )}
-              {!isLastStep && (
-                <NextButton
-                  disabled={isNextDisabled}
-                  onClick={() => {
-                    setDirection(1);
-                    updateStep(currentStep + 1);
-                  }}
-                >
-                  {nextButtonText}
-                </NextButton>
-              )}
+              <NextButton onClick={handleNext}>
+                {isLastStep ? "Finish" : nextButtonText}
+              </NextButton>
             </FooterNav>
           </FooterContainer>
         )}
@@ -337,15 +333,9 @@ interface StepIndicatorProps {
   step: number;
   currentStep: number;
   onClickStep: (step: number) => void;
-  disableStepIndicators?: boolean;
 }
 
-function StepIndicator({
-  step,
-  currentStep,
-  onClickStep,
-  disableStepIndicators,
-}: StepIndicatorProps) {
+function StepIndicator({ step, currentStep, onClickStep }: StepIndicatorProps) {
   const status =
     currentStep === step
       ? "active"
@@ -354,7 +344,7 @@ function StepIndicator({
       : "complete";
 
   const handleClick = () => {
-    if (step !== currentStep && !disableStepIndicators) onClickStep(step);
+    if (step !== currentStep) onClickStep(step);
   };
 
   return (
