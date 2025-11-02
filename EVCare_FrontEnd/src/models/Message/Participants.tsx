@@ -5,4 +5,5 @@ export type Participants = {
   role: RoleEnum;
   name: string;
   phone: string;
+  employeeId?: string;
 };
