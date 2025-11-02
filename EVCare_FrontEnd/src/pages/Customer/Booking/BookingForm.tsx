@@ -191,13 +191,14 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
 
       if (stepIndex === 0) {
         if (isAddNew) {
+          if (!vehicleCategory || vehicleCategory === 0) {
+            newErrors.vehicleCategory = "Please select a vehicle model.";
+          }
           if (!licensePlate) {
             newErrors.licensePlate = "License plate is required.";
           } else if (!LICENSE_PLATE_REGEX.test(licensePlate)) {
             newErrors.licensePlate = ERROR_MESSAGE.LICENSE_PLATE_WRONG;
           }
-        } else if (selectedValue === 0) {
-          newErrors.vehicleSelect = "Please select a vehicle.";
         }
       }
 
@@ -224,6 +225,16 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
   );
 
   const handleSubmit = useCallback(async () => {
+    // Validate step 3: date & time
+    if (!validateStep(2)) {
+      notification.error({
+        message: MSG_TITLE.CREATE_APPOINTMENT,
+        description: "Please select both date and time for the appointment.",
+      });
+      return;
+    }
+
+    // Validate policy checkbox
     if (!checkbox) {
       notification.error({
         message: MSG_TITLE.CREATE_APPOINTMENT,
@@ -281,6 +292,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
     handleClose,
     notification,
     resetForm,
+    validateStep,
   ]);
 
   useEffect(() => {
@@ -326,9 +338,9 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
           currentStep={currentStep}
           onStepChange={setCurrentStep}
           validateStep={validateStep}
-          onFinalStepCompleted={handleSubmit}
           nextButtonText="Next"
           backButtonText="Back"
+          hideNextOnLastStep={true}
         >
           {/* Step 1 */}
           <Step>
@@ -355,8 +367,11 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
                     licensePlate={licensePlate}
                     errors={errors}
                   />
+
                   <FormGroup>
-                    <Label>Image</Label>
+                    <Label>
+                      Image (Max: 5 Images; Only send vehicle damage status)
+                    </Label>
                     <UploadImage
                       existingImages={files}
                       handleFileRemove={(url) =>
@@ -389,7 +404,9 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
                   selectedServices={selectedServices}
                 />
                 {errors.services && (
-                  <p style={{ color: "red", marginTop: "10px" }}>
+                  <p
+                    style={{ color: "red", marginTop: "10px", marginBottom: 0 }}
+                  >
                     {errors.services}
                   </p>
                 )}
@@ -404,14 +421,15 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
                 <h5>
                   <PiNumberCircleThreeFill /> Time
                 </h5>
+
                 <TimeSection
                   date={dateSelected}
                   time={timeSelected}
                   handleSelectDate={handleSelectDate}
                   handleSelectTime={handleSelectTime}
+                  errors={errors}
                 />
-                {errors.date && <p style={{ color: "red" }}>{errors.date}</p>}
-                {errors.time && <p style={{ color: "red" }}>{errors.time}</p>}
+
                 <FormGroup>
                   <Label>Note</Label>
                   <TextArea

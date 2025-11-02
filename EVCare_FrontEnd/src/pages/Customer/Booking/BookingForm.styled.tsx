@@ -253,8 +253,8 @@ export const BookingFormButton = styled.div`
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    white-space: nowrap; /* 🔥 ngăn text bị xuống dòng */
-    writing-mode: horizontal-tb; /* 🔥 đảm bảo text nằm ngang */
+    white-space: nowrap;
+    writing-mode: horizontal-tb;
     text-transform: uppercase;
 
     &:disabled {
