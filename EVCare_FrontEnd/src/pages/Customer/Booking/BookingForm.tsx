@@ -112,7 +112,6 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
     setCurrentStep(0);
   }, []);
 
-  // chọn xe
   const handleSelectVehicle = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = Number(e.target.value);
@@ -132,7 +131,6 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
     [listVehicleOfCustomer]
   );
 
-  // chọn dịch vụ
   const handleSelectServices = useCallback((serviceId: number) => {
     setSelectedServices((prev) =>
       prev.includes(serviceId)
@@ -155,7 +153,6 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
     []
   );
 
-  // chọn ngày giờ
   const handleSelectDate = useCallback(
     (date: Dayjs | undefined) => {
       setDateSelected(date);
@@ -188,7 +185,6 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
     [dateSelected]
   );
 
-  // validate từng step
   const validateStep = useCallback(
     (stepIndex: number) => {
       const newErrors: Record<string, string> = {};
@@ -227,7 +223,6 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
     ]
   );
 
-  // submit
   const handleSubmit = useCallback(async () => {
     if (!checkbox) {
       notification.error({
@@ -288,7 +283,6 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
     resetForm,
   ]);
 
-  // fetch data
   useEffect(() => {
     if (!show || !isAuthenticated || !accountId) return;
     const fetchData = async () => {
