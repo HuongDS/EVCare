@@ -59,7 +59,9 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
                   <span className={`conversation-name ${isSelected ? "selected" : ""}`}>
                     {role === RoleEnum.STAFF
                       ? `Customer #${item.participants[0]?.name}`
-                      : `Staff #${item.participants[1]?.name}`}
+                      : `Staff #${
+                          item.participants[1]?.name == null ? "EVCare Assistant" : item.participants[1]?.name
+                        }`}
                   </span>
                   <span className="conversation-time">
                     <ClockCircleOutlined />
