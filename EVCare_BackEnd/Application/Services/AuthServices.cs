@@ -147,7 +147,7 @@ namespace Application.Services
                 accountId = createdAccount.Id,
             };
         }
-        public async Task RegisterCustomerAsync(AccountResponseDto account)
+        public virtual async Task RegisterCustomerAsync(AccountResponseDto account)
         {
             var newCustomer = new Customer
             {
@@ -245,9 +245,13 @@ namespace Application.Services
         public async Task<ResponseDto<LoginResponseDto>> LoginGoogleAsync(string idToken, HttpContext context)
         {
             var payload = await _googleValidator.ValidateAsync(idToken);
-            if (payload is null || string.IsNullOrEmpty(payload.Email))
+            if (payload is null)
             {
                 throw new Exception(Message.LOGIN_FAILED);
+            }
+            if (string.IsNullOrEmpty(payload.Email)) {
+                throw new Exception(Message.LOGIN_FAILED);
+
             }
 
             var email = payload.Email;
