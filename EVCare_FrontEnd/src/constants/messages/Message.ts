@@ -64,7 +64,7 @@ export const SUCCESS_MESSAGE = {
   DELETE_VEHICLE_SUCCESS: "Delete Vehicle success",
   UPDATE_ACCOUNT_SUCCESSFULLY: "Update account success",
   ADD_VEHICLE_SUCCESSFULLY: "Add vehivle success",
-  SEND_REVIEW_SUCCESS: "Send Review Success",
+  SEND_REVIEW_SUCCESS: "Send Review Successfully",
   INVENTORY_UPDATED_SUCCESSFULLY: "Part is updated successfully",
   APPOINTMENT_CANCELLED_SUCCESSFULLY: "Appointment is cancelled successfully",
   PAID_SUCCESSFULLY: "Order is paid successfully",
