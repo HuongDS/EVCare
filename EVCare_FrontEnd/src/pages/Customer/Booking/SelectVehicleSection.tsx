@@ -65,7 +65,7 @@ function SelectVehicleComponent({
           </option>
         </Select>
         {errors?.vehicleSelect && (
-          <p style={{ color: "red", marginTop: "5px" }}>
+          <p style={{ color: "red", marginTop: "2px", marginBottom: 0 }}>
             {errors.vehicleSelect}
           </p>
         )}
@@ -79,6 +79,9 @@ function SelectVehicleComponent({
             value={vehicleCategory}
             onChange={handleSelectVehicleCategory}
           >
+            <option value={0} disabled>
+              Select Vehicle Model
+            </option>
             {listCategories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -91,6 +94,11 @@ function SelectVehicleComponent({
             disabled
             value={listCategories.find((c) => c.id === vehicleCategory)?.name}
           />
+        )}
+        {isAddNew && errors?.vehicleCategory && (
+          <p style={{ color: "red", marginTop: "2px", marginBottom: 0 }}>
+            {errors.vehicleCategory}
+          </p>
         )}
       </FormGroup>
       {isAddNew && (
@@ -108,7 +116,7 @@ function SelectVehicleComponent({
             required={true}
           />
           {errors?.licensePlate && (
-            <p style={{ color: "red", marginTop: "5px" }}>
+            <p style={{ color: "red", marginTop: "2px", marginBottom: 0 }}>
               {errors.licensePlate}
             </p>
           )}
