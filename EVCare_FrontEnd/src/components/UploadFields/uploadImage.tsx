@@ -6,8 +6,8 @@ import type { UploadFile } from "antd/es/upload/interface";
 import styled from "styled-components";
 const UploadListFix = styled.div`
   .ant-upload-list-item-name {
-    color: #111827 !important; /* màu chữ xám đậm */
-    text-decoration: none !important; /* bỏ gạch chân */
+    color: #111827 !important;
+    text-decoration: none !important;
     font-weight: 500;
     cursor: default;
   }
@@ -35,6 +35,7 @@ interface Props {
   imgQuantity: number;
   handleFileRemove?: (url: string) => void;
   existingImages?: { url: string; name: string }[];
+  setIsUploading?: (uploading: boolean) => void;
 }
 
 const UploadImage: React.FC<Props> = ({
