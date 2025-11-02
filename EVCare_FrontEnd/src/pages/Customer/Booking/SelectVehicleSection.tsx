@@ -1,6 +1,13 @@
 import React from "react";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
-import { FormGroup, Input, Label, Required, Select, SubTitle } from "./BookingForm.styled";
+import {
+  FormGroup,
+  Input,
+  Label,
+  Required,
+  Select,
+  SubTitle,
+} from "./BookingForm.styled";
 import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 
 interface Props {
@@ -9,10 +16,13 @@ interface Props {
   handleSelectVehicle: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   listVehicleOfCustomer: VehicleViewDto[];
   listCategories: VehicleCategoryViewDto[];
-  handleSelectVehicleCategory: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleSelectVehicleCategory: (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => void;
   vehicleCategory: number;
   setLicensePlate: (l: string) => void;
   licensePlate: string;
+  errors?: { [key: string]: string };
 }
 
 function SelectVehicleComponent({
@@ -25,6 +35,7 @@ function SelectVehicleComponent({
   vehicleCategory,
   setLicensePlate,
   licensePlate,
+  errors,
 }: Props) {
   return (
     <>
@@ -40,7 +51,10 @@ function SelectVehicleComponent({
         <Label>
           Your Vehicle License Plate <Required>*</Required>
         </Label>
-        <Select value={isAddNew ? 0 : selectedValue} onChange={handleSelectVehicle}>
+        <Select
+          value={isAddNew ? 0 : selectedValue}
+          onChange={handleSelectVehicle}
+        >
           {listVehicleOfCustomer.map((v) => (
             <option key={v.id} value={v.id}>
               {v.licensePlate}
@@ -50,13 +64,21 @@ function SelectVehicleComponent({
             Add Vehicle
           </option>
         </Select>
+        {errors?.vehicleSelect && (
+          <p style={{ color: "red", marginTop: "5px" }}>
+            {errors.vehicleSelect}
+          </p>
+        )}
       </FormGroup>
       <FormGroup>
         <Label>
           Vehicle Model <Required>*</Required>
         </Label>
         {isAddNew ? (
-          <Select value={vehicleCategory} onChange={handleSelectVehicleCategory}>
+          <Select
+            value={vehicleCategory}
+            onChange={handleSelectVehicleCategory}
+          >
             {listCategories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -64,25 +86,34 @@ function SelectVehicleComponent({
             ))}
           </Select>
         ) : (
-          <Input type="text" disabled value={listCategories.find((c) => c.id === vehicleCategory)?.name} />
+          <Input
+            type="text"
+            disabled
+            value={listCategories.find((c) => c.id === vehicleCategory)?.name}
+          />
         )}
       </FormGroup>
-      <FormGroup>
-        {isAddNew && (
-          <>
-            <Label>
-              Vehicle License Plate <Required>*</Required>
-            </Label>
-            <Input
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLicensePlate(e.target.value)}
-              type="text"
-              placeholder="Ex:50G99999"
-              value={licensePlate}
-              required={true}
-            />
-          </>
-        )}
-      </FormGroup>
+      {isAddNew && (
+        <FormGroup>
+          <Label>
+            Vehicle License Plate <Required>*</Required>
+          </Label>
+          <Input
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setLicensePlate(e.target.value)
+            }
+            type="text"
+            placeholder="Ex: 50G99999"
+            value={licensePlate}
+            required={true}
+          />
+          {errors?.licensePlate && (
+            <p style={{ color: "red", marginTop: "5px" }}>
+              {errors.licensePlate}
+            </p>
+          )}
+        </FormGroup>
+      )}
     </>
   );
 }
