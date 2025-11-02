@@ -42,7 +42,7 @@ const StepIndicatorRow = styled.div`
 
 const StepIndicatorWrapper = styled(motion.div)`
   position: relative;
-  cursor: pointer;
+  cursor: default;
   outline: none;
 `;
 
@@ -168,6 +168,7 @@ interface StepperProps extends HTMLAttributes<HTMLDivElement> {
   onFinalStepCompleted?: () => void;
   backButtonText?: string;
   nextButtonText?: string;
+  hideNextOnLastStep?: boolean;
 }
 
 export default function Stepper({
@@ -178,6 +179,7 @@ export default function Stepper({
   onFinalStepCompleted,
   backButtonText = "Back",
   nextButtonText = "Next",
+  hideNextOnLastStep = false,
   ...rest
 }: StepperProps) {
   const [direction, setDirection] = useState(0);
@@ -214,14 +216,7 @@ export default function Stepper({
             const isNotLast = index < totalSteps - 1;
             return (
               <React.Fragment key={index}>
-                <StepIndicator
-                  step={index + 1}
-                  currentStep={currentStep + 1}
-                  onClickStep={(stepNum) => {
-                    setDirection(stepNum > currentStep + 1 ? 1 : -1);
-                    onStepChange(stepNum - 1);
-                  }}
-                />
+                <StepIndicator step={index + 1} currentStep={currentStep + 1} />
                 {isNotLast && (
                   <StepConnector isComplete={currentStep + 1 > index + 1} />
                 )}
@@ -246,9 +241,10 @@ export default function Stepper({
               {currentStep !== 0 && (
                 <BackButton onClick={handleBack}>{backButtonText}</BackButton>
               )}
-              <NextButton onClick={handleNext}>
-                {isLastStep ? "Finish" : nextButtonText}
-              </NextButton>
+
+              {!(isLastStep && hideNextOnLastStep) && (
+                <NextButton onClick={handleNext}>{nextButtonText}</NextButton>
+              )}
             </FooterNav>
           </FooterContainer>
         )}
@@ -332,10 +328,9 @@ export function Step({ children }: { children: ReactNode }) {
 interface StepIndicatorProps {
   step: number;
   currentStep: number;
-  onClickStep: (step: number) => void;
 }
 
-function StepIndicator({ step, currentStep, onClickStep }: StepIndicatorProps) {
+function StepIndicator({ step, currentStep }: StepIndicatorProps) {
   const status =
     currentStep === step
       ? "active"
@@ -343,16 +338,8 @@ function StepIndicator({ step, currentStep, onClickStep }: StepIndicatorProps) {
       ? "inactive"
       : "complete";
 
-  const handleClick = () => {
-    if (step !== currentStep) onClickStep(step);
-  };
-
   return (
-    <StepIndicatorWrapper
-      onClick={handleClick}
-      animate={status}
-      initial={false}
-    >
+    <StepIndicatorWrapper animate={status} initial={false}>
       <StepIndicatorInner
         variants={{
           inactive: { backgroundColor: LIGHT_GRAY, color: DARK_GRAY },
