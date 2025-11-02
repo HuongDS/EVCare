@@ -32,7 +32,7 @@ namespace Application.Services
                                         && a.Status != AppointmentStatusEnum.Canceled);
             if (appointment is null) throw new Exception(Application.Infrastructures.Message.APPOINTMENT_NOT_FOUND);
 
-            var candidate = await _dbContext.Employees.FirstOrDefaultAsync(a => a.Id == appointment.EmployeeId);
+            var candidate = await _dbContext.Employees.FirstOrDefaultAsync(a => a.Id == appointment.EmployeeId && a.Deleted_At == DateTime.MinValue);
             if (candidate is null) return null;
 
             return candidate.AccountId.ToString();
