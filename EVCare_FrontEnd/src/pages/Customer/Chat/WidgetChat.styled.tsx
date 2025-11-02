@@ -726,4 +726,39 @@ export const WidgetChatStyleWrapper = styled.div`
     padding: 1rem;
     text-align: center;
   }
+
+  .chat-offline-message {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background: #f9fafb;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
+  }
+
+  .chat-offline-message .chat-offline-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-family: inherit !important;
+  }
+
+  .chat-offline-message p {
+    font-size: 0.95rem;
+    color: #4b5563;
+    max-width: 300px;
+    line-height: 1.6;
+    font-family: inherit !important;
+  }
+
+  .chat-header-status {
+    font-size: 0.8rem;
+    margin: 0;
+    font-weight: 700;
+  }
 `;
