@@ -37,8 +37,10 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Staff")]
         [HttpPost]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
+        [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
         [ServiceFilter(typeof(ValidateInvoiceTotalFilter))]
-        //update to merger
+        
         public async Task<IActionResult> CreateInvoice(InvoiceCreateModel model)
         {
             try
