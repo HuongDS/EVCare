@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Select, Badge, Avatar, Card, Typography } from "antd";
 import { Phone, Award, Wrench, User } from "lucide-react";
@@ -26,28 +26,25 @@ const Manage_Technicians = () => {
   // const [technicians] = useState(mockTechnicians);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [availableCount, setAvailableCount] = useState(0);
-  const [busyCount, setBusyCount] = useState(0);
-  const [total, setTotal] = useState(0);
 
   const { data: technicians, isLoading } = useGetTechniciansToday({
     ...(statusFilter !== "all" ? { Status: statusFilter } : {}),
     ...((searchTerm && { FullName: searchTerm }) || {}),
   });
 
-  useEffect(() => {
-    const availableCount = technicians?.data?.items?.filter(
+  const { availableCount, busyCount, total } = useMemo(() => {
+    const techniciansList = technicians?.data?.items;
+    const availableCount = techniciansList?.filter(
       (t) => t.status === "Available"
     ).length;
 
-    const busyCount = technicians?.data?.items?.filter(
+    const busyCount = techniciansList?.filter(
       (t) => t.status === "Busy"
     ).length;
 
-    setAvailableCount(availableCount || 0);
-    setBusyCount(busyCount || 0);
-    setTotal(technicians?.data?.items?.length || 0);
-  }, [technicians?.data?.items]);
+    const total = techniciansList?.length;
+    return { availableCount, busyCount, total };
+  }, [technicians]);
 
   return (
     <Container>
@@ -145,7 +142,7 @@ const Manage_Technicians = () => {
                     <Wrench size={16} />
                     <span>Skills & Expertise</span>
                   </div>
-                  <div>
+                  <div className="skills-list">
                     {tech.skills.map((skill) => (
                       <SkillTag key={skill.id}>{skill.name}</SkillTag>
                     ))}
@@ -314,7 +311,7 @@ const TechAvatar = styled(Avatar)`
   height: 64px;
   font-size: 1.5rem;
   font-weight: 600;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #27ec4e 0%, #78d497 100%);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 `;
 
@@ -380,17 +377,22 @@ const SkillsSection = styled.div`
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #64748b;
+    color: #b2c8ac;
     font-size: 0.875rem;
     font-weight: 500;
     margin-bottom: 0.75rem;
+  }
+
+  .skills-list {
+    max-height: 200px;
+    overflow-y: auto;
   }
 `;
 
 const SkillTag = styled.span`
   display: inline-block;
-  background: #eff6ff;
-  color: #3b82f6;
+  background: #d3f1d8;
+  color: #00ad4e;
   padding: 0.375rem 0.75rem;
   border-radius: 6px;
   font-size: 0.8rem;

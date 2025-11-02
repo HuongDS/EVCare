@@ -13,7 +13,7 @@ interface StepsProps {
 export const ProgressSteps = ({ steps, currentStep, children }: StepsProps) => {
   return (
     <Steps.Root step={currentStep} count={steps.length}>
-      <Steps.List style={{ margin: "2%" }}>
+      <Steps.List style={{ margin: "1%" }}>
         {steps.map((step, index) => (
           <Steps.Item key={index} index={index} title={step.title}>
             <Steps.Indicator boxSize={8} />
@@ -58,10 +58,11 @@ export const getAppointmentStepFromStatus = (status: string) => {
     case "CheckedIn":
       return 1;
     case "AddingPart":
-    case "InProgress":
       return 2;
-    case "ReadyForPickup":
+    case "InProgress":
       return 3;
+    case "ReadyForPickup":
+      return 4;
     case "Done":
       return 5;
   }

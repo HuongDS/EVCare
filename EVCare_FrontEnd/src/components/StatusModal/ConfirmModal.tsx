@@ -1,6 +1,6 @@
 import { Modal } from "@mui/material";
 import styled, { keyframes } from "styled-components";
-import ButtonAction from "../../components/Button/ReviewButton";
+import ButtonAction from "../Button/ButtonAction";
 
 interface ConfirmModalProps {
   open: boolean;

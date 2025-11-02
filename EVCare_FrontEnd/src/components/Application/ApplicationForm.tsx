@@ -24,7 +24,7 @@ import {
   SuccessText,
 } from "./ApplicationForm.styled";
 import dayjs from "dayjs";
-import ButtonAction from "../Button/ReviewButton";
+import ButtonAction from "../Button/ButtonAction";
 import DatePicker from "./DatePickerLazyPerformance";
 import { Editor } from "@tinymce/tinymce-react";
 import { useNotification } from "../../context/useNotification";

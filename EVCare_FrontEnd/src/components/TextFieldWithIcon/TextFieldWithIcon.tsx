@@ -1,3 +1,4 @@
+// import { CircleCheck, CircleX } from "lucide-react";
 import { CircleCheck, CircleX } from "lucide-react";
 import type { ReactNode } from "react";
 import styled, { css } from "styled-components";
@@ -71,26 +72,33 @@ const FieldGroup = styled.div<{ $hasText: boolean }>`
 
 interface IconData {
   icon: ReactNode;
+  label: string;
   type: string;
   text: string;
   required?: boolean;
   setText: (val: string) => void;
+  error?: boolean;
+  errorMessage?: string;
 }
 
 export default function TextFieldWithIcon({
   icon,
   type,
+  label,
   text,
   required = false,
   setText,
+  error,
+  errorMessage,
 }: IconData) {
+  const isFilled = text.trim() !== "";
   return (
     <div>
       <Field>
         <div>{icon}</div>
 
         <FieldGroup $hasText={text !== ""}>
-          <span>{type}</span>
+          <span>{label}</span>
           <input
             type={type.toLocaleLowerCase()}
             value={text}
@@ -98,9 +106,24 @@ export default function TextFieldWithIcon({
             required={required}
           />
         </FieldGroup>
-        <CircleCheck color="#00AD4E" />
-        <CircleX color="red" />
+        {error ? (
+          <CircleX className="status-icon" color="red" />
+        ) : (
+          isFilled && <CircleCheck className="status-icon" color="green" />
+        )}
       </Field>
+      {error && (
+        <p
+          style={{
+            color: "red",
+            fontSize: "12px",
+            marginLeft: "5px",
+            marginBottom: 0,
+          }}
+        >
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 }
