@@ -36,7 +36,6 @@ export default function Technician_MyJob() {
       setFade(true);
 
       try {
-        // 🔹 Gọi API lấy danh sách appointment theo trạng thái
         const data = await getTechnicianAppointments({
           Status: statusToFetch,
           PageSize: 1000,
@@ -45,18 +44,15 @@ export default function Technician_MyJob() {
 
         const list = data.items ?? [];
 
-        // ✅ Nếu đang ở tab PENDING mà có 1 appointment, auto đổi sang ADDING_PART
         if (
           statusToFetch === TechnicianWorkingSessionEnum.PENDING &&
           list.length > 0
         ) {
-          const pendingAppointment = list[0]; // chỉ lấy 1 cái duy nhất
+          const pendingAppointment = list[0];
           await updateTechnicianWorkingSession({
             orderId: pendingAppointment.orderId,
             status: TechnicianWorkingSessionEnum.ADDING_PART,
           });
-
-          console.log("✅ Appointment moved to ADDING_PART");
 
           setActiveStatus(TechnicianWorkingSessionEnum.ADDING_PART);
           await fetchAppointments(TechnicianWorkingSessionEnum.ADDING_PART);
