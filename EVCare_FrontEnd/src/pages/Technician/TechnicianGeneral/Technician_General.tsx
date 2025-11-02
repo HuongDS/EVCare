@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
 import { useGetAccount } from "../../../services/authService";
 import StatusTag from "../../../components/StatusTags/StatusTag";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   ContentWrapper,
@@ -52,12 +53,12 @@ interface TechnicianAppointment {
   services: Service[];
   status: string;
 }
-
 const TechnicianGeneral: React.FC = () => {
   const [appointments, setAppointments] = useState<TechnicianAppointment[]>([]);
   const [completedAppointment, setCompletedAppointment] = useState(0);
   const [total, setTotal] = useState(0);
 
+  const navigate = useNavigate();
   const { data: techInfo } = useGetAccount();
 
   useEffect(() => {
@@ -197,6 +198,9 @@ const TechnicianGeneral: React.FC = () => {
                 type="primary"
                 icon={<UserRoundPen size={18} />}
                 block
+                onClick={() => {
+                  navigate("/account-information");
+                }}
               >
                 Edit Profile
               </StyledButton>
