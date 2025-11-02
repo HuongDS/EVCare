@@ -83,9 +83,8 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
       const { conversationId } = await startConsultation(selectedAppointmentId);
       const newList = await listConversations();
       const conversation = newList.find((conv) => conv.id === conversationId);
-      // use employeeId to check available or not
-      const staff = await getEmployeeById(Number(conversation?.participants[1]?.employeeId) || 0);
-      // then update UI
+      const staffParticipant = conversation?.participants.find((p) => p.role === RoleEnum.STAFF);
+      const staff = await getEmployeeById(Number(staffParticipant?.employeeId) || 0);
       const checkAvailableStaff = await checkStaffAvailable(staff.data?.employeeId || 0);
       setIsStaffAvailable(checkAvailableStaff.data?.statusEnum === EmployeeStatusEnum.Available);
       setConversations(newList);
@@ -110,18 +109,41 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
       setModalOpen(false);
       setSelectedId(response.data ?? "");
       setSelectedConv(newList.find((conv) => conv.id === response.data) || null);
+      setIsStaffAvailable(true);
       setView("chat");
     } catch (error) {
       notification.error({
         message: "Error",
         description: (error as Error).message || "Failed to start consultation",
       });
+      setView("new_choice");
     }
   };
 
-  const handleSelectConversation = (conv: Conversation) => {
+  const handleSelectConversation = async (conv: Conversation) => {
+    setView("loading");
     setSelectedId(conv.id);
-    setView("chat");
+    setSelectedConv(conv);
+
+    try {
+      if (conv.type === "AI") {
+        setIsStaffAvailable(true);
+      } else {
+        const staffParticipant = conv.participants.find((p) => p.role === RoleEnum.STAFF);
+        if (!staffParticipant) {
+          throw new Error("No staff found in this conversation.");
+        }
+
+        const staff = await getEmployeeById(Number(staffParticipant.employeeId) || 0);
+        const checkAvailableStaff = await checkStaffAvailable(staff.data?.employeeId || 0);
+
+        setIsStaffAvailable(checkAvailableStaff.data?.statusEnum === EmployeeStatusEnum.Available);
+      }
+      setView("chat");
+    } catch (error) {
+      notification.error({ message: "Error loading conversation:", description: (error as Error).message });
+      setView("list");
+    }
   };
 
   const handleBackToList = () => {
@@ -242,24 +264,22 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
     }
   };
 
-  const handleNewMessage = useCallback(() => {
-    (conversationId: string, newMessage: HistoryMessage) => {
-      setConversations((prev) => {
-        const conTarget = prev.find((c) => c.id === conversationId);
-        if (!conTarget) return prev;
-        const update = {
-          ...conTarget,
-          lastMessage: {
-            text: newMessage.text,
-            sentAt: newMessage.sentAt,
-            senderId: newMessage.senderId,
-          },
-        };
+  const handleNewMessage = useCallback((conversationId: string, newMessage: HistoryMessage) => {
+    setConversations((prev) => {
+      const conTarget = prev.find((c) => c.id === conversationId);
+      if (!conTarget) return prev;
+      const update = {
+        ...conTarget,
+        lastMessage: {
+          text: newMessage.text,
+          sentAt: newMessage.sentAt,
+          senderId: newMessage.senderId,
+        },
+      };
 
-        const oldConvo = prev.filter((c) => c.id !== conversationId);
-        return [update, ...oldConvo];
-      });
-    };
+      const oldConvo = prev.filter((c) => c.id !== conversationId);
+      return [update, ...oldConvo];
+    });
   }, []);
 
   return (
