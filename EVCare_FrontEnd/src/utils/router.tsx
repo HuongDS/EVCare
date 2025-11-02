@@ -99,7 +99,7 @@ import {
   LazyApplication,
   LazyMyJob,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
-import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
+import { AppointmentList } from "../pages/Technician/TechnicianMyJob/Technician_MyJob.styled";
 
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -411,7 +411,7 @@ const router = createBrowserRouter([
     path: "/test",
     element: (
       <SuspenseWrapper>
-        <Test />
+          <Test />
       </SuspenseWrapper>
     ),
   },
