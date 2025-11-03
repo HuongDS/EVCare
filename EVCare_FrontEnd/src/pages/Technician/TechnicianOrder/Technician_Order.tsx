@@ -11,7 +11,7 @@ import SearchBar from "../Technician_Component/SearchBar";
 
 import { updateOrderParts } from "../../../services/updateOrderPartApi";
 import { getAllParts } from "../../../services/partApi";
-import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
+import { useGetTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
 import { updateAppointmentPartCondition } from "../../../services/appointmentPartCondition";
 
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
@@ -79,6 +79,13 @@ export default function TechnicianOrder({
     refetch: refetchTechnicianParts,
   } = getTechnicianAddedParts(currentOrderId ?? 0);
 
+  // Use React Query hook to get appointments with cache
+  const { data: appointmentRes } = useGetTechnicianAppointments({
+    Status: "AddingPart",
+    PageSize: 1000,
+    PageIndex: 1,
+  });
+
   useEffect(() => {
     const fetchAllParts = async () => {
       if (!currentOrderId) return;
@@ -87,10 +94,8 @@ export default function TechnicianOrder({
         const partsRes = await getAllParts({ pageIndex: 1, pageSize: 1000 });
         setAllParts(partsRes.items ?? []);
 
-        const appointmentRes = await getTechnicianAppointments({
-          Status: "AddingPart",
-        });
-        const appointment = appointmentRes.items?.find(
+        // useGetTechnicianAppointments returns a PageModel in .items
+        const appointment = appointmentRes?.items?.find(
           (a: TechnicianAppointmentsDto) => a.orderId === currentOrderId
         );
         if (appointment) setAppointmentId(appointment.id);
@@ -102,7 +107,8 @@ export default function TechnicianOrder({
     };
 
     fetchAllParts();
-  }, [currentOrderId]);
+    // appointmentRes included as dependency so when cached data arrives, appointmentId is set
+  }, [currentOrderId, appointmentRes]);
 
   useEffect(() => {
     if (technicianPartsRes?.data) {

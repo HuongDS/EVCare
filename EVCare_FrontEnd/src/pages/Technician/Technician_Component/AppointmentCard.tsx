@@ -61,6 +61,8 @@ const AppointmentCard: React.FC<Props> = ({
   useEffect(() => {
     const fetchDamageLevels = async () => {
       try {
+        await new Promise((res) => setTimeout(res, Math.random() * 300));
+
         const response = await getAppointmentPartCondition(data.id);
         const map: Record<number, DamageLevelEnum> = {};
         response.data?.partDamageLevels?.forEach((d) => {
@@ -86,6 +88,7 @@ const AppointmentCard: React.FC<Props> = ({
         console.error("Failed to load part condition:", err);
       }
     };
+
     if (data.id) fetchDamageLevels();
   }, [data.id]);
 
