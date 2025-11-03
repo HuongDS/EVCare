@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   PageWrapper,
@@ -34,11 +34,21 @@ import { Editor } from "@tinymce/tinymce-react";
 import type { Category, PartDetailDto } from "../../../../models/PartModel/PartModel";
 import type { NewPartDto } from "../../../../models/PartModel/NewPartDto";
 import { useNotification } from "../../../../context/useNotification";
-import { createPart, deletePart, getAllParts02, getPartCategories, updatePart } from "../../../../services/partApi";
+import {
+  createPart,
+  deletePart,
+  getAllParts02,
+  getPartCategories,
+  getPartTemplate,
+  importPartsByFileCSV,
+  updatePart,
+} from "../../../../services/partApi";
 import { UpdatePartForm } from "./UpdatePartForm";
 import { Pagination } from "../../../../components/Paginations/Pagination";
 import { ERROR_MESSAGE } from "../../../../constants/messages/Message";
 import SearchBar from "../../AdminCustomer&Vehicle/SearchBar";
+import { Button, Space, Typography, Upload, type UploadProps } from "antd";
+import { DownloadOutlined, UploadOutlined } from "@ant-design/icons";
 
 export default function Admin_Part() {
   const [activeTab, setActiveTab] = useState<"list" | "add" | "update">("list");
@@ -52,6 +62,8 @@ export default function Admin_Part() {
   const [pageSize, setPageSize] = useState(8);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [templateLoading, setTemplateLoading] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   const [newPart, setNewPart] = useState<Omit<NewPartDto, "image">>({
     name: "",
@@ -86,37 +98,38 @@ export default function Admin_Part() {
     fetchCategories();
   }, [notification]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        let partsData = null;
-        if (search.trim().length > 0) {
-          partsData = await getAllParts02({
-            PartName: search.trim(),
-            PageSize: pageSize,
-            PageIndex: pageIndex,
-          });
-        } else {
-          partsData = await getAllParts02({
-            PageSize: pageSize,
-            PageIndex: pageIndex,
-          });
-        }
-        setParts(partsData.items);
-        setTotalPages(partsData.totalPages);
-        setTotalItems(partsData.totalItems);
-        setPageIndex(partsData.pageIndex);
-        setPageSize(partsData.pageSize);
-      } catch (error) {
-        console.error("Failed to fetch data", error);
-        notification.error({
-          message: "Fetch Data",
-          description: ERROR_MESSAGE.FETCH_DATA_FAILED,
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      let partsData = null;
+      if (search.trim().length > 0) {
+        partsData = await getAllParts02({
+          PartName: search.trim(),
+          PageSize: pageSize,
+          PageIndex: pageIndex,
+        });
+      } else {
+        partsData = await getAllParts02({
+          PageSize: pageSize,
+          PageIndex: pageIndex,
         });
       }
-      setIsLoading(false);
-    };
+      setParts(partsData.items);
+      setTotalPages(partsData.totalPages);
+      setTotalItems(partsData.totalItems);
+      setPageIndex(partsData.pageIndex);
+      setPageSize(partsData.pageSize);
+    } catch (error) {
+      console.error("Failed to fetch data", error);
+      notification.error({
+        message: "Fetch Data",
+        description: ERROR_MESSAGE.FETCH_DATA_FAILED,
+      });
+    }
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
     fetchData();
   }, [search, pageIndex, pageSize, notification]);
 
@@ -303,6 +316,54 @@ export default function Admin_Part() {
     }
   };
 
+  const handleExportTemplate = async () => {
+    setTemplateLoading(true);
+    try {
+      const response = await getPartTemplate();
+      let filename = `EVCare_Part_Template.xlsx`;
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      notification.error({ message: "Export template failed. Please try again later." });
+    } finally {
+      setTemplateLoading(false);
+    }
+  };
+
+  const uploadProps: UploadProps = {
+    name: "file",
+    showUploadList: false,
+    beforeUpload: () => {
+      setUploadLoading(true);
+      return true;
+    },
+    customRequest: async ({ file, onSuccess, onError }) => {
+      const fileData = file as File;
+      const formData = new FormData();
+      formData.append("file", fileData);
+      try {
+        const response = await importPartsByFileCSV(fileData);
+        onSuccess?.(response.data);
+        notification.success({ message: `Import file ${fileData.name} successful.` });
+        setUploadLoading(false);
+        fetchData();
+      } catch (error) {
+        onError?.(error as Error);
+        notification.error({
+          message: `Import file ${fileData.name} failed.`,
+          description: (error as Error).message || "Please try again later.",
+        });
+        setUploadLoading(false);
+      }
+    },
+  };
+
   const tabVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
@@ -317,7 +378,37 @@ export default function Admin_Part() {
           <Instruction>Manage, add new, and delete spare parts in the system.</Instruction>
         </Header>
 
-        <SearchBar search={search} onSearchChange={handleSearch} placeHolder="Search by part name..." />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "16px",
+            padding: "16px 0",
+            borderBottom: "1px solid #e5e7eb",
+          }}
+        >
+          <SearchBar search={search} onSearchChange={handleSearch} placeHolder="Search by part name..." />
+
+          <Space direction="vertical" align="end" style={{ gap: 4 }}>
+            <Button icon={<DownloadOutlined />} onClick={handleExportTemplate} loading={templateLoading}>
+              Download Template (Excel)
+            </Button>
+            <Typography.Text type="secondary" style={{ fontSize: 12, marginTop: "-4px" }}>
+              (Download file template to import parts)
+            </Typography.Text>
+          </Space>
+
+          <Space direction="vertical" align="end" style={{ gap: 4 }}>
+            <Upload {...uploadProps}>
+              <Button icon={<UploadOutlined />} loading={uploadLoading}>
+                Import Parts (Excel)
+              </Button>
+            </Upload>
+            <Typography.Text type="secondary" style={{ fontSize: 12, marginTop: "-4px" }}>
+              (Import parts from the filled template file)
+            </Typography.Text>
+          </Space>
+        </div>
 
         <TabContainer>
           <TabButton $isActive={activeTab === "list"} onClick={() => setActiveTab("list")}>

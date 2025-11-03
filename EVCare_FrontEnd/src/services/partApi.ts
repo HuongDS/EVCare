@@ -139,3 +139,40 @@ export async function exportParts() {
     throw new Error(ERROR_MESSAGE.FETCH_DATA_FAILED);
   }
 }
+
+export async function getPartTemplate() {
+  try {
+    const response = await api.get("/api/Part/template", {
+      headers: {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+      responseType: "blob",
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.FETCH_DATA_FAILED);
+  }
+}
+
+export async function importPartsByFileCSV(file: File) {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await api.post("/api/Part/import", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.FETCH_DATA_FAILED);
+  }
+}
