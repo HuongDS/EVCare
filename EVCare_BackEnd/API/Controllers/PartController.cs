@@ -20,7 +20,7 @@ namespace API.Controllers
         }
 
         [HttpGet("template")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetPartImportTemplate() {
             try {
                 var content = await _partService.GetPartImportTemplate();
