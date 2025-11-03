@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  PiNumberCircleOneFill,
-  PiNumberCircleTwoFill,
-  PiNumberCircleThreeFill,
-} from "react-icons/pi";
+import { PiNumberCircleOneFill, PiNumberCircleTwoFill, PiNumberCircleThreeFill } from "react-icons/pi";
 import {
   BookingFormWrapper,
   BookingFormHeader,
@@ -23,11 +19,7 @@ import UploadImage from "../../../components/UploadFields/uploadImage";
 import { getCustomerId } from "../../../services/customerServices";
 import type { RootState } from "../../../states/store";
 import { useSelector } from "react-redux";
-import {
-  createVehicle,
-  getVehicleByCustomerId,
-  getVehicleCategories,
-} from "../../../services/vehicleServicesApi";
+import { createVehicle, getVehicleByCustomerId, getVehicleCategories } from "../../../services/vehicleServicesApi";
 import { getAllServices } from "../../../services/serviceServicesApi";
 import { getAccountInformation } from "../../../services/accountService";
 import { handleError } from "../../../utils/errorHandler";
@@ -60,23 +52,13 @@ interface Props {
 }
 
 function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
-  const accountId = useSelector(
-    (state: RootState) => state.auth.user?.accountId
-  );
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
+  const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const [accountInfor, setAccountInfor] = useState<AccountViewModel>();
-  const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<
-    VehicleViewDto[]
-  >([]);
-  const [listCategories, setListCategories] = useState<
-    VehicleCategoryViewDto[]
-  >([]);
-  const [serviceCategories, setServiceCategories] = useState<
-    ServiceCategoryViewModel[]
-  >([]);
+  const [listVehicleOfCustomer, setListVehicleOfCustomer] = useState<VehicleViewDto[]>([]);
+  const [listCategories, setListCategories] = useState<VehicleCategoryViewDto[]>([]);
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryViewModel[]>([]);
 
   const [selectedValue, setSelectedValue] = useState(0);
   const [isAddNew, setIsAddNew] = useState(true);
@@ -133,36 +115,27 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
 
   const handleSelectServices = useCallback((serviceId: number) => {
     setSelectedServices((prev) =>
-      prev.includes(serviceId)
-        ? prev.filter((s) => s !== serviceId)
-        : [...prev, serviceId]
+      prev.includes(serviceId) ? prev.filter((s) => s !== serviceId) : [...prev, serviceId]
     );
   }, []);
 
-  const handleServiceCategoriesChange = useCallback(
-    (serviceCategory: ServiceCategoryViewModel) => {
-      const servicesInCategory = serviceCategory.services.map((s) => s.id);
-      if (servicesInCategory.length === 0) return;
-      setSelectedServices((prev) => {
-        const allSelected = servicesInCategory.every((s) => prev.includes(s));
-        return allSelected
-          ? prev.filter((s) => !servicesInCategory.includes(s))
-          : [...new Set([...prev, ...servicesInCategory])];
-      });
-    },
-    []
-  );
+  const handleServiceCategoriesChange = useCallback((serviceCategory: ServiceCategoryViewModel) => {
+    const servicesInCategory = serviceCategory.services.map((s) => s.id);
+    if (servicesInCategory.length === 0) return;
+    setSelectedServices((prev) => {
+      const allSelected = servicesInCategory.every((s) => prev.includes(s));
+      return allSelected
+        ? prev.filter((s) => !servicesInCategory.includes(s))
+        : [...new Set([...prev, ...servicesInCategory])];
+    });
+  }, []);
 
   const handleSelectDate = useCallback(
     (date: Dayjs | undefined) => {
       setDateSelected(date);
       if (date && timeSelected) {
         setAppointmentDate(
-          date
-            .hour(timeSelected.hour())
-            .minute(timeSelected.minute())
-            .second(0)
-            .format("YYYY-MM-DDTHH:mm:ss")
+          date.hour(timeSelected.hour()).minute(timeSelected.minute()).second(0).format("YYYY-MM-DDTHH:mm:ss")
         );
       }
     },
@@ -174,11 +147,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
       setTimeSelected(time);
       if (dateSelected && time) {
         setAppointmentDate(
-          dateSelected
-            .hour(time.hour())
-            .minute(time.minute())
-            .second(0)
-            .format("YYYY-MM-DDTHH:mm:ss")
+          dateSelected.hour(time.hour()).minute(time.minute()).second(0).format("YYYY-MM-DDTHH:mm:ss")
         );
       }
     },
@@ -214,14 +183,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;
     },
-    [
-      isAddNew,
-      licensePlate,
-      selectedValue,
-      selectedServices,
-      dateSelected,
-      timeSelected,
-    ]
+    [isAddNew, licensePlate, selectedValue, selectedServices, dateSelected, timeSelected]
   );
 
   const handleSubmit = useCallback(async () => {
@@ -359,9 +321,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
                     handleSelectVehicle={handleSelectVehicle}
                     listVehicleOfCustomer={listVehicleOfCustomer}
                     listCategories={listCategories}
-                    handleSelectVehicleCategory={(e) =>
-                      setVehicleCategory(Number(e.target.value))
-                    }
+                    handleSelectVehicleCategory={(e) => setVehicleCategory(Number(e.target.value))}
                     vehicleCategory={vehicleCategory}
                     setLicensePlate={setLicensePlate}
                     licensePlate={licensePlate}
@@ -369,19 +329,13 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
                   />
 
                   <FormGroup>
-                    <Label>
-                      Image (Max: 5 Images; Only send vehicle damage status)
-                    </Label>
+                    <Label>Image (Max: 5 Images; Only send vehicle damage status)</Label>
                     <UploadImage
                       existingImages={files}
-                      handleFileRemove={(url) =>
-                        setFiles((prev) =>
-                          prev.filter((item) => item.url !== url)
-                        )
-                      }
+                      handleFileRemove={(url) => setFiles((prev) => prev.filter((item) => item.url !== url))}
                       imgQuantity={LENGTH.IMAGES}
                       handleFileSubmit={(file) =>
-                        setFiles((prev) => [...prev, file])
+                        setFiles((prev) => [...prev, { url: file.url, name: file.name ?? "" }])
                       }
                     />
                   </FormGroup>
@@ -404,11 +358,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
                   selectedServices={selectedServices}
                 />
                 {errors.services && (
-                  <p
-                    style={{ color: "red", marginTop: "10px", marginBottom: 0 }}
-                  >
-                    {errors.services}
-                  </p>
+                  <p style={{ color: "red", marginTop: "10px", marginBottom: 0 }}>{errors.services}</p>
                 )}
               </RightBody>
             </StepContent>
@@ -447,11 +397,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
                   }}
                 >
                   {!visible && (
-                    <Checkbox
-                      color="success"
-                      onChange={() => setCheckBox((prev) => !prev)}
-                      checked={checkbox}
-                    />
+                    <Checkbox color="success" onChange={() => setCheckBox((prev) => !prev)} checked={checkbox} />
                   )}
                   <AppointmentPolicySection
                     visible={visible}
@@ -473,11 +419,7 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
                     }}
                   >
                     <BookingFormButton>
-                      <button
-                        disabled={!checkbox}
-                        type="button"
-                        onClick={handleSubmit}
-                      >
+                      <button disabled={!checkbox} type="button" onClick={handleSubmit}>
                         SEND
                       </button>
                     </BookingFormButton>

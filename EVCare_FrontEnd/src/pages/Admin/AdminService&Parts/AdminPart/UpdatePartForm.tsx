@@ -59,7 +59,7 @@ export const UpdatePartForm = ({
     }
   };
 
-  const handleFileSubmit = (url: string) => {
+  const handleFileSubmit = ({ url }: { url: string }) => {
     setNewImageUrl(url);
   };
   const handleFileRemove = () => {
