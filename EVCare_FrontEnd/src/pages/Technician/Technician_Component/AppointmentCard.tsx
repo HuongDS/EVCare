@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import { formatDate } from "../../../utils/formatDate";
 import { updateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
 import { getAppointmentPartCondition } from "../../../services/appointmentPartCondition";
@@ -9,134 +8,10 @@ import { ERROR_MESSAGE } from "../../../constants/messages/Message";
 import {
   DamageLevelEnum,
   DamageLevelLabels,
-  damageColorMap,
 } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import { useNotification } from "../../../context/useNotification";
 import { getTechnicianAddedParts } from "../../../services/getTechnicianOrder";
-
-// --- Styled Components ---
-const CardContainer = styled.div`
-  width: 100%;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-  padding: 1.2rem 1.5rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  font-size: 0.95rem;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  font-weight: 600;
-  font-size: 1.05rem;
-`;
-
-const ImageCarousel = styled.div`
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 0.5rem 0;
-  border-radius: 6px;
-  background: #f4f4f4;
-`;
-
-const ImageItem = styled.div`
-  min-width: 100px;
-  height: 100px;
-  flex-shrink: 0;
-  border-radius: 6px;
-  overflow: hidden;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-`;
-
-const SectionBox = styled.div`
-  background: #f9f9f9;
-  border-radius: 8px;
-  padding: 0.8rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  flex: 1;
-  min-width: 200px;
-`;
-
-const InfoBox = styled(SectionBox)`
-  flex-direction: row;
-  justify-content: space-between;
-`;
-
-const InfoColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-`;
-
-const SectionTitle = styled.div`
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-`;
-
-const ListWrapper = styled.div`
-  max-height: 150px;
-  overflow-y: auto;
-  ul {
-    padding-left: 1rem;
-    margin: 0;
-    font-size: 0.95rem;
-  }
-  .empty {
-    color: #888;
-    font-size: 0.9rem;
-  }
-`;
-
-const PartItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 4px;
-
-  img {
-    width: 45px;
-    height: 45px;
-    object-fit: cover;
-    border-radius: 6px;
-  }
-`;
-
-const DamageLevelBadgeStyled = styled.span<{ $level: DamageLevelEnum }>`
-  padding: 3px 6px;
-  border-radius: 4px;
-  color: white;
-  font-size: 0.8rem;
-  font-weight: 500;
-  background-color: ${({ $level }) => damageColorMap[$level] || "#999"};
-`;
-
-const ListSection = styled.div`
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 0.8rem;
-`;
 
 type Props = {
   data: TechnicianAppointmentsDto;
@@ -146,6 +21,22 @@ type Props = {
   ) => void;
   onPartsUpdated?: (orderId: number) => void;
 };
+import {
+  CardContainer,
+  Header,
+  ImageCarousel,
+  ImageItem,
+  InfoBox,
+  InfoColumn,
+  ListSection,
+  SectionBox,
+  SectionTitle,
+  ListWrapper,
+  PartItem,
+  DamageLevelBadgeStyled,
+  ButtonWrapper,
+  SubTitle,
+} from "./Style/AppointmentCard.styled";
 
 const AppointmentCard: React.FC<Props> = ({
   data,
@@ -274,7 +165,18 @@ const AppointmentCard: React.FC<Props> = ({
         </SectionBox>
 
         <SectionBox>
-          <SectionTitle>Parts</SectionTitle>
+          <SectionTitle>
+            Parts
+            <SubTitle
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: "400",
+                color: "#777",
+              }}
+            >
+              Only the parts you have added
+            </SubTitle>
+          </SectionTitle>
           <ListWrapper>
             {isLoadingParts ? (
               <div className="empty">Loading parts...</div>
