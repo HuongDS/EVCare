@@ -76,13 +76,19 @@ export const SectionTitle = styled.div`
   border-bottom: 1px solid #e0e0e0;
 `;
 
+export const SubTitle = styled.div`
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #777;
+`;
+
 export const ListWrapper = styled.div`
   flex: 1;
   overflow-y: auto;
-  max-height: 220px; /* Giới hạn chiều cao */
+  max-height: 220px;
 
   ul {
-    list-style: none; /* Bỏ dấu chấm */
+    list-style: none;
     padding-left: 0;
     margin: 0;
   }

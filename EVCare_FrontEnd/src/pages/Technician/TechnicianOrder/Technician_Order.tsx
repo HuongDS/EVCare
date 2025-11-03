@@ -11,7 +11,7 @@ import SearchBar from "../Technician_Component/SearchBar";
 
 import { updateOrderParts } from "../../../services/updateOrderPartApi";
 import { getAllParts } from "../../../services/partApi";
-import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
+import { useGetTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
 import { updateAppointmentPartCondition } from "../../../services/appointmentPartCondition";
 
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
@@ -32,6 +32,7 @@ import {
 import { LENGTH } from "../../../constants/Code/Constants";
 import ButtonAction from "../../../components/Button/ButtonAction";
 import { useNotification } from "../../../context/useNotification";
+import { getTechnicianAddedParts } from "../../../services/getTechnicianOrder";
 
 interface TechnicianOrderProps {
   orderId?: number;
@@ -65,46 +66,39 @@ export default function TechnicianOrder({
 
   const [allParts, setAllParts] = useState<OrderPartsResponseDto[]>([]);
   const [displayParts, setDisplayParts] = useState<OrderPartsResponseDto[]>([]);
-
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
-
   const pageSize = LENGTH.VIEW_PARTCARD_MAX;
 
+  const {
+    data: technicianPartsRes,
+    isLoading: isPartsLoading,
+    refetch: refetchTechnicianParts,
+  } = getTechnicianAddedParts(currentOrderId ?? 0);
+
+  // Use React Query hook to get appointments with cache
+  const { data: appointmentRes } = useGetTechnicianAppointments({
+    Status: "AddingPart",
+    PageSize: 1000,
+    PageIndex: 1,
+  });
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllParts = async () => {
       if (!currentOrderId) return;
       setIsLoading(true);
       try {
         const partsRes = await getAllParts({ pageIndex: 1, pageSize: 1000 });
         setAllParts(partsRes.items ?? []);
-        const appointmentRes = await getTechnicianAppointments({
-          Status: "AddingPart",
-        });
-        const appointment = appointmentRes.items?.find(
+
+        // useGetTechnicianAppointments returns a PageModel in .items
+        const appointment = appointmentRes?.items?.find(
           (a: TechnicianAppointmentsDto) => a.orderId === currentOrderId
         );
-        if (!appointment) return;
-
-        setAppointmentId(appointment.id);
-
-        const mappedCart =
-          appointment.parts?.map((p) => ({
-            part: {
-              id: p.id,
-              name: p.name,
-              price: p.price,
-              imageUrl: p.imageUrl,
-              quantity: p.quantity,
-              categoryId: 0,
-              isDeleted: false,
-            } as OrderPartsResponseDto,
-            quantity: p.quantity,
-          })) ?? [];
-        setCart(mappedCart);
+        if (appointment) setAppointmentId(appointment.id);
       } catch (err) {
         console.error("Failed to fetch parts or appointment", err);
       } finally {
@@ -112,8 +106,25 @@ export default function TechnicianOrder({
       }
     };
 
-    fetchData();
-  }, [currentOrderId]);
+    fetchAllParts();
+    // appointmentRes included as dependency so when cached data arrives, appointmentId is set
+  }, [currentOrderId, appointmentRes]);
+
+  useEffect(() => {
+    if (technicianPartsRes?.data) {
+      const mappedCart =
+        technicianPartsRes.data.map((p) => ({
+          part: {
+            id: p.partID,
+            name: p.partName,
+            price: p.price,
+            quantity: p.quantity,
+          } as OrderPartsResponseDto,
+          quantity: p.quantity,
+        })) ?? [];
+      setCart(mappedCart);
+    }
+  }, [technicianPartsRes]);
 
   const updateDisplayParts = useCallback(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -174,6 +185,7 @@ export default function TechnicianOrder({
       });
       onPartsUpdated?.(currentOrderId);
       setCartOpen(false);
+      refetchTechnicianParts();
       navigate("/technician/my-jobs", { state: { tab: "ADDING_PART" } });
     } catch (err) {
       console.error(err);
@@ -223,7 +235,7 @@ export default function TechnicianOrder({
 
       <ContentWrapper>
         <CardWrapper>
-          {isLoading ? (
+          {isLoading || isPartsLoading ? (
             Array.from({ length: pageSize }).map((_, idx) => (
               <ProductCard key={idx} isSkeleton />
             ))

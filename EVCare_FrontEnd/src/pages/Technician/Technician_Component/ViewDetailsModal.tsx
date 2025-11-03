@@ -17,6 +17,7 @@ import {
   ListWrapper,
 } from "./Style/ViewDetailsModal.styled";
 import { formatDate } from "../../../utils/formatDate";
+import { SubTitle } from "../../Customer/Booking/BookingForm.styled";
 
 interface Props {
   isOpen: boolean;
@@ -113,7 +114,7 @@ const ViewDetailsModal: React.FC<Props> = ({
               </div>
             </InfoSection>
 
-            {/* --- Danh sách service & part --- */}
+            {/* --- service & part --- */}
             <ListSection>
               <ListBox>
                 <SectionTitle>Services</SectionTitle>
@@ -131,7 +132,21 @@ const ViewDetailsModal: React.FC<Props> = ({
               </ListBox>
 
               <ListBox>
-                <SectionTitle>Part list</SectionTitle>
+                <div>
+                  <SectionTitle>
+                    Part list
+                    <SubTitle
+                      style={{
+                        fontSize: "0.7rem",
+                        fontWeight: "400",
+                        color: "#777",
+                      }}
+                    >
+                      Parts that you and the other technicians added
+                    </SubTitle>
+                  </SectionTitle>
+                </div>
+
                 <ListWrapper>
                   {isLoading || isTechLoading ? (
                     <Spin />
