@@ -364,7 +364,7 @@ namespace Application.Services
                         });
                         col.Item().LineHorizontal(1);
                         col.Item().AlignRight()
-                           .Text($"Total: {invoiceData.TotalPrice}")
+                           .Text($"Total: {invoiceData.TotalPrice} VND")
                            .Bold().FontSize(14);
                     });
                     page.Footer().AlignCenter().Text("Thank you for trusting our service!");
