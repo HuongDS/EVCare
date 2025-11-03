@@ -1,10 +1,6 @@
 import axios from "axios";
 import { api } from "../api/api";
-import type {
-  ResponseDto,
-  PageModel,
-  OrderPartsResponseDto,
-} from "../models/OrderPartModel/Order_Parts_Model";
+import type { ResponseDto, PageModel, OrderPartsResponseDto } from "../models/OrderPartModel/Order_Parts_Model";
 import type { NewPartDto } from "../models/PartModel/NewPartDto";
 import { handleError } from "../utils/errorHandler";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
@@ -18,9 +14,7 @@ export async function getAllParts(params?: {
   pageIndex?: number;
 }) {
   try {
-    const response = await api.get<
-      ResponseDto<PageModel<OrderPartsResponseDto>>
-    >("/api/Part", {
+    const response = await api.get<ResponseDto<PageModel<OrderPartsResponseDto>>>("/api/Part", {
       params,
     });
 
@@ -103,16 +97,9 @@ export async function getPartCategories(pageSize?: number) {
   }
 }
 
-export async function getAllParts02(params?: {
-  PartName?: string;
-  PageSize?: number;
-  PageIndex?: number;
-}) {
+export async function getAllParts02(params?: { PartName?: string; PageSize?: number; PageIndex?: number }) {
   try {
-    const response = await api.get<ResponseDto<PageModel<PartDetailDto>>>(
-      "/api/Part",
-      { params }
-    );
+    const response = await api.get<ResponseDto<PageModel<PartDetailDto>>>("/api/Part", { params });
 
     return (
       response.data.data ?? {
@@ -132,5 +119,23 @@ export async function getAllParts02(params?: {
       totalItems: 0,
       totalPages: 1,
     };
+  }
+}
+
+export async function exportParts() {
+  try {
+    const response = await api.get("/api/Part/export", {
+      headers: {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      },
+      responseType: "blob",
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.FETCH_DATA_FAILED);
   }
 }
