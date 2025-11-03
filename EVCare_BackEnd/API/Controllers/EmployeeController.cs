@@ -179,7 +179,7 @@ namespace API.Controllers
         }
 
         [HttpGet("admin-get-employee-id")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllEmployees([FromQuery] int employeeId)
         {
             try
