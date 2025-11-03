@@ -10,6 +10,7 @@ namespace DataAccess.Dtos.Invoice {
     public class InvoiceDetailViewModel {
         public int Id { get; set; }
         public DateTime PaymentDate { get; set; }
+        public PaymentMethodEnum PaymentMethod { get; set; }
         public decimal SubTotal {  get; set; }
         public decimal Vat {  get; set; }
         public decimal Total { get; set; }
