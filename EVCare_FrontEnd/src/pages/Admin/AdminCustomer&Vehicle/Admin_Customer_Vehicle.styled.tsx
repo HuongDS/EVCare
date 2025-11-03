@@ -57,7 +57,7 @@ export const SearchIcon = styled.div`
 `;
 
 export const SearchInput = styled.input`
-  width: 50%;
+  width: 80%;
   padding: 12px 20px 12px 50px;
   font-size: 1rem;
   font-family: "Outfit", sans-serif;
