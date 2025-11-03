@@ -31,19 +31,10 @@ import UploadImage from "../../../../components/UploadFields/uploadImage";
 import DeleteConfirmationModal from "../DeleteConfirmModal";
 import SpinnerComponent from "../../../../components/SpinnerComponent";
 import { Editor } from "@tinymce/tinymce-react";
-import type {
-  Category,
-  PartDetailDto,
-} from "../../../../models/PartModel/PartModel";
+import type { Category, PartDetailDto } from "../../../../models/PartModel/PartModel";
 import type { NewPartDto } from "../../../../models/PartModel/NewPartDto";
 import { useNotification } from "../../../../context/useNotification";
-import {
-  createPart,
-  deletePart,
-  getAllParts02,
-  getPartCategories,
-  updatePart,
-} from "../../../../services/partApi";
+import { createPart, deletePart, getAllParts02, getPartCategories, updatePart } from "../../../../services/partApi";
 import { UpdatePartForm } from "./UpdatePartForm";
 import { Pagination } from "../../../../components/Paginations/Pagination";
 import { ERROR_MESSAGE } from "../../../../constants/messages/Message";
@@ -130,11 +121,7 @@ export default function Admin_Part() {
   }, [search, pageIndex, pageSize, notification]);
 
   const handleInputChange = (
-    e:
-      | React.ChangeEvent<
-          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
-      | string
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | string
   ) => {
     if (typeof e === "string") {
       setNewPart((prev) => ({
@@ -146,10 +133,7 @@ export default function Admin_Part() {
       setNewPart((prev) => ({
         ...prev,
         [name]:
-          name === "price" ||
-          name === "replacementPrice" ||
-          name === "stock" ||
-          name === "categoryId"
+          name === "price" || name === "replacementPrice" || name === "stock" || name === "categoryId"
             ? Number(value)
             : value,
       }));
@@ -206,14 +190,8 @@ export default function Admin_Part() {
       }
 
       const payload: NewPartDto = { ...newPart, image: imageUrl };
-      if (
-        payload.price === 0 ||
-        payload.replacementPrice === 0 ||
-        payload.stock === 0
-      ) {
-        throw new Error(
-          "Price, Replacement Price or Stock must be greater than 0 when you adding !"
-        );
+      if (payload.price === 0 || payload.replacementPrice === 0 || payload.stock === 0) {
+        throw new Error("Price, Replacement Price or Stock must be greater than 0 when you adding !");
       }
       const response = await createPart(payload);
       setParts((prev) => [
@@ -221,7 +199,7 @@ export default function Admin_Part() {
         {
           id: response.data,
           name: payload.name,
-          quantity: payload.stock,
+          stock: payload.stock,
           description: payload.description ?? "",
           replacementPrice: payload.replacementPrice,
           price: payload.price,
@@ -293,14 +271,8 @@ export default function Admin_Part() {
 
   const handleUpdateSubmit = async (id: number, payload: PartDetailDto) => {
     try {
-      if (
-        payload.price === 0 ||
-        payload.replacementPrice === 0 ||
-        payload.quantity === 0
-      ) {
-        throw new Error(
-          "Price, Replacement Price or Quantity must be greater than 0 when you updating !"
-        );
+      if (payload.price === 0 || payload.replacementPrice === 0 || payload.stock === 0) {
+        throw new Error("Price, Replacement Price or Quantity must be greater than 0 when you updating !");
       }
       await updatePart(id, payload);
       notification.success({
@@ -314,7 +286,7 @@ export default function Admin_Part() {
             ? {
                 ...p,
                 ...payload,
-                quantity: payload.quantity,
+                quantity: payload.stock,
                 imageUrl: payload.imageUrl,
               }
             : p
@@ -342,22 +314,13 @@ export default function Admin_Part() {
       <ContentWrapper>
         <Header>
           <Title>Product Management</Title>
-          <Instruction>
-            Manage, add new, and delete spare parts in the system.
-          </Instruction>
+          <Instruction>Manage, add new, and delete spare parts in the system.</Instruction>
         </Header>
 
-        <SearchBar
-          search={search}
-          onSearchChange={handleSearch}
-          placeHolder="Search by part name..."
-        />
+        <SearchBar search={search} onSearchChange={handleSearch} placeHolder="Search by part name..." />
 
         <TabContainer>
-          <TabButton
-            $isActive={activeTab === "list"}
-            onClick={() => setActiveTab("list")}
-          >
+          <TabButton $isActive={activeTab === "list"} onClick={() => setActiveTab("list")}>
             <FaList />
             Spare Parts List
           </TabButton>
@@ -415,32 +378,18 @@ export default function Admin_Part() {
                             !part.isDeleted && (
                               <Tr key={part.id}>
                                 <Td>
-                                  <PartImage
-                                    src={part.imageUrl}
-                                    alt={part.name}
-                                  />
+                                  <PartImage src={part.imageUrl} alt={part.name} />
                                 </Td>
                                 <Td>{part.name}</Td>
                                 <Td>{getCategoryName(part.categoryId)}</Td>
+                                <Td>{part.price.toLocaleString("vi-VN")} VND</Td>
+                                <Td>{part.replacementPrice.toLocaleString("vi-VN")} VND</Td>
+                                <Td>{part.stock}</Td>
                                 <Td>
-                                  {part.price.toLocaleString("vi-VN")} VND
-                                </Td>
-                                <Td>
-                                  {part.replacementPrice.toLocaleString(
-                                    "vi-VN"
-                                  )}{" "}
-                                  VND
-                                </Td>
-                                <Td>{part.quantity}</Td>
-                                <Td>
-                                  <ActionButton
-                                    onClick={() => handleDelete(part)}
-                                  >
+                                  <ActionButton onClick={() => handleDelete(part)}>
                                     <FaTrash />
                                   </ActionButton>
-                                  <ActionButton
-                                    onClick={() => handleSelectForUpdate(part)}
-                                  >
+                                  <ActionButton onClick={() => handleSelectForUpdate(part)}>
                                     <FaPencilAlt />
                                   </ActionButton>
                                 </Td>
@@ -450,13 +399,7 @@ export default function Admin_Part() {
                       ) : (
                         <Tr>
                           <Td colSpan={7}>
-                            <EmptyState>
-                              {isLoading ? (
-                                <SpinnerComponent />
-                              ) : (
-                                "There are no products."
-                              )}
-                            </EmptyState>
+                            <EmptyState>{isLoading ? <SpinnerComponent /> : "There are no products."}</EmptyState>
                           </Td>
                         </Tr>
                       )}
@@ -479,9 +422,7 @@ export default function Admin_Part() {
                   <FormGrid>
                     <div>
                       <InputGroup>
-                        <StyledLabel htmlFor="name">
-                          Spare PartDetailDto Name
-                        </StyledLabel>
+                        <StyledLabel htmlFor="name">Spare PartDetailDto Name</StyledLabel>
                         <StyledInput
                           id="name"
                           name="name"
@@ -501,9 +442,7 @@ export default function Admin_Part() {
                           onChange={handleInputChange}
                           required
                         >
-                          {categories.length === 0 && (
-                            <option>Is Loading...</option>
-                          )}
+                          {categories.length === 0 && <option>Is Loading...</option>}
                           {categories.map(
                             (cat) =>
                               !cat.isDeleted && (
@@ -516,9 +455,7 @@ export default function Admin_Part() {
                       </InputGroup>
 
                       <InputGroup>
-                        <StyledLabel htmlFor="description">
-                          Description
-                        </StyledLabel>
+                        <StyledLabel htmlFor="description">Description</StyledLabel>
                         <Editor
                           apiKey={import.meta.env.VITE_TINY_KEY}
                           value={newPart.description}
@@ -567,9 +504,7 @@ export default function Admin_Part() {
                           />
                         </InputGroup>
                         <InputGroup>
-                          <StyledLabel htmlFor="replacementPrice">
-                            Replacement price (VND)
-                          </StyledLabel>
+                          <StyledLabel htmlFor="replacementPrice">Replacement price (VND)</StyledLabel>
                           <StyledInput
                             id="replacementPrice"
                             name="replacementPrice"
@@ -607,9 +542,7 @@ export default function Admin_Part() {
                           />
                         </DraggerWrapper>
                         {imageUrl && (
-                          <div
-                            style={{ marginTop: "10px", textAlign: "center" }}
-                          >
+                          <div style={{ marginTop: "10px", textAlign: "center" }}>
                             <img
                               src={imageUrl}
                               alt="Preview"
