@@ -42,6 +42,7 @@ import dayjs from "dayjs";
 import type { PartsDetailDto } from "../../../../models/OrderModel/ViewOrderModel";
 import { useGetOrderDetail } from "../../../../services/orderServiceApi";
 import { useGetTechniciansByOrderId } from "../../../../services/technicianService";
+import { useEffect, useState } from "react";
 
 interface Props {
   onClose: () => void;
@@ -60,8 +61,23 @@ const formatCurrency = (value: number) => {
 export default function AppointmentDetail({ onClose, open, appointmentId, data }: Props) {
   const { data: order } = useGetOrderDetail(data.orderId);
   const { data: technicians } = useGetTechniciansByOrderId(data.orderId);
+  const [processedData, setProcessedData] = useState<PartsDetailDto[]>([]);
 
   if (!open) return;
+
+  useEffect(() => {
+    const tmp = order?.data?.parts.reduce((acc, item) => {
+      const key = item.id;
+      if (!acc[key]) {
+        const { technicianId, ...rest } = item;
+        acc[key] = rest;
+      } else {
+        acc[key].quantity += item.quantity;
+      }
+      return acc;
+    }, {} as any);
+    setProcessedData(tmp ? Object.values(tmp) : []);
+  }, [order]);
 
   const subtotal =
     order?.data?.parts.reduce(
@@ -107,7 +123,7 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
             </Section>
 
             <Section>
-              <Title>Service</Title>
+              <Title>Services</Title>
               <ServiceList>
                 {data?.services.map((s) => (
                   <Row key={s.id}>
@@ -119,12 +135,12 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
 
             <Section>
               <Title>Order Details</Title>
-              {!order || order.data?.parts.length == 0 ? (
+              {!processedData || processedData.length == 0 ? (
                 <WaitingMessage>Please wait for the technician to inspect your vehicle.</WaitingMessage>
               ) : (
                 <>
                   <PartList>
-                    {order.data?.parts.map((part) => (
+                    {processedData.map((part) => (
                       <PartItem key={part.id}>
                         <PartInfo>
                           <PartImage src={part.imageUrl} alt={part.name} />
@@ -151,12 +167,12 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
                       <span>{formatCurrency(subtotal)}</span>
                     </SummaryLine>
                     <SummaryLine>
-                      <span>VAT ({order.data?.vat ?? 0}%)</span>
-                      <span>{formatCurrency((subtotal * (order.data?.vat ?? 0)) / 100)}</span>
+                      <span>VAT ({order?.data?.vat ?? 0}%)</span>
+                      <span>{formatCurrency((subtotal * (order?.data?.vat ?? 0)) / 100)}</span>
                     </SummaryLine>
                     <SummaryLine>
                       <strong>Total Price</strong>
-                      <strong>{formatCurrency(order.data?.price ?? 0)}</strong>
+                      <strong>{formatCurrency(order?.data?.price ?? 0)}</strong>
                     </SummaryLine>
                   </OrderSummary>
                 </>

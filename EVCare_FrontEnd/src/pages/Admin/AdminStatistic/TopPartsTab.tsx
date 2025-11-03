@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { DatePicker, InputNumber, List, Typography, Avatar } from "antd";
+import { DatePicker, InputNumber, List, Typography, Avatar, Button, Space } from "antd";
 import {
   PieChart,
   Pie,
@@ -12,9 +12,12 @@ import {
 import type { TopPartModel } from "../../../models/Statistic/TopPartModel";
 import { getTopParts } from "../../../services/adminService";
 import type { Dayjs } from "dayjs";
+import { useNotification } from "../../../context/useNotification";
+import { exportParts } from "../../../services/partApi";
+import { DownloadOutlined } from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const COLORS = ["#00ad4e", "#008f41", "#34d399", "#a7f3d0"];
 
@@ -22,6 +25,8 @@ export const TopPartsTab: React.FC = () => {
   const [topN, setTopN] = useState(5);
   const [data, setData] = useState<TopPartModel[]>([]);
   const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null] | null>(null);
+  const [exportLoading, setExportLoading] = useState(false);
+  const notification = useNotification();
 
   const fetchData = async () => {
     const [fromDate, toDate] = dateRange
@@ -43,6 +48,26 @@ export const TopPartsTab: React.FC = () => {
       percentage: (item.totalUsed / total) * 100,
     }));
   }, [data]);
+
+  const handleExport = async () => {
+    setExportLoading(true);
+    try {
+      const response = await exportParts();
+      let filename = `EVCare_All_Parts.xlsx`;
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      notification.error({ message: "Export parts failed. Please try again later." });
+    } finally {
+      setExportLoading(false);
+    }
+  };
 
   const renderCustomizedLabel = (props: PieLabelRenderProps) => {
     const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
@@ -69,6 +94,15 @@ export const TopPartsTab: React.FC = () => {
       <div className="filter-bar">
         <RangePicker onChange={(dates) => setDateRange(dates as any)} />
         <InputNumber min={1} max={20} value={topN} onChange={(val) => setTopN(val || 5)} addonBefore="Top" />
+        <Space direction="horizontal" align="baseline" style={{ marginLeft: "auto", gap: 4 }}>
+          <Text type="secondary" style={{ fontSize: 12, marginTop: "-4px" }}>
+            (Get list of parts in CSV format)
+          </Text>
+
+          <Button icon={<DownloadOutlined />} onClick={handleExport} loading={exportLoading}>
+            Export (CSV)
+          </Button>
+        </Space>
       </div>
 
       <div className="split-layout">

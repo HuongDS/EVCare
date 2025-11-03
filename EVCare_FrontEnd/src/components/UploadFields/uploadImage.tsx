@@ -31,7 +31,7 @@ const UploadListFix = styled.div`
 const { Dragger } = Upload;
 
 interface Props {
-  handleFileSubmit: (file: { url: string; name: string }) => void;
+  handleFileSubmit: (file: { url: string; name?: string }) => void;
   imgQuantity: number;
   handleFileRemove?: (url: string) => void;
   existingImages?: { url: string; name: string }[];
@@ -89,9 +89,7 @@ const UploadImage: React.FC<Props> = ({
         <p className="ant-upload-drag-icon">
           <InboxOutlined style={{ color: "#00ad4e" }} />
         </p>
-        <p className="ant-upload-text">
-          Click or drag file to this area to upload
-        </p>
+        <p className="ant-upload-text">Click or drag file to this area to upload</p>
       </Dragger>
     </UploadListFix>
   );
