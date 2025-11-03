@@ -19,7 +19,7 @@ export default function Technician_MyJob() {
 
   const [activeStatus, setActiveStatus] =
     useState<TechnicianWorkingSessionEnum>(
-      TechnicianWorkingSessionEnum.PENDING
+      TechnicianWorkingSessionEnum.ADDING_PART
     );
   const [appointments, setAppointments] = useState<TechnicianAppointmentsDto[]>(
     []
