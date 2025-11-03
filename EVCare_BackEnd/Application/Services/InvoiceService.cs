@@ -82,6 +82,8 @@ namespace Application.Services
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+            invoice.Create_At = DateTime.UtcNow.AddHours(7);
+            invoice.Updated_At = DateTime.UtcNow.AddHours(7);
             var order = await _orderRepository.GetByIdAsync(invoice.OrderId);
             order.Status = OrderStatusEnum.Completed;
             await _orderRepository.UpdateAsync(order);
@@ -140,6 +142,7 @@ namespace Application.Services
                     throw new Exception("Invoice not found");
                 }
                 invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
+                invoice.Updated_At = DateTime.UtcNow.AddHours(7);
                 await _redisService.DeleteAsync(result.OrderCode.ToString());
                 await _invoiceRepository.AddAsync(invoice);
                 var order = await _orderRepository.GetByIdAsync(invoice.OrderId);
@@ -200,6 +203,7 @@ namespace Application.Services
                     invoice.Customer = null;
                     invoice.Order = null;
                     invoice.Status = PaymentStatusEnum.Completed;
+                    
                     invoice.Updated_At = DateTime.UtcNow.AddHours(7);
                     invoice.OrderCode = orderCode;
                     var order = await _orderRepository.GetByIdAsync(invoice.OrderId);
@@ -262,7 +266,9 @@ namespace Application.Services
             var invoice = await _invoiceRepository.GetInvoiceByOrderId(orderId);
             if (invoice == null) throw new Exception("Invoice not found");
 
+
             var invoiceData = await _invoiceRepository.GetInvoicePrintData(orderId);
+            var invoicePartItems = (await _invoiceRepository.GetInvoiceDetailByOrderIdAsync(orderId)).PartItems;
             var serviceCenter = await _serviceCenterRepository.GetCenterInforAsync();
 
             var pdf = QuestPDF.Fluent.Document.Create(container => {
@@ -337,7 +343,7 @@ namespace Application.Services
                                 header.Cell().Text("Total Price").Bold();
                             });
 
-                            foreach (var p in invoiceData.PartItems)
+                            foreach (var p in invoicePartItems)
                             {
                                 table.Cell().Text(p.PartName);
                                 table.Cell().Text(p.Quantity.ToString());
@@ -370,6 +376,10 @@ namespace Application.Services
             pdf.GeneratePdf(stream);
             return stream.ToArray();
 
+        }
+
+        public async Task<InvoiceDetailViewModel> GetInvoiceDetailByOrderIdAsync(int orderId) {
+            return await _invoiceRepository.GetInvoiceDetailByOrderIdAsync(orderId);
         }
     }
 }
