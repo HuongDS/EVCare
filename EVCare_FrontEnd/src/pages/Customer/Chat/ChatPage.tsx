@@ -351,7 +351,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
                   ))}
                 </div>
               ) : (
-                <p className="custom-empty-text">You don't have any valid appointments to start a chat with.</p>
+                <p className="custom-empty-text">You don't have any valid appointments to start a chat with Staff.</p>
               )}
             </div>
           </Spin>
