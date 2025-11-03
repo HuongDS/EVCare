@@ -127,7 +127,7 @@ export default function Admin_Part() {
       });
     }
     setIsLoading(false);
-  }, []);
+  }, [search, pageIndex, pageSize]);
 
   useEffect(() => {
     fetchData();

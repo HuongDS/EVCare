@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  FormWrapper,
-  FormActions,
-  SubmitButton,
-  LoadingSpinner,
-} from "./Admin_Category.styled";
+import { FormWrapper, FormActions, SubmitButton, LoadingSpinner } from "./Admin_Category.styled";
 import { FaSave } from "react-icons/fa";
 import { useNotification } from "../../../context/useNotification";
 import type { VehicleCategoryCreateDto } from "../../../models/VehicleModels/VehicleCategoryCreateDto";
@@ -20,6 +15,9 @@ export default function VehicleCategoryForm({ onAddSuccess }: Props) {
     name: "",
     model3DUrl: "",
     partCategoryIds: [],
+    scaleX: 1,
+    scaleY: 1,
+    scaleZ: 1,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const notification = useNotification();
@@ -71,11 +69,7 @@ export default function VehicleCategoryForm({ onAddSuccess }: Props) {
 
   return (
     <FormWrapper onSubmit={handleSubmit}>
-      <VehicleCategoryFormFields
-        formData={formData}
-        setFormData={setFormData}
-        isSubmitting={isSubmitting}
-      />
+      <VehicleCategoryFormFields formData={formData} setFormData={setFormData} isSubmitting={isSubmitting} />
       <FormActions>
         <SubmitButton type="submit" disabled={isSubmitting}>
           {isSubmitting ? <LoadingSpinner /> : <FaSave />}

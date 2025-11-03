@@ -17,6 +17,7 @@ import { notification } from "antd";
 import { process3DFile } from "../../../services/vehicleServicesApi";
 import { getPartCategories } from "../../../services/partApi";
 import type { Category } from "../../../models/PartModel/PartModel";
+import { FormGrid } from "../AdminService&Parts/AdminPart/Admin_Part.styled";
 
 interface Props {
   formData: VehicleCategoryCreateDto;
@@ -24,11 +25,7 @@ interface Props {
   isSubmitting: boolean;
 }
 
-export default function VehicleCategoryFormFields({
-  formData,
-  setFormData,
-  isSubmitting,
-}: Props) {
+export default function VehicleCategoryFormFields({ formData, setFormData, isSubmitting }: Props) {
   const [allPartCategories, setAllPartCategories] = useState<Category[]>([]);
   const [isPartsLoading, setIsPartsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
@@ -82,9 +79,7 @@ export default function VehicleCategoryFormFields({
     }
 
     const validExtensions = [".glb", ".obj", ".gltf", ".stl"];
-    const fileExtension = file.name
-      .slice(file.name.lastIndexOf("."))
-      .toLowerCase();
+    const fileExtension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
 
     if (!validExtensions.includes(fileExtension)) {
       notification.error({
@@ -180,17 +175,62 @@ export default function VehicleCategoryFormFields({
                 maxWidth: "calc(100% - 40px)",
               }}
             >
-              <FaCheckCircle
-                style={{ marginRight: "8px", color: "#00ad4e", flexShrink: 0 }}
-              />
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
-                {fileName}
-              </span>
+              <FaCheckCircle style={{ marginRight: "8px", color: "#00ad4e", flexShrink: 0 }} />
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{fileName}</span>
             </div>
           ) : null}
         </LinkInputWrapper>
+        <InstructionText>Select a 3D model file. We will process and host it in our cloud.</InstructionText>
+      </InputGroup>
+
+      <InputGroup>
+        <StyledLabel>Model Scale (X, Y, Z)</StyledLabel>
+        <FormGrid $isNested={true}>
+          <InputGroup>
+            <StyledLabel htmlFor="scaleX">Scale X</StyledLabel>
+            <StyledInput
+              id="scaleX"
+              name="scaleX"
+              type="number"
+              step="0.01"
+              value={formData.scaleX}
+              onChange={handleInputChange}
+              disabled={isSubmitting}
+              placeholder="1.0"
+              required
+            />
+          </InputGroup>
+          <InputGroup>
+            <StyledLabel htmlFor="scaleY">Scale Y</StyledLabel>
+            <StyledInput
+              id="scaleY"
+              name="scaleY"
+              type="number"
+              step="0.01"
+              value={formData.scaleY}
+              onChange={handleInputChange}
+              disabled={isSubmitting}
+              placeholder="1.0"
+              required
+            />
+          </InputGroup>
+          <InputGroup>
+            <StyledLabel htmlFor="scaleZ">Scale Z</StyledLabel>
+            <StyledInput
+              id="scaleZ"
+              name="scaleZ"
+              type="number"
+              step="0.01"
+              value={formData.scaleZ}
+              onChange={handleInputChange}
+              disabled={isSubmitting}
+              placeholder="1.0"
+              required
+            />
+          </InputGroup>
+        </FormGrid>
         <InstructionText>
-          Select a 3D model file. We will process and host it in our cloud.
+          Set the default display scale for the 3D model (e.g. 1.0 is the original size)
         </InstructionText>
       </InputGroup>
 
@@ -199,11 +239,7 @@ export default function VehicleCategoryFormFields({
         <PillSelectorWrapper>
           <AnimatePresence>
             {isPartsLoading && (
-              <LoadingOverlay
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <LoadingOverlay initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <LoadingSpinner />
               </LoadingOverlay>
             )}
@@ -218,19 +254,13 @@ export default function VehicleCategoryFormFields({
                   onClick={() => togglePartCategory(cat.id)}
                   disabled={isSubmitting}
                 >
-                  {formData.partCategoryIds.includes(cat.id) ? (
-                    <FaCheck />
-                  ) : (
-                    <FaTimes />
-                  )}
+                  {formData.partCategoryIds.includes(cat.id) ? <FaCheck /> : <FaTimes />}
                   {cat.name}
                 </PillButton>
               )
           )}
         </PillSelectorWrapper>
-        <InstructionText>
-          Select all part categories that apply to this vehicle type.
-        </InstructionText>
+        <InstructionText>Select all part categories that apply to this vehicle type.</InstructionText>
       </InputGroup>
     </>
   );
