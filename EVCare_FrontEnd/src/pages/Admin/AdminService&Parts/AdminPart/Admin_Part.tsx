@@ -149,7 +149,7 @@ export default function Admin_Part() {
     setPageIndex(1);
   };
 
-  const handleFileSubmit = (url: string) => {
+  const handleFileSubmit = ({ url }: { url: string }) => {
     setImageUrl(url);
   };
 
