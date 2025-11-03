@@ -628,7 +628,14 @@ namespace DataAccess.Repositories
                     Id = x.Id,
                     VehicleCategoryId = x.Vehicle.CategoryId,
                     VehicleModel3DUrl = x.Vehicle.Category.Model3DUrl,
-                    PartCategoryAppointmentViewModels = parts
+                    PartCategoryAppointmentViewModels = parts,
+                    Scale = new Dtos.Others.ScaleDto { 
+                        
+                        X = x.Vehicle.Category.ScaleX,
+                        Y = x.Vehicle.Category.ScaleY,  
+                        Z = x.Vehicle.Category.ScaleZ
+                    
+                    }
 
 
                 }).FirstOrDefaultAsync();
