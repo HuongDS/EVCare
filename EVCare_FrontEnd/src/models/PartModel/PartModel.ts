@@ -1,7 +1,7 @@
 export type PartDetailDto = {
   id: number;
   name: string;
-  quantity: number;
+  stock: number;
   description: string;
   replacementPrice: number;
   price: number;
