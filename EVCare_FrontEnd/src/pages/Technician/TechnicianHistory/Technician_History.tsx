@@ -31,18 +31,16 @@ export default function TechnicianHistory() {
     []
   );
 
-  const { data: completedData, isLoading: loadingCompleted } =
-    useGetTechnicianAppointments({
-      Status: "Completed",
-      PageSize: 50,
-      PageIndex: 1,
-    });
-  const { data: canceledData, isLoading: loadingCanceled } =
-    useGetTechnicianAppointments({
-      Status: "Canceled",
-      PageSize: 50,
-      PageIndex: 1,
-    });
+  const { data: completedData } = useGetTechnicianAppointments({
+    Status: "Completed",
+    PageSize: 50,
+    PageIndex: 1,
+  });
+  const { data: canceledData } = useGetTechnicianAppointments({
+    Status: "Canceled",
+    PageSize: 50,
+    PageIndex: 1,
+  });
 
   useEffect(() => {
     const fetch = async () => {
