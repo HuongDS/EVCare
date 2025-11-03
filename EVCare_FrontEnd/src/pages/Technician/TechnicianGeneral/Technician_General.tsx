@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import dayjs from "dayjs";
 
-import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
+import { useGetTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
 import { useGetAccount } from "../../../services/authService";
 import StatusTag from "../../../components/StatusTags/StatusTag";
 import { useNavigate } from "react-router-dom";
@@ -61,63 +61,57 @@ const TechnicianGeneral: React.FC = () => {
   const navigate = useNavigate();
   const { data: techInfo } = useGetAccount();
 
+  // useQuery for each status (small fixed set)
+  const statuses = [
+    TechnicianWorkingSessionEnum.ADDING_PART,
+    TechnicianWorkingSessionEnum.CONFIRM,
+    TechnicianWorkingSessionEnum.INPROGRESS,
+    TechnicianWorkingSessionEnum.COMPLETED,
+    TechnicianWorkingSessionEnum.CANCELED,
+  ];
+
+  const queries = statuses.map((status) =>
+    useGetTechnicianAppointments({
+      Status: String(status),
+      BeginTime: dayjs().format("MM/DD/YYYY"),
+      EndTime: dayjs().format("MM/DD/YYYY"),
+      PageSize: 100,
+      PageIndex: 1,
+    })
+  );
+
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const activeStatuses = [
-          TechnicianWorkingSessionEnum.ADDING_PART,
-          TechnicianWorkingSessionEnum.CONFIRM,
-          TechnicianWorkingSessionEnum.INPROGRESS,
-          TechnicianWorkingSessionEnum.COMPLETED,
-          TechnicianWorkingSessionEnum.CANCELED,
-        ];
+    const allAppointments = queries.flatMap((q) => q.data?.items ?? []);
 
-        const results = await Promise.all(
-          activeStatuses.map((status) =>
-            getTechnicianAppointments({
-              Status: status,
-              BeginTime: dayjs().format("MM/DD/YYYY"),
-              EndTime: dayjs().format("MM/DD/YYYY"),
-              PageSize: 100,
-              PageIndex: 1,
-            }).catch(() => ({ items: [] }))
-          )
-        );
+    const mappedAppointments: TechnicianAppointment[] = allAppointments.map(
+      (a) => ({
+        id: a.id,
+        appointmentDate: a.appointmentDate,
+        customerName: a.customerName,
+        status: a.status,
+        services: a.services.map((s, index) => ({ id: index, name: s })),
+      })
+    );
 
-        const allAppointments = results.flatMap((res) => res.items ?? []);
+    const recentAppointments = mappedAppointments
+      .sort(
+        (a, b) =>
+          new Date(b.appointmentDate).getTime() -
+          new Date(a.appointmentDate).getTime()
+      )
+      .slice(0, 5);
 
-        const mappedAppointments: TechnicianAppointment[] = allAppointments.map(
-          (a) => ({
-            id: a.id,
-            appointmentDate: a.appointmentDate,
-            customerName: a.customerName,
-            status: a.status,
-            services: a.services.map((s, index) => ({ id: index, name: s })),
-          })
-        );
+    setAppointments(recentAppointments);
 
-        const recentAppointments = mappedAppointments
-          .sort(
-            (a, b) =>
-              new Date(b.appointmentDate).getTime() -
-              new Date(a.appointmentDate).getTime()
-          )
-          .slice(0, 5);
-
-        setAppointments(recentAppointments);
-
-        const completed = mappedAppointments.filter(
-          (app) => app.status === "Completed"
-        ).length;
-        setCompletedAppointment(completed);
-        setTotal(mappedAppointments.length);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchAppointments();
-  }, []);
+    const completed = mappedAppointments.filter(
+      (app) => app.status === "Completed"
+    ).length;
+    setCompletedAppointment(completed);
+    setTotal(mappedAppointments.length);
+  }, [
+    queries.map((q) => q.data).join?.("") /* not needed but keep deps stable */,
+    queries.map((q) => q.data).toString(),
+  ]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

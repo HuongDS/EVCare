@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SortTable from "../Technician_Component/SortTable";
 import {
@@ -9,7 +9,7 @@ import {
 
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
+import { useGetTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
 import { updateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
 import { CardListSection } from "../Technician_Component/CardListSection";
 
@@ -19,70 +19,63 @@ export default function Technician_MyJob() {
 
   const [activeStatus, setActiveStatus] =
     useState<TechnicianWorkingSessionEnum>(
-      TechnicianWorkingSessionEnum.PENDING
+      TechnicianWorkingSessionEnum.ADDING_PART
     );
   const [appointments, setAppointments] = useState<TechnicianAppointmentsDto[]>(
     []
   );
-  const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [fade, setFade] = useState(false);
 
-  const fetchAppointments = useCallback(
-    async (statusOverride?: TechnicianWorkingSessionEnum) => {
-      const statusToFetch = statusOverride ?? activeStatus;
-      setIsLoading(true);
-      setIsError(false);
-      setFade(true);
-
-      try {
-        const data = await getTechnicianAppointments({
-          Status: statusToFetch,
-          PageSize: 1000,
-          PageIndex: 1,
-        });
-
-        const list = data.items ?? [];
-
-        if (
-          statusToFetch === TechnicianWorkingSessionEnum.PENDING &&
-          list.length > 0
-        ) {
-          const pendingAppointment = list[0];
-          await updateTechnicianWorkingSession({
-            orderId: pendingAppointment.orderId,
-            status: TechnicianWorkingSessionEnum.ADDING_PART,
-          });
-
-          setActiveStatus(TechnicianWorkingSessionEnum.ADDING_PART);
-          await fetchAppointments(TechnicianWorkingSessionEnum.ADDING_PART);
-          return;
-        }
-
-        setAppointments(list);
-      } catch (e) {
-        console.error("Failed to fetch appointments", e);
-        setIsError(true);
-      } finally {
-        setTimeout(() => setFade(false), 80);
-        setIsLoading(false);
-      }
-    },
-    [activeStatus]
+  const { data, isLoading, isFetching, refetch } = useGetTechnicianAppointments(
+    {
+      Status: String(activeStatus),
+      PageSize: 1000,
+      PageIndex: 1,
+    }
   );
+
+  useEffect(() => {
+    setFade(true);
+    setIsError(false);
+    try {
+      const list = data?.items ?? [];
+      if (
+        String(activeStatus) === TechnicianWorkingSessionEnum.PENDING &&
+        list.length > 0
+      ) {
+        (async () => {
+          const pendingAppointment = list[0];
+          try {
+            await updateTechnicianWorkingSession({
+              orderId: pendingAppointment.orderId,
+              status: TechnicianWorkingSessionEnum.ADDING_PART,
+            });
+            setActiveStatus(TechnicianWorkingSessionEnum.ADDING_PART);
+          } catch (err) {
+            console.error("Failed to auto-update pending appointment", err);
+            setIsError(true);
+          }
+        })();
+        return;
+      }
+      setAppointments(list);
+    } catch (e) {
+      console.error("Failed to process appointments", e);
+      setIsError(true);
+    } finally {
+      setTimeout(() => setFade(false), 80);
+    }
+  }, [data, activeStatus]);
 
   useEffect(() => {
     const tab = location.state?.tab;
     if (tab === "ADDING_PART") {
       setActiveStatus(TechnicianWorkingSessionEnum.ADDING_PART);
-      fetchAppointments(TechnicianWorkingSessionEnum.ADDING_PART);
       navigate(location.pathname, { replace: true, state: {} });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.key]);
-
-  useEffect(() => {
-    fetchAppointments();
-  }, [fetchAppointments]);
 
   const handleUpdateStatus = async (
     orderId: number,
@@ -92,7 +85,7 @@ export default function Technician_MyJob() {
       prev.map((a) => (a.orderId === orderId ? { ...a, status: newStatus } : a))
     );
     setTimeout(async () => {
-      await fetchAppointments();
+      await refetch();
       if (activeStatus !== newStatus) setActiveStatus(newStatus);
     }, 500);
   };
@@ -101,7 +94,7 @@ export default function Technician_MyJob() {
     setAppointments((prev) =>
       prev.map((a) => (a.orderId === orderId ? { ...a } : a))
     );
-    fetchAppointments();
+    refetch();
   };
 
   const sortName: TechnicianWorkingSessionEnum[] = [
@@ -124,7 +117,6 @@ export default function Technician_MyJob() {
         onChange={(val) => {
           if (val !== activeStatus) {
             setActiveStatus(val);
-            fetchAppointments(val);
           }
         }}
       />
@@ -135,7 +127,7 @@ export default function Technician_MyJob() {
         appointments={appointments}
         onStatusChange={handleUpdateStatus}
         onPartsUpdated={handlePartsUpdated}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
       />
     </AppointmentWrapper>
   );

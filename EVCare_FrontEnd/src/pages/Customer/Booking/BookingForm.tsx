@@ -325,6 +325,13 @@ function BookingFormStepper({ show, handleClose, setLoading, loading }: Props) {
     }
   }, [show, resetForm]);
 
+  useEffect(() => {
+    if (isAddNew) {
+      setVehicleCategory(0);
+      setLicensePlate("");
+    }
+  }, [isAddNew]);
+
   if (!show || loading) return null;
 
   return (
