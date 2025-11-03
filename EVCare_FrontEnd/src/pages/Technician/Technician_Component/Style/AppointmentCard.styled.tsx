@@ -1,260 +1,133 @@
 import styled from "styled-components";
-import { TechnicianWorkingSessionEnum } from "../../../../models/enums/TechnicianWorkingSessionEnum";
-import { DamageLevelEnum } from "../../../../models/enums/DamageLevelEnum";
+import {
+  damageColorMap,
+  type DamageLevelEnum,
+} from "../../../../models/enums/DamageLevelEnum";
 
-const statusColors: Record<TechnicianWorkingSessionEnum, string> = {
-  [TechnicianWorkingSessionEnum.PENDING]: "#ff9800",
-  [TechnicianWorkingSessionEnum.ADDING_PART]: "#3f51b5",
-  [TechnicianWorkingSessionEnum.CONFIRM]: "#2196f3",
-  [TechnicianWorkingSessionEnum.INPROGRESS]: "#9c27b0",
-  [TechnicianWorkingSessionEnum.COMPLETED]: "#4caf50",
-  [TechnicianWorkingSessionEnum.CANCELED]: "#f44336",
-};
-
-const damageColors: Record<DamageLevelEnum, string> = {
-  [DamageLevelEnum.NotAssessed]: "#9E9E9E",
-  [DamageLevelEnum.Minor]: "#00AD4E",
-  [DamageLevelEnum.Moderate]: "#FFC107",
-  [DamageLevelEnum.Severe]: "#FF7043",
-  [DamageLevelEnum.Critical]: "#E53935",
-};
-
-/* 🟢 Dùng transient prop: $status */
-export const AppointmentStatus = styled.div<{
-  $status: TechnicianWorkingSessionEnum;
-}>`
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95em;
-  text-transform: capitalize;
-  background-color: ${({ $status }) => statusColors[$status]}20;
-  color: ${({ $status }) => statusColors[$status]};
-  border: 1px solid ${({ $status }) => statusColors[$status]};
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: 480px) {
-    font-size: 0.85em;
-    padding: 4px 10px;
-  }
-`;
-
-export const DamageLevelBadge = styled.div<{ $level: DamageLevelEnum }>`
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.9em;
-  font-weight: 600;
-  background-color: ${({ $level }) => damageColors[$level]}20;
-  color: ${({ $level }) => damageColors[$level]};
-  border: 1px solid ${({ $level }) => damageColors[$level]};
-  margin-left: 6px;
-  text-transform: capitalize;
-
-  @media (max-width: 480px) {
-    font-size: 0.8em;
-    padding: 3px 8px;
-  }
-`;
-
-export const Card = styled.div`
-  font-family: "Outfit", sans-serif;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  margin: 12px;
-  padding: 16px 22px;
+export const CardContainer = styled.div`
+  width: 100%;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-
-  @media (max-width: 768px) {
-    padding: 14px 18px;
-  }
-
-  @media (max-width: 480px) {
-    margin: 10px 0;
-    padding: 12px 14px;
-  }
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 0.95rem;
 `;
 
-export const CardHeader = styled.div`
+export const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap;
-  row-gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1.05rem;
 `;
 
-export const AppointmentID = styled.div`
-  font-size: 1.2em;
-  font-weight: bold;
-  color: #333;
-
-  span {
-    color: #555;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 1em;
-  }
-`;
-
-export const AppointmentDate = styled.div`
+export const ImageCarousel = styled.div`
   display: flex;
-  column-gap: 0.5rem;
-  align-items: center;
-  font-size: 1rem;
-  color: #555;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  border-radius: 6px;
+  background: #f4f4f4;
+`;
 
-  i {
-    font-size: 1.2em;
-    color: #777;
+export const ImageItem = styled.div`
+  min-width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
+`;
 
-  @media (max-width: 480px) {
+export const SectionBox = styled.div`
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 200px;
+`;
+
+export const InfoBox = styled(SectionBox)`
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+export const InfoColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+`;
+
+export const SectionTitle = styled.div`
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+`;
+
+export const SubTitle = styled.div`
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #777;
+`;
+
+export const ListWrapper = styled.div`
+  max-height: 150px;
+  overflow-y: auto;
+  ul {
+    padding-left: 1rem;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  .empty {
+    color: #888;
     font-size: 0.9rem;
   }
 `;
 
-export const CardBody = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5em;
-  margin-top: 15px;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 1em;
-  }
-`;
-
-export const Title = styled.div`
-  font-size: 1.4em;
-  font-weight: bold;
-  padding-bottom: 5px;
-  color: #333;
-
-  @media (max-width: 480px) {
-    font-size: 1.2em;
-  }
-`;
-
-export const Info = styled.div`
-  font-size: 1em;
-  color: #555;
-  word-break: break-word;
-
-  @media (max-width: 480px) {
-    font-size: 0.9em;
-  }
-`;
-
-export const InformationStyled = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8em;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-export const ListService = styled.div`
-  max-height: 6em;
-  overflow-y: auto;
-  margin-top: 8px;
-`;
-
-export const ListPart = styled.div`
-  max-height: 6em;
-  overflow-y: auto;
-  margin-top: 8px;
-`;
-
-export const ButtonStyled = styled.div`
+export const PartItem = styled.div`
   display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 12px;
-
-  @media (max-width: 480px) {
-    justify-content: center;
-  }
-`;
-
-export const AppointmentImagesWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  margin-top: 10px;
-  border-radius: 12px;
-`;
-
-export const AppointmentImages = styled.div<{ $currentIndex: number }>`
-  display: flex;
-  transition: transform 0.5s ease-in-out;
-  transform: translateX(${({ $currentIndex }) => `-${$currentIndex * 100}%`});
-`;
-
-export const ImageItem = styled.div`
-  min-width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
   align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px;
 
   img {
-    max-width: 50%;
-    max-height: 160px;
-    object-fit: contain;
-    border-radius: 12px;
-  }
-
-  @media (max-width: 1024px) {
-    height: 220px;
-  }
-
-  @media (max-width: 768px) {
-    height: 180px;
-  }
-
-  @media (max-width: 480px) {
-    height: 150px;
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 6px;
   }
 `;
 
-export const DotsContainer = styled.div`
+export const DamageLevelBadgeStyled = styled.span<{ $level: DamageLevelEnum }>`
+  padding: 3px 6px;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background-color: ${({ $level }) => damageColorMap[$level] || "#999"};
+`;
+
+export const ListSection = styled.div`
   display: flex;
-  justify-content: center;
-  margin-top: 8px;
-  gap: 6px;
+  gap: 1rem;
+  flex-wrap: wrap;
 `;
 
-export const Dot = styled.div<{ $active: boolean }>`
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: ${({ $active }) => ($active ? "#4caf50" : "#ccc")};
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &:hover {
-    background: #4caf50;
-  }
-
-  @media (max-width: 480px) {
-    width: 8px;
-    height: 8px;
-  }
+export const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.8rem;
 `;
