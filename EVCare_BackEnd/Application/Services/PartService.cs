@@ -404,7 +404,7 @@ namespace Application.Services
                 NewUnitPrice = part.Price,
                 OldReplacePrice = part.ReplacementPrice,
                 NewReplacePrice = part.ReplacementPrice,
-                ActionType = DataAccess.Enums.ActionTypeEnum.Restore,
+                //ActionType = DataAccess.Enums.ActionTypeEnum.Restore,
                 ChangeDate = DateTime.Now,
                 EmployeeName = account.First_Name + " " + account.Last_Name
             };
@@ -461,6 +461,7 @@ namespace Application.Services
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var part = await _partRepository.GetByIdAsync(id);
+                part.Updated_At = DateTime.Now;
                 if (part.Deleted_At != DateTime.MinValue) {
                     throw new Exception("Part has been deleted");
                 }

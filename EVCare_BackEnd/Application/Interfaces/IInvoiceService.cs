@@ -23,5 +23,6 @@ namespace Application.Interfaces
         Task CancelPayOSOrder(int orderId);
         Task<InvoiceViewModel> GetInvoiceByOrderId(int orderId);
         Task<byte[]> PrintInvoice(int orderId);
+        Task<InvoiceDetailViewModel> GetInvoiceDetailByOrderIdAsync(int orderId);
     }
 }

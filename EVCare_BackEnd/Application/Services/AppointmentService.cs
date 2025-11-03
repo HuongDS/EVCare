@@ -308,6 +308,8 @@ namespace Application.Services
             var entity = _mapper.Map<Appointment>(model);
             entity.Status = AppointmentStatusEnum.CheckedIn;
             entity.EmployeeId = employeeId;
+            entity.CustomerId = model.CustomerId;
+
             return (await _appointmentRepository.AddAsync(entity)).Id;
         }
     }
