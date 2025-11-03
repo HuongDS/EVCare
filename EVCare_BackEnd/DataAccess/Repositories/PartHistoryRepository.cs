@@ -29,8 +29,10 @@ namespace DataAccess.Repositories {
                  query  = query.Where(query => DateOnly.FromDateTime(query.ChangeDate) <= model.ToDate.Value);
             }
             if(!string.IsNullOrEmpty(model.Keyword)) {
-                 query  = query.Where(query => query.Part.Name.Contains(model.Keyword));
-                 query = query.Where(query => query.EmployeeName.Contains(model.Keyword));
+                var keyword = model.Keyword.Trim().ToLower();
+                query = query.Where(q =>
+                    q.Part.Name.ToLower().Contains(keyword)
+                    || q.EmployeeName.ToLower().Contains(keyword));
             }
             if(model.ActionType.HasValue) {
                  query  = query.Where(query => query.ActionType == model.ActionType.Value);
