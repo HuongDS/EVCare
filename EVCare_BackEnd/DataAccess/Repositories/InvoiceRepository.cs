@@ -193,7 +193,8 @@ namespace DataAccess.Repositories
                     PaymentStatus = x.Status,
                     SubTotal = subTotal,
                     Vat = serviceCenter.Vat,
-                    Total = total
+                    Total = total,
+                    PaymentMethod = x.Payment_Method
 
                 }).FirstOrDefaultAsync();
 
