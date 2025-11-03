@@ -256,27 +256,33 @@ namespace Application.Services
             return await _partRepository.GetAllParts(model);
         }
 
-        public async Task<byte[]> GetPartImportTemplate()
-        {
+       
+        public async Task<byte[]> GetPartImportTemplate() {
             using var wb = new XLWorkbook();
+
             var ws = wb.AddWorksheet("Parts");
-            string[] headers = {
-                "Name","CategoryName","Description","Price",
-                "ReplacementPrice","Stock"
-                };
+            string[] headers = { "Name", "CategoryName", "Description", "Price", "ReplacementPrice", "Stock" };
+
             for (int i = 0; i < headers.Length; i++)
-            {
                 ws.Cell(1, i + 1).Value = headers[i];
-            }
+            var headerRange = ws.Range("A1:F1");
+            var dataRange = ws.Range("A2:F1000");
+
+            headerRange.Style.Protection.Locked = true;
+
+            dataRange.Style.Protection.Locked = false;
+
+            ws.Protect("evcare");
+
             ws.Cell(2, 1).Value = "Front Brake Pad A12";
-            ws.Cell(2, 2).Value = "Brake System";
+            ws.Cell(2, 2).Value = "Choose category from dropdown";
             ws.Cell(2, 3).Value = "High-performance ceramic pad";
             ws.Cell(2, 4).Value = 650000;
             ws.Cell(2, 5).Value = 120000;
             ws.Cell(2, 6).Value = 25;
 
-
-            ws.Range("A1:H1").Style.Font.Bold = true;
+            ws.Range("A1:F1").Style.Font.Bold = true; 
+            ws.SheetView.FreezeRows(1);
             ws.Columns().AdjustToContents();
 
             var readme = wb.AddWorksheet("README");
@@ -288,41 +294,84 @@ namespace Application.Services
             readme.Cell(rr++, 1).Value = "• Price, ReplacementPrice: số thập phân không âm.";
             readme.Cell(rr++, 1).Value = "• Stock: số nguyên không âm.";
             readme.Cell(rr++, 1).Value = "• Dòng ví dụ có sẵn ở sheet Parts (hàng 2). Hãy xóa dòng ví dụ khi import thật.";
-
             readme.Column(1).AdjustToContents();
 
-            var category = wb.AddWorksheet("Categories");
-            category.Cell(1, 1).Value = "Categories in System";
+            var wsCat = wb.AddWorksheet("Categories");
+            wsCat.Cell(1, 1).Value = "CategoryName";
+            wsCat.Cell(1, 1).Style.Font.Bold = true;
+
             var categories = await _partCategoryRepository.GetAllAsync();
-            int r = 2;
-            category.Cell(r, 1).Value = "Name";
-            category.Cell(r, 1).Style.Font.Bold = true;
-            category.Cell(r, 2).Value = "IsDelete";
-            category.Cell(r, 2).Style.Font.Bold = true;
-            foreach (var c in categories)
-            {
-                category.Cell(++r, 1).Value = c.Name;
-                category.Cell(r, 2).Value = (c.Deleted_At != DateTime.MinValue);
+            var activeNames = categories
+                .Where(c => c.Deleted_At == DateTime.MinValue)
+                .Select(c => (c.Name ?? string.Empty).Trim())
+                .Where(n => !string.IsNullOrWhiteSpace(n))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(n => n)
+                .ToList();
+
+            for (int i = 0; i < activeNames.Count; i++)
+                wsCat.Cell(i + 2, 1).Value = activeNames[i];
+
+            wsCat.Column(1).AdjustToContents();
+
+            if (activeNames.Count > 0) {
+                var lastRow = activeNames.Count + 1; 
+                var listRange = wsCat.Range(2, 1, lastRow, 1);
+
+                listRange.AddToNamed("CategoryList", XLScope.Workbook);
+
+                var dvRange = ws.Range("B2:B1000");
+                var dv = dvRange.SetDataValidation();
+                dv.AllowedValues = XLAllowedValues.List;
+                dv.InCellDropdown = true;
+                dv.IgnoreBlanks = true;
+                dv.List("=CategoryList"); 
+
+               
+                dv.ShowInputMessage = true;
+                dv.InputTitle = "Category";
+                dv.InputMessage = "Chọn từ danh sách có sẵn.";
+
+                dv.ShowErrorMessage = true;
+                dv.ErrorTitle = "Invalid category";
+                dv.ErrorMessage = "Vui lòng chọn CategoryName từ dropdown (không gõ tự do).";
             }
-            category.Range("A1:A1").Style.Font.Bold = true;
-            category.Columns().AdjustToContents();
+
+           
+            wsCat.Hide();
+
+           
             using var ms = new MemoryStream();
             wb.SaveAs(ms);
-            var bytes = ms.ToArray();
-            return bytes;
+            return ms.ToArray();
         }
+
 
         public async Task<PartImportResult> ImportPartAsync(IFormFile file, int accountId)
         {
             var result = new PartImportResult();
+
             using var stream = new MemoryStream();
             await file.CopyToAsync(stream);
+            stream.Position = 0; 
+
             using var workbook = new XLWorkbook(stream);
-            var worksheet = workbook.Worksheet("Parts");
-            var rows = worksheet.RowsUsed().Skip(1);
-            var rowIndex = 2;
-            foreach (var row in rows)
+            var worksheet = workbook.Worksheets.FirstOrDefault(ws =>
+                ws.Name.Trim().Equals("Parts", StringComparison.OrdinalIgnoreCase));
+
+            if (worksheet == null)
+                throw new Exception("Worksheet 'Parts' not found in file.");
+
+            var lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 0;
+            if (lastRow < 2)
+                throw new Exception("No data rows found in worksheet 'Parts'.");
+
+          
+            for (int rowIndex = 2;rowIndex <= lastRow;rowIndex++)
             {
+                var row = worksheet.Row(rowIndex);
+                if (row.IsEmpty())
+                    continue;
                 var errorModel = new PartImportErrorModel();
                 try
                 {
@@ -351,14 +400,22 @@ namespace Application.Services
                         errorModel.Errors.Add("Name is required");
 
                     var category = await _partCategoryRepository.GetByNameAsync(categoryName);
-                    if (category == null || category.Deleted_At != DateTime.MinValue)
+                    if (category == null)
                     {
                         errorModel.Errors.Add("Category not found or has been deleted");
+                    }
+                    if(category != null && category.Deleted_At != DateTime.MinValue)
+                    {
+                        errorModel.Errors.Add("Category has been deleted");
                     }
                     var existingPart = await _partRepository.GetByNameAsync(name);
                     if (existingPart != null)
                     {
                         errorModel.Errors.Add("Part name already exists");
+                    }
+                    if (errorModel.Errors.Count > 0) {
+                        result.Errors.Add(errorModel);
+                        continue;
                     }
                     var part = new PartCreateModel
                     {
@@ -369,18 +426,14 @@ namespace Application.Services
                         ReplacementPrice = replacementPrice,
                         Stock = stock,
                     };
-                    if (errorModel.Errors.Count > 0)
-                    {
-                        result.Errors.Add(errorModel);
-                        continue;
-                    }
+                   
                     await CreateAPart(part, accountId);
                 }
                 catch (Exception ex)
                 {
 
                 }
-                rowIndex++;
+              
             }
             return result;
         }
