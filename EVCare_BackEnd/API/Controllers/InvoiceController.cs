@@ -289,5 +289,31 @@ namespace API.Controllers
             }
         }
 
+        [HttpGet("details/{orderId}")]
+        [Authorize(Roles ="Staff")]
+        public async Task<IActionResult> GetInvoiceDetail(int orderId) {
+            try {
+                var data = await _invoiceService.GetInvoiceDetailByOrderIdAsync(orderId);
+                return Ok(new ResponseDto<InvoiceDetailViewModel>
+                {
+                    data = data,
+                    statusCode = HttpStatus.OK,
+                    message = Message.GET_INVOICE_DETAIL_SUCCESSFULLY
+
+                });
+
+
+            }catch(Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    data = null,
+                    message = ex.Message
+
+                });
+            }
+        }
+
+
     }
 }
