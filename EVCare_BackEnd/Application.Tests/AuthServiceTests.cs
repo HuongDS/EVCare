@@ -10,6 +10,7 @@ using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
 using BCrypt.Net;
 using DataAccess.Dtos.Accounts;
+using DataAccess.Dtos.Others;
 using DataAccess.Dtos.Register;
 using DataAccess.Entities;
 using DataAccess.Enums;
@@ -236,7 +237,7 @@ namespace Application.Tests {
                     _fixture.Create<IGoogleValidator>()
 
                 )
-            { CallBase = true};
+            { CallBase = true };
 
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
                 .ReturnsAsync(inputRegister);
@@ -263,7 +264,7 @@ namespace Application.Tests {
                    _fixture.Create<ITechnicianRepository>(),
                      _fixture.Create<IGoogleValidator>()
                )
-            { CallBase = true};
+            { CallBase = true };
 
             authServiceMock.Setup(a => a.ValidateInfo(It.IsAny<RegisterRequestDto>()))
                 .ThrowsAsync(new Exception("Data invalid"));
@@ -550,10 +551,10 @@ namespace Application.Tests {
         }
         [Fact]
         public async Task LoginGoogleAsync_WithEmptyEmail_ThrowsException() {
-           
+
             var payload = new Google.Apis.Auth.GoogleJsonWebSignature.Payload
             {
-                Email=""
+                Email = ""
             };
             var googleValidatorMock = _fixture.Freeze<Mock<IGoogleValidator>>();
             googleValidatorMock.Setup(g => g.ValidateAsync(It.IsAny<string>()))
@@ -569,7 +570,7 @@ namespace Application.Tests {
 
             var payload = new Google.Apis.Auth.GoogleJsonWebSignature.Payload
             {
-               Email = null
+                Email = null
             };
             var googleValidatorMock = _fixture.Freeze<Mock<IGoogleValidator>>();
             googleValidatorMock.Setup(g => g.ValidateAsync(It.IsAny<string>()))
@@ -600,7 +601,7 @@ namespace Application.Tests {
                 Hash_Password = "hash",
                 Create_At = DateTime.UtcNow,
                 Updated_At = DateTime.UtcNow,
-                Deleted_At =DateTime.MinValue,
+                Deleted_At = DateTime.MinValue,
                 Role = RoleEnum.Customer
             };
             var googleValidatorMock = _fixture.Freeze<Mock<IGoogleValidator>>();
@@ -622,10 +623,10 @@ namespace Application.Tests {
                 _fixture.Create<ITechnicianRepository>(),
                 googleValidatorMock.Object
             )
-            { CallBase = true};
+            { CallBase = true };
             authServiceMock.Setup(t => t.RegisterCustomerAsync(It.IsAny<AccountResponseDto>()))
                 .Returns(Task.CompletedTask);
-            authServiceMock.Setup(t=>t.GenerateTokenAsync(It.IsAny<Account>(),
+            authServiceMock.Setup(t => t.GenerateTokenAsync(It.IsAny<Account>(),
                                         It.IsAny<ResponseDto<LoginResponseDto>>(),
                                         It.IsAny<HttpContext>()))
                 .ReturnsAsync(new ResponseDto<LoginResponseDto>
@@ -640,7 +641,7 @@ namespace Application.Tests {
             var context = new DefaultHttpContext();
             var result = await authServiceMock.Object.LoginGoogleAsync("valid_google_token", context);
             Assert.NotNull(result);
-            Assert.Equal("abc",result?.data?.accessToken);
+            Assert.Equal("abc", result?.data?.accessToken);
         }
 
         [Fact]
@@ -687,14 +688,14 @@ namespace Application.Tests {
             { CallBase = true };
             authServiceMock.Setup(t => t.RegisterCustomerAsync(It.IsAny<AccountResponseDto>()))
                 .Returns(Task.CompletedTask);
-           
+
             var context = new DefaultHttpContext();
-            var result  = await Assert.ThrowsAsync<Exception>(
+            var result = await Assert.ThrowsAsync<Exception>(
                 async () => await authServiceMock.Object.LoginGoogleAsync("valid_google_token", context));
             Assert.Equal(Message.ACCOUNT_HAS_BEEN_DISABLED, result.Message);
         }
 
-        [Theory,AutoData]
+        [Theory, AutoData]
         public async Task VerifyRegisterAsync_WithInvalidEmail_ThrowsException(string email) {
             //Arrange
             var otpServiceMock = _fixture.Freeze<Mock<IOtpServices>>();
@@ -718,7 +719,7 @@ namespace Application.Tests {
                     phone = "0908249649",
                     password = "ValidPass1@"
                 });
-            
+
             var authServiceMock = new Mock<AuthServices>(
                 _fixture.Create<IAccountRepository>(),
                 _fixture.Create<ITokenServices>(),
@@ -730,12 +731,12 @@ namespace Application.Tests {
                 _fixture.Create<ITechnicianRepository>(),
                 _fixture.Create<IGoogleValidator>()
             )
-            { CallBase = true};
+            { CallBase = true };
             authServiceMock.Setup(a => a.RegisterAccountAsync(It.IsAny<RegisterRequestDto>()))
                 .ReturnsAsync(new AccountResponseDto
                 {
                     accountId = 1000
-                   
+
                 });
             var authService = authServiceMock.Object;
             var result = await authService.VerifyRegisterAsync(email);
@@ -744,6 +745,66 @@ namespace Application.Tests {
 
         }
 
-    }
-    
+        [Theory, AutoData]
+        public async Task ResetPassword_WithAccountIsNull_ThrowsException(ResetPasswordRequestDto model) {
+
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(a => a.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(() => null);
+            var authService = _fixture.Create<AuthServices>();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.ResetPassword(model));
+            Assert.Equal(Message.ACCOUNT_NOT_FOUND, exception.Message);
+
+        }
+        [Theory, AutoData]
+        public async Task ResetPassword_WithAccountIsBanned_ThrowsException(ResetPasswordRequestDto model) {
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(a => a.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(new DataAccess.Entities.Account
+                {
+                    Deleted_At = DateTime.UtcNow.AddDays(-1)
+                });
+            var authService = _fixture.Create<AuthServices>();
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.ResetPassword(model));
+            Assert.Equal(Message.ACCOUNT_HAS_BEEN_DISABLED, exception.Message);
+        }
+
+        [Theory, InlineAutoData("weekpassword")]
+        public async Task ResetPassword_WithWeakPassword_ThrowsException(string password,
+            ResetPasswordRequestDto model) {
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(a => a.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(new DataAccess.Entities.Account
+                {
+                    Deleted_At = DateTime.MinValue
+                });
+            var authService = _fixture.Create<AuthServices>();
+            model.newPassword = password;
+            var exception = await Assert.ThrowsAsync<Exception>(
+                async () => await authService.ResetPassword(model));
+            Assert.Equal(Message.WEAK_PASSWORD, exception.Message);
+
+        }
+        [Theory, InlineAutoData("StrongPass1@")]
+        public async Task ResetPassword_WithValidData_DataIsUpdated(string password,
+            ResetPasswordRequestDto model) {
+            var accountToUpdate = new DataAccess.Entities.Account
+            {
+                Id = 1000,
+                Deleted_At = DateTime.MinValue
+            };
+            var accountRepositoryMock = _fixture.Freeze<Mock<IAccountRepository>>();
+            accountRepositoryMock.Setup(a => a.GetAccountByEmail(It.IsAny<string>()))
+                .ReturnsAsync(accountToUpdate);
+            accountRepositoryMock.Setup(a => a.UpdateAsync(It.IsAny<DataAccess.Entities.Account>()))
+                .ReturnsAsync((DataAccess.Entities.Account acc) => acc);
+            var authService = _fixture.Create<AuthServices>();
+            model.newPassword = password;
+            await authService.ResetPassword(model);
+
+            accountRepositoryMock.Verify(a => a.UpdateAsync(accountToUpdate), Times.Once);
+        }
+      }
 }

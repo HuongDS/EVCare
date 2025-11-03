@@ -2,9 +2,10 @@ import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsMode
 import { TechnicianWorkingSessionEnum } from "../../../models/enums";
 import {
   AppointmentList,
-  Watermark,
   ErrorMessage,
-} from "../TechnicianGeneral/Technician_General.styled";
+  Watermark,
+} from "../TechnicianMyJob/Technician_MyJob.styled";
+
 import AppointmentCard from "./AppointmentCard";
 import AppointmentCardProgress from "./AppointmentCardProgress";
 import LoadingOverlay from "./LoadingOverlay";
