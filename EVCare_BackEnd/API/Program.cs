@@ -184,6 +184,7 @@ builder.Services.AddScoped<AuthorizeTechnicianDetail>();
 builder.Services.AddScoped<ValidateInvoiceTotalFilter>();
 builder.Services.AddScoped<CheckAuthorizationOfCustomerFilter>();
 builder.Services.AddScoped<AuthorizeCustomerAndStaffForOrder>();
+builder.Services.AddScoped<AuthorizeEmployeeIsAbsent>();
 
 //Background Job
 builder.Services.AddScoped<IAppointmentExpiryJob, AppointmentExpiryJob>();

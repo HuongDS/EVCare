@@ -1,6 +1,6 @@
 import { ChatSidebar } from "./ChatSideBar";
 import { ChatWindow } from "./ChatWindow";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Layout, message, Badge, Spin } from "antd";
 import type { Conversation } from "../../../models/Message/Conversation";
 import { useSelector } from "react-redux";
@@ -47,23 +47,25 @@ export const StaffChatPage = () => {
     });
   }, [connection]);
 
-  const handleNewMessage = (conversationId: string, newMessage: HistoryMessage) => {
-    setConversations((prev) => {
-      const conTarget = prev.find((c) => c.id === conversationId);
-      if (!conTarget) return prev;
-      const update = {
-        ...conTarget,
-        lastMessage: {
-          text: newMessage.text,
-          sentAt: newMessage.sentAt,
-          senderId: newMessage.senderId,
-        },
-      };
+  const handleNewMessage = useCallback(() => {
+    (conversationId: string, newMessage: HistoryMessage) => {
+      setConversations((prev) => {
+        const conTarget = prev.find((c) => c.id === conversationId);
+        if (!conTarget) return prev;
+        const update = {
+          ...conTarget,
+          lastMessage: {
+            text: newMessage.text,
+            sentAt: newMessage.sentAt,
+            senderId: newMessage.senderId,
+          },
+        };
 
-      const oldConvo = prev.filter((c) => c.id !== conversationId);
-      return [update, ...oldConvo];
-    });
-  };
+        const oldConvo = prev.filter((c) => c.id !== conversationId);
+        return [update, ...oldConvo];
+      });
+    };
+  }, []);
 
   const handleSelectConversation = (conversationId: string) => {
     setSelected(conversationId);

@@ -40,6 +40,7 @@ namespace API.Controllers
         [Authorize(Roles = "Staff")]
         [HttpPost("staff")]
         [ServiceFilter(typeof(SetEmployeeIdFilter))]
+        [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
         public async Task<IActionResult> CreateAppointment(AppointmentCreateModel model) {
             try {
                 int employeeId = (int)HttpContext.Items["EmployeeId"];
@@ -183,6 +184,7 @@ namespace API.Controllers
         [Authorize(Roles = "Staff")]
         [HttpPut("staff")]
         [ServiceFilter(typeof(SetEmployeeIdFilter))]
+        [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
         public async Task<IActionResult> UpdateAppointment(AppointmentUpdateModel model) {
             try {
                 var employeeId = (int)HttpContext.Items["EmployeeId"];
@@ -208,8 +210,8 @@ namespace API.Controllers
 
         [Authorize(Roles = "Staff")]
         [HttpDelete("{appointmentId}")]
-        [ServiceFilter(typeof(SetCustomerIdFilter))]
-        [ServiceFilter(typeof(AppointmentOwnershipFilter))]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
+        [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
         public async Task<IActionResult> DeleteAppointment(int appointmentId) {
             try {
                 var result = await _appointmentService.DeleteAppointment(appointmentId);

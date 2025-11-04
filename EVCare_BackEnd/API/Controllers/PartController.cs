@@ -92,7 +92,7 @@ namespace API.Controllers
         public async Task<IActionResult> UpdatePart([FromQuery] int id, [FromBody] PartAdminUpdateModel model) {
             try {
                 var accountId = (int)HttpContext.Items["AccountId"];
-                await _partService.UpdateAPart(id, model,accountId);
+                await _partService.UpdateAPart(id, model, accountId);
                 return Ok(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.OK,
@@ -207,7 +207,7 @@ namespace API.Controllers
                 var accountId = (int)HttpContext.Items["AccountId"];
                 var result = await _partService.ImportPartAsync(file, accountId);
                 if (result.HasError) {
-                   var fileContent =  _partService.GeneratePartImportErrorFile(result.Errors);
+                    var fileContent = _partService.GeneratePartImportErrorFile(result.Errors);
                     var fileName = $"Part_Import_Errors_{DateOnly.FromDateTime(DateTime.Now)}.xlsx";
                     return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
                 }
@@ -218,6 +218,49 @@ namespace API.Controllers
                         message = "Import parts successfully"
                     });
                 }
+            }
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("total-price")]
+        [Authorize(Roles = "Admin, Staff, Technician")]
+        public async Task<IActionResult> GetTotalPriceOfParts() {
+            try {
+                var totalPrice = await _partService.GetTotalPriceOfParts();
+                return Ok(new ResponseDto<decimal>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = "Get total price of parts successfully",
+                    data = totalPrice
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("low-stock")]
+        [Authorize(Roles = "Admin, Staff, Technician")]
+        public async Task<IActionResult> GetLowStockParts() {
+            try {
+                var data = await _partService.GetLowStockParts();
+
+                return Ok(new ResponseDto<IEnumerable<PartViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = "Get low stock parts successfully",
+                    data = data
+                });
             }
             catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>

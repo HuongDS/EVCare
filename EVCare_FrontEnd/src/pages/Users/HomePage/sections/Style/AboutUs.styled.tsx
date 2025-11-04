@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { Button } from "react-bootstrap";
+import { Button, type ButtonProps } from "react-bootstrap";
 import { lighten } from "polished";
 import { motion } from "framer-motion";
+import type { ComponentType } from "react";
 
 const EVCareGreen = "#00ad4e";
 const TEXT_COLOR_DARK = "#2A3D45";
@@ -21,7 +22,7 @@ export const AboutUsWrapper = styled.section`
   gap: 5rem;
 `;
 
-export const AboutUsButton = styled(Button)`
+export const AboutUsButton = styled(Button as ComponentType<ButtonProps>)`
   background: linear-gradient(135deg, #00c656 0%, ${EVCareGreen} 100%);
   color: #fff;
   border: none;
@@ -38,11 +39,7 @@ export const AboutUsButton = styled(Button)`
   gap: 0.5rem;
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      ${lighten(0.05, EVCareGreen)} 0%,
-      ${EVCareGreen} 100%
-    );
+    background: linear-gradient(135deg, ${lighten(0.05, EVCareGreen)} 0%, ${EVCareGreen} 100%);
     box-shadow: 0 6px 20px rgba(0, 173, 78, 0.4);
     transform: translateY(-2px);
   }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Service;
+using DataAccess.Dtos.Technician;
 using DataAccess.Enums;
 
 namespace DataAccess.Dtos.Appointment
@@ -24,6 +25,7 @@ namespace DataAccess.Dtos.Appointment
         public int? OrderId { get; set; }
         public List<string> ImagesUrls { get; set; } = new();
         public List<ServiceViewFormModel> Services { get; set; } = new();
+        public IEnumerable<TechnicianViewModel> Technicians { get; set; }
 
     }
 }

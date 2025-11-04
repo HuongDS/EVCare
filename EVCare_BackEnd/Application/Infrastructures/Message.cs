@@ -192,5 +192,7 @@ namespace Application.Infrastructures
         public static string ORDER_PARTS_GET_SUCCESS  = "Get order parts successfully";
 
         public static string GET_ACCOUNT_ID_SUCCESS  = "Get account id successfully";
+
+        public static string GET_INVOICE_DETAIL_SUCCESSFULLY = "Get Invoice detail successfully";
     }
 }

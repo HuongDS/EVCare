@@ -41,6 +41,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   setSelectedRole,
   setAddImage,
 }) => {
+  const handleUploadImage = ({ url }: { url: string }) => {
+    setAddImage(url);
+  };
   return (
     <div className="form-section">
       <div className="section-title">Basic Information</div>
@@ -180,7 +183,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           <label className="form-label">
             Add Image<span className="required">*</span>
           </label>
-          <UploadImage handleFileSubmit={setAddImage} imgQuantity={1} />
+          <UploadImage handleFileSubmit={handleUploadImage} imgQuantity={1} />
         </div>
       </div>
     </div>

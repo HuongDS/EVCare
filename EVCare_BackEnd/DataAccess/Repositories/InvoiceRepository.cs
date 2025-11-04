@@ -163,5 +163,43 @@ namespace DataAccess.Repositories
                         }).ToList()
                 }).FirstOrDefaultAsync();
         }
+
+        public async Task<InvoiceDetailViewModel> GetInvoiceDetailByOrderIdAsync(int orderId) {
+
+            var serviceCenter = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
+            var partLists = await _dbContext.OrderParts
+                 .AsNoTracking()
+                 .Where(x => x.OrderId == orderId)
+                 .Include(x => x.Part)
+                 .GroupBy(x => new { x.Part.Name, x.ReplacementPrice, x.Price })
+                 .Select(x => new OrderPartViewInvoiceModel
+                 {
+                     PartName = x.Key.Name,
+                     Quantity = x.Sum(x=>x.Quantity),
+                     ReplacePrice = x.Key.ReplacementPrice,
+                     UnitPrice = x.Key.Price
+
+                 }).ToListAsync();
+            var subTotal = partLists.Sum(x => x.Quantity * (x.UnitPrice + x.ReplacePrice));
+            var total = subTotal * (1 + serviceCenter.Vat / 100m);
+
+            var query = await _dbContext.Invoices.AsNoTracking()
+                .Where(x => x.OrderId == orderId)
+                .Select(x => new InvoiceDetailViewModel
+                {
+                    Id = x.Id,
+                    PartItems = partLists,
+                    PaymentDate = x.Updated_At,
+                    PaymentStatus = x.Status,
+                    SubTotal = subTotal,
+                    Vat = serviceCenter.Vat,
+                    Total = total,
+                    PaymentMethod = x.Payment_Method
+
+                }).FirstOrDefaultAsync();
+
+            return query;
+                
+        }
     }
 }

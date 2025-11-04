@@ -63,7 +63,7 @@ export const ContainerWrapper = styled.div`
       width: 100px;
       height: 100px;
       border-radius: 50%;
-      background: #e0e0e0;
+      background: #fff;
       margin: 0 auto 15px;
       border: 2px solid rgba(255, 255, 255, 1);
     }

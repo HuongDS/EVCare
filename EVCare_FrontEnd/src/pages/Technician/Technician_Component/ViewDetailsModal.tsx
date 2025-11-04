@@ -1,6 +1,10 @@
-import React from "react";
-import { Modal } from "antd";
+import React, { useMemo } from "react";
+import { Modal, Spin } from "antd";
+import { useQueries } from "@tanstack/react-query";
+import { useGetOrderDetail } from "../../../services/orderServiceApi";
+import { getTechnicianDetail } from "../../../services/technicianDetail";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+
 import {
   ModalContainer,
   Header,
@@ -13,6 +17,7 @@ import {
   ListWrapper,
 } from "./Style/ViewDetailsModal.styled";
 import { formatDate } from "../../../utils/formatDate";
+import { SubTitle } from "../../Customer/Booking/BookingForm.styled";
 
 interface Props {
   isOpen: boolean;
@@ -25,6 +30,43 @@ const ViewDetailsModal: React.FC<Props> = ({
   onClose,
   appointment,
 }) => {
+  const orderId = appointment?.orderId ?? 0;
+  const { data: orderDetail, isLoading } = useGetOrderDetail(orderId);
+  const parts = orderDetail?.data?.parts ?? [];
+
+  // Lấy danh sách unique technicianIds
+  const technicianIds = useMemo(() => {
+    if (!parts) return [];
+    return Array.from(
+      new Set(
+        parts.map((p: any) => Number(p.technicianId)).filter((id) => !isNaN(id))
+      )
+    );
+  }, [parts]);
+
+  // Lấy thông tin từng technician bằng useQueries
+  const techQueries = useQueries({
+    queries: technicianIds.map((id) => ({
+      queryKey: ["technicianDetail", id],
+      queryFn: () => getTechnicianDetail(id),
+      enabled: !!id,
+      staleTime: 5 * 60 * 1000,
+    })),
+  });
+
+  // Tạo map technicianId -> fullName
+  const techMap = useMemo(() => {
+    const map: Record<number, string> = {};
+    techQueries.forEach((q, index) => {
+      if (q.data) {
+        map[technicianIds[index]] = q.data.fullName;
+      }
+    });
+    return map;
+  }, [techQueries, technicianIds]);
+
+  const isTechLoading = techQueries.some((q) => q.isLoading);
+
   return (
     <Modal
       open={isOpen}
@@ -63,7 +105,7 @@ const ViewDetailsModal: React.FC<Props> = ({
                 </InfoItem>
                 <InfoItem>
                   <span className="label">Phone:</span>{" "}
-                  {appointment.phoneNumber ?? "default"}
+                  {appointment.phoneNumber ?? "—"}
                 </InfoItem>
                 <InfoItem>
                   <span className="label">Date:</span>{" "}
@@ -71,6 +113,8 @@ const ViewDetailsModal: React.FC<Props> = ({
                 </InfoItem>
               </div>
             </InfoSection>
+
+            {/* --- service & part --- */}
             <ListSection>
               <ListBox>
                 <SectionTitle>Services</SectionTitle>
@@ -88,13 +132,48 @@ const ViewDetailsModal: React.FC<Props> = ({
               </ListBox>
 
               <ListBox>
-                <SectionTitle>Part list</SectionTitle>
+                <div>
+                  <SectionTitle>
+                    Part list
+                    <SubTitle
+                      style={{
+                        fontSize: "0.7rem",
+                        fontWeight: "400",
+                        color: "#777",
+                      }}
+                    >
+                      Parts that you and the other technicians added
+                    </SubTitle>
+                  </SectionTitle>
+                </div>
+
                 <ListWrapper>
-                  {appointment.parts?.length ? (
+                  {isLoading || isTechLoading ? (
+                    <Spin />
+                  ) : parts?.length ? (
                     <ul>
-                      {appointment.parts.map((p, idx) => (
-                        <li key={idx}>
-                          {p.name} × {p.quantity}
+                      {parts.map((p: any, idx: number) => (
+                        <li
+                          key={idx}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: "4px 0",
+                          }}
+                        >
+                          <span>
+                            {p.name} × {p.quantity}
+                          </span>
+                          <span
+                            style={{
+                              fontStyle: "italic",
+                              color: "#555",
+                              fontSize: "0.9rem",
+                            }}
+                          >
+                            {techMap[p.technicianId] ?? "—"}
+                          </span>
                         </li>
                       ))}
                     </ul>

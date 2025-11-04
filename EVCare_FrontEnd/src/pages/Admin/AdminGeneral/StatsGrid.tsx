@@ -35,7 +35,6 @@ const StatsGrid: React.FC = () => {
     // when realtime event comes, refresh quick summary
     // refresh();
     if (type === "AppointmentConfirm") {
-      console.log("test data from back: ", payload);
       setData(payload);
     }
   });

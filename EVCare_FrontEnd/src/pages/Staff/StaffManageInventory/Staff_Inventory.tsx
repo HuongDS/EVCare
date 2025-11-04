@@ -48,8 +48,8 @@ const Staff_Inventory = () => {
     const items = parts?.data?.items ?? [];
 
     const total = items.length;
-    const lowStockItems = items.filter((p) => p.quantity < 10).length;
-    const totalValue = items.reduce((sum, p) => sum + p.price * p.quantity, 0);
+    const lowStockItems = items.filter((p) => p.stock < 10).length;
+    const totalValue = items.reduce((sum, p) => sum + p.price * p.stock, 0);
 
     return { total, lowStockItems, totalValue };
   }, [parts]);
@@ -176,7 +176,7 @@ const Staff_Inventory = () => {
                   return (
                     <tr
                       key={part.id}
-                      className={part.quantity < 10 ? "low-stock" : ""}
+                      className={part.stock < 10 ? "low-stock" : ""}
                     >
                       <td>
                         <img
@@ -197,11 +197,11 @@ const Staff_Inventory = () => {
                       <td>{part.price.toLocaleString("vi-VN")}</td>
                       <td
                         style={{
-                          color: part.quantity < 10 ? "#cf1322" : "#1a1a1a",
+                          color: part.stock < 10 ? "#cf1322" : "#1a1a1a",
                           fontWeight: 500,
                         }}
                       >
-                        {part.quantity}
+                        {part.stock}
                       </td>
                       <td>
                         <div

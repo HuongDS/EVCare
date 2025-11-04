@@ -1393,6 +1393,15 @@ namespace DataAccess.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<decimal?>("ScaleX")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("ScaleY")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("ScaleZ")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.ToTable("VehiclesCategories");

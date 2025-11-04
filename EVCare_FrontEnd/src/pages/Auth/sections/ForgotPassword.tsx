@@ -8,6 +8,7 @@ interface ForgotProps {
   setEmail: (v: string) => void;
   isLoading: boolean;
   handChangeIsForgot: () => void;
+  // setIsReset: (v: boolean) => void;
 }
 export default function ForgotPassword({
   email,

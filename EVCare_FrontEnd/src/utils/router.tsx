@@ -88,7 +88,12 @@ const StaffChatPage = lazy(() =>
 const Admin_Applications = lazy(
   () => import("../pages/Admin/AdminAplication/Admin_Applications")
 );
+const AdminStatisticPage = lazy(
+  () => import("../pages/Admin/AdminStatistic/AdminStatisticPage")
+);
 
+const CancelPage = lazy(() => import("../pages/Users/CancelPage/CancelPage"));
+const ThankYouPage = lazy(() => import("../pages/Users/ThankYou/ThankYou"));
 import {
   LazyOrder,
   LazyHistory,
@@ -97,28 +102,12 @@ import {
   LazyApplication,
   LazyMyJob,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
-import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technician_General.styled";
+import { AppointmentList } from "../pages/Technician/TechnicianMyJob/Technician_MyJob.styled";
 
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  return (
-    <Suspense
-      fallback={
-        <div
-          style={{
-            position: "fixed",
-            top: "50%",
-            height: "50%",
-          }}
-        >
-          <SpinnerComponent />
-        </div>
-      }
-    >
-      {children}
-    </Suspense>
-  );
+  return <Suspense fallback={<SpinnerComponent />}>{children}</Suspense>;
 };
 
 const router = createBrowserRouter([
@@ -310,7 +299,15 @@ const router = createBrowserRouter([
         path: "manage-services",
         element: (
           <SuspenseWrapper>
-            <Admin_Service /> M
+            <Admin_Service />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "applications",
+        element: (
+          <SuspenseWrapper>
+            <Admin_Applications />
           </SuspenseWrapper>
         ),
       },
@@ -327,6 +324,14 @@ const router = createBrowserRouter([
         element: (
           <SuspenseWrapper>
             <AdminServiceCenter />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "finance-reports",
+        element: (
+          <SuspenseWrapper>
+            <AdminStatisticPage />
           </SuspenseWrapper>
         ),
       },
@@ -425,7 +430,23 @@ const router = createBrowserRouter([
     path: "/test",
     element: (
       <SuspenseWrapper>
-        <Test />
+          <Test />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: "/ThankYou",
+    element: (
+      <SuspenseWrapper>
+        <ThankYouPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: "/Cancel",
+    element: (
+      <SuspenseWrapper>
+        <CancelPage />
       </SuspenseWrapper>
     ),
   },

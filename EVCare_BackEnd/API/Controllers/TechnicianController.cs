@@ -51,7 +51,7 @@ namespace API.Controllers
 
         [HttpGet("detail/{technicianId}")]
         [Authorize(Roles = "Staff,Admin,Technician")]
-        [ServiceFilter(typeof(AuthorizeTechnicianDetail))]
+        //[ServiceFilter(typeof(AuthorizeTechnicianDetail))]
         public async Task<IActionResult> GetTechnicianDeatil(int technicianId)
         {
             try
