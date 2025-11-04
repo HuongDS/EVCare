@@ -39,9 +39,7 @@ export const SideImage = styled.div<{ $isSignUp: boolean }>`
   left: ${(p) => (p.$isSignUp ? "0" : "50%")};
   border-radius: ${(p) => (p.$isSignUp ? "12px 0 0 12px" : "0 12px 12px 0")};
   background: ${(p) =>
-    p.$isSignUp
-      ? "linear-gradient(to right, #ebffe7, #f9fff8)"
-      : "linear-gradient(to left, #ebffe7, #f9fff8)"};
+    p.$isSignUp ? "linear-gradient(to right, #ebffe7, #f9fff8)" : "linear-gradient(to left, #ebffe7, #f9fff8)"};
   transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   justify-content: center;
@@ -183,6 +181,24 @@ export const FormWrapperOTP = styled.div`
   flex-direction: column;
   row-gap: 20px;
   align-items: center;
+
+  overflow-y: auto;
+
+  max-height: 60vh;
+
+  padding-bottom: 2rem;
+
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+  }
+
   p {
     font-weight: bold;
   }
