@@ -189,5 +189,31 @@ namespace Application.Tests {
             Assert.False(result);
 
         }
+
+        [Theory,AutoData]
+        public async Task CheckAppointmentsForApointmentDate_WithAvailableSlot_ReturnsTrue(DateTime appointmentDate) {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(x => x.CountAppointment(DateOnly.FromDateTime(appointmentDate)))
+                .ReturnsAsync(2);
+            var serviceCenterRepositoryMock = _fixture.Freeze<Mock<IServiceCenterRepository>>();
+            serviceCenterRepositoryMock.Setup(x => x.GetAppactityOfServiceCenter())
+                .ReturnsAsync(5);
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+            var result = await appointmentService.CheckAppointmentsForApointmentDate(appointmentDate);
+            Assert.True(result);
+        }
+        [Theory, AutoData]
+        public async Task CheckAppointmentsForApointmentDate_WithUnavailableSlot_ReturnsTrue(DateTime appointmentDate) {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(x => x.CountAppointment(DateOnly.FromDateTime(appointmentDate)))
+                .ReturnsAsync(9);
+            var serviceCenterRepositoryMock = _fixture.Freeze<Mock<IServiceCenterRepository>>();
+            serviceCenterRepositoryMock.Setup(x => x.GetAppactityOfServiceCenter())
+                .ReturnsAsync(5);
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+            var result = await appointmentService.CheckAppointmentsForApointmentDate(appointmentDate);
+            Assert.False(result);
+        }
+
     }
 }
