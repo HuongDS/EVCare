@@ -8,9 +8,19 @@ interface Props {
 
 const InvoiceSection: React.FC<Props> = ({ invoices }) => {
   return (
-    <div className="profile-card invoices-section">
+    <div>
       <div className="section-header">
-        <h2 className="section-title">Invoice History</h2>
+        <h2 className="section-title">Invoices History ({invoices.length})</h2>
+        <p
+          style={{
+            color: "#6b7280",
+            fontStyle: "italic",
+            fontSize: "0.9rem",
+            marginTop: "-5px",
+          }}
+        >
+          These are all the invoices you have paid at EVCare.
+        </p>
       </div>
 
       <div className="invoices-list" id="invoicesList">
