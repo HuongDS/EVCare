@@ -313,6 +313,8 @@ namespace Application.Tests {
         public async Task UpdateAppointment_WithValidData_ReturnsTrue(
            AppointmentUpdateModel model, int employeeId) {
             var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            var mapper  = _fixture.Create<IMapper>();
+            
             appointmentRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(new Appointment
                 {
