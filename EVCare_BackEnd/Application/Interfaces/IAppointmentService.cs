@@ -22,7 +22,7 @@ namespace Application.Interfaces
         Task<int> CreateAppointment(AppointmentCreateModel model);
         Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId);
         Task<bool> DeleteAppointment(int appointmentId);
-        Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId);
+        Task<AppointmentViewDetailModel> GetAppointmentById(int appointmentIdId);
         Task<IEnumerable<AppointmentViewModel>> GetAppointmentHistoryByCustomerId(int customerId);
         Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(AppointmentQueryDto model);
         Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex);
