@@ -165,35 +165,32 @@ namespace Application.Services
                 throw new Exception("Error retrieving appointments with pagination");
             }
         }
-        public async Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId)
-        {
+        public async Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId) {
             var appointment = await _appointmentRepository.GetByIdAsync(model.AppointmentId);
 
-            if (appointment == null)
-            {
+            if (appointment == null) {
                 throw new Exception("Appointment not found");
             }
-           
-            if (appointment.Status == AppointmentStatusEnum.Done || appointment.Status == AppointmentStatusEnum.Canceled)
-            {
+
+            if (appointment.Status == AppointmentStatusEnum.Done || appointment.Status == AppointmentStatusEnum.Canceled) {
                 throw new Exception("Cannot update status of completed or canceled appointment");
             }
-            if (model.Status == AppointmentStatusEnum.CheckedIn)
-            {
+            if (model.Status == AppointmentStatusEnum.CheckedIn) {
                 var utcNow = DateTime.UtcNow;
                 var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 var vnTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vnZone);
-                if (DateOnly.FromDateTime(appointment.Appointment_Date) != DateOnly.FromDateTime(vnTime))
-                {
+                if (DateOnly.FromDateTime(appointment.Appointment_Date) != DateOnly.FromDateTime(vnTime)) {
                     throw new Exception("Can only check-in on the day of the appointment");
-                }
 
+                }
             }
             _mapper.Map(model, appointment);
-            if(appointment.Employee == null) appointment.EmployeeId = employeeId;
+            if (appointment.Employee == null)
+                appointment.EmployeeId = employeeId;
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
 
+            
         }
         public async Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex)
         {
