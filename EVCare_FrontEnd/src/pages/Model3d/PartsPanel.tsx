@@ -12,7 +12,7 @@ import { closeModel3d } from "../../states/uiSlice";
 
 interface PartsPanelProps {
   categories?: DataDto<PartCategoryViewModel<PartDamagedModel>>;
-  onSelectPart: (nodeName: string) => void;
+  onSelectPart: (nodeName: string | null) => void;
   selectedPart?: PartDamagedModel | null;
 }
 
@@ -81,7 +81,9 @@ export default function PartsPanel({
                         key={j}
                         $isSelected={isSelected}
                         $delay={j * 0.05}
-                        onClick={() => onSelectPart(part.nodeName)}
+                        onClick={() =>
+                          onSelectPart(isSelected ? null : part.nodeName)
+                        }
                       >
                         <PartItemContent>
                           <StatusDot $isSelected={isSelected} />

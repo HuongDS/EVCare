@@ -2,7 +2,11 @@ import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Select, Typography } from "antd";
 import { Package, AlertCircle, ChartCandlestick } from "lucide-react";
-import { useExportInventoryToExcel, useGetAllPartCategories, useGetParts } from "../../../services/staffService";
+import {
+  useExportInventoryToExcel,
+  useGetAllPartCategories,
+  useGetParts,
+} from "../../../services/staffService";
 import SearchBar from "../../../components/SearchBar/Search";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import { DownloadButton } from "../../../components/Button/DownloadButton";
@@ -19,17 +23,18 @@ const Staff_Inventory = () => {
   const [selectedPart, setSelectedPart] = useState<PartDetailDto | undefined>();
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>();
 
   const { data: partCategories } = useGetAllPartCategories({});
   const { data: parts, isLoading } = useGetParts({
     ...((searchValue && { partName: searchValue }) || {}),
+    categoryId: selectedCategory ? [selectedCategory] : [],
     pageIndex: currentPage,
-    pageSize: 5,
+    pageSize: pageSize,
   });
+  const { mutate: exportToExcel, isPending } = useExportInventoryToExcel();
 
-  const filteredParts =
-    (selectedCategory ? parts?.data?.items?.filter((p) => p.categoryId === selectedCategory) : parts?.data?.items) ??
-    [];
+  const filteredParts = parts?.data?.items ?? [];
 
   const categoryOptions = [
     { label: "All Categories", value: null },
@@ -39,7 +44,7 @@ const Staff_Inventory = () => {
     })) ?? []),
   ];
 
-  const { total, lowStockItems, totalValue } = useMemo(() => {
+  const { lowStockItems, totalValue } = useMemo(() => {
     const items = parts?.data?.items ?? [];
 
     const total = items.length;
@@ -49,7 +54,9 @@ const Staff_Inventory = () => {
     return { total, lowStockItems, totalValue };
   }, [parts]);
 
-  const { mutate: exportToExcel, isPending } = useExportInventoryToExcel();
+  const onSelectPageSize = (value: any) => {
+    setPageSize(value);
+  };
 
   return (
     <Container>
@@ -63,7 +70,10 @@ const Staff_Inventory = () => {
             {isPending ? (
               <SpinnerComponent />
             ) : (
-              <DownloadButton action={() => exportToExcel()} text="Export to Excel" />
+              <DownloadButton
+                action={() => exportToExcel()}
+                text="Export to Excel"
+              />
             )}
           </TitleRow>
           <StatsGrid>
@@ -74,7 +84,7 @@ const Staff_Inventory = () => {
                   <Package size={20} />
                 </StatIcon>
               </StatHeader>
-              <StatValue>{total}</StatValue>
+              <StatValue>{parts?.data?.totalItems}</StatValue>
               <StatSubtext>Parts in inventory</StatSubtext>
             </StatCard>
             <StatCard>
@@ -84,7 +94,11 @@ const Staff_Inventory = () => {
                   <AlertCircle size={20} />
                 </StatIcon>
               </StatHeader>
-              <StatValue style={{ color: lowStockItems > 0 ? "#cf1322" : "#1a1a1a" }}>{lowStockItems}</StatValue>
+              <StatValue
+                style={{ color: lowStockItems > 0 ? "#cf1322" : "#1a1a1a" }}
+              >
+                {lowStockItems}
+              </StatValue>
               <StatSubtext>Items below threshold</StatSubtext>
             </StatCard>
             <StatCard>
@@ -94,7 +108,9 @@ const Staff_Inventory = () => {
                   <ChartCandlestick size={20} />
                 </StatIcon>
               </StatHeader>
-              <StatValue style={{ fontSize: "1.5rem" }}>{totalValue.toLocaleString("vi-VN")}đ</StatValue>
+              <StatValue style={{ fontSize: "1.5rem" }}>
+                {totalValue.toLocaleString("vi-VN")}đ
+              </StatValue>
               <StatSubtext>Total stock value</StatSubtext>
             </StatCard>
           </StatsGrid>
@@ -103,18 +119,33 @@ const Staff_Inventory = () => {
 
       <ContentWrapper>
         <FilterBar>
-          <SearchBar handleSearchValue={setSearchValue} searchValue={searchValue} placeholder="Search part..." />
+          <SearchBar
+            handleSearchValue={setSearchValue}
+            searchValue={searchValue}
+            placeholder="Search part..."
+          />
           <StyledSelect
             options={categoryOptions}
             placeholder="Filter by Category"
             value={selectedCategory}
-            onChange={(v) => setSelectedCategory(Number(v))}
+            onChange={(v) => setSelectedCategory(v === null ? null : Number(v))}
             style={{
               height: "44px",
             }}
           />
           <Text style={{ marginLeft: "auto", color: "#8c8c8c" }}>
-            Showing {filteredParts.length} of {total} items
+            Showing{" "}
+            <Select
+              onChange={onSelectPageSize}
+              defaultValue={parts?.data?.totalItems}
+              options={[
+                { value: "5", label: <span>5</span> },
+                { value: "10", label: <span>10</span> },
+                { value: "20", label: <span>20</span> },
+              ]}
+              style={{ width: "60px", margin: "0 5px" }}
+            />
+            items
           </Text>
         </FilterBar>
 
@@ -130,16 +161,23 @@ const Staff_Inventory = () => {
                   <th>Category</th>
                   <th>Unit Price (đ)</th>
                   <th>Stock</th>
-                  <th style={{ display: "flex", justifyContent: "center" }}>Action</th>
+                  <th style={{ display: "flex", justifyContent: "center" }}>
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {filteredParts.map((part) => {
                   const category =
-                    partCategories?.data?.items.find((c) => c.id === part.categoryId)?.name || "Uncategorized";
+                    partCategories?.data?.items.find(
+                      (c) => c.id === part.categoryId
+                    )?.name || "Uncategorized";
 
                   return (
-                    <tr key={part.id} className={part.stock < 10 ? "low-stock" : ""}>
+                    <tr
+                      key={part.id}
+                      className={part.stock < 10 ? "low-stock" : ""}
+                    >
                       <td>
                         <img
                           src={part.imageUrl}
@@ -166,7 +204,9 @@ const Staff_Inventory = () => {
                         {part.stock}
                       </td>
                       <td>
-                        <div style={{ display: "flex", justifyContent: "center" }}>
+                        <div
+                          style={{ display: "flex", justifyContent: "center" }}
+                        >
                           <ShowButton
                             text="Update"
                             onclick={() => {
@@ -198,7 +238,13 @@ const Staff_Inventory = () => {
         )}
       </ContentWrapper>
 
-      {isOpen && <UpdatePartModal isOpen={isOpen} setIsOpen={setIsOpen} part={selectedPart} />}
+      {isOpen && (
+        <UpdatePartModal
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          part={selectedPart}
+        />
+      )}
     </Container>
   );
 };

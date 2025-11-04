@@ -9,17 +9,12 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
-import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import { useAppDispatch } from "../../../states/store";
-import { setStep } from "../../../states/appointmentSlice";
-import {
-  useEnterRemindSchedule,
-  useGetAppointmentById,
-} from "../../../services/appointmentServiceApi";
+import { useEnterRemindSchedule } from "../../../services/appointmentServiceApi";
 import {
   ERROR_MESSAGE,
   MSG_TITLE,
@@ -27,29 +22,23 @@ import {
 } from "../../../constants/messages/Message";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface NextMaintenanceProps {
-  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
+  data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
   onConfirm?: (months: number | string) => void;
   onSkip?: () => void;
-  currentStep: number;
 }
 
 export default function NextMaintenance({
   data,
-  currentStep,
+  onSkip,
 }: NextMaintenanceProps) {
   const [reminderMonths, setReminderMonths] = useState<number | string>(3);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState("");
-  const dispatch = useAppDispatch();
-
-  const { data: appointmentDetail } = useGetAppointmentById(data.id);
-
-  const onSkip = () => {
-    dispatch(setStep({ id: data.id, step: currentStep + 1 }));
-  };
+  const queryClient = useQueryClient();
 
   //handle submit schedule
   const { mutateAsync: enterRemindSchedule } = useEnterRemindSchedule();
@@ -57,7 +46,7 @@ export default function NextMaintenance({
     e.preventDefault();
     try {
       await enterRemindSchedule({
-        id: appointmentDetail?.data?.vehicleId,
+        id: data.vehicleId,
         reminderIntervalMonths: Number(reminderMonths),
       });
 
@@ -69,8 +58,10 @@ export default function NextMaintenance({
     }
   };
 
-  const handleChangeStep = () => {
-    dispatch(setStep({ id: data.id, step: currentStep + 1 }));
+  const handleChangeStep = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ["AppointmentDetail"],
+    });
   };
 
   const formatDate = (date: string | Date) => {
@@ -132,9 +123,7 @@ export default function NextMaintenance({
                   </IconWrapper>
                   <InfoContent>
                     <InfoLabel>Email</InfoLabel>
-                    <InfoValue>
-                      {appointmentDetail?.data?.customerEmail}
-                    </InfoValue>
+                    <InfoValue>{data.customerEmail}</InfoValue>
                   </InfoContent>
                 </InfoRow>
 
@@ -145,7 +134,7 @@ export default function NextMaintenance({
                   <InfoContent>
                     <InfoLabel>Vehicle</InfoLabel>
                     <InfoValue>
-                      {data.vehicleModel} - {data.licensePlate}
+                      {data.vehicleName} - {data.vehiclePlateNumber}
                     </InfoValue>
                   </InfoContent>
                 </InfoRow>
@@ -156,7 +145,9 @@ export default function NextMaintenance({
                   </IconWrapper>
                   <InfoContent>
                     <InfoLabel>Appointment Date</InfoLabel>
-                    <InfoValue>{formatDate(data.appointmentDate)}</InfoValue>
+                    <InfoValue>
+                      {formatDate(data.appointmentDate.toString())}
+                    </InfoValue>
                   </InfoContent>
                 </InfoRow>
 
@@ -238,8 +229,8 @@ export default function NextMaintenance({
                 <PreviewLabel>Next Reminder Date</PreviewLabel>
                 <PreviewDate>
                   {new Date(
-                    new Date(data.appointmentDate).setMonth(
-                      new Date(data.appointmentDate).getMonth() +
+                    new Date(data.appointmentDate.toString()).setMonth(
+                      new Date(data.appointmentDate.toString()).getMonth() +
                         Number(reminderMonths)
                     )
                   ).toLocaleDateString("en-US", {
