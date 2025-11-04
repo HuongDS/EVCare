@@ -23,5 +23,7 @@ namespace Application.Interfaces
         Task<byte[]> GetPartImportTemplate();
         Task<PartImportResult> ImportPartAsync(IFormFile file, int accountId);
         byte[] GeneratePartImportErrorFile(List<PartImportErrorModel> errors);
+        Task<decimal> GetTotalPriceOfParts();
+        Task<IEnumerable<PartViewModel>> GetLowStockParts();
     }
 }
