@@ -126,19 +126,14 @@ namespace Application.Services
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
         }
-        public async Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId)
+        public async Task<AppointmentViewDetailModel> GetAppointmentById(int appointmentId)
         {
-            try
-            {
-                var result = await _appointmentRepository.GetAppointmentWithDetails(appointmentIdId);
-                if (result == null) throw new Exception("Appointment not found");
-                return result;
+           
+            var result = await _appointmentRepository.GetAppointmentWithDetails(appointmentId);
+            if (result == null) throw new Exception("Appointment not found");
+            return result;
 
-            }
-            catch
-            {
-                throw new Exception("Appointment not found");
-            }
+           
         }
         public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentHistoryByCustomerId(int customerId)
         {
