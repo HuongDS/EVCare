@@ -19,7 +19,7 @@ interface ScrollFloatProps {
 }
 
 // Styled Components
-const ScrollFloatContainer = styled.h2`
+const ScrollFloatContainer = styled.div`
   overflow: hidden;
 `;
 
