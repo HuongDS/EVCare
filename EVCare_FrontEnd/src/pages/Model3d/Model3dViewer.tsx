@@ -1,15 +1,8 @@
-import { Environment, OrbitControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { Model3dScence } from "./Model3dScence";
 import PartsPanel from "./PartsPanel";
 import { useGetPartDamage } from "../../services/Model3dService";
-import type { StaffAppointmentsDto } from "../../models/AppointmentsModel/Staff_Appointments_Model";
-import type {
-  TechnicianModel,
-  TechnicianSkills,
-} from "../../models/AppointmentsModel/Technician_Appointments_Model";
 import type { PartDamagedModel } from "../../models/Model3d/Model3d";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch } from "../../states/store";
@@ -18,22 +11,16 @@ import ShowButton from "../../components/Button/ShowButton";
 import { TriangleAlert } from "lucide-react";
 
 interface Model3dProps {
-  data?: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
+  data?: number;
 }
 
 export default function Model3dViewer({ data }: Model3dProps) {
-  const {
-    data: apiResponse,
-    error,
-    isLoading,
-  } = useGetPartDamage(data?.id || 0);
+  const { data: apiResponse, error, isLoading } = useGetPartDamage(data || 0);
   const dispatch = useAppDispatch();
   const [selectedPart, setSelectedPart] = useState<PartDamagedModel | null>(
     null
   );
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-
-  // console.log(apiResponse?.data.vehicleModel3DUrl);
 
   if (isLoading) {
     return (
@@ -79,7 +66,6 @@ export default function Model3dViewer({ data }: Model3dProps) {
       .find((p) => p.nodeName === nodeName);
     setSelectedPart(foundPart || null);
 
-    // Close panel on mobile after selection
     if (window.innerWidth <= 768) {
       setIsPanelOpen(false);
     }
@@ -90,41 +76,19 @@ export default function Model3dViewer({ data }: Model3dProps) {
       <LeftPanel $isOpen={isPanelOpen}>
         <PartsPanel
           categories={apiResponse?.data || []}
-          onSelectPart={handlePartSelected}
+          onSelectPart={handlePartSelected as (nodeName: string | null) => void}
           selectedPart={selectedPart}
         />
       </LeftPanel>
 
       <RightPanel>
         <CanvasWrapper>
-          <Canvas
-            camera={{ position: [0, 2, 7], fov: 50 }}
-            shadows
-            gl={{ alpha: true }}
-            onCreated={({ gl }) => {
-              gl.setClearColor("#b1f5a4", 0.2);
-            }}
-          >
-            <Suspense fallback={null}>
-              <ambientLight intensity={0.5} />
-              <pointLight position={[10, 10, 10]} intensity={1.5} castShadow />
-              <pointLight position={[-10, -5, -10]} intensity={0.5} />
-              <Environment preset="city" />
-
-              <Model3dScence
-                data={apiResponse?.data}
-                onPartClick={(name) => handlePartSelected(name || "")}
-                selectedPart={selectedPart}
-                hiddenMeshes={[""]}
-              />
-
-              <OrbitControls
-                enablePan={false}
-                minDistance={3}
-                maxDistance={15}
-              />
-            </Suspense>
-          </Canvas>
+          <Model3dScence
+            data={apiResponse?.data}
+            onPartClick={(name) => handlePartSelected(name || "")}
+            selectedPart={selectedPart}
+            hiddenMeshes={[""]}
+          />
         </CanvasWrapper>
       </RightPanel>
 
@@ -156,7 +120,7 @@ export default function Model3dViewer({ data }: Model3dProps) {
 const PopupStyled = styled.div`
   position: fixed;
   bottom: 20px;
-  left: 50%;
+  left: 65%;
   transform: translateX(-50%);
   width: 320px;
   background: white;
@@ -301,6 +265,7 @@ const ErrorContent = styled.div`
 const CanvasWrapper = styled.div`
   width: 100%;
   height: 100%;
+  right: 10%;
   position: relative;
 
   canvas {

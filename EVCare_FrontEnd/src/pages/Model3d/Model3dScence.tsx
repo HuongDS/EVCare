@@ -1,13 +1,13 @@
 import * as THREE from "three";
-import { useEffect } from "react";
-// Import thêm Bounds
-import { useGLTF, useBounds, Bounds } from "@react-three/drei";
+import { Suspense, useRef } from "react";
+import { useGLTF, OrbitControls, Environment } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
 import type {
-  PartDamagedModel,
   DataDto,
   PartCategoryViewModel,
+  PartDamagedModel,
 } from "../../models/Model3d/Model3d";
+import { Canvas } from "@react-three/fiber";
 
 type GLTFResult = GLTF & {
   nodes: Record<string, THREE.Mesh>;
@@ -34,78 +34,78 @@ export function Model3dScence({
   selectedPart,
   onPartClick,
   hiddenMeshes,
-  ...props
 }: ModelProps) {
-  const { nodes, materials } = useGLTF(
-    data.vehicleModel3DUrl
-  ) as unknown as GLTFResult;
+  const { nodes } = useGLTF(data.vehicleModel3DUrl) as unknown as GLTFResult;
+  const groupRef = useRef<THREE.Group>(null);
 
-  const bounds = useBounds();
-
-  useEffect(() => {
-    if (data.vehicleModel3DUrl) {
-      useGLTF.preload(data.vehicleModel3DUrl);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    Object.values(materials).forEach((mat) => {
-      if (!mat.userData.originalColor) {
-        mat.userData.originalColor = mat.color.clone();
-      }
-      mat.color.set("#fff");
-      mat.metalness = 0.5;
-      mat.roughness = 0.4;
-    });
-  }, [materials]);
-
-  useEffect(() => {
-    if (!bounds) return;
-    if (selectedPart?.nodeName && nodes[selectedPart.nodeName]) {
-      bounds.refresh(nodes[selectedPart.nodeName]).clip().fit();
-    } else {
-      bounds.refresh().fit();
-    }
-  }, [selectedPart, bounds, nodes]);
-
+  // Tô màu theo damage level
   const damageMap = new Map<string, string>();
-  data.partCategoryAppointmentViewModels.forEach((cat) => {
+  data.partCategoryAppointmentViewModels?.forEach((cat) => {
     cat?.damagedPartViewModels?.forEach((p) => {
       damageMap.set(p.nodeName, p.damageLevel);
     });
   });
-  // Render tất cả mesh (trừ hidden)
+
   return (
-    <Bounds>
-      <group scale={[0.005, 0.005, 0.005]} {...props} dispose={null}>
-        {Object.entries(nodes).map(([name, mesh]) => {
-          if (!(mesh instanceof THREE.Mesh)) return null;
-          if (hiddenMeshes.includes(name)) return null;
+    <>
+      <Canvas
+        shadows
+        gl={{ alpha: true }}
+        onCreated={({ gl }) => {
+          gl.setClearColor("#b1f5a4", 0.2);
+        }}
+        camera={{ position: [0, -100, 0], fov: 60, up: [0, 0, 1] }}
+      >
+        <Suspense fallback={null}>
+          <ambientLight intensity={0.5} />
+          <pointLight position={[10, 10, 10]} intensity={1.5} castShadow />
+          <Environment preset="city" />
 
-          const isSelected = selectedPart?.nodeName === name;
-          const damageLevel = damageMap.get(name) || "NotAssessed";
+          <group
+            ref={groupRef}
+            dispose={null}
+            scale={[data.scale.x, data.scale.y, data.scale.z]}
+            rotation={[Math.PI / 2, -Math.PI / 2, 0]}
+          >
+            {Object.entries(nodes).map(([name, mesh]) => {
+              if (!(mesh instanceof THREE.Mesh)) return null;
+              if (hiddenMeshes.includes(name)) return null;
 
-          return (
-            <mesh
-              key={name}
-              geometry={mesh.geometry}
-              position={mesh.position}
-              rotation={mesh.rotation}
-              scale={mesh.scale}
-              onClick={(e) => {
-                e.stopPropagation();
-                onPartClick(isSelected ? null : name);
-              }}
-            >
-              <meshStandardMaterial
-                color={isSelected ? "#00FFFF" : DAMAGE_COLORS[damageLevel]}
-                emissive={isSelected ? "#00FFFF" : "#000000"}
-                emissiveIntensity={isSelected ? 0.5 : 0}
-              />
-            </mesh>
-          );
-        })}
-      </group>
-    </Bounds>
+              const isSelected = selectedPart?.nodeName === name;
+              const damageLevel = damageMap.get(name) || "NotAssessed";
+
+              return (
+                <mesh
+                  key={name}
+                  geometry={mesh.geometry}
+                  position={mesh.position}
+                  rotation={mesh.rotation}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onPartClick(isSelected ? null : name);
+                  }}
+                >
+                  <meshStandardMaterial
+                    color={isSelected ? "#00FFFF" : DAMAGE_COLORS[damageLevel]}
+                    emissive={isSelected ? "#00FFFF" : "#000000"}
+                    emissiveIntensity={isSelected ? 0.5 : 0}
+                    metalness={0.5}
+                    roughness={0.4}
+                  />
+                </mesh>
+              );
+            })}
+          </group>
+
+          <OrbitControls
+            target={[0, 0, 0]}
+            enablePan={false}
+            minDistance={10}
+            maxDistance={150}
+            maxPolarAngle={Math.PI}
+          />
+        </Suspense>
+      </Canvas>
+    </>
   );
 }
