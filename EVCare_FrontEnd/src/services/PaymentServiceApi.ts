@@ -11,7 +11,7 @@ type paymentParams = {
   payment_Method: string;
 };
 
-export const usePayByPayOS = () => {
+export const useHandlePayment = () => {
   return useMutation({
     mutationKey: ["Invoice"],
     mutationFn: async (params: paymentParams) => {

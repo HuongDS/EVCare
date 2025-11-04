@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import styled from "styled-components";
 import { SortDateButton } from "./SortDateButton";
 import SortDateRange from "./SortDateRange";
@@ -107,7 +107,10 @@ const SortTable: React.FC<MyComponentProps> = ({
   setEndDate,
   disabled,
 }) => {
-  const [activeCategory, setActiveCategory] = useState<string>(sortName[0]);
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const sortParam = params.get("sortBy") || sortName[0];
+  const [activeCategory, setActiveCategory] = useState<string>(sortParam);
 
   const selectCategory = (category: string) => {
     setActiveCategory(category);
@@ -119,7 +122,9 @@ const SortTable: React.FC<MyComponentProps> = ({
       <Container>
         {sortName.map((name) => (
           <Category
-            to={`/staff/appointments`}
+            to={`/staff/appointments?sortBy=${encodeURIComponent(
+              name.split(/\s+/).join("")
+            )}`}
             key={name}
             $active={activeCategory === name}
             onClick={() => selectCategory(name)}

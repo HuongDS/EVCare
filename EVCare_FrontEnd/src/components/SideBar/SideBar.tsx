@@ -25,6 +25,7 @@ import { deleteToken, logout } from "../../services/authService";
 import { useNavigate } from "react-router";
 import { useAppDispatch } from "../../states/store";
 import { logoutRedux } from "../../states/authSlice";
+import { MessageCircleMore } from "lucide-react";
 
 interface MenuItem {
   key: string;
@@ -137,7 +138,7 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "7",
-      icon: <SolutionOutlined />,
+      icon: <MessageCircleMore size={20} />,
       label: "Chat",
       route: "/staff/chat-with-customer",
     },
@@ -175,7 +176,7 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "5",
-      icon: <SolutionOutlined size={20} />,
+      icon: <SolutionOutlined size={10} />,
       label: "Application",
       route: "/technician/application",
     },

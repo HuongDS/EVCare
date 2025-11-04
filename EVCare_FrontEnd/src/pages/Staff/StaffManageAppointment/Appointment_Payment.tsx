@@ -10,13 +10,13 @@ import {
   CarOutlined,
 } from "@ant-design/icons";
 import { useGetOrderDetail } from "../../../services/orderServiceApi";
-import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import { formatDate } from "../../../utils/formatDate";
 import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import { usePayByPayOS } from "../../../services/PaymentServiceApi";
+import { useHandlePayment } from "../../../services/PaymentServiceApi";
 import { handleError } from "../../../utils/errorHandler";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,8 +30,7 @@ import {
 import { useNotification } from "../../../context/useNotification";
 
 interface PaymentPageProps {
-  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
-  currentStep: number;
+  data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
   onPaymentSuccess: () => void;
 }
 
@@ -77,7 +76,7 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
   };
 
   //lấy qr code
-  const { mutateAsync: payment, isPending } = usePayByPayOS();
+  const { mutateAsync: payment, isPending } = useHandlePayment();
   const handlePaymentMethod = useCallback(async () => {
     try {
       const response = await payment({
@@ -135,17 +134,19 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
                 <InfoLabel>
                   <CarOutlined /> License Plate
                 </InfoLabel>
-                <InfoValue>{data.licensePlate}</InfoValue>
+                <InfoValue>{data.vehiclePlateNumber}</InfoValue>
               </InfoItem>
               <InfoItem>
                 <InfoLabel>Vehicle Model</InfoLabel>
-                <InfoValue>{data.vehicleModel}</InfoValue>
+                <InfoValue>{data.vehicleName}</InfoValue>
               </InfoItem>
               <InfoItem style={{ gridColumn: "1 / -1" }}>
                 <InfoLabel>
                   <CalendarOutlined /> Appointment Date
                 </InfoLabel>
-                <InfoValue>{formatDate(data.appointmentDate)}</InfoValue>
+                <InfoValue>
+                  {formatDate(data.appointmentDate.toString())}
+                </InfoValue>
               </InfoItem>
             </InfoGrid>
           </StyledCard>

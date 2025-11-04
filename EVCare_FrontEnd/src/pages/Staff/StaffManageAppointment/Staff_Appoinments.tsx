@@ -8,7 +8,6 @@ import {
 } from "../../../services/appointmentServiceApi";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import SearchBar from "../../../components/SearchBar/Search";
-import SpinnerComponent from "../../../components/SpinnerComponent";
 import { useEffect, useState } from "react";
 import Appoinment_Progress_Modal from "./Appoinment_Progress_Modal";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,6 +29,7 @@ import Model3dViewer from "../../Model3d/Model3dViewer";
 import { openModel3d } from "../../../states/uiSlice";
 import ShowButton from "../../../components/Button/ShowButton";
 import CreateAppointment from "./CreateAppointment";
+import SkeletonCount from "../../../components/Skeletons/Skeleton";
 
 export default function Staff_Appoinments() {
   const queryClient = useQueryClient();
@@ -40,11 +40,11 @@ export default function Staff_Appoinments() {
   const [endTime, setEndTime] = useState("");
   const [currenPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedAppointment, setSelectedAppointment] =
-    useState<StaffAppointmentsDto<TechnicianModel<TechnicianSkills>> | null>(
-      null
-    );
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<
+    number | null
+  >(null);
   const [isCreating, setIsCreating] = useState(false);
+  const dispatch = useAppDispatch();
 
   const isOpen3dModel = useAppSelector(
     (state: RootState) => state.ui.model3dOpen
@@ -56,19 +56,19 @@ export default function Staff_Appoinments() {
   const handleOpenProgress = (
     appointment: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
   ) => {
-    setSelectedAppointment(appointment);
+    setSelectedAppointmentId(appointment.id);
     setShowProgressModal(true);
   };
 
   const handleOpenReassign = (
     appointment: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
   ) => {
-    setSelectedAppointment(appointment);
+    setSelectedAppointmentId(appointment.id);
     setShowReassignModal(true);
   };
 
   const handleCloseModal = () => {
-    setSelectedAppointment(null);
+    setSelectedAppointmentId(null);
     setShowProgressModal(false);
     setShowReassignModal(false);
     queryClient.invalidateQueries({
@@ -89,7 +89,6 @@ export default function Staff_Appoinments() {
   });
 
   //Lấy các cuộc hẹn có technician onleave
-
   const { data: appointmentsHaveTech } = useGetAppointmentHaveTech({});
 
   //hàm check appointment có technician rời việc hay không
@@ -131,10 +130,8 @@ export default function Staff_Appoinments() {
     setSortOrder(v);
   };
 
-  const dispatch = useAppDispatch();
-
   if (isOpen3dModel) {
-    return <Model3dViewer data={selectedAppointment || undefined} />;
+    return <Model3dViewer data={selectedAppointmentId || undefined} />;
   } else if (isCreating) {
     return (
       <PageTransition $isCreating={isCreating}>
@@ -167,7 +164,9 @@ export default function Staff_Appoinments() {
             setSortOrder={handleSortByDate}
             disabled={appointments?.data?.items?.length === 0}
           />
-          <SpinnerStyled>{isLoading && <SpinnerComponent />}</SpinnerStyled>
+          <SpinnerStyled>
+            {isLoading && <SkeletonCount count={5} />}
+          </SpinnerStyled>
           <ListAppointmentStyled>
             {appointments?.data?.items?.length !== 0 ? (
               appointments?.data?.items?.map(
@@ -192,7 +191,7 @@ export default function Staff_Appoinments() {
 
             <ShowButton
               onclick={() => dispatch(openModel3d())}
-              text="Model 3D"
+              text="Show Model"
             />
 
             {!isLoading && (
@@ -206,19 +205,19 @@ export default function Staff_Appoinments() {
             )}
           </ListAppointmentStyled>
         </AppoitmentWrapper>
-        {showProgressModal && selectedAppointment && (
+        {showProgressModal && selectedAppointmentId && (
           <Appoinment_Progress_Modal
             show={showProgressModal}
             close={handleCloseModal}
-            data={selectedAppointment}
+            appointmentId={selectedAppointmentId}
           />
         )}
 
-        {showReassignModal && selectedAppointment && (
+        {showReassignModal && selectedAppointmentId && (
           <Appointment_Reassign
             show={showReassignModal}
             close={handleCloseModal}
-            data={selectedAppointment}
+            appointmentId={selectedAppointmentId}
           />
         )}
       </PageTransition>
@@ -253,14 +252,15 @@ const ButtonGroup = styled.div`
 `;
 
 const SpinnerStyled = styled.div`
-  position: fixed;
+  /* position: fixed;
   top: 55%;
   left: 55%;
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1000; */
+  margin: 0 10px;
 `;
 
 const slideIn = keyframes`

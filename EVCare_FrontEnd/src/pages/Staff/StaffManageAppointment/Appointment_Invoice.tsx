@@ -6,7 +6,7 @@ import {
   useDownloadInvoice,
   useGetInvoice,
 } from "../../../services/invoicesService";
-import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import type {
   TechnicianModel,
   TechnicianSkills,
@@ -14,14 +14,35 @@ import type {
 import { useGetOrderDetail } from "../../../services/orderServiceApi";
 import { DownloadButton } from "../../../components/Button/DownloadButton";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import ShowButton from "../../../components/Button/ShowButton";
+import { useState } from "react";
 
 type InvoicePageProps = {
-  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
+  data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
 };
 
 export const InvoicePage = ({ data }: InvoicePageProps) => {
+  const [showDetail, setShowDetail] = useState(false);
   const { data: orderDetail } = useGetOrderDetail(data.orderId);
-  const { data: invoice } = useGetInvoice(orderDetail?.data?.id ?? 0);
+  const { data: invoice, isFetching } = useGetInvoice(
+    orderDetail?.data?.id ?? 0
+  );
+
+  //gộp các item cùng id
+  const mergeOrder =
+    orderDetail?.data?.parts.reduce((acc, part) => {
+      if (acc[part.id]) {
+        acc[part.id].quantity += part.quantity;
+        acc[part.id].price += part.price;
+        acc[part.id].replacementPrice += part.replacementPrice;
+      } else {
+        acc[part.id] = { ...part };
+      }
+      return acc;
+    }, {} as Record<number, (typeof orderDetail.data.parts)[0]>) || {};
+
+  // Chuyển object thành array
+  const mergedPartsArray = Object.values(mergeOrder);
 
   //tính các chi phí trong order
   const subtotal =
@@ -53,7 +74,7 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
   return (
     <PageContainer>
       <InvoiceWrapper>
-        {isLoading ? (
+        {isLoading && isFetching ? (
           <SpinStyled>
             <SpinnerComponent />
           </SpinStyled>
@@ -70,7 +91,6 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
           </div>
         )}
         <InvoiceContainer>
-          {/* Header */}
           <InvoiceHeader>
             <HeaderTop>
               <CompanyInfo>
@@ -92,7 +112,6 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
             </HeaderTop>
           </InvoiceHeader>
 
-          {/* Body */}
           <InvoiceBody>
             <CustomerSection>
               <InfoCard>
@@ -117,58 +136,101 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
                   <InfoItem>
                     <Car size={16} />
                     <span>
-                      <strong>{data.vehicleModel || "Vehicle Model"}</strong>
+                      <strong>{data.vehicleName || "Vehicle Model"}</strong>
                     </span>
                   </InfoItem>
                   <InfoItem>
                     <FileText size={16} />
                     <span>
                       License Plate:{" "}
-                      <strong>{data.licensePlate || "N/A"}</strong>
+                      <strong>{data.vehiclePlateNumber || "N/A"}</strong>
                     </span>
                   </InfoItem>
                   <InfoItem>
                     <Calendar size={16} />
                     <span>
-                      Service Date: {formatDate(data.appointmentDate)}
+                      Service Date:{" "}
+                      {formatDate(data.appointmentDate.toString())}
                     </span>
                   </InfoItem>
                 </InfoList>
               </InfoCard>
             </CustomerSection>
 
-            {/* Parts Table */}
             <TableSection>
-              <SectionTitle>Parts & Services</SectionTitle>
-              <Table>
-                <TableHeader>
-                  <tr>
-                    <th>Description</th>
-                    <th>Qty</th>
-                    <th>Unit Price</th>
-                    <th>Service Price</th>
-                    <th>Amount</th>
-                  </tr>
-                </TableHeader>
-                <TableBody>
-                  {orderDetail?.data?.parts.map((part) => (
-                    <tr key={part.id}>
-                      <td>{part.name}</td>
-                      <td>{part.quantity}</td>
-                      <td>{formatCurrency(part.price)}</td>
-                      <td>{formatCurrency(part.replacementPrice)}</td>
-                      <td>
-                        {formatCurrency(
-                          (part.price + part.replacementPrice) * part.quantity
-                        )}
-                      </td>
+              <SectionTitle>
+                Parts & Services
+                {showDetail ? (
+                  <ShowButton
+                    text="Invoice"
+                    onclick={() => setShowDetail(false)}
+                  />
+                ) : (
+                  <ShowButton
+                    text="Order Detail"
+                    onclick={() => setShowDetail(true)}
+                  />
+                )}
+              </SectionTitle>
+              {showDetail ? (
+                <Table>
+                  <TableHeaderOrder>
+                    <tr>
+                      <th>Description</th>
+                      <th>Order By</th>
+                      <th>Qty</th>
+                      <th>Unit Price</th>
+                      <th>Service Price</th>
+                      <th>Amount</th>
                     </tr>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeaderOrder>
+                  <TableBodyOrder>
+                    {orderDetail?.data?.parts?.map((part) => (
+                      <tr key={part.id}>
+                        <td>{part.name}</td>
+                        <td>{part.technicianName}</td>
+                        <td>{part.quantity}</td>
+                        <td>{formatCurrency(part.price)}</td>
+                        <td>{formatCurrency(part.replacementPrice)}</td>
+                        <td>
+                          {formatCurrency(
+                            (part.price + part.replacementPrice) * part.quantity
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </TableBodyOrder>
+                </Table>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <tr>
+                      <th>Description</th>
+                      <th>Qty</th>
+                      <th>Unit Price</th>
+                      <th>Service Price</th>
+                      <th>Amount</th>
+                    </tr>
+                  </TableHeader>
+                  <TableBody>
+                    {mergedPartsArray?.map((part) => (
+                      <tr key={part.id}>
+                        <td>{part.name}</td>
+                        <td>{part.quantity}</td>
+                        <td>{formatCurrency(part.price)}</td>
+                        <td>{formatCurrency(part.replacementPrice)}</td>
+                        <td>
+                          {formatCurrency(
+                            (part.price + part.replacementPrice) * part.quantity
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </TableSection>
 
-            {/* Summary */}
             <SummarySection>
               <SummaryCard>
                 <SummaryRow>
@@ -372,6 +434,9 @@ const TableSection = styled.div`
 `;
 
 const SectionTitle = styled.h3`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 18px;
   font-weight: 700;
   color: #000;
@@ -381,6 +446,81 @@ const SectionTitle = styled.h3`
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
+`;
+
+const TableHeaderOrder = styled.thead`
+  background: #f5f5f5;
+
+  th {
+    padding: 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+
+    &:nth-child(2) {
+      text-align: left;
+    }
+    &:nth-child(3) {
+      text-align: center;
+    }
+    &:nth-child(4),
+    &:nth-child(5) {
+      text-align: right;
+    }
+    &:nth-child(6) {
+      text-align: right;
+    }
+  }
+
+  @media (max-width: 768px) {
+    th {
+      padding: 10px 8px;
+      font-size: 12px;
+    }
+  }
+`;
+
+const TableBodyOrder = styled.tbody`
+  tr {
+    border-bottom: 1px solid #e0e0e0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  td {
+    padding: 14px 12px;
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+
+    &:nth-child(2) {
+      text-align: left;
+    }
+
+    &:nth-child(3) {
+      text-align: center;
+    }
+
+    &:nth-child(4),
+    &:nth-child(5) {
+      text-align: right;
+    }
+    &:nth-child(6) {
+      text-align: right;
+    }
+  }
+
+  @media (max-width: 768px) {
+    td {
+      padding: 12px 8px;
+      font-size: 13px;
+    }
+  }
 `;
 
 const TableHeader = styled.thead`
@@ -427,17 +567,16 @@ const TableBody = styled.tbody`
     padding: 14px 12px;
     font-size: 14px;
     color: #333;
+    font-weight: 600;
 
     &:nth-child(2) {
       text-align: center;
-      font-weight: 600;
     }
 
     &:nth-child(3),
     &:nth-child(4),
     &:nth-child(5) {
       text-align: right;
-      font-weight: 600;
     }
   }
 

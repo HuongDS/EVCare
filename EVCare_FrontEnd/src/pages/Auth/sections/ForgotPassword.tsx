@@ -8,8 +8,14 @@ interface ForgotProps {
   setEmail: (v: string) => void;
   isLoading: boolean;
   handChangeIsForgot: () => void;
+  // setIsReset: (v: boolean) => void;
 }
-export default function ForgotPassword({ email, setEmail, isLoading, handChangeIsForgot }: ForgotProps) {
+export default function ForgotPassword({
+  email,
+  setEmail,
+  isLoading,
+  handChangeIsForgot,
+}: ForgotProps) {
   return (
     <FormWrapper>
       <TextFieldWithIcon

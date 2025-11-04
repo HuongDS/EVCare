@@ -7,6 +7,7 @@ import type {
   ResetPasswordRequestDto,
   ResponseDto,
   VerifyOTPDto,
+  VerifyOtpSignUp,
 } from "../models/AuthModel/authModel";
 import { clearToken, setTokens } from "../token/tokenStore";
 import { handleError } from "../utils/errorHandler";
@@ -78,7 +79,7 @@ export async function register(registerData: RegisterRequestDto) {
   }
 }
 
-export async function verifyOtp(data: VerifyOTPDto) {
+export async function verifyOtp(data: VerifyOtpSignUp) {
   try {
     const response = await api.post<ResponseDto<object>>(
       "/api/Auth/verify-otp-register",

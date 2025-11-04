@@ -1,10 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Select, Badge, Avatar, Card, Typography } from "antd";
 import { Phone, Award, Wrench, User } from "lucide-react";
 import { useGetTechniciansToday } from "../../../services/appointmentServiceApi";
 import SearchBar from "../../../components/SearchBar/Search";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import type {
+  TechnicianModel,
+  TechnicianSkills,
+} from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -26,14 +30,22 @@ const Manage_Technicians = () => {
   // const [technicians] = useState(mockTechnicians);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [allTechnicians, setAllTechnicians] =
+    useState<TechnicianModel<TechnicianSkills>[]>();
 
   const { data: technicians, isLoading } = useGetTechniciansToday({
     ...(statusFilter !== "all" ? { Status: statusFilter } : {}),
     ...((searchTerm && { FullName: searchTerm }) || {}),
   });
 
+  useEffect(() => {
+    if (technicians?.data?.items) {
+      setAllTechnicians(technicians.data.items);
+    }
+  }, []);
+
   const { availableCount, busyCount, total } = useMemo(() => {
-    const techniciansList = technicians?.data?.items;
+    const techniciansList = allTechnicians || [];
     const availableCount = techniciansList?.filter(
       (t) => t.status === "Available"
     ).length;
@@ -44,7 +56,7 @@ const Manage_Technicians = () => {
 
     const total = techniciansList?.length;
     return { availableCount, busyCount, total };
-  }, [technicians]);
+  }, [allTechnicians]);
 
   return (
     <Container>
