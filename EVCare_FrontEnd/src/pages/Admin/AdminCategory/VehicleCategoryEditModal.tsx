@@ -14,30 +14,25 @@ import { FaTimes, FaSave } from "react-icons/fa";
 import { useNotification } from "../../../context/useNotification";
 import VehicleCategoryFormFields from "./VehicleCategoryFormFields";
 import type { VehicleCategoryCreateDto } from "../../../models/VehicleModels/VehicleCategoryCreateDto";
-import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
+import type { VehicleCategoryWithScaleViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import {
-  getDetailVehicleCategory,
-  updateVehicleCategory,
-} from "../../../services/vehicleServicesApi";
+import { getDetailVehicleCategory, updateVehicleCategory } from "../../../services/vehicleServicesApi";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  itemToEdit: VehicleCategoryViewDto | null;
+  itemToEdit: VehicleCategoryWithScaleViewDto | null;
 }
 
-export default function VehicleCategoryEditModal({
-  isOpen,
-  onClose,
-  onSuccess,
-  itemToEdit,
-}: Props) {
+export default function VehicleCategoryEditModal({ isOpen, onClose, onSuccess, itemToEdit }: Props) {
   const [formData, setFormData] = useState<VehicleCategoryCreateDto>({
     name: "",
     model3DUrl: "",
     partCategoryIds: [],
+    scaleX: 1,
+    scaleY: 1,
+    scaleZ: 1,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,6 +49,9 @@ export default function VehicleCategoryEditModal({
           name: tmp.name,
           model3DUrl: tmp.model3DUrl,
           partCategoryIds: tmp.partCategoryNames.map((a) => a.id),
+          scaleX: itemToEdit.scaleX,
+          scaleY: itemToEdit.scaleY,
+          scaleZ: itemToEdit.scaleZ,
         });
       }
     } catch (error) {
@@ -102,6 +100,15 @@ export default function VehicleCategoryEditModal({
       return;
     }
 
+    if (formData.scaleX <= 0 || formData.scaleY <= 0 || formData.scaleZ <= 0) {
+      notification.warning({
+        message: "Warning",
+        description: "Scale values must be greater than 0.",
+        showProgress: true,
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const response = await updateVehicleCategory(itemToEdit.id, formData);
@@ -122,12 +129,7 @@ export default function VehicleCategoryEditModal({
   };
 
   return (
-    <ModalBackdrop
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
+    <ModalBackdrop initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
       <ModalContainer
         as="form"
         onSubmit={handleSubmit}
@@ -155,28 +157,15 @@ export default function VehicleCategoryEditModal({
               <SpinnerComponent />
             </div>
           ) : (
-            <VehicleCategoryFormFields
-              formData={formData}
-              setFormData={setFormData}
-              isSubmitting={isSubmitting}
-            />
+            <VehicleCategoryFormFields formData={formData} setFormData={setFormData} isSubmitting={isSubmitting} />
           )}
         </ModalBody>
 
         <ModalFooter>
-          <ModalButton
-            type="button"
-            $isConfirm={false}
-            onClick={onClose}
-            disabled={isSubmitting}
-          >
+          <ModalButton type="button" $isConfirm={false} onClick={onClose} disabled={isSubmitting}>
             Cancel
           </ModalButton>
-          <ModalButton
-            type="submit"
-            $isConfirm={true}
-            disabled={isSubmitting || isLoading}
-          >
+          <ModalButton type="submit" $isConfirm={true} disabled={isSubmitting || isLoading}>
             {isSubmitting ? <LoadingSpinner /> : <FaSave />}
             Save Changes
           </ModalButton>

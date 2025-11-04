@@ -159,6 +159,45 @@ export const Buttons = styled.div`
     }
   }
 
+  .dropdown-menu {
+    right: 0 !important;
+    left: auto !important;
+    margin-top: 10px !important;
+    background: rgba(235, 255, 231, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 173, 78, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+
+    border-radius: 20px;
+    padding: 10px;
+
+    animation: ${fadeInDown} 0.3s ease-out;
+  }
+
+  .dropdown-item {
+    font-family: "Outfit", sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #2d3748; /
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 2px;
+    transition: all 0.2s ease-out;
+
+    &:hover,
+    &:focus {
+      color: #00ad4e; 
+      background-color: #e6f7ee; 
+      transform: scale(1.03); 
+    }
+
+    &:active {
+      background-color: #e6f7ee;
+      color: #00ad4e;
+    }
+  }
+
   @media (max-width: 750px) {
     .btn-fill {
       font-size: 14px;
