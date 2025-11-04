@@ -37,9 +37,9 @@ namespace Application.Tests {
             var appointmentCreateModel = _fixture.Build<DataAccess.Dtos.Appointment.AppointmentCreateModel>()
                 .With(x => x.Appointment_Date, new DateTime(2024, 6, 8))
                 .Create();
-           var result =  await Assert.ThrowsAsync<Exception>(async () => 
-                await appointmentService.CreateAppointment(appointmentCreateModel)
-            );
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                 await appointmentService.CreateAppointment(appointmentCreateModel)
+             );
             Assert.Equal($"You must book the appointment from {DayOfWeek.Monday} to {DayOfWeek.Friday} ", result.Message);
         }
         [Fact]
@@ -72,14 +72,14 @@ namespace Application.Tests {
                     WorkStartDay = DayOfWeek.Monday
                 });
 
-           
+
             var appointmentCreateModel = _fixture.Build<DataAccess.Dtos.Appointment.AppointmentCreateModel>()
                 .With(x => x.Appointment_Date, new DateTime(2025, 11, 3))
                 .Create();
 
             var appointmentService = new Mock<Services.AppointmentService>
             (
-               _fixture.Create<IAppointmentRepository>()    ,
+               _fixture.Create<IAppointmentRepository>(),
                _fixture.Create<IMapper>(),
                serviceCenterRepositoryMock.Object
             )
@@ -104,7 +104,7 @@ namespace Application.Tests {
                     WorkStartDay = DayOfWeek.Monday
                 });
             var appointmentCreateModel = _fixture.Build<DataAccess.Dtos.Appointment.AppointmentCreateModel>()
-                .With(x => x.Appointment_Date, new DateTime(2025, 11,3))
+                .With(x => x.Appointment_Date, new DateTime(2025, 11, 3))
                 .Create();
             var appointmentService = new Mock<Services.AppointmentService>(
                  _fixture.Create<IAppointmentRepository>(),
@@ -136,13 +136,13 @@ namespace Application.Tests {
             appointmentRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Appointment>()))
                .ReturnsAsync((Appointment a) =>
                {
-                   a.Id = 1000;  
+                   a.Id = 1000;
                    return a;
                });
 
             var appointmentCreateModel = _fixture.Build<DataAccess.Dtos.Appointment.AppointmentCreateModel>()
                 .With(x => x.Appointment_Date, new DateTime(2025, 11, 3))
-                
+
                 .Create();
 
             var appointmentService = new Mock<Services.AppointmentService>(
@@ -163,5 +163,31 @@ namespace Application.Tests {
 
         }
 
+        [Fact]
+        public async Task CheckCustomerCreate_WithValidBookingLimit_ReturnsTrue() {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(x => x.CountAppointmentsPerDay(It.IsAny<int>()))
+                .ReturnsAsync(2);
+            var serviceCenterRepositoryMock = _fixture.Freeze<Mock<IServiceCenterRepository>>();
+            serviceCenterRepositoryMock.Setup(x=>x.GetLimitBookingOfServiceCenter())
+                .ReturnsAsync(5);
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+            var result = await appointmentService.CheckCustomerCreate(It.IsAny<int>());
+            Assert.True(result);
+
+        }
+        [Fact]
+        public async Task CheckCustomerCreate_WithInValidBookingLimit_ReturnsTrue() {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(x => x.CountAppointmentsPerDay(It.IsAny<int>()))
+                .ReturnsAsync(2);
+            var serviceCenterRepositoryMock = _fixture.Freeze<Mock<IServiceCenterRepository>>();
+            serviceCenterRepositoryMock.Setup(x => x.GetLimitBookingOfServiceCenter())
+                .ReturnsAsync(1);
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+            var result = await appointmentService.CheckCustomerCreate(It.IsAny<int>());
+            Assert.False(result);
+
+        }
     }
 }
