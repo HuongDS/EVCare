@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Interfaces;
 using Application.Services;
 using AutoFixture;
 using AutoFixture.AutoMoq;
@@ -213,6 +214,33 @@ namespace Application.Tests {
             var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
             var result = await appointmentService.CheckAppointmentsForApointmentDate(appointmentDate);
             Assert.False(result);
+        }
+
+        [Theory, AutoData]
+        public async Task GetAppointmentById_WithExitsID_ReturnsAppointment(int appointmentId) {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(x => x.GetAppointmentWithDetails(appointmentId))
+                .ReturnsAsync(new DataAccess.Dtos.Appointment.AppointmentViewDetailModel
+                {
+                    Id = appointmentId
+                });
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+            var result = await appointmentService.GetAppointmentById(appointmentId);
+            Assert.NotNull(result);
+            Assert.Equal(appointmentId, result.Id);
+
+        }
+        [Theory, AutoData]
+        public async Task GetAppointmentById_WithNonExitsID_ThrowsException(int appointmentId) {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(x => x.GetAppointmentWithDetails(appointmentId))
+                .ReturnsAsync(() => null);
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                 await appointmentService.GetAppointmentById(appointmentId)
+             );
+            Assert.Equal("Appointment not found", result.Message);
+
         }
 
     }

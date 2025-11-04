@@ -162,7 +162,7 @@ namespace API.Controllers
 
                 };
                 var appointmentId = await _appointmentService.CreateAppointment(newModel);
-                var appointmentDetails = await _appointmentService.GetAppointmentByiD(appointmentId);
+                var appointmentDetails = await _appointmentService.GetAppointmentById(appointmentId);
                 await _notificationServices.SendAppointmentInforAsync(appointmentDetails);
                 return Ok(new
                 {
