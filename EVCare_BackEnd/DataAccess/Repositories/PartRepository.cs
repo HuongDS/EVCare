@@ -107,7 +107,7 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<PartViewModel>> GetLowStockParts() {
             return await _dbContext.Parts
-                .Where(x => x.Stock <=10)
+                .Where(x => x.Stock <=10 && x.Deleted_At == DateTime.MinValue)
                 .Select(x => new PartViewModel {
                     Id = x.Id,
                     Name = x.Name,
