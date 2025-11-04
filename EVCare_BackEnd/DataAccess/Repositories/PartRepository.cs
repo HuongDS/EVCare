@@ -100,5 +100,26 @@ namespace DataAccess.Repositories
         public async Task<Part> GetByNameAsync(string name) {
             return await _dbContext.Parts.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
         }
+
+        public async Task<decimal> GetTotalPriceOfParts() {
+            return await _dbContext.Parts.SumAsync(x => x.Price * x.Stock);
+        }
+
+        public async Task<IEnumerable<PartViewModel>> GetLowStockParts() {
+            return await _dbContext.Parts
+                .Where(x => x.Stock <=10)
+                .Select(x => new PartViewModel {
+                    Id = x.Id,
+                    Name = x.Name,
+                    CategoryId = x.CategoryId,
+                    IsDeleted = (x.Deleted_At != DateTime.MinValue),
+                    Price = x.Price,
+                    Quantity = x.Stock,
+                    ImageUrl = x.Image,
+                    Description = x.Description,
+                    ReplacementPrice = x.ReplacementPrice
+                })
+                .ToListAsync();
+        }
     }
 }
