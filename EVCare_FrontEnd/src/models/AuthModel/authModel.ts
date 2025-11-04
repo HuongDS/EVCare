@@ -43,6 +43,7 @@ export type RegisterRequestDto = {
 
 export type VerifyOTPDto = {
   email: string;
+  newPassword: string;
   otp: string;
 };
 
