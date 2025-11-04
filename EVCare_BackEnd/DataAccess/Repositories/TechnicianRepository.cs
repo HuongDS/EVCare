@@ -77,6 +77,7 @@ namespace DataAccess.Repositories
                     Id = x.Id,
                     FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
                     ExpYears = x.ExpYear,
+                    Email = x.Employee.Account.Email,
                     Phone = x.Employee.Account.Phone,
                     Skills = x.TechnicianSkills.Select(x => new Dtos.Service.ServiceViewFormModel
                     {
