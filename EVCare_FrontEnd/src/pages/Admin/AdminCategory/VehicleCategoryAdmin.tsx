@@ -16,28 +16,25 @@ import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useNotification } from "../../../context/useNotification";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import DeleteConfirmationModal from "../AdminService&Parts/DeleteConfirmModal";
-import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
+import type {
+  VehicleCategoryViewDto,
+  VehicleCategoryWithScaleViewDto,
+} from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import VehicleCategoryForm from "./VehicleCategoryForm"; // <-- UPDATED
 import VehicleCategoryEditModal from "./VehicleCategoryEditModal"; // <-- UPDATED
-import {
-  deleteVehicleCategory,
-  getVehicleCategories,
-} from "../../../services/vehicleServicesApi";
+import { deleteVehicleCategory, getVehicleCategories } from "../../../services/vehicleServicesApi";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
 
 type SubTab = "view" | "add";
 
 export default function VehicleCategoryAdmin() {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>("view");
-  const [categories, setCategories] = useState<VehicleCategoryViewDto[]>([]);
+  const [categories, setCategories] = useState<VehicleCategoryWithScaleViewDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const notification = useNotification();
-  const [itemToEdit, setItemToEdit] = useState<VehicleCategoryViewDto | null>(
-    null
-  );
+  const [itemToEdit, setItemToEdit] = useState<VehicleCategoryWithScaleViewDto | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] =
-    useState<VehicleCategoryViewDto | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<VehicleCategoryViewDto | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
@@ -70,12 +67,12 @@ export default function VehicleCategoryAdmin() {
     setItemToEdit(null);
   };
 
-  const handleOpenEditModal = (category: VehicleCategoryViewDto) => {
+  const handleOpenEditModal = (category: VehicleCategoryWithScaleViewDto) => {
     setItemToEdit(category);
     setIsEditModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (category: VehicleCategoryViewDto) => {
+  const handleOpenDeleteModal = (category: VehicleCategoryWithScaleViewDto) => {
     setItemToDelete(category);
     setIsDeleteModalOpen(true);
   };
@@ -102,12 +99,7 @@ export default function VehicleCategoryAdmin() {
   };
 
   const renderViewTab = () => (
-    <TabContent
-      key="view"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <TabContent key="view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       {isLoading ? (
         <SpinnerComponent />
       ) : (
@@ -127,10 +119,7 @@ export default function VehicleCategoryAdmin() {
                     <ActionButton onClick={() => handleOpenEditModal(cat)}>
                       <FaPencilAlt />
                     </ActionButton>
-                    <ActionButton
-                      $isDelete
-                      onClick={() => handleOpenDeleteModal(cat)}
-                    >
+                    <ActionButton $isDelete onClick={() => handleOpenDeleteModal(cat)}>
                       <FaTrash />
                     </ActionButton>
                   </Td>
@@ -144,12 +133,7 @@ export default function VehicleCategoryAdmin() {
   );
 
   const renderAddTab = () => (
-    <TabContent
-      key="add"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-    >
+    <TabContent key="add" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
       <VehicleCategoryForm onAddSuccess={handleAddSuccess} />
     </TabContent>
   );
@@ -158,23 +142,15 @@ export default function VehicleCategoryAdmin() {
     <>
       <ManagerWrapper>
         <SubTabContainer>
-          <SubTabButton
-            $isActive={activeSubTab === "view"}
-            onClick={() => setActiveSubTab("view")}
-          >
+          <SubTabButton $isActive={activeSubTab === "view"} onClick={() => setActiveSubTab("view")}>
             View All
           </SubTabButton>
-          <SubTabButton
-            $isActive={activeSubTab === "add"}
-            onClick={() => setActiveSubTab("add")}
-          >
+          <SubTabButton $isActive={activeSubTab === "add"} onClick={() => setActiveSubTab("add")}>
             Add New
           </SubTabButton>
         </SubTabContainer>
 
-        <AnimatePresence mode="wait">
-          {activeSubTab === "view" ? renderViewTab() : renderAddTab()}
-        </AnimatePresence>
+        <AnimatePresence mode="wait">{activeSubTab === "view" ? renderViewTab() : renderAddTab()}</AnimatePresence>
       </ManagerWrapper>
 
       <AnimatePresence>
