@@ -1,32 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 import logo from "../../assets/EVCare.png";
 import SwitchButton from "../../components/Button/SwitchButton";
-import {
-  FormContainer,
-  HeaderBox,
-  SideImage,
-  StyledModal,
-} from "./Authentication.styled";
+import { FormContainer, HeaderBox, SideImage, StyledModal } from "./Authentication.styled";
 import AuthForm from "./sections/AuthForm";
-import OTPForm from "./sections/OTPForm";
-import {
-  AUTH_FORM_MESSAGE,
-  ERROR_MESSAGE,
-  FORM_MESSAGES,
-  MSG_TITLE,
-} from "../../constants/messages/Message";
-import type {
-  LoginRequestDto,
-  RegisterRequestDto,
-  VerifyOTPDto,
-} from "../../models/AuthModel/authModel";
-import {
-  login,
-  register,
-  saveTokens,
-  sendOtp,
-  verifyOtp,
-} from "../../services/authService";
+import ResetPasswordForm from "./sections/ResetPasswordForm";
+import { AUTH_FORM_MESSAGE, ERROR_MESSAGE, FORM_MESSAGES, MSG_TITLE } from "../../constants/messages/Message";
+import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto } from "../../models/AuthModel/authModel";
+import { login, register, resetPassword, saveTokens, sendOtp } from "../../services/authService";
 import { toUseFromJwt } from "../../token/jwtDecode";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../states/store";
@@ -37,11 +17,7 @@ import { saveUser } from "../../token/tokenStore";
 import { PASSWORD_REGEX } from "../../constants/regexs/PasswordRegex";
 import { EMAIL_REGEX } from "../../constants/regexs/EmailRegex";
 import { PHONE_NUMBER_REGEX } from "../../constants/regexs/PhoneNumberRegex";
-import {
-  closeLogin,
-  consumeAction,
-  openAppointmentForm,
-} from "../../states/uiSlice";
+import { closeLogin, consumeAction, openAppointmentForm } from "../../states/uiSlice";
 import { ACTION } from "../../constants/messages/Actions";
 import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
 import { handleError } from "../../utils/errorHandler";
@@ -55,6 +31,11 @@ import { useNotification } from "../../context/useNotification";
 //   handleClose: () => void;
 // }
 
+type FormDataResetPassword = {
+  newPassword: string;
+  confirmNewPassword: string;
+};
+
 export default function Authentication() {
   const [isSignUp, setIsSignUp] = useState(true); // true: signUp | false : login
   const [isOTP, setIsOTP] = useState(false); // true: verify Otp
@@ -66,18 +47,13 @@ export default function Authentication() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState<string[]>(() =>
-    Array(LENGTH.OTP_LENGTH).fill("")
-  ); // lazy init
   const [isLoading, setIsLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
   const pending = useSelector((state: RootState) => state.ui.actionAfterLogin);
-  const loginFormOpen = useSelector(
-    (state: RootState) => state.ui.loginFormOpen
-  );
+  const loginFormOpen = useSelector((state: RootState) => state.ui.loginFormOpen);
 
   // Navigate
   const navigate = useNavigate();
@@ -151,12 +127,7 @@ export default function Authentication() {
   }, [email, password, pending, dispatch, navigate, notification]);
 
   const handleSignUp = useCallback(async () => {
-    if (
-      firstName == null ||
-      lastName == null ||
-      firstName.length === 0 ||
-      lastName.length === 0
-    ) {
+    if (firstName == null || lastName == null || firstName.length === 0 || lastName.length === 0) {
       notification.warning({
         message: "Error",
         description: FORM_MESSAGES.NAME,
@@ -180,10 +151,7 @@ export default function Authentication() {
         duration: 3,
       });
       return;
-    } else if (
-      !PASSWORD_REGEX.test(password) ||
-      !PASSWORD_REGEX.test(confirm)
-    ) {
+    } else if (!PASSWORD_REGEX.test(password) || !PASSWORD_REGEX.test(confirm)) {
       notification.warning({
         message: "Error",
         description: ERROR_MESSAGE.INVALID_PASSWORD,
@@ -239,36 +207,53 @@ export default function Authentication() {
     }
   }, [email, password, firstName, lastName, phone, confirm]);
 
-  const handleVerifyOTP = useCallback(async () => {
-    setIsLoading(true);
-    const code = otp.join("");
-    if (code.length != LENGTH.OTP_LENGTH || !OTP_REGEX.test(code)) {
-      notification.warning({
-        message: `OTP must be ${LENGTH.OTP_LENGTH} numbers`,
-        showProgress: true,
-      });
-      return;
-    }
-    try {
-      const data: VerifyOTPDto = {
-        email: email,
-        otp: code,
-      };
-      const response = await verifyOtp(data);
-      notification.success({ message: response.message });
-    } catch (error) {
-      notification.error({
-        message: (error as Error).message,
-        showProgress: true,
-      });
+  const handleSubmitResetPassword = useCallback(
+    async (formData: FormDataResetPassword, otp: string) => {
+      setIsLoading(true);
+      if (otp.length != LENGTH.OTP_LENGTH || !OTP_REGEX.test(otp)) {
+        notification.warning({
+          message: `OTP must be ${LENGTH.OTP_LENGTH} numbers`,
+          showProgress: true,
+        });
+        return;
+      }
+      if (!PASSWORD_REGEX.test(formData.newPassword)) {
+        notification.warning({
+          message: ERROR_MESSAGE.INVALID_PASSWORD,
+          showProgress: true,
+        });
+        return;
+      }
+      if (formData.newPassword !== formData.confirmNewPassword) {
+        notification.warning({
+          message: ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME,
+          showProgress: true,
+        });
+        return;
+      }
+      try {
+        const data: VerifyOTPDto = {
+          email: email,
+          otp: otp,
+          newPassword: formData.newPassword,
+        };
+        const response = await resetPassword(data);
+        notification.success({ message: response.message });
+      } catch (error) {
+        notification.error({
+          message: (error as Error).message,
+          showProgress: true,
+        });
+        setIsLoading(false);
+        handleError(error);
+        return;
+      }
       setIsLoading(false);
-      handleError(error);
-      return;
-    }
-    setIsLoading(false);
-    setIsOTP(false);
-    dispatch(closeLogin());
-  }, [email, otp, dispatch]);
+      setIsOTP(false);
+      dispatch(closeLogin());
+    },
+    [email, dispatch]
+  );
 
   const handChangeIsForgot = useCallback(async () => {
     setIsLoading(true);
@@ -276,22 +261,28 @@ export default function Authentication() {
     try {
       if (!EMAIL_REGEX.test(email.trim())) {
         notification.warning({ message: ERROR_MESSAGE.INVALID_EMAIL });
+        setIsLoading(false);
+        setIsForgot(false);
         return;
       }
       const response = await sendOtp(email);
-      console.log(response);
+      if (response.statusCode === HTTP_STATUS.OK) {
+        notification.success({ message: response.message });
+        setIsOTP(true);
+        setIsForgot(false);
+      }
     } catch (error) {
       notification.error({
         message: (error as Error).message,
         showProgress: true,
       });
       handleError(error);
+      setIsForgot(false);
       return;
     } finally {
       setIsLoading(false);
-      setIsForgot(false);
     }
-  }, [email]);
+  }, [email, notification]);
 
   // header text
   const headerText = useMemo(() => {
@@ -303,21 +294,14 @@ export default function Authentication() {
 
   return (
     <>
-      <StyledModal
-        show={loginFormOpen}
-        onHide={() => dispatch(closeLogin())}
-        centered
-        backdrop={true}
-      >
+      <StyledModal show={loginFormOpen} onHide={() => dispatch(closeLogin())} centered backdrop={true}>
         <SideImage $isSignUp={isSignUp}>
           <img src={logo} alt="EVCare Logo" />
         </SideImage>
         <FormContainer $isSignUp={isSignUp}>
           <HeaderBox>
             <h1>{headerText}</h1>
-            {!isOTP && !isForgot ? (
-              <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} />
-            ) : null}
+            {!isOTP && !isForgot ? <SwitchButton isSignUp={isSignUp} onChange={setIsSignUp} /> : null}
           </HeaderBox>
 
           {!isOTP ? (
@@ -353,12 +337,7 @@ export default function Authentication() {
               )}
             </>
           ) : (
-            <OTPForm
-              disable={isLoading}
-              otp={otp}
-              setOtp={setOtp}
-              handleVerifyOTP={handleVerifyOTP}
-            />
+            <ResetPasswordForm disable={isLoading} handleSubmit={handleSubmitResetPassword} />
           )}
         </FormContainer>
       </StyledModal>

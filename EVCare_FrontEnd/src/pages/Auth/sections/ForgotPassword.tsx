@@ -9,12 +9,7 @@ interface ForgotProps {
   isLoading: boolean;
   handChangeIsForgot: () => void;
 }
-export default function ForgotPassword({
-  email,
-  setEmail,
-  isLoading,
-  handChangeIsForgot,
-}: ForgotProps) {
+export default function ForgotPassword({ email, setEmail, isLoading, handChangeIsForgot }: ForgotProps) {
   return (
     <FormWrapper>
       <TextFieldWithIcon
@@ -23,6 +18,7 @@ export default function ForgotPassword({
         type="Email"
         text={email}
         setText={setEmail}
+        label="Email"
       />
       {isLoading ? (
         <SpinnerComponent />
