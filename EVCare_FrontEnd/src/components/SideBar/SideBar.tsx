@@ -13,7 +13,6 @@ import {
   InboxOutlined,
   LineChartOutlined,
   LogoutOutlined,
-  QuestionCircleOutlined,
   SettingOutlined,
   ShoppingOutlined,
   SolutionOutlined,
@@ -94,12 +93,6 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "10",
-      icon: <QuestionCircleOutlined size={20} />,
-      label: "Help & Information",
-      route: "/admin/help",
-    },
-    {
-      key: "11",
       icon: <LogoutOutlined />,
       label: "Logout",
       action: () => logout,
