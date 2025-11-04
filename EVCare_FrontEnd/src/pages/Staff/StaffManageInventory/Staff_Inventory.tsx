@@ -2,11 +2,7 @@ import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Select, Typography } from "antd";
 import { Package, AlertCircle, ChartCandlestick } from "lucide-react";
-import {
-  useExportInventoryToExcel,
-  useGetAllPartCategories,
-  useGetParts,
-} from "../../../services/staffService";
+import { useExportInventoryToExcel, useGetAllPartCategories, useGetParts } from "../../../services/staffService";
 import SearchBar from "../../../components/SearchBar/Search";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import { DownloadButton } from "../../../components/Button/DownloadButton";
@@ -32,9 +28,8 @@ const Staff_Inventory = () => {
   });
 
   const filteredParts =
-    (selectedCategory
-      ? parts?.data?.items?.filter((p) => p.categoryId === selectedCategory)
-      : parts?.data?.items) ?? [];
+    (selectedCategory ? parts?.data?.items?.filter((p) => p.categoryId === selectedCategory) : parts?.data?.items) ??
+    [];
 
   const categoryOptions = [
     { label: "All Categories", value: null },
@@ -48,8 +43,8 @@ const Staff_Inventory = () => {
     const items = parts?.data?.items ?? [];
 
     const total = items.length;
-    const lowStockItems = items.filter((p) => p.quantity < 10).length;
-    const totalValue = items.reduce((sum, p) => sum + p.price * p.quantity, 0);
+    const lowStockItems = items.filter((p) => p.stock < 10).length;
+    const totalValue = items.reduce((sum, p) => sum + p.price * p.stock, 0);
 
     return { total, lowStockItems, totalValue };
   }, [parts]);
@@ -68,10 +63,7 @@ const Staff_Inventory = () => {
             {isPending ? (
               <SpinnerComponent />
             ) : (
-              <DownloadButton
-                action={() => exportToExcel()}
-                text="Export to Excel"
-              />
+              <DownloadButton action={() => exportToExcel()} text="Export to Excel" />
             )}
           </TitleRow>
           <StatsGrid>
@@ -92,11 +84,7 @@ const Staff_Inventory = () => {
                   <AlertCircle size={20} />
                 </StatIcon>
               </StatHeader>
-              <StatValue
-                style={{ color: lowStockItems > 0 ? "#cf1322" : "#1a1a1a" }}
-              >
-                {lowStockItems}
-              </StatValue>
+              <StatValue style={{ color: lowStockItems > 0 ? "#cf1322" : "#1a1a1a" }}>{lowStockItems}</StatValue>
               <StatSubtext>Items below threshold</StatSubtext>
             </StatCard>
             <StatCard>
@@ -106,9 +94,7 @@ const Staff_Inventory = () => {
                   <ChartCandlestick size={20} />
                 </StatIcon>
               </StatHeader>
-              <StatValue style={{ fontSize: "1.5rem" }}>
-                {totalValue.toLocaleString("vi-VN")}đ
-              </StatValue>
+              <StatValue style={{ fontSize: "1.5rem" }}>{totalValue.toLocaleString("vi-VN")}đ</StatValue>
               <StatSubtext>Total stock value</StatSubtext>
             </StatCard>
           </StatsGrid>
@@ -117,11 +103,7 @@ const Staff_Inventory = () => {
 
       <ContentWrapper>
         <FilterBar>
-          <SearchBar
-            handleSearchValue={setSearchValue}
-            searchValue={searchValue}
-            placeholder="Search part..."
-          />
+          <SearchBar handleSearchValue={setSearchValue} searchValue={searchValue} placeholder="Search part..." />
           <StyledSelect
             options={categoryOptions}
             placeholder="Filter by Category"
@@ -148,23 +130,16 @@ const Staff_Inventory = () => {
                   <th>Category</th>
                   <th>Unit Price (đ)</th>
                   <th>Stock</th>
-                  <th style={{ display: "flex", justifyContent: "center" }}>
-                    Action
-                  </th>
+                  <th style={{ display: "flex", justifyContent: "center" }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredParts.map((part) => {
                   const category =
-                    partCategories?.data?.items.find(
-                      (c) => c.id === part.categoryId
-                    )?.name || "Uncategorized";
+                    partCategories?.data?.items.find((c) => c.id === part.categoryId)?.name || "Uncategorized";
 
                   return (
-                    <tr
-                      key={part.id}
-                      className={part.quantity < 10 ? "low-stock" : ""}
-                    >
+                    <tr key={part.id} className={part.stock < 10 ? "low-stock" : ""}>
                       <td>
                         <img
                           src={part.imageUrl}
@@ -184,16 +159,14 @@ const Staff_Inventory = () => {
                       <td>{part.price.toLocaleString("vi-VN")}</td>
                       <td
                         style={{
-                          color: part.quantity < 10 ? "#cf1322" : "#1a1a1a",
+                          color: part.stock < 10 ? "#cf1322" : "#1a1a1a",
                           fontWeight: 500,
                         }}
                       >
-                        {part.quantity}
+                        {part.stock}
                       </td>
                       <td>
-                        <div
-                          style={{ display: "flex", justifyContent: "center" }}
-                        >
+                        <div style={{ display: "flex", justifyContent: "center" }}>
                           <ShowButton
                             text="Update"
                             onclick={() => {
@@ -225,13 +198,7 @@ const Staff_Inventory = () => {
         )}
       </ContentWrapper>
 
-      {isOpen && (
-        <UpdatePartModal
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          part={selectedPart}
-        />
-      )}
+      {isOpen && <UpdatePartModal isOpen={isOpen} setIsOpen={setIsOpen} part={selectedPart} />}
     </Container>
   );
 };
