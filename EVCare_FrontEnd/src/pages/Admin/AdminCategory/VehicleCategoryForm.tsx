@@ -48,6 +48,14 @@ export default function VehicleCategoryForm({ onAddSuccess }: Props) {
       });
       return;
     }
+    if (formData.scaleX <= 0 || formData.scaleY <= 0 || formData.scaleZ <= 0) {
+      notification.warning({
+        message: "Warning",
+        description: "Scale values must be greater than 0.",
+        showProgress: true,
+      });
+      return;
+    }
     setIsSubmitting(true);
     try {
       const response = await createVehicleCategory(formData);

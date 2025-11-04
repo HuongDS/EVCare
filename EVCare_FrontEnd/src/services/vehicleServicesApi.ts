@@ -1,7 +1,7 @@
 import axios from "axios";
 import { api } from "../api/api";
 import type { ResponseDto } from "../models/AuthModel/authModel";
-import type { VehicleCategoryViewDto } from "../models/VehicleModels/vehicleCategoryViewDto";
+import type { VehicleCategoryWithScaleViewDto } from "../models/VehicleModels/vehicleCategoryViewDto";
 import type { VehicleCreateDto } from "../models/VehicleModels/VehicleCreateDto";
 import type { VehicleViewDto } from "../models/VehicleModels/vehicleViewDto";
 import { handleError } from "../utils/errorHandler";
@@ -22,7 +22,7 @@ export async function getVehicleByCustomerId(customerId: number) {
 
 export async function getVehicleCategories(pageSize?: number) {
   try {
-    const response = await api.get<ResponseDto<VehicleCategoryViewDto[]>>("/api/VehicleCategory/active", {
+    const response = await api.get<ResponseDto<VehicleCategoryWithScaleViewDto[]>>("/api/VehicleCategory/active", {
       params: {
         pageSize: pageSize ?? 1000,
       },
