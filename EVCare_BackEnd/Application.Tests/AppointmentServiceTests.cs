@@ -9,6 +9,7 @@ using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
 using AutoMapper;
+using DataAccess.Dtos.Appointment;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using Moq;
@@ -170,7 +171,7 @@ namespace Application.Tests {
             appointmentRepositoryMock.Setup(x => x.CountAppointmentsPerDay(It.IsAny<int>()))
                 .ReturnsAsync(2);
             var serviceCenterRepositoryMock = _fixture.Freeze<Mock<IServiceCenterRepository>>();
-            serviceCenterRepositoryMock.Setup(x=>x.GetLimitBookingOfServiceCenter())
+            serviceCenterRepositoryMock.Setup(x => x.GetLimitBookingOfServiceCenter())
                 .ReturnsAsync(5);
             var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
             var result = await appointmentService.CheckCustomerCreate(It.IsAny<int>());
@@ -191,7 +192,7 @@ namespace Application.Tests {
 
         }
 
-        [Theory,AutoData]
+        [Theory, AutoData]
         public async Task CheckAppointmentsForApointmentDate_WithAvailableSlot_ReturnsTrue(DateTime appointmentDate) {
             var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
             appointmentRepositoryMock.Setup(x => x.CountAppointment(DateOnly.FromDateTime(appointmentDate)))
@@ -243,5 +244,84 @@ namespace Application.Tests {
 
         }
 
+        [Theory, AutoData]
+        public async Task UpdateAppointment_WithNonExistAppointment_ThrowsException(
+            AppointmentUpdateModel model, int employeeId) {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                 await appointmentService.UpdateAppointment(model, It.IsAny<int>())
+             );
+            Assert.Equal("Appointment not found", result.Message);
+        }
+        [Theory, AutoData]
+        public async Task UpdateAppointment_WithAppointmentIsDone_ThrowsException(
+           AppointmentUpdateModel model, int employeeId) {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Appointment
+                {
+                    Status = DataAccess.Enums.AppointmentStatusEnum.Done
+                });
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                 await appointmentService.UpdateAppointment(model, It.IsAny<int>())
+             );
+            Assert.Equal("Cannot update status of completed or canceled appointment", result.Message);
+        }
+        [Theory, AutoData]
+        public async Task UpdateAppointment_WithAppointmentIsCanncel_ThrowsException(
+         AppointmentUpdateModel model, int employeeId) {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Appointment
+                {
+                    Status = DataAccess.Enums.AppointmentStatusEnum.Canceled
+                });
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                 await appointmentService.UpdateAppointment(model, It.IsAny<int>())
+             );
+            Assert.Equal("Cannot update status of completed or canceled appointment", result.Message);
+        }
+        [Theory, AutoData]
+        public async Task UpdateAppointment_WithStatusCheckInNotAppointmentDate_ThrowsException(
+            AppointmentUpdateModel model, int employeeId) {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            model.Status = DataAccess.Enums.AppointmentStatusEnum.CheckedIn;
+            appointmentRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Appointment
+                {
+                    Status = DataAccess.Enums.AppointmentStatusEnum.Confirmed,
+                    Appointment_Date = DateTime.Now.AddDays(1)
+                });
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                 await appointmentService.UpdateAppointment(model, It.IsAny<int>())
+             );
+            Assert.Equal("Can only check-in on the day of the appointment", result.Message);
+
+
+        }
+
+        [Theory, AutoData]
+        public async Task UpdateAppointment_WithValidData_ReturnsTrue(
+           AppointmentUpdateModel model, int employeeId) {
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Appointment
+                {
+                    Status = DataAccess.Enums.AppointmentStatusEnum.CheckedIn,
+                    Appointment_Date = DateTime.Now
+                });
+            var appointmentService = _fixture.Create<Application.Services.AppointmentService>();
+            var result = await appointmentService.UpdateAppointment(model, It.IsAny<int>());    
+            Assert.True(result);
+        }
     }
 }

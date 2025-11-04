@@ -239,7 +239,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetAppointmentDetailByAppointmetId(int appointmentId) {
             try {
 
-                var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
+                var appointment = await _appointmentService.GetAppointmentById(appointmentId);
 
                 return Ok(new ResponseDto<AppointmentViewDetailModel>
                 {
@@ -341,7 +341,7 @@ namespace API.Controllers
             }
 
             var appointmentId = payload.Item3;
-            var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
+            var appointment = await _appointmentService.GetAppointmentById(appointmentId);
             if (appointment == null) {
                 return NotFound(new ResponseDto<object>
                 {
@@ -382,7 +382,7 @@ namespace API.Controllers
             }
 
             var appointmentId = payload.Item3;
-            var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
+            var appointment = await _appointmentService.GetAppointmentById(appointmentId);
             if (appointment == null) {
                 return NotFound(new ResponseDto<object>
                 {
