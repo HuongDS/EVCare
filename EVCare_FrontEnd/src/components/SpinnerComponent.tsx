@@ -1,4 +1,3 @@
-import React from "react";
 import { Spin } from "antd";
 import styled from "styled-components";
 
@@ -8,6 +7,6 @@ const SpinStyled = styled(Spin)`
   align-items: center;
   text-align: center;
 `;
-const SpinnerComponent: React.FC = () => <SpinStyled size="large" />;
+const SpinnerComponent = () => <SpinStyled size="large" />;
 
 export default SpinnerComponent;

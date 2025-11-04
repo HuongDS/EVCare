@@ -14,6 +14,7 @@ import axios from "axios";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import dayjs from "dayjs";
 import type { UpdateInventoryPayload } from "../models/Inventory/InventoryModel";
+import type { MultipleImageDto } from "../models/AppointmentsModel/Staff_Appointments_Model";
 
 interface GetPartCategoryParams {
   pageSize?: number;
@@ -34,6 +35,7 @@ export const useGetAllCustomer = (params: GetCustomerListParams) => {
         throw error;
       }
     },
+    staleTime: 10 * 60 * 1000,
   });
 };
 
@@ -142,6 +144,24 @@ export const useUpdateInventoryImage = () => {
       );
 
       return response.data.data;
+    },
+  });
+};
+
+export const useUploadAppointmentImage = () => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await api.post<ResponseDto<MultipleImageDto[]>>(
+        "/api/File/upload-multiple-images",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            FolderName: "AppointmentImages",
+          },
+        }
+      );
+      return response.data;
     },
   });
 };

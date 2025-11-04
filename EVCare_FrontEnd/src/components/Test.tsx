@@ -3,9 +3,11 @@
 // import OrderHistorySort from "../pages/Customer/CustomerComponent/OrderHistorySort";
 // import OrderHistoryCard from "../pages/Customer/OrderHistory/Orders/OrderHistoryCard";
 
+import OTPForm from "../pages/Auth/sections/OTPForm";
 import { useAppDispatch } from "../states/store";
 import { closeModel3d, openModel3d } from "../states/uiSlice";
 import BackButton from "./Button/BackButton";
+import Skeleton from "./Skeletons/Skeleton";
 
 // import SortDateRange from "../pages/Staff/StaffComponents/SortDateRange";
 // import Payment_Success_Page from "../pages/Staff/StaffManageAppointment/Payment_Success_Page";
@@ -39,7 +41,7 @@ export default function Test() {
       {/* <SortDateButton onSort={() => 1} /> */}
       {/* <Payment_Success_Page /> */}
       {/* <SortDateRange onDateRangeChange={() => 1} /> */}
-      <button
+      {/* <button
         className="btn btn-primary"
         onClick={() => dispatch(openModel3d())}
       >
@@ -47,6 +49,7 @@ export default function Test() {
       </button>
       <h1>ĐAY LA MO HINH 3D PAGE</h1>
 
+      <Skeleton /> */}
       {/* <BackButton /> */}
     </>
   );

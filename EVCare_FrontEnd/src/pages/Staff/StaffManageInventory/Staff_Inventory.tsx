@@ -23,18 +23,18 @@ const Staff_Inventory = () => {
   const [selectedPart, setSelectedPart] = useState<PartDetailDto | undefined>();
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>();
 
   const { data: partCategories } = useGetAllPartCategories({});
   const { data: parts, isLoading } = useGetParts({
     ...((searchValue && { partName: searchValue }) || {}),
+    categoryId: selectedCategory ? [selectedCategory] : [],
     pageIndex: currentPage,
-    pageSize: 5,
+    pageSize: pageSize,
   });
+  const { mutate: exportToExcel, isPending } = useExportInventoryToExcel();
 
-  const filteredParts =
-    (selectedCategory
-      ? parts?.data?.items?.filter((p) => p.categoryId === selectedCategory)
-      : parts?.data?.items) ?? [];
+  const filteredParts = parts?.data?.items ?? [];
 
   const categoryOptions = [
     { label: "All Categories", value: null },
@@ -44,7 +44,7 @@ const Staff_Inventory = () => {
     })) ?? []),
   ];
 
-  const { total, lowStockItems, totalValue } = useMemo(() => {
+  const { lowStockItems, totalValue } = useMemo(() => {
     const items = parts?.data?.items ?? [];
 
     const total = items.length;
@@ -54,7 +54,9 @@ const Staff_Inventory = () => {
     return { total, lowStockItems, totalValue };
   }, [parts]);
 
-  const { mutate: exportToExcel, isPending } = useExportInventoryToExcel();
+  const onSelectPageSize = (value: any) => {
+    setPageSize(value);
+  };
 
   return (
     <Container>
@@ -82,7 +84,7 @@ const Staff_Inventory = () => {
                   <Package size={20} />
                 </StatIcon>
               </StatHeader>
-              <StatValue>{total}</StatValue>
+              <StatValue>{parts?.data?.totalItems}</StatValue>
               <StatSubtext>Parts in inventory</StatSubtext>
             </StatCard>
             <StatCard>
@@ -126,13 +128,24 @@ const Staff_Inventory = () => {
             options={categoryOptions}
             placeholder="Filter by Category"
             value={selectedCategory}
-            onChange={(v) => setSelectedCategory(Number(v))}
+            onChange={(v) => setSelectedCategory(v === null ? null : Number(v))}
             style={{
               height: "44px",
             }}
           />
           <Text style={{ marginLeft: "auto", color: "#8c8c8c" }}>
-            Showing {filteredParts.length} of {total} items
+            Showing{" "}
+            <Select
+              onChange={onSelectPageSize}
+              defaultValue={parts?.data?.totalItems}
+              options={[
+                { value: "5", label: <span>5</span> },
+                { value: "10", label: <span>10</span> },
+                { value: "20", label: <span>20</span> },
+              ]}
+              style={{ width: "60px", margin: "0 5px" }}
+            />
+            items
           </Text>
         </FilterBar>
 

@@ -66,9 +66,8 @@ export default function Authentication() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState<string[]>(() =>
-    Array(LENGTH.OTP_LENGTH).fill("")
-  ); // lazy init
+  const [otp, setOtp] = useState<string[]>(Array(LENGTH.OTP_LENGTH).fill(""));
+  // lazy init
   const [isLoading, setIsLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
 
@@ -295,7 +294,7 @@ export default function Authentication() {
 
   // header text
   const headerText = useMemo(() => {
-    if (isOTP) return AUTH_FORM_MESSAGE.VERIFY;
+    if (isOTP) return "";
     if (isSignUp) return AUTH_FORM_MESSAGE.REGISTER;
     if (isForgot) return AUTH_FORM_MESSAGE.FORGOT_PASSWORD;
     return AUTH_FORM_MESSAGE.LOGIN;
@@ -354,6 +353,7 @@ export default function Authentication() {
             </>
           ) : (
             <OTPForm
+              setIsOpen={setIsOTP}
               disable={isLoading}
               otp={otp}
               setOtp={setOtp}

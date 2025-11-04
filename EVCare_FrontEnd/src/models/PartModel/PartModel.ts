@@ -12,9 +12,11 @@ export type PartDetailDto = {
 
 export type GetPartParams = {
   partName?: string;
-  categoryId?: number;
+  categoryId?: number[];
   pageSize?: number;
   pageIndex?: number;
+  sortField?: string;
+  sortOrder?: string;
 };
 
 export interface Category {

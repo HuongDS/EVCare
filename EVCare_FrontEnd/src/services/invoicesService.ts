@@ -94,6 +94,7 @@ export const useGetInvoice = (orderId: number) => {
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
       }
     },
+    refetchOnWindowFocus: false,
   });
 };
 

@@ -4,26 +4,33 @@ import { Badge, Avatar, Card, Typography } from "antd";
 import { Phone, Mail, Car, User, Users, UserCheck, Ban } from "lucide-react";
 import { useGetAllCustomer } from "../../../services/staffService";
 import SearchBar from "../../../components/SearchBar/Search";
-
 const { Title, Text } = Typography;
 
 const Manage_Customer: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
+  const { data: allCustomersRaw } = useGetAllCustomer({
+    keyword: "",
+  });
+
   const { data: customers } = useGetAllCustomer({
     keyword: searchTerm,
   });
 
-  const { activeCount, bannedCount, totalVehicles } = useMemo(() => {
-    const customerList = customers?.data?.items;
-    const activeCount = customerList?.filter((c) => !c.banned).length;
-    const bannedCount = customerList?.filter((c) => c.banned).length;
-    const totalVehicles = customerList?.reduce(
+  const { totalCus, activeCount, bannedCount, totalVehicles } = useMemo(() => {
+    const totalCus = allCustomersRaw?.data?.items.length;
+    const activeCount = allCustomersRaw?.data?.items.filter(
+      (c) => !c.banned
+    ).length;
+    const bannedCount = allCustomersRaw?.data?.items.filter(
+      (c) => c.banned
+    ).length;
+    const totalVehicles = allCustomersRaw?.data?.items.reduce(
       (sum, c) => sum + c.vehicles.length,
       0
     );
-    return { activeCount, bannedCount, totalVehicles };
-  }, [customers]);
+    return { totalCus, activeCount, bannedCount, totalVehicles };
+  }, [allCustomersRaw?.data?.items]);
 
   return (
     <Container>
@@ -34,7 +41,7 @@ const Manage_Customer: React.FC = () => {
               <Users size={24} />
             </div>
             <div className="content">
-              <h3>{customers?.data?.items.length}</h3>
+              <h3>{totalCus}</h3>
               <p>Total Customers</p>
             </div>
           </StatCard>

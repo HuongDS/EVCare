@@ -102,7 +102,23 @@ import { AppointmentList } from "../pages/Technician/TechnicianGeneral/Technicia
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  return <Suspense fallback={<SpinnerComponent />}>{children}</Suspense>;
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            height: "50%",
+          }}
+        >
+          <SpinnerComponent />
+        </div>
+      }
+    >
+      {children}
+    </Suspense>
+  );
 };
 
 const router = createBrowserRouter([
