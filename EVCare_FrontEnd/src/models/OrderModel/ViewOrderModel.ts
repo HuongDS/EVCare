@@ -13,11 +13,13 @@ export type ViewOrderDataDto<T> = {
 
 export type PartsDetailDto = {
   technicianId: number;
+  technicianName: string;
   id: number;
   name: string;
   quantity: number;
   price: number;
   replacementPrice: number;
+  stock: number;
   imageUrl: string;
 };
 

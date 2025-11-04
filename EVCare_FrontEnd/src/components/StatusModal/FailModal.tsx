@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import ErrorIcon from "../IconsAnimation/errorIcon";
 import ButtonAction from "../Button/ButtonAction";
+import { createPortal } from "react-dom";
 
 const initBox = keyframes`
   from {
@@ -44,10 +45,11 @@ interface PopUpProps {
 }
 
 export default function FailedModal({ header, message, action }: PopUpProps) {
-  return (
+  return createPortal(
     <Layout>
       <PopUp header={header} message={message} action={action} />
-    </Layout>
+    </Layout>,
+    document.body
   );
 }
 

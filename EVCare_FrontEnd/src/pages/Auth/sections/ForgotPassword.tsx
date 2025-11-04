@@ -23,6 +23,7 @@ export default function ForgotPassword({
         type="Email"
         text={email}
         setText={setEmail}
+        label="Email"
       />
       {isLoading ? (
         <SpinnerComponent />
