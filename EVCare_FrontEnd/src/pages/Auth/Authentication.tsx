@@ -353,7 +353,7 @@ export default function Authentication() {
   const headerText = useMemo(() => {
     if (isOTP) return "";
     if (isSignUp) return AUTH_FORM_MESSAGE.REGISTER;
-    if (isForgot) return AUTH_FORM_MESSAGE.FORGOT_PASSWORD;
+    if (isForgot) return "";
     return AUTH_FORM_MESSAGE.LOGIN;
   }, [isOTP, isSignUp, isForgot]);
 
@@ -385,6 +385,7 @@ export default function Authentication() {
                     handChangeIsForgot={handChangeIsForgot}
                     email={email}
                     setEmail={setEmail}
+                    setIsForgot={setIsForgot}
                   />
                 ) : (
                   <ResetPasswordForm
