@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router";
 import { Navbar, Logo, Menu, Buttons } from "./Header.styled";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../states/store";
-import { Dropdown, DropdownButton } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 import { AiOutlineMenu } from "react-icons/ai";
 import { deleteToken, logout } from "../../services/authService";
 import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
@@ -18,7 +18,7 @@ import { stopChatConnection } from "../../signalr/chatConnection";
 
 export default function Header() {
   // const [showAuth, setShowAuth] = useState(false);
-  const [tongle, setTongle] = useState(false);
+  // const [tongle, setTongle] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
@@ -48,7 +48,7 @@ export default function Header() {
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
-      setTongle(true);
+      // setTongle(true);
     };
   }, []);
 
@@ -69,6 +69,41 @@ export default function Header() {
     navigate("/");
   };
 
+  const dropdownTitle = <AiOutlineMenu />;
+
+  const onClickService = () => {
+    navigate("/service");
+  };
+
+  const onClickAbout = () => {
+    navigate("/about");
+  };
+
+  const onClickContact = () => {
+    navigate("/contact");
+  };
+
+  const onClickReview = () => {
+    navigate("/review");
+  };
+
+  const mobileMenu: any = isMobile ? (
+    <Buttons>
+      <Dropdown>
+        <Dropdown.Toggle id="dropdown-item-button" variant="light">
+          {dropdownTitle}
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          <Dropdown.Item onClick={onClickService}>Services</Dropdown.Item>
+          <Dropdown.Item onClick={onClickAbout}>About Us</Dropdown.Item>
+          <Dropdown.Item onClick={onClickContact}>Contacts</Dropdown.Item>
+          <Dropdown.Item onClick={onClickReview}>Reviews</Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    </Buttons>
+  ) : null;
+
   return (
     <Navbar $isScrolled={isScrolled}>
       <Logo>
@@ -79,7 +114,7 @@ export default function Header() {
 
       <Menu>
         <Link to="/">Home</Link>
-        <Link to="/service">Service</Link>
+        <Link to="/service">Services</Link>
         <Link to="/about">About</Link>
         <Link to="/policy">Policies</Link>
         <Link to="/contact">Contact</Link>
@@ -101,26 +136,7 @@ export default function Header() {
         </Buttons>
       )}
 
-      {isMobile ? (
-        <Buttons>
-          {tongle && (
-            <DropdownButton id="dropdown-item-button" title={<AiOutlineMenu />}>
-              <Dropdown.Item as="button" onClick={() => navigate("/service")}>
-                Service
-              </Dropdown.Item>
-              <Dropdown.Item as="button" onClick={() => navigate("/about")}>
-                About Us
-              </Dropdown.Item>
-              <Dropdown.Item as="button" onClick={() => navigate("/contact")}>
-                Contact
-              </Dropdown.Item>
-              <Dropdown.Item as="button" onClick={() => navigate("/review")}>
-                Reviews
-              </Dropdown.Item>
-            </DropdownButton>
-          )}
-        </Buttons>
-      ) : undefined}
+      {mobileMenu}
     </Navbar>
   );
 }

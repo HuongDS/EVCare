@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   PageWrapper,
@@ -31,10 +31,7 @@ import UploadImage from "../../../../components/UploadFields/uploadImage";
 import DeleteConfirmationModal from "../DeleteConfirmModal";
 import SpinnerComponent from "../../../../components/SpinnerComponent";
 import { Editor } from "@tinymce/tinymce-react";
-import type {
-  Category,
-  PartDetailDto,
-} from "../../../../models/PartModel/PartModel";
+import type { Category, PartDetailDto } from "../../../../models/PartModel/PartModel";
 import type { NewPartDto } from "../../../../models/PartModel/NewPartDto";
 import { useNotification } from "../../../../context/useNotification";
 import {
@@ -42,12 +39,16 @@ import {
   deletePart,
   getAllParts02,
   getPartCategories,
+  getPartTemplate,
+  importPartsByFileCSV,
   updatePart,
 } from "../../../../services/partApi";
 import { UpdatePartForm } from "./UpdatePartForm";
 import { Pagination } from "../../../../components/Paginations/Pagination";
 import { ERROR_MESSAGE } from "../../../../constants/messages/Message";
 import SearchBar from "../../AdminCustomer&Vehicle/SearchBar";
+import { Button, Space, Typography, Upload, type UploadProps } from "antd";
+import { DownloadOutlined, UploadOutlined } from "@ant-design/icons";
 
 export default function Admin_Part() {
   const [activeTab, setActiveTab] = useState<"list" | "add" | "update">("list");
@@ -61,6 +62,8 @@ export default function Admin_Part() {
   const [pageSize, setPageSize] = useState(8);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [templateLoading, setTemplateLoading] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   const [newPart, setNewPart] = useState<Omit<NewPartDto, "image">>({
     name: "",
@@ -95,46 +98,43 @@ export default function Admin_Part() {
     fetchCategories();
   }, [notification]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        let partsData = null;
-        if (search.trim().length > 0) {
-          partsData = await getAllParts02({
-            PartName: search.trim(),
-            PageSize: pageSize,
-            PageIndex: pageIndex,
-          });
-        } else {
-          partsData = await getAllParts02({
-            PageSize: pageSize,
-            PageIndex: pageIndex,
-          });
-        }
-        setParts(partsData.items);
-        setTotalPages(partsData.totalPages);
-        setTotalItems(partsData.totalItems);
-        setPageIndex(partsData.pageIndex);
-        setPageSize(partsData.pageSize);
-      } catch (error) {
-        console.error("Failed to fetch data", error);
-        notification.error({
-          message: "Fetch Data",
-          description: ERROR_MESSAGE.FETCH_DATA_FAILED,
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      let partsData = null;
+      if (search.trim().length > 0) {
+        partsData = await getAllParts02({
+          PartName: search.trim(),
+          PageSize: pageSize,
+          PageIndex: pageIndex,
+        });
+      } else {
+        partsData = await getAllParts02({
+          PageSize: pageSize,
+          PageIndex: pageIndex,
         });
       }
-      setIsLoading(false);
-    };
+      setParts(partsData.items);
+      setTotalPages(partsData.totalPages);
+      setTotalItems(partsData.totalItems);
+      setPageIndex(partsData.pageIndex);
+      setPageSize(partsData.pageSize);
+    } catch (error) {
+      console.error("Failed to fetch data", error);
+      notification.error({
+        message: "Fetch Data",
+        description: ERROR_MESSAGE.FETCH_DATA_FAILED,
+      });
+    }
+    setIsLoading(false);
+  }, [search, pageIndex, pageSize]);
+
+  useEffect(() => {
     fetchData();
   }, [search, pageIndex, pageSize, notification]);
 
   const handleInputChange = (
-    e:
-      | React.ChangeEvent<
-          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
-      | string
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | string
   ) => {
     if (typeof e === "string") {
       setNewPart((prev) => ({
@@ -146,10 +146,7 @@ export default function Admin_Part() {
       setNewPart((prev) => ({
         ...prev,
         [name]:
-          name === "price" ||
-          name === "replacementPrice" ||
-          name === "stock" ||
-          name === "categoryId"
+          name === "price" || name === "replacementPrice" || name === "stock" || name === "categoryId"
             ? Number(value)
             : value,
       }));
@@ -165,7 +162,7 @@ export default function Admin_Part() {
     setPageIndex(1);
   };
 
-  const handleFileSubmit = (url: string) => {
+  const handleFileSubmit = ({ url }: { url: string }) => {
     setImageUrl(url);
   };
 
@@ -206,14 +203,8 @@ export default function Admin_Part() {
       }
 
       const payload: NewPartDto = { ...newPart, image: imageUrl };
-      if (
-        payload.price === 0 ||
-        payload.replacementPrice === 0 ||
-        payload.stock === 0
-      ) {
-        throw new Error(
-          "Price, Replacement Price or Stock must be greater than 0 when you adding !"
-        );
+      if (payload.price === 0 || payload.replacementPrice === 0 || payload.stock === 0) {
+        throw new Error("Price, Replacement Price or Stock must be greater than 0 when you adding !");
       }
       const response = await createPart(payload);
       setParts((prev) => [
@@ -221,7 +212,7 @@ export default function Admin_Part() {
         {
           id: response.data,
           name: payload.name,
-          quantity: payload.stock,
+          stock: payload.stock,
           description: payload.description ?? "",
           replacementPrice: payload.replacementPrice,
           price: payload.price,
@@ -293,14 +284,8 @@ export default function Admin_Part() {
 
   const handleUpdateSubmit = async (id: number, payload: PartDetailDto) => {
     try {
-      if (
-        payload.price === 0 ||
-        payload.replacementPrice === 0 ||
-        payload.quantity === 0
-      ) {
-        throw new Error(
-          "Price, Replacement Price or Quantity must be greater than 0 when you updating !"
-        );
+      if (payload.price === 0 || payload.replacementPrice === 0 || payload.stock === 0) {
+        throw new Error("Price, Replacement Price or Quantity must be greater than 0 when you updating !");
       }
       await updatePart(id, payload);
       notification.success({
@@ -314,7 +299,7 @@ export default function Admin_Part() {
             ? {
                 ...p,
                 ...payload,
-                quantity: payload.quantity,
+                quantity: payload.stock,
                 imageUrl: payload.imageUrl,
               }
             : p
@@ -331,6 +316,54 @@ export default function Admin_Part() {
     }
   };
 
+  const handleExportTemplate = async () => {
+    setTemplateLoading(true);
+    try {
+      const response = await getPartTemplate();
+      let filename = `EVCare_Part_Template.xlsx`;
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      notification.error({ message: "Export template failed. Please try again later." });
+    } finally {
+      setTemplateLoading(false);
+    }
+  };
+
+  const uploadProps: UploadProps = {
+    name: "file",
+    showUploadList: false,
+    beforeUpload: () => {
+      setUploadLoading(true);
+      return true;
+    },
+    customRequest: async ({ file, onSuccess, onError }) => {
+      const fileData = file as File;
+      const formData = new FormData();
+      formData.append("file", fileData);
+      try {
+        const response = await importPartsByFileCSV(fileData);
+        onSuccess?.(response.data);
+        notification.success({ message: `Import file ${fileData.name} successful.` });
+        setUploadLoading(false);
+        fetchData();
+      } catch (error) {
+        onError?.(error as Error);
+        notification.error({
+          message: `Import file ${fileData.name} failed.`,
+          description: (error as Error).message || "Please try again later.",
+        });
+        setUploadLoading(false);
+      }
+    },
+  };
+
   const tabVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
@@ -342,22 +375,43 @@ export default function Admin_Part() {
       <ContentWrapper>
         <Header>
           <Title>Product Management</Title>
-          <Instruction>
-            Manage, add new, and delete spare parts in the system.
-          </Instruction>
+          <Instruction>Manage, add new, and delete spare parts in the system.</Instruction>
         </Header>
 
-        <SearchBar
-          search={search}
-          onSearchChange={handleSearch}
-          placeHolder="Search by part name..."
-        />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "16px",
+            padding: "16px 0",
+            borderBottom: "1px solid #e5e7eb",
+          }}
+        >
+          <SearchBar search={search} onSearchChange={handleSearch} placeHolder="Search by part name..." />
+
+          <Space direction="vertical" align="end" style={{ gap: 4 }}>
+            <Button icon={<DownloadOutlined />} onClick={handleExportTemplate} loading={templateLoading}>
+              Download Template (Excel)
+            </Button>
+            <Typography.Text type="secondary" style={{ fontSize: 12, marginTop: "-4px" }}>
+              (Download file template to import parts)
+            </Typography.Text>
+          </Space>
+
+          <Space direction="vertical" align="end" style={{ gap: 4 }}>
+            <Upload {...uploadProps}>
+              <Button icon={<UploadOutlined />} loading={uploadLoading}>
+                Import Parts (Excel)
+              </Button>
+            </Upload>
+            <Typography.Text type="secondary" style={{ fontSize: 12, marginTop: "-4px" }}>
+              (Import parts from the filled template file)
+            </Typography.Text>
+          </Space>
+        </div>
 
         <TabContainer>
-          <TabButton
-            $isActive={activeTab === "list"}
-            onClick={() => setActiveTab("list")}
-          >
+          <TabButton $isActive={activeTab === "list"} onClick={() => setActiveTab("list")}>
             <FaList />
             Spare Parts List
           </TabButton>
@@ -415,32 +469,18 @@ export default function Admin_Part() {
                             !part.isDeleted && (
                               <Tr key={part.id}>
                                 <Td>
-                                  <PartImage
-                                    src={part.imageUrl}
-                                    alt={part.name}
-                                  />
+                                  <PartImage src={part.imageUrl} alt={part.name} />
                                 </Td>
                                 <Td>{part.name}</Td>
                                 <Td>{getCategoryName(part.categoryId)}</Td>
+                                <Td>{part.price.toLocaleString("vi-VN")} VND</Td>
+                                <Td>{part.replacementPrice.toLocaleString("vi-VN")} VND</Td>
+                                <Td>{part.stock}</Td>
                                 <Td>
-                                  {part.price.toLocaleString("vi-VN")} VND
-                                </Td>
-                                <Td>
-                                  {part.replacementPrice.toLocaleString(
-                                    "vi-VN"
-                                  )}{" "}
-                                  VND
-                                </Td>
-                                <Td>{part.quantity}</Td>
-                                <Td>
-                                  <ActionButton
-                                    onClick={() => handleDelete(part)}
-                                  >
+                                  <ActionButton onClick={() => handleDelete(part)}>
                                     <FaTrash />
                                   </ActionButton>
-                                  <ActionButton
-                                    onClick={() => handleSelectForUpdate(part)}
-                                  >
+                                  <ActionButton onClick={() => handleSelectForUpdate(part)}>
                                     <FaPencilAlt />
                                   </ActionButton>
                                 </Td>
@@ -450,13 +490,7 @@ export default function Admin_Part() {
                       ) : (
                         <Tr>
                           <Td colSpan={7}>
-                            <EmptyState>
-                              {isLoading ? (
-                                <SpinnerComponent />
-                              ) : (
-                                "There are no products."
-                              )}
-                            </EmptyState>
+                            <EmptyState>{isLoading ? <SpinnerComponent /> : "There are no products."}</EmptyState>
                           </Td>
                         </Tr>
                       )}
@@ -479,9 +513,7 @@ export default function Admin_Part() {
                   <FormGrid>
                     <div>
                       <InputGroup>
-                        <StyledLabel htmlFor="name">
-                          Spare PartDetailDto Name
-                        </StyledLabel>
+                        <StyledLabel htmlFor="name">Spare PartDetailDto Name</StyledLabel>
                         <StyledInput
                           id="name"
                           name="name"
@@ -501,9 +533,7 @@ export default function Admin_Part() {
                           onChange={handleInputChange}
                           required
                         >
-                          {categories.length === 0 && (
-                            <option>Is Loading...</option>
-                          )}
+                          {categories.length === 0 && <option>Is Loading...</option>}
                           {categories.map(
                             (cat) =>
                               !cat.isDeleted && (
@@ -516,9 +546,7 @@ export default function Admin_Part() {
                       </InputGroup>
 
                       <InputGroup>
-                        <StyledLabel htmlFor="description">
-                          Description
-                        </StyledLabel>
+                        <StyledLabel htmlFor="description">Description</StyledLabel>
                         <Editor
                           apiKey={import.meta.env.VITE_TINY_KEY}
                           value={newPart.description}
@@ -567,9 +595,7 @@ export default function Admin_Part() {
                           />
                         </InputGroup>
                         <InputGroup>
-                          <StyledLabel htmlFor="replacementPrice">
-                            Replacement price (VND)
-                          </StyledLabel>
+                          <StyledLabel htmlFor="replacementPrice">Replacement price (VND)</StyledLabel>
                           <StyledInput
                             id="replacementPrice"
                             name="replacementPrice"
@@ -607,9 +633,7 @@ export default function Admin_Part() {
                           />
                         </DraggerWrapper>
                         {imageUrl && (
-                          <div
-                            style={{ marginTop: "10px", textAlign: "center" }}
-                          >
+                          <div style={{ marginTop: "10px", textAlign: "center" }}>
                             <img
                               src={imageUrl}
                               alt="Preview"

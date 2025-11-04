@@ -51,7 +51,7 @@ namespace Application.Services
 
         }
 
-        private async Task<bool> CheckAppointmentsForApointmentDate(DateTime appointment_Date)
+        public virtual async Task<bool> CheckAppointmentsForApointmentDate(DateTime appointment_Date)
         {
             int cnt = await _appointmentRepository.CountAppointment(DateOnly.FromDateTime(appointment_Date));
             int capacity = await _serviceCenterRepository.GetAppactityOfServiceCenter();
@@ -64,7 +64,7 @@ namespace Application.Services
 
         }
 
-        private async Task<bool> CheckCustomerCreate(int customerId)
+        public virtual async  Task<bool> CheckCustomerCreate(int customerId)
         {
             int appointments = await _appointmentRepository.CountAppointmentsPerDay(customerId);
             int dailyLimit = await _serviceCenterRepository.GetLimitBookingOfServiceCenter();
@@ -308,6 +308,8 @@ namespace Application.Services
             var entity = _mapper.Map<Appointment>(model);
             entity.Status = AppointmentStatusEnum.CheckedIn;
             entity.EmployeeId = employeeId;
+            entity.CustomerId = model.CustomerId;
+
             return (await _appointmentRepository.AddAsync(entity)).Id;
         }
     }

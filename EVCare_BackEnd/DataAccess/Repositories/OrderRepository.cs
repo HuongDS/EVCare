@@ -32,17 +32,24 @@ namespace DataAccess.Repositories
         {
             var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
             var query = await _dbSet.AsNoTracking().Where(x => x.Id == orderId)
+                .Include(x=>x.OrderParts)
+                  .ThenInclude(x=>x.Technician)
+                   .ThenInclude(x=>x.Employee)
+                    .ThenInclude(x=>x.Account)
                 .Select(x => new OrderViewModel
                 {
                     Id = x.Id,
-                    Parts = x.OrderParts.Select(x => new Dtos.Part.PartTechnicianViewModel
+                    Parts = x.OrderParts.
+                    Select(x => new Dtos.Part.PartTechnicianViewModel
                     {
                         Id = x.PartId,
+
                         ImageUrl = x.Part.Image,
                         Name = x.Part.Name,
                         Price = x.Price,
                         Quantity = x.Quantity,
                         TechnicianId = x.TechnicianId,
+                        TechnicianName = x.Technician.Employee.Account.First_Name+" " +x.Technician.Employee.Account.Last_Name,
                         ReplacementPrice = x.Part.ReplacementPrice,
                         Stock = x.Part.Stock
 

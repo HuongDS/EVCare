@@ -15,7 +15,7 @@ import { ERROR_MESSAGE } from "../constants/messages/Message";
 import dayjs from "dayjs";
 import type { UpdateInventoryPayload } from "../models/Inventory/InventoryModel";
 import type { MultipleImageDto } from "../models/AppointmentsModel/Staff_Appointments_Model";
-
+import type { EmployeeStatusViewModel } from "../models/Employee/EmployeeStatusViewModel";
 interface GetPartCategoryParams {
   pageSize?: number;
   pageIndex?: number;
@@ -46,7 +46,9 @@ export const useGetAllPartCategories = (params: GetPartCategoryParams) => {
       try {
         const response = await api.get<
           ResponseDto<PageResultDto<CategoryResponseDTO>>
-        >("/api/PartCategory", { params });
+        >("/api/PartCategory", {
+          params,
+        });
         return response.data;
       } catch (error) {
         handleError(error);
@@ -165,3 +167,21 @@ export const useUploadAppointmentImage = () => {
     },
   });
 };
+
+export async function checkStaffAvailable(data: number) {
+  try {
+    const response = await api.get<ResponseDto<EmployeeStatusViewModel>>(
+      `/api/Employee/customer/${data}`
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        ERROR_MESSAGE.FETCH_DATA_FAILED;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { FiUser, FiFileText, FiServer } from "react-icons/fi";
+import { FiUser, FiFileText } from "react-icons/fi";
 import HeaderBar from "./HeaderBar";
-import RankBadge from "./RankBadge";
+// import RankBadge from "./RankBadge";
 import PersonalInfoForm from "./InforForm";
 import SpendingSection from "./SpendingSection";
 import VehiclesSection from "./VehicleSection";
@@ -14,9 +14,9 @@ import { getCustomerId } from "../../../services/customerServices";
 import { getUser } from "../../../token/tokenStore";
 import { handleError } from "../../../utils/errorHandler";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
-import { CustomerRankEnum, RoleEnum } from "../../../models/enums";
+// import { CustomerRankEnum, RoleEnum } from "../../../models/enums";
 import type { AccountUpdateDto } from "../../../models/Accounts/AccountUpdateDto";
-import type { CustomerViewDto } from "../../../models/CustomerModels/CustomerViewDto";
+// import type { CustomerViewDto } from "../../../models/CustomerModels/CustomerViewDto";
 import type { AccountViewModel } from "../../../models/Accounts/accountViewModel";
 import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
 import { getInvoices } from "../../../services/invoicesService";
@@ -24,6 +24,9 @@ import type { User } from "../../../models/AuthModel/authModel";
 import { createVehicle, deleteVehicle, getVehicleByCustomerId } from "../../../services/vehicleServicesApi";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import { RoleEnum } from "../../../models/enums";
+import { UserRound } from "lucide-react";
+import { FaCarAlt } from "react-icons/fa";
 
 type ProfileTab = "info" | "vehicles" | "invoices";
 
@@ -32,7 +35,7 @@ function UserProfileComponent() {
 
   const [vehicles, setVehicles] = useState<VehicleViewDto[]>([]);
   const [profileData, setProfileData] = useState<AccountViewModel>();
-  const [cusProfile, setCusProfile] = useState<CustomerViewDto>();
+  // const [cusProfile, setCusProfile] = useState<CustomerViewDto>();
   const [totalSpending, setTotalSpending] = useState<number>(0);
   const [invoices, setInvoices] = useState<InvoiceViewModel[]>([]);
   const [user, setUser] = useState<User | null>(null);
@@ -123,7 +126,7 @@ function UserProfileComponent() {
         setVehicles(response04?.data || []);
         setUser(user);
         setInvoices(response03?.data || []);
-        setCusProfile(response02?.data);
+        // setCusProfile(response02?.data);
         setTotalSpending(response03?.data ? response03.data.reduce((acc, item) => acc + item.totalPrice, 0) : 0);
       } catch (error) {
         handleError(error);
@@ -137,7 +140,13 @@ function UserProfileComponent() {
   return (
     <>
       {isLoading ? (
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "15px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "15px",
+          }}
+        >
           <SpinnerComponent />
         </div>
       ) : (
@@ -150,15 +159,11 @@ function UserProfileComponent() {
           <div className="container">
             <div className="sidebar">
               <div className="sidebar-info-card">
-                <img className="avatar-placeholder" src="" alt={profileData?.first_Name} />
-
+                <UserRound className="avatar-placeholder" color="#23cf17" strokeWidth={1.25} absoluteStrokeWidth />
                 <h2>
                   {profileData?.first_Name} {profileData?.last_Name}
                 </h2>
                 <p>{profileData?.email}</p>
-                {profileData?.role === RoleEnum.CUSTOMER && (
-                  <RankBadge rank={cusProfile?.rank || CustomerRankEnum.REGULAR} />
-                )}
               </div>
 
               <nav className="sidebar-nav">
@@ -174,7 +179,7 @@ function UserProfileComponent() {
                       className={`sidebar-nav-btn ${activeTab === "vehicles" ? "active" : ""}`}
                       onClick={() => setActiveTab("vehicles")}
                     >
-                      <FiServer /> My Vehicles
+                      <FaCarAlt /> My Vehicles
                     </button>
                     <button
                       className={`sidebar-nav-btn ${activeTab === "invoices" ? "active" : ""}`}

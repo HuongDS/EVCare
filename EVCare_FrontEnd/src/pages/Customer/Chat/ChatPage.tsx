@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Modal, Spin, Tooltip } from "antd";
 import { MessageOutlined, PlusOutlined, RobotOutlined, UserSwitchOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import type { Conversation } from "../../../models/Message/Conversation";
@@ -7,13 +7,15 @@ import { ChatSidebar } from "./ChatSideBar";
 import { ChatWindow } from "./ChatWindow";
 import type { RootState } from "../../../states/store";
 import { useSelector } from "react-redux";
-import { AppointmentStatusEnum, RoleEnum } from "../../../models/enums";
+import { AppointmentStatusEnum, EmployeeStatusEnum, RoleEnum } from "../../../models/enums";
 import { WidgetChatStyleWrapper } from "./WidgetChat.styled";
 import { useNotification } from "../../../context/useNotification";
 import { getCustomerAppointment } from "../../../services/appointmentServiceApi";
 import type { AppointmentViewDetailModel } from "../../../models/AppointmentsModel/AppointmentViewDetailModel";
 import { formatDate } from "../../../utils/formatDate";
 import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
+import { getEmployeeById } from "../../../services/adminService";
+import { checkStaffAvailable } from "../../../services/staffService";
 
 interface ChatPageProps {
   isWidgetMode?: boolean;
@@ -31,6 +33,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
+  const [isStaffAvailable, setIsStaffAvailable] = useState(true);
 
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
   const role = useSelector((state: RootState) => state.auth.user?.role);
@@ -79,10 +82,15 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
     try {
       const { conversationId } = await startConsultation(selectedAppointmentId);
       const newList = await listConversations();
+      const conversation = newList.find((conv) => conv.id === conversationId);
+      const staffParticipant = conversation?.participants.find((p) => p.role === RoleEnum.STAFF);
+      const staff = await getEmployeeById(Number(staffParticipant?.employeeId) || 0);
+      const checkAvailableStaff = await checkStaffAvailable(staff.data?.employeeId || 0);
+      setIsStaffAvailable(checkAvailableStaff.data?.statusEnum === EmployeeStatusEnum.Available);
       setConversations(newList);
       setModalOpen(false);
       setSelectedId(conversationId);
-      setSelectedConv(newList.find((conv) => conv.id === conversationId) || null);
+      setSelectedConv(conversation || null);
       setView("chat");
     } catch (error) {
       notification.error({
@@ -101,18 +109,41 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
       setModalOpen(false);
       setSelectedId(response.data ?? "");
       setSelectedConv(newList.find((conv) => conv.id === response.data) || null);
+      setIsStaffAvailable(true);
       setView("chat");
     } catch (error) {
       notification.error({
         message: "Error",
         description: (error as Error).message || "Failed to start consultation",
       });
+      setView("new_choice");
     }
   };
 
-  const handleSelectConversation = (conv: Conversation) => {
+  const handleSelectConversation = async (conv: Conversation) => {
+    setView("loading");
     setSelectedId(conv.id);
-    setView("chat");
+    setSelectedConv(conv);
+
+    try {
+      if (conv.type === "AI") {
+        setIsStaffAvailable(true);
+      } else {
+        const staffParticipant = conv.participants.find((p) => p.role === RoleEnum.STAFF);
+        if (!staffParticipant) {
+          throw new Error("No staff found in this conversation.");
+        }
+
+        const staff = await getEmployeeById(Number(staffParticipant.employeeId) || 0);
+        const checkAvailableStaff = await checkStaffAvailable(staff.data?.employeeId || 0);
+
+        setIsStaffAvailable(checkAvailableStaff.data?.statusEnum === EmployeeStatusEnum.Available);
+      }
+      setView("chat");
+    } catch (error) {
+      notification.error({ message: "Error loading conversation:", description: (error as Error).message });
+      setView("list");
+    }
   };
 
   const handleBackToList = () => {
@@ -225,6 +256,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
             isWidgetMode={isWidgetMode}
             setLastMessage={handleNewMessage}
             selectedConversation={selectedConv}
+            isStaffAvailable={isStaffAvailable}
           />
         );
       default:
@@ -232,7 +264,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
     }
   };
 
-  const handleNewMessage = (conversationId: string, newMessage: HistoryMessage) => {
+  const handleNewMessage = useCallback((conversationId: string, newMessage: HistoryMessage) => {
     setConversations((prev) => {
       const conTarget = prev.find((c) => c.id === conversationId);
       if (!conTarget) return prev;
@@ -248,7 +280,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
       const oldConvo = prev.filter((c) => c.id !== conversationId);
       return [update, ...oldConvo];
     });
-  };
+  }, []);
 
   return (
     <WidgetChatStyleWrapper
@@ -319,7 +351,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
                   ))}
                 </div>
               ) : (
-                <p className="custom-empty-text">You don't have any valid appointments to start a chat with.</p>
+                <p className="custom-empty-text">You don't have any valid appointments to start a chat with Staff.</p>
               )}
             </div>
           </Spin>

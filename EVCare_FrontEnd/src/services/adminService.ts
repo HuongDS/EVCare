@@ -8,6 +8,10 @@ import { ERROR_MESSAGE } from "../constants/messages/Message";
 import type { EmployeeStatusEnum, RoleEnum } from "../models/enums";
 import type { EmployeeViewModel } from "../models/Employee/EmployeeViewModel";
 import type { EmployeeRegisterDto } from "../models/Employee/EmployeeRegisterDto";
+import type { TopServiceModel } from "../models/Statistic/TopServiceModel";
+import type { TopPartModel } from "../models/Statistic/TopPartModel";
+import type { PartHistoryUpdateModel } from "../models/Statistic/PartHistoryUpdateModel";
+import type { ActionTypeEnum } from "../models/enums/ActionTypeEnum";
 
 export async function getAllCustomerInformation(keyword: string, pageSize: number, pageIndex: number) {
   try {
@@ -87,5 +91,60 @@ export async function getEmployeeById(data: number) {
   } catch (error) {
     handleError(error);
     throw error;
+  }
+}
+
+export async function getTopServices(props: { fromDate?: string; toDate?: string; top: number }) {
+  try {
+    const response = await api.get<ResponseDto<TopServiceModel[]>>("/api/Statistic/top-services", {
+      params: props,
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
+
+export async function getTopParts(props: { fromDate?: string; toDate?: string; top: number }) {
+  try {
+    const response = await api.get<ResponseDto<TopPartModel[]>>("/api/Statistic/top-parts", {
+      params: props,
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
+
+export async function getHistoryParts(props: {
+  fromDate: string;
+  toDate: string;
+  keyword: string;
+  actionType?: ActionTypeEnum;
+  pageSize: number;
+  pageIndex: number;
+}) {
+  try {
+    const response = await api.get<ResponseDto<PageResultDto<PartHistoryUpdateModel>>>(
+      "/api/Statistic/part-histories",
+      {
+        params: props,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }

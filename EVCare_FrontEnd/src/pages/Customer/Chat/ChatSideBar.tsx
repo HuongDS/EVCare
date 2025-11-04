@@ -23,7 +23,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
     const diffMins = Math.floor(diffMs / 60000);
 
     if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins} minutes`;
+    if (diffMins < 60) return `${diffMins} min`;
     if (diffMins < 1440) return `${Math.floor(diffMins / 60)} hours`;
     return `${Math.floor(diffMins / 1440)} days`;
   };
@@ -43,7 +43,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
               avatar={
                 <div className="conversation-avatar-wrapper">
                   <Avatar
-                    size={48}
+                    size={40}
                     icon={<UserOutlined />}
                     className={`conversation-avatar ${isSelected ? "selected" : ""}`}
                   />
@@ -59,7 +59,9 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
                   <span className={`conversation-name ${isSelected ? "selected" : ""}`}>
                     {role === RoleEnum.STAFF
                       ? `Customer #${item.participants[0]?.name}`
-                      : `Staff #${item.participants[1]?.name}`}
+                      : `Staff #${
+                          item.participants[1]?.name == null ? "EVCare Assistant" : item.participants[1]?.name
+                        }`}
                   </span>
                   <span className="conversation-time">
                     <ClockCircleOutlined />

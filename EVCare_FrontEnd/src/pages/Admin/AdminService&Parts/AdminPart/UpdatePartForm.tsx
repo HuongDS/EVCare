@@ -1,8 +1,5 @@
 import { useState } from "react";
-import type {
-  Category,
-  PartDetailDto,
-} from "../../../../models/PartModel/PartModel";
+import type { Category, PartDetailDto } from "../../../../models/PartModel/PartModel";
 import {
   ButtonRow,
   CancelButton,
@@ -37,7 +34,7 @@ export const UpdatePartForm = ({
     description: part.description || "",
     price: part.price,
     replacementPrice: part.replacementPrice,
-    quantity: part.quantity,
+    stock: part.stock,
     categoryId: part.categoryId,
     isDeleted: part.isDeleted,
     imageUrl: part.imageUrl,
@@ -46,11 +43,7 @@ export const UpdatePartForm = ({
   const [newImageUrl, setNewImageUrl] = useState<string>(part.imageUrl);
   const notification = useNotification();
   const handleInputChange = (
-    e:
-      | React.ChangeEvent<
-          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
-      | string
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | string
   ) => {
     if (typeof e === "string") {
       setFormData((prev) => ({ ...prev, description: e }));
@@ -59,17 +52,14 @@ export const UpdatePartForm = ({
       setFormData((prev) => ({
         ...prev,
         [name]:
-          name === "price" ||
-          name === "replacementPrice" ||
-          name === "quantity" ||
-          name === "categoryId"
+          name === "price" || name === "replacementPrice" || name === "stock" || name === "categoryId"
             ? Number(value)
             : value,
       }));
     }
   };
 
-  const handleFileSubmit = (url: string) => {
+  const handleFileSubmit = ({ url }: { url: string }) => {
     setNewImageUrl(url);
   };
   const handleFileRemove = () => {
@@ -176,9 +166,7 @@ export const UpdatePartForm = ({
               />
             </InputGroup>
             <InputGroup>
-              <StyledLabel htmlFor="update-replacementPrice">
-                Replacement price (VND)
-              </StyledLabel>
+              <StyledLabel htmlFor="update-replacementPrice">Replacement price (VND)</StyledLabel>
               <StyledInput
                 id="update-replacementPrice"
                 name="replacementPrice"
@@ -192,12 +180,12 @@ export const UpdatePartForm = ({
           </FormGrid>
 
           <InputGroup>
-            <StyledLabel htmlFor="update-stock">Inventory quantity</StyledLabel>
+            <StyledLabel htmlFor="update-stock">Inventory stock</StyledLabel>
             <StyledInput
               id="update-stock"
-              name="quantity"
+              name="stock"
               type="number"
-              value={formData.quantity}
+              value={formData.stock}
               onChange={handleInputChange}
               min={0}
               required
@@ -209,11 +197,7 @@ export const UpdatePartForm = ({
           <InputGroup>
             <StyledLabel>Upload new photo (if you want to change)</StyledLabel>
             <DraggerWrapper>
-              <UploadImage
-                handleFileSubmit={handleFileSubmit}
-                handleFileRemove={handleFileRemove}
-                imgQuantity={1}
-              />
+              <UploadImage handleFileSubmit={handleFileSubmit} handleFileRemove={handleFileRemove} imgQuantity={1} />
             </DraggerWrapper>
           </InputGroup>
         </div>

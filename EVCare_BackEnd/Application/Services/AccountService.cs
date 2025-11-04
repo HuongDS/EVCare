@@ -47,12 +47,14 @@ namespace Application.Services
             return data;
         }
 
-        public async Task<int> GetAccountIdByEmail(string email) {
-           var account = await _accountRepository.GetAccountByEmail(email);
-              if (account == null) {
+        public async Task<int> GetAccountIdByEmail(string email)
+        {
+            var account = await _accountRepository.GetAccountByEmail(email);
+            if (account == null)
+            {
                 throw new Exception(Message.ACCOUNT_NOT_FOUND);
             }
-              return account.Id;
+            return account.Id;
         }
 
         public async Task<int> UnbannedAccount(int accountId)
@@ -132,6 +134,11 @@ namespace Application.Services
                 throw new Exception(Message.ACCOUNT_NOT_FOUND);
             }
             return BCrypt.Net.BCrypt.Verify(password, account.Hash_Password);
+        }
+
+        public async Task<bool> CheckAccountIsBanned(int accountId)
+        {
+            return await _accountRepository.CheckAccountIsBanned(accountId);
         }
     }
 }

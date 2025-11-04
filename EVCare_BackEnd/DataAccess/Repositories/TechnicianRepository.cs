@@ -37,6 +37,7 @@ namespace DataAccess.Repositories
                 .Include(x => x.TechnicianWorkingSessions)
                 .Select(x => new TechnicianViewModel
                 {
+                    Id = x.Id,
                     ExpYears = x.ExpYear,
                     FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
                     Phone = x.Employee.Account.Phone,

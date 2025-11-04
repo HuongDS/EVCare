@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import AppointmentCard from "../Technician_Component/AppointmentCard";
 import SearchBar from "../Technician_Component/SearchBar";
 import LoadingOverlay from "../Technician_Component/LoadingOverlay";
-import { getTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
+import { useGetTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import {
   AppointmentWrapper,
@@ -21,54 +21,47 @@ import SortTable from "../Technician_Component/SortTable";
 const PAGE_SIZE = LENGTH.VIEW_HISTORY_MAX;
 
 export default function TechnicianHistory() {
-  const [appointments, setAppointments] = useState<TechnicianAppointmentsDto[]>(
-    []
-  );
   const [statusFilter, setStatusFilter] = useState<
     "All" | "Completed" | "Canceled"
   >("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [appointments, setAppointments] = useState<TechnicianAppointmentsDto[]>(
+    []
+  );
 
-  const fetchAppointments = async (
-    status?: "Completed" | "Canceled" | "All"
-  ) => {
-    setLoading(true);
-    try {
-      let allItems: TechnicianAppointmentsDto[] = [];
-
-      if (status === "All") {
-        const completed = await getTechnicianAppointments({
-          PageSize: 50,
-          PageIndex: 1,
-          Status: "Completed",
-        });
-        const canceled = await getTechnicianAppointments({
-          PageSize: 50,
-          PageIndex: 1,
-          Status: "Canceled",
-        });
-        allItems = [...(completed.items ?? []), ...(canceled.items ?? [])];
-      } else {
-        const data = await getTechnicianAppointments({
-          PageSize: 50,
-          PageIndex: 1,
-          Status: status,
-        });
-        allItems = data.items ?? [];
-      }
-
-      setAppointments(allItems);
-      setCurrentPage(1);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: completedData } = useGetTechnicianAppointments({
+    Status: "Completed",
+    PageSize: 50,
+    PageIndex: 1,
+  });
+  const { data: canceledData } = useGetTechnicianAppointments({
+    Status: "Canceled",
+    PageSize: 50,
+    PageIndex: 1,
+  });
 
   useEffect(() => {
-    fetchAppointments(statusFilter);
-  }, [statusFilter]);
+    const fetch = async () => {
+      setLoading(true);
+      try {
+        if (statusFilter === "All") {
+          const completed = completedData?.items ?? [];
+          const canceled = canceledData?.items ?? [];
+          setAppointments([...completed, ...canceled]);
+        } else if (statusFilter === "Completed") {
+          setAppointments(completedData?.items ?? []);
+        } else {
+          setAppointments(canceledData?.items ?? []);
+        }
+        setCurrentPage(1);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
+  }, [statusFilter, completedData, canceledData]);
 
   const filteredAppointments = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();

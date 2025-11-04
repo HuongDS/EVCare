@@ -13,7 +13,6 @@ import {
   InboxOutlined,
   LineChartOutlined,
   LogoutOutlined,
-  QuestionCircleOutlined,
   SettingOutlined,
   ShoppingOutlined,
   SolutionOutlined,
@@ -95,12 +94,6 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "10",
-      icon: <QuestionCircleOutlined size={20} />,
-      label: "Help & Information",
-      route: "/admin/help",
-    },
-    {
-      key: "11",
       icon: <LogoutOutlined />,
       label: "Logout",
       action: () => logout,
@@ -209,9 +202,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
   useEffect(() => {
     const currentPath = window.location.pathname;
-    const foundKey = menuByRole[role].find(
-      (item) => item.route === currentPath
-    )?.key;
+    const foundKey = menuByRole[role].find((item) => item.route === currentPath)?.key;
 
     if (foundKey) {
       setSelectedKey([foundKey]);

@@ -22,12 +22,15 @@ namespace API.Controllers
         private readonly IAuthServices _authServices;
         private readonly INotificationServices _notificationServices;
         private readonly IOtpServices _otpServices;
+        private readonly IAccountService _accountService;
 
-        public AuthController(IAuthServices authServices, INotificationServices notificationServices, IOtpServices otpServices)
+        public AuthController(IAuthServices authServices, INotificationServices notificationServices, IOtpServices otpServices,
+            IAccountService accountService)
         {
             _authServices = authServices;
             _notificationServices = notificationServices;
             _otpServices = otpServices;
+            _accountService = accountService;
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequestDto data)
@@ -176,14 +179,32 @@ namespace API.Controllers
         [HttpPost("sent-otp")]
         public async Task<IActionResult> SendOTP(string email)
         {
-            var otp = await _notificationServices.SendOTP(email, 5);
-            await _otpServices.SaveOtpAsync(email, otp, 5);
-            return Ok(new ResponseDto<object>
+            try
             {
-                statusCode = HttpStatus.OK,
-                message = Message.OTP_HAS_BEEN_SENT,
-                data = null
-            });
+                var accountId = await _accountService.GetAccountIdByEmail(email);
+                var isBanned = await _accountService.CheckAccountIsBanned(accountId);
+                if (isBanned)
+                {
+                    throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
+                }
+                var otp = await _notificationServices.SendOTP(email, 5);
+                await _otpServices.SaveOtpAsync(email, otp, 5);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.OTP_HAS_BEEN_SENT,
+                    data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = ex.Message.Equals(Message.ACCOUNT_NOT_FOUND) ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
         }
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto data)

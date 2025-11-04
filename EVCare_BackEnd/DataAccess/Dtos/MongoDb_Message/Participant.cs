@@ -14,5 +14,6 @@ namespace DataAccess.Dtos.MongoDb_Message
         public RoleEnum Role { get; set; }
         public string? Name { get; set; }
         public string? Phone { get; set; }
+        public string? EmployeeId { get; set; }
     }
 }

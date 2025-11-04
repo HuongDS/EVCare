@@ -127,6 +127,7 @@ namespace DataAccess.Repositories
                 .Include(a => a.Vehicle).ThenInclude(v => v.Category)
                 .Include(a => a.Customer).ThenInclude(c => c.Account)
                 .Include(a => a.Employee).ThenInclude(e => e.Account)
+                .Include(a=>a.Order).ThenInclude(a=>a.TechnicianWorkingSessions).ThenInclude(tws=>tws.Technician).ThenInclude(t=>t.Employee).ThenInclude(e=>e.Account)
                 .Include(a => a.AppointmentImages)
                 .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
                 .Select(a => new AppointmentViewDetailModel
@@ -150,7 +151,20 @@ namespace DataAccess.Repositories
                         Id = s.ServiceId,
                         Name = s.Service.Name
                     }).ToList(),
-                    ImagesUrls = a.AppointmentImages.Select(img => img.Image).ToList()
+                    ImagesUrls = a.AppointmentImages.Select(img => img.Image).ToList(),
+                    Technicians = a.Order != null ? a.Order.TechnicianWorkingSessions.Select(tws => new TechnicianViewModel
+                    {
+                        Id = tws.TechnicianId,
+                        ExpYears = tws.Technician.ExpYear,
+                        FullName = tws.Technician.Employee.Account.First_Name + " " + tws.Technician.Employee.Account.Last_Name,
+                        Phone = tws.Technician.Employee.Account.Phone,
+                        Status = tws.Technician.Employee.Status,
+                        Skills = tws.Technician.TechnicianSkills.Select(ts => new ServiceViewFormModel
+                        {
+                            Id = ts.ServiceId,
+                            Name = ts.Service.Name
+                        }).ToList()
+                    }).ToList() : new List<TechnicianViewModel>()
                 })
                 .FirstOrDefaultAsync();
         }
@@ -628,7 +642,14 @@ namespace DataAccess.Repositories
                     Id = x.Id,
                     VehicleCategoryId = x.Vehicle.CategoryId,
                     VehicleModel3DUrl = x.Vehicle.Category.Model3DUrl,
-                    PartCategoryAppointmentViewModels = parts
+                    PartCategoryAppointmentViewModels = parts,
+                    Scale = new Dtos.Others.ScaleDto { 
+                        
+                        X = x.Vehicle.Category.ScaleX,
+                        Y = x.Vehicle.Category.ScaleY,  
+                        Z = x.Vehicle.Category.ScaleZ
+                    
+                    }
 
 
                 }).FirstOrDefaultAsync();

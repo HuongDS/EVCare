@@ -15,12 +15,15 @@ namespace Application.Services
         private readonly IMongoCollection<Conversation> _conversations;
         private readonly IStaffRoutingService _route;
         private readonly IAccountService _accountService;
+        private readonly IEmployeeServices _employeeServices;
 
-        public ConversationService(IMongoDatabase db, IStaffRoutingService route, IAccountService accountService)
+        public ConversationService(IMongoDatabase db, IStaffRoutingService route, IAccountService accountService,
+            IEmployeeServices employeeServices)
         {
             _conversations = db.GetCollection<Conversation>("conversations");
             _route = route;
             _accountService = accountService;
+            _employeeServices = employeeServices;
         }
 
         public async Task<Conversation> CreateOrGetConsultationAsync(string customerAccountId, string staffAccountId)
@@ -38,13 +41,24 @@ namespace Application.Services
 
             var customerInfo = await _accountService.GetAccountById(int.Parse(customerAccountId));
 
+            var employee = new Participant
+            {
+                AccountId = staffAccountId,
+                Role = DataAccess.Enums.RoleEnum.Staff,
+                Name = "EVCare Assistant"
+            };
+            if (staffAccountId != "AI_BOT")
+            {
+                employee.EmployeeId = (await _employeeServices.GetEmployeeIdByAccountId(int.Parse(staffAccountId))).ToString();
+            }
+
             var newConversation = new Conversation
             {
                 Type = type,
                 Participants = new List<Participant>
                 {
                     new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer, Name = customerInfo.First_Name + customerInfo.Last_Name, Phone = customerInfo.Phone },
-                    new Participant { AccountId = staffAccountId, Role = DataAccess.Enums.RoleEnum.Staff}
+                    employee
                 },
                 Unread = new Dictionary<string, int>
                 {
@@ -84,13 +98,24 @@ namespace Application.Services
 
             var customerInfo = await _accountService.GetAccountById(int.Parse(customerAccountId));
 
+            var employee = new Participant
+            {
+                AccountId = staffId,
+                Role = DataAccess.Enums.RoleEnum.Staff,
+                Name = "EVCare Assistant"
+            };
+            if (staffId != "AI_BOT")
+            {
+                employee.EmployeeId = (await _employeeServices.GetEmployeeIdByAccountId(int.Parse(staffId))).ToString();
+            }
+
             var newConversation = new Conversation
             {
                 Type = type,
                 Participants = new List<Participant>
                 {
                     new Participant { AccountId = customerAccountId, Role = DataAccess.Enums.RoleEnum.Customer, Name = customerInfo.First_Name + customerInfo.Last_Name, Phone = customerInfo.Phone },
-                    new Participant { AccountId = staffId, Role = DataAccess.Enums.RoleEnum.Staff, Name = "EVCare Assistant"}
+                    employee
                 },
                 Unread = new Dictionary<string, int>
                 {

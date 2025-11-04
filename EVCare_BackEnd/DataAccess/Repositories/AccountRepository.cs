@@ -39,5 +39,6 @@ namespace DataAccess.Repositories
             var entity = await _dbSet.FirstOrDefaultAsync(e => e.Phone.Equals(phone) && e.Deleted_At == DateTime.MinValue);
             return entity;
         }
+
     }
 }

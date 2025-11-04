@@ -8,7 +8,7 @@ import {
   StyledModal,
 } from "./Authentication.styled";
 import AuthForm from "./sections/AuthForm";
-import OTPForm from "./sections/OTPForm";
+import ResetPasswordForm from "./sections/ResetPasswordForm";
 import {
   AUTH_FORM_MESSAGE,
   ERROR_MESSAGE,
@@ -19,10 +19,12 @@ import type {
   LoginRequestDto,
   RegisterRequestDto,
   VerifyOTPDto,
+  VerifyOtpSignUp,
 } from "../../models/AuthModel/authModel";
 import {
   login,
   register,
+  resetPassword,
   saveTokens,
   sendOtp,
   verifyOtp,
@@ -49,11 +51,17 @@ import ForgotPassword from "./sections/ForgotPassword";
 import { RoleEnum } from "../../models/enums";
 import { useNavigate } from "react-router";
 import { useNotification } from "../../context/useNotification";
+import OTPForm from "./sections/OTPForm";
 
 // interface AuthProps {
 //   show: boolean;
 //   handleClose: () => void;
 // }
+
+type FormDataResetPassword = {
+  newPassword: string;
+  confirmNewPassword: string;
+};
 
 export default function Authentication() {
   const [isSignUp, setIsSignUp] = useState(true); // true: signUp | false : login
@@ -70,6 +78,7 @@ export default function Authentication() {
   // lazy init
   const [isLoading, setIsLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
+  const [isReset, setIsReset] = useState(false);
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
@@ -249,7 +258,7 @@ export default function Authentication() {
       return;
     }
     try {
-      const data: VerifyOTPDto = {
+      const data: VerifyOtpSignUp = {
         email: email,
         otp: code,
       };
@@ -260,37 +269,85 @@ export default function Authentication() {
         message: (error as Error).message,
         showProgress: true,
       });
-      setIsLoading(false);
-      handleError(error);
-      return;
     }
-    setIsLoading(false);
-    setIsOTP(false);
-    dispatch(closeLogin());
-  }, [email, otp, dispatch]);
+  }, []);
+
+  const handleSubmitResetPassword = useCallback(
+    async (formData: FormDataResetPassword, otp: string) => {
+      setIsLoading(true);
+      if (otp.length != LENGTH.OTP_LENGTH || !OTP_REGEX.test(otp)) {
+        notification.warning({
+          message: `OTP must be ${LENGTH.OTP_LENGTH} numbers`,
+          showProgress: true,
+        });
+        return;
+      }
+      if (!PASSWORD_REGEX.test(formData.newPassword)) {
+        notification.warning({
+          message: ERROR_MESSAGE.INVALID_PASSWORD,
+          showProgress: true,
+        });
+        return;
+      }
+      if (formData.newPassword !== formData.confirmNewPassword) {
+        notification.warning({
+          message: ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME,
+          showProgress: true,
+        });
+        return;
+      }
+      try {
+        const data: VerifyOTPDto = {
+          email: email,
+          otp: otp,
+          newPassword: formData.newPassword,
+        };
+        const response = await resetPassword(data);
+        notification.success({ message: response.message });
+        setIsForgot(false);
+      } catch (error) {
+        notification.error({
+          message: (error as Error).message,
+          showProgress: true,
+        });
+        setIsLoading(false);
+        handleError(error);
+        return;
+      }
+      setIsLoading(false);
+      setIsOTP(false);
+      dispatch(closeLogin());
+    },
+    [email, dispatch]
+  );
 
   const handChangeIsForgot = useCallback(async () => {
     setIsLoading(true);
     setIsForgot(true);
+    setIsReset(true);
     try {
       if (!EMAIL_REGEX.test(email.trim())) {
         notification.warning({ message: ERROR_MESSAGE.INVALID_EMAIL });
+        setIsLoading(false);
+        setIsForgot(false);
         return;
       }
       const response = await sendOtp(email);
-      console.log(response);
+      if (response.statusCode === HTTP_STATUS.OK) {
+        notification.success({ message: response.message });
+      }
     } catch (error) {
       notification.error({
         message: (error as Error).message,
         showProgress: true,
       });
       handleError(error);
+      setIsForgot(false);
       return;
     } finally {
       setIsLoading(false);
-      setIsForgot(false);
     }
-  }, [email]);
+  }, [email, notification]);
 
   // header text
   const headerText = useMemo(() => {
@@ -322,12 +379,19 @@ export default function Authentication() {
           {!isOTP ? (
             <>
               {isForgot ? (
-                <ForgotPassword
-                  isLoading={isLoading}
-                  handChangeIsForgot={handChangeIsForgot}
-                  email={email}
-                  setEmail={setEmail}
-                />
+                !isReset ? (
+                  <ForgotPassword
+                    isLoading={isLoading}
+                    handChangeIsForgot={handChangeIsForgot}
+                    email={email}
+                    setEmail={setEmail}
+                  />
+                ) : (
+                  <ResetPasswordForm
+                    disable={isLoading}
+                    handleSubmit={handleSubmitResetPassword}
+                  />
+                )
               ) : (
                 <AuthForm
                   isSignUp={isSignUp}

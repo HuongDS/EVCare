@@ -22,5 +22,6 @@ namespace DataAccess.Interfaces
         Task<Invoice> GetInvoiceByOrderId(int orderId);
         Task<InvoiceViewModel> GetInvoiceViewModelByOrderId(int orderId);
         Task<InvoicePrintDataModel> GetInvoicePrintData(int orderId);
+        Task<InvoiceDetailViewModel> GetInvoiceDetailByOrderIdAsync(int orderId);
     }
 }
