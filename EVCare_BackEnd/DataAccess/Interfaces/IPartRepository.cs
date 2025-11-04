@@ -20,5 +20,7 @@ namespace DataAccess.Interfaces
         Task <IEnumerable<Part>> GetAllWithCategory();
         Task<IEnumerable<int>> GetPartIdsByCategoryId(int id);
         Task<Part> GetByNameAsync(string name);
+        Task<decimal> GetTotalPriceOfParts();
+        Task<IEnumerable<PartViewModel>> GetLowStockParts();
     }
 }
