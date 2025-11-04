@@ -9,6 +9,7 @@ namespace Application.Interfaces
 {
     public interface IAccountService
     {
+        Task<bool> CheckAccountIsBanned(int accountId);
         Task DeleteAccount(int accountId);
         public Task<AccountViewModel> GetAccountById(int accountId);
         Task<int> GetAccountIdByEmail(string email);
