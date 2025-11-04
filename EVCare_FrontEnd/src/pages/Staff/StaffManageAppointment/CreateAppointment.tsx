@@ -11,10 +11,14 @@ import {
   Phone,
   Mail,
   FileText,
+  UserPlus,
 } from "lucide-react";
 import { Select, DatePicker, Upload as AntUpload, message } from "antd";
 import type { UploadFile } from "antd";
-import { useGetAllCustomer } from "../../../services/staffService";
+import {
+  useGetAllCustomer,
+  useUploadAppointmentImage,
+} from "../../../services/staffService";
 import { useGetAllServices } from "../../../services/servicesApi";
 import { useStaffCreateAppointment } from "../../../services/appointmentServiceApi";
 import {
@@ -24,6 +28,10 @@ import {
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import type { FullCustomerInfor } from "../../../models/CustomerModels/FullCustomerInfor";
+import { useGetCustomerID } from "../../../services/customerServices";
+import { useCreateNewOrder } from "../../../services/orderServiceApi";
+import type { Dayjs } from "dayjs";
+import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
 
 interface Props {
   onBack: () => void;
@@ -35,14 +43,16 @@ export default function CreateAppointmentPage({ onBack }: Props) {
     useState<FullCustomerInfor | null>(null);
   const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
-  const [appointmentDate, setAppointmentDate] = useState<any>(null);
+  const [appointmentDate, setAppointmentDate] = useState<Dayjs>();
   const [note, setNote] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  const { data: customers } = useGetAllCustomer({});
+  const { data: customers } = useGetAllCustomer({
+    keyword: searchQuery,
+  });
   const { data: services } = useGetAllServices({});
 
   const filteredCustomers =
@@ -65,8 +75,15 @@ export default function CreateAppointmentPage({ onBack }: Props) {
     setSearchQuery("");
   };
 
+  const { data: customerDetail } = useGetCustomerID(
+    selectedCustomer?.accountId || 0
+  );
+
   //gọi api create appointment
   const { mutateAsync: staffCreateAppointment } = useStaffCreateAppointment();
+  const { mutateAsync: createOrder } = useCreateNewOrder();
+  const { mutateAsync: uploadImages } = useUploadAppointmentImage();
+
   const handleSubmit = async () => {
     if (
       !selectedCustomer ||
@@ -78,17 +95,34 @@ export default function CreateAppointmentPage({ onBack }: Props) {
       return;
     }
 
-    const appointmentData = {
-      customerId: selectedCustomer.accountId,
-      vehicleId: selectedVehicle,
-      note: note || "",
-      appointment_Date: appointmentDate.toISOString(),
-      imagesUrls: fileList.map((file) => file.url || ""),
-      serviceIds: selectedServices,
-    };
-
     try {
-      await staffCreateAppointment(appointmentData);
+      const formData = new FormData();
+      fileList.forEach((file) => {
+        if (file.originFileObj) {
+          formData.append("files", file.originFileObj as Blob);
+        }
+      });
+
+      const Images = await uploadImages(formData);
+
+      const appointmentData = {
+        customerId: customerDetail?.data?.id || 0,
+        vehicleId: selectedVehicle,
+        note: note || "",
+        appointment_Date: appointmentDate.add(7, "hour").toISOString(),
+        imagesUrls: Images?.data?.map((image) => image.url || ""),
+        serviceIds: selectedServices,
+      };
+
+      const response = await staffCreateAppointment(appointmentData);
+
+      if (response) {
+        const createNewOrderParams = {
+          appointmentID: response.appointmentId || 0,
+          created_At: new Date().toISOString(),
+        };
+        await createOrder(createNewOrderParams);
+      }
       setModalMessage(APPOINTMENT_MESSAGE.CREATE_APPOINTMENT_SUCCESS);
       setIsSuccess(true);
     } catch (error) {
@@ -131,7 +165,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
               />
             </SearchBox>
 
-            {searchQuery && filteredCustomers.length > 0 && (
+            {searchQuery && filteredCustomers.length > 0 ? (
               <CustomerResults>
                 {filteredCustomers.slice(0, 5).map((customer) => (
                   <CustomerCard
@@ -161,6 +195,13 @@ export default function CreateAppointmentPage({ onBack }: Props) {
                   </CustomerCard>
                 ))}
               </CustomerResults>
+            ) : (
+              selectedCustomer === null && (
+                <NOT_FOUND_ITEMS
+                  icon={<UserPlus size={40} />}
+                  message={"Enter customer information for searching"}
+                />
+              )
             )}
 
             {selectedCustomer && (
@@ -349,7 +390,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
         )}
         {isError && (
           <FailedModal
-            header={MSG_TITLE.CANCEL_APPOINTMENT + " Failed"}
+            header={MSG_TITLE.CREATE_APPOINTMENT + " Failed"}
             message={modalMessage}
             action={() => setIsError(false)}
           />
