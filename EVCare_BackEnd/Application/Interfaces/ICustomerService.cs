@@ -11,6 +11,7 @@ namespace Application.Interfaces
     public interface ICustomerService
     {
         Task<PageResultDto<CustomerViewModel>> GetAllCustomers(CustomerQueryDto model);
+        Task<int> GetBannedCustomers();
         Task<CustomerViewDto> GetCustomerByAccountId(int accountId);
     }
 }

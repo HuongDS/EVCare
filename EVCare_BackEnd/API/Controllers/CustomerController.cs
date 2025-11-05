@@ -83,5 +83,30 @@ namespace API.Controllers
                 }
             }
         }
-    }
+
+        [HttpGet("banned")]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> GetBannedCustomers() {
+            try {
+                var customers = await _customerService.GetBannedCustomers();
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.CUSTOMERS_GET_SUCCESSFULLY,
+                    data = customers
+                });
+            }
+            catch (Exception ex) {
+                {
+                    return BadRequest(new ResponseDto<object>
+                    {
+                        statusCode = HttpStatus.BAD_REQUEST,
+                        message = ex.Message,
+                        data = null
+                    });
+                }
+            }
+        }
+
+      }
 }
