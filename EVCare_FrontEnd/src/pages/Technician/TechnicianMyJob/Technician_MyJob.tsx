@@ -21,6 +21,7 @@ export default function Technician_MyJob() {
     useState<TechnicianWorkingSessionEnum>(
       TechnicianWorkingSessionEnum.ADDING_PART
     );
+
   const [appointments, setAppointments] = useState<TechnicianAppointmentsDto[]>(
     []
   );
@@ -34,39 +35,47 @@ export default function Technician_MyJob() {
       PageIndex: 1,
     }
   );
+  const { data: pendingData, isFetching: isPendingFetching } =
+    useGetTechnicianAppointments({
+      Status: "Pending",
+      PageSize: 1000,
+      PageIndex: 1,
+    });
 
   useEffect(() => {
+    const handleHiddenPending = async () => {
+      if (isPendingFetching) return;
+
+      const pendingList = pendingData?.items ?? [];
+      if (pendingList.length > 0) {
+        const pending = pendingList[0];
+
+        const updateRes = await updateTechnicianWorkingSession({
+          orderId: pending.orderId,
+          status: TechnicianWorkingSessionEnum.ADDING_PART,
+        });
+
+        if (updateRes) {
+          await refetch();
+        }
+      }
+    };
+
+    handleHiddenPending();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingData, isPendingFetching]);
+
+  useEffect(() => {
+    if (isFetching || isLoading) return;
+
     setFade(true);
     setIsError(false);
-    try {
-      const list = data?.items ?? [];
-      if (
-        String(activeStatus) === TechnicianWorkingSessionEnum.PENDING &&
-        list.length > 0
-      ) {
-        (async () => {
-          const pendingAppointment = list[0];
-          try {
-            await updateTechnicianWorkingSession({
-              orderId: pendingAppointment.orderId,
-              status: TechnicianWorkingSessionEnum.ADDING_PART,
-            });
-            setActiveStatus(TechnicianWorkingSessionEnum.ADDING_PART);
-          } catch (err) {
-            console.error("Failed to auto-update pending appointment", err);
-            setIsError(true);
-          }
-        })();
-        return;
-      }
-      setAppointments(list);
-    } catch (e) {
-      console.error("Failed to process appointments", e);
-      setIsError(true);
-    } finally {
-      setTimeout(() => setFade(false), 80);
-    }
-  }, [data, activeStatus]);
+
+    const list = data?.items ?? [];
+    setAppointments(list);
+
+    setTimeout(() => setFade(false), 80);
+  }, [data, isFetching, isLoading, activeStatus]);
 
   useEffect(() => {
     const tab = location.state?.tab;
@@ -84,6 +93,7 @@ export default function Technician_MyJob() {
     setAppointments((prev) =>
       prev.map((a) => (a.orderId === orderId ? { ...a, status: newStatus } : a))
     );
+
     setTimeout(async () => {
       await refetch();
       if (activeStatus !== newStatus) setActiveStatus(newStatus);
