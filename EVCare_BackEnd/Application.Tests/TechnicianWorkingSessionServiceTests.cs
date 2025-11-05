@@ -161,9 +161,6 @@ namespace Application.Tests {
             appointmentRepositoryMock.Verify(t => t.GetAppointmentByOrderIdAsync(model.OrderId), Times.Once);
             appointmentRepositoryMock.Verify(t => t.UpdateAsync(It.Is<DataAccess.Entities.Appointment>(a => a.Status == DataAccess.Enums.AppointmentStatusEnum.ReadyForPickup)), Times.Once);
             notificationServiceMock.Verify(t=>t.SendPaymentPendingPickupEmailAsync(It.IsAny<DataAccess.Dtos.Payment.PaymentPendingPickupEmailModel>()), Times.Exactly(2));
-
-
-
         }
 
      }
