@@ -34,7 +34,7 @@ namespace Application.Tests {
             configMock.SetupGet(x => x["R2:Bucket"]).Returns("bucket");
             configMock.SetupGet(x => x["R2:PublicBaseUrl"]).Returns("https://cdn.com");
 
-            var fileService = _fixture.Create<FileService>();
+            var fileService = new FileService(configMock.Object);
             return fileService;
         }
         [Fact]
@@ -134,5 +134,42 @@ namespace Application.Tests {
             var result = await Assert.ThrowsAsync<Exception>(async () => await fileService.UploadImageAsync(file));
             Assert.Equal("File is null or empty", result.Message);
         }
-    }
+        [Fact]
+        public async Task UploadImagesAsync_WithOneVaildFileAndOneInvalidFile_ReturnsListUrlFile() {
+            var configMock = _fixture.Freeze<Mock<IConfiguration>>();
+            configMock.SetupGet(x => x["Cloudinary:CloudName"]).Returns("abc");
+            configMock.SetupGet(x => x["Cloudinary:ApiKey"]).Returns("123");
+            configMock.SetupGet(x => x["Cloudinary:ApiSecret"]).Returns("456");
+            configMock.SetupGet(x => x["R2:AccountId"]).Returns("acc");
+            configMock.SetupGet(x => x["R2:AccessKeyId"]).Returns("ak");
+            configMock.SetupGet(x => x["R2:SecretAccessKey"]).Returns("sk");
+            configMock.SetupGet(x => x["R2:Bucket"]).Returns("bucket");
+            configMock.SetupGet(x => x["R2:PublicBaseUrl"]).Returns("https://cdn.com");
+            var files = new List<FileUploadModel>
+            {
+                new FileUploadModel
+                {
+                    FileName = "test1.jpg",
+                    ContentType = "image/png",
+                    FileStream = new MemoryStream(Encoding.UTF8.GetBytes("dummy image content 1"))
+                },
+                new FileUploadModel
+                {
+                    FileName = "test2.jpg",
+                    ContentType = "image/jpeg",
+                    FileStream = new MemoryStream(Encoding.UTF8.GetBytes("dummy image content 2"))
+                }
+            };
+            var service = new Mock<FileService>(configMock.Object) { CallBase = true };
+            service.SetupSequence(s => s.UploadImageAsync(It.IsAny<FileUploadModel>()))
+               .ThrowsAsync(new Exception("Upload failed"))
+               .ReturnsAsync(() => "https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg");
+            var result = await service.Object.UploadImagesAsync(files);
+            Assert.Equal(2, result.Count);
+            Assert.Null(result[0].Url);
+            Assert.Equal("Upload failed", result[0].ErrorMessage);
+            Assert.Equal("https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg", result[1].Url);
+
+        }
+     }
 }
