@@ -52,6 +52,13 @@ namespace DataAccess.Repositories
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
         }
 
+        public Task<int> GetBannedCustomers() {
+           return _dbContext.Customers
+                .Include(x=>x.Account)
+                .Where(x => x.Account.Deleted_At != DateTime.MinValue)
+                .CountAsync();
+        }
+
         public async Task<CustomerViewDto?> GetCustomerByAccountId(int accountId)
         {
             return await _dbContext.Customers
