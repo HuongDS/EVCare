@@ -34,7 +34,8 @@ namespace Application.Services
         
         private readonly IUnitOfWork _unitOfWork;
 
-        public OrderService(IOrderRepository orderRepository, IAppointmentRepository appointmentRepository,
+        public OrderService(IOrderRepository orderRepository,
+            IAppointmentRepository appointmentRepository,
             IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository,IUnitOfWork unitOfWork
             ,ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
             )
@@ -236,7 +237,7 @@ namespace Application.Services
 
 
         }
-        public async Task AddOrder(OrderPartAddModel model,int technicianId)
+        public virtual async Task AddOrder(OrderPartAddModel model,int technicianId)
         {
             var partIds = model.Parts.Select(p => p.Id).Distinct().ToList();
             var partsDict = await _partRepository.GetPartWithIDs(partIds);
