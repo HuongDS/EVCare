@@ -9,6 +9,6 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["vite/client", "@testing-library/jest-dom"]
+    "types": ["vite/client"]
   }
 }
