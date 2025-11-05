@@ -228,7 +228,7 @@ namespace Application.Services
                 
                 }
 
-                  await  _orderPartRepository.RemoveRange(model.OrderId, technicianId);
+                 await  _orderPartRepository.RemoveRange(model.OrderId, technicianId);
 
                  await AddOrder(model, technicianId);
 

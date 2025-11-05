@@ -143,13 +143,11 @@ namespace Application.Service
                 ? fileUploadModel.ContentType
                 : GetMime(extension);
 
-            // --- Quan trọng: chuẩn bị stream có Content-Length ---
             Stream uploadStream = fileUploadModel.FileStream;
             if (uploadStream.CanSeek) {
                 uploadStream.Position = 0;
             }
             else {
-                // Buffer để có Length (tránh streaming-chunked)
                 var ms = new MemoryStream();
                 await fileUploadModel.FileStream.CopyToAsync(ms);
                 ms.Position = 0;
