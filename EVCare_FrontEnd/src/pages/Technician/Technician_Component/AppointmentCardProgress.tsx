@@ -166,7 +166,7 @@ const AppointmentCardProgress: React.FC<Props> = ({
 
         <SectionContainer>
           <SectionTitle>
-            Parts
+            Parts{" "}
             <SubTitle
               style={{
                 fontSize: "0.7rem",
