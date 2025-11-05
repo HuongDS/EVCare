@@ -244,12 +244,102 @@ namespace Application.Tests {
                 uowMock.Object,
                 techncianWorkingSessionRepositoryMock.Object
             )
-            { CallBase = true};
+            { CallBase = true };
             orderService.Setup(t => t.AddOrder(model, technicianId)).Returns(Task.CompletedTask);
 
 
             await orderService.Object.AddPartsToAnOrder(model, technicianId);
             uowMock.Verify(u => u.ExecuteInTransactionAsync(It.IsAny<Func<Task>>()), Times.Once);
+
+        }
+
+        [Theory, AutoData]
+        public async Task UpdatePartToOrder_OrderIdAndTechnicianIdNotFound_ThrowsException(OrderPartAddModel model, int technicianId) {
+
+            var technicianWorkingSessionRepositoryMock = _fixture.Freeze<Mock<DataAccess.Interfaces.ITechnicianWorkingSessionRepository>>();
+            technicianWorkingSessionRepositoryMock.Setup(x => x.GetTechnicianWorkingSession(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync((DataAccess.Dtos.Technician.TechnicianWorkingSessionViewModel?)null);
+            var orderService = _fixture.Create<Application.Services.OrderService>();
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                await orderService.UpdatePartToOrder(model, technicianId)
+            );
+            Assert.Equal("Source not found", result.Message);
+
+        }
+        [Theory, AutoData]
+        public async Task UpdatePartToOrder_SessionIsNotAddingPart_ThrowsException(OrderPartAddModel model, int technicianId) {
+
+            var technicianWorkingSessionRepositoryMock = _fixture.Freeze<Mock<DataAccess.Interfaces.ITechnicianWorkingSessionRepository>>();
+            technicianWorkingSessionRepositoryMock.Setup(x => x.GetTechnicianWorkingSession(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new DataAccess.Dtos.Technician.TechnicianWorkingSessionViewModel
+                {
+                    Status = DataAccess.Enums.TechnicianWorkingSessionEnum.Pending
+                });
+            var orderService = _fixture.Create<Application.Services.OrderService>();
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                await orderService.UpdatePartToOrder(model, technicianId)
+            );
+            Assert.Equal("You are only updated when in adding part status", result.Message);
+
+        }
+        [Theory, AutoData]
+        public async Task UpdatePartToOrder_ValidData_UpdateSuccessfully(OrderPartAddModel model, int technicianId) {
+            var technicianWorkingSessionRepositoryMock = _fixture.Freeze<Mock<DataAccess.Interfaces.ITechnicianWorkingSessionRepository>>();
+            technicianWorkingSessionRepositoryMock.Setup(x => x.GetTechnicianWorkingSession(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new DataAccess.Dtos.Technician.TechnicianWorkingSessionViewModel
+                {
+                    Status = DataAccess.Enums.TechnicianWorkingSessionEnum.AddingPart
+                });
+            var uowMock = _fixture.Freeze<Mock<IUnitOfWork>>();
+            uowMock
+                .Setup(u => u.ExecuteInTransactionAsync(It.IsAny<Func<Task>>()))
+                .Returns<Func<Task>>(action => action());
+            var orderPartRepositoryMock = _fixture.Freeze<Mock<DataAccess.Interfaces.IOrderPartRepository>>();
+            orderPartRepositoryMock.Setup(x => x.GetOrderPart(It.IsAny<int>(),It.IsAny<int>()))
+                .ReturnsAsync(new List<DataAccess.Entities.OrderPart>()
+                {
+                    new DataAccess.Entities.OrderPart
+                    {
+                      
+                        OrderId = model.OrderId,
+                        PartId = 1,
+                        Quantity = 2,
+                        TechnicianId = technicianId
+                    },
+                    new DataAccess.Entities.OrderPart
+                    {
+                    
+                        OrderId = model.OrderId,
+                        PartId = 2,
+                        Quantity = 3,
+                        TechnicianId = technicianId
+                    }
+                });
+            var partRepositoryMock = _fixture.Freeze<Mock<DataAccess.Interfaces.IPartRepository>>();
+            partRepositoryMock.Setup(x => x.GetPartWithIDs(It.IsAny<List<int>>()))
+                .ReturnsAsync(new Dictionary<int, DataAccess.Entities.Part>
+                {
+                    { 1, new DataAccess.Entities.Part { Id = 1, Name = "Part 1", Stock = 10 } },
+                    { 2, new DataAccess.Entities.Part { Id = 2, Name = "Part 2", Stock = 20 } }
+                });
+            orderPartRepositoryMock.Setup(x=>x.RemoveRange(It.IsAny<int>(),It.IsAny<int>()))
+                .Returns(Task.CompletedTask);
+            var orderService = new Mock<OrderService>(
+                _fixture.Create<DataAccess.Interfaces.IOrderRepository>(),
+                _fixture.Create<DataAccess.Interfaces.IAppointmentRepository>(),
+                _fixture.Create<AutoMapper.IMapper>(),
+                orderPartRepositoryMock.Object,
+                partRepositoryMock.Object,
+                uowMock.Object,
+                technicianWorkingSessionRepositoryMock.Object
+            )
+            { CallBase = true };
+            orderService.Setup(t => t.AddOrder(model, technicianId)).Returns(Task.CompletedTask);
+
+            await orderService.Object.UpdatePartToOrder(model, technicianId);
+            uowMock.Verify(u => u.ExecuteInTransactionAsync(It.IsAny<Func<Task>>()), Times.Once);
+            orderPartRepositoryMock.Verify(x=>x.RemoveRange(It.IsAny<int>(),It.IsAny<int>()),Times.Once);
+            orderService.Verify(x=>x.AddOrder(model, technicianId),Times.Once);
 
         }
     }
