@@ -9,6 +9,7 @@ using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
 using DataAccess.Dtos.OrderPart;
+using DataAccess.Dtos.OrderParts;
 using DataAccess.Dtos.Orders;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
@@ -295,12 +296,12 @@ namespace Application.Tests {
                 .Setup(u => u.ExecuteInTransactionAsync(It.IsAny<Func<Task>>()))
                 .Returns<Func<Task>>(action => action());
             var orderPartRepositoryMock = _fixture.Freeze<Mock<DataAccess.Interfaces.IOrderPartRepository>>();
-            orderPartRepositoryMock.Setup(x => x.GetOrderPart(It.IsAny<int>(),It.IsAny<int>()))
+            orderPartRepositoryMock.Setup(x => x.GetOrderPart(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new List<DataAccess.Entities.OrderPart>()
                 {
                     new DataAccess.Entities.OrderPart
                     {
-                      
+
                         OrderId = model.OrderId,
                         PartId = 1,
                         Quantity = 2,
@@ -308,7 +309,7 @@ namespace Application.Tests {
                     },
                     new DataAccess.Entities.OrderPart
                     {
-                    
+
                         OrderId = model.OrderId,
                         PartId = 2,
                         Quantity = 3,
@@ -322,7 +323,7 @@ namespace Application.Tests {
                     { 1, new DataAccess.Entities.Part { Id = 1, Name = "Part 1", Stock = 10 } },
                     { 2, new DataAccess.Entities.Part { Id = 2, Name = "Part 2", Stock = 20 } }
                 });
-            orderPartRepositoryMock.Setup(x=>x.RemoveRange(It.IsAny<int>(),It.IsAny<int>()))
+            orderPartRepositoryMock.Setup(x => x.RemoveRange(It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
             var orderService = new Mock<OrderService>(
                 _fixture.Create<DataAccess.Interfaces.IOrderRepository>(),
@@ -338,11 +339,235 @@ namespace Application.Tests {
 
             await orderService.Object.UpdatePartToOrder(model, technicianId);
             uowMock.Verify(u => u.ExecuteInTransactionAsync(It.IsAny<Func<Task>>()), Times.Once);
-            orderPartRepositoryMock.Verify(x=>x.RemoveRange(It.IsAny<int>(),It.IsAny<int>()),Times.Once);
-            orderService.Verify(x=>x.AddOrder(model, technicianId),Times.Once);
+            orderPartRepositoryMock.Verify(x => x.RemoveRange(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+            orderService.Verify(x => x.AddOrder(model, technicianId), Times.Once);
 
         }
-    }
 
-      
+        [Theory, AutoData]
+        public async Task UpdateOrderAsync_WithNonExitsOrder_ThrowsException(OrderUpdateModel model) {
+            var orderRepository = _fixture.Freeze<Mock<DataAccess.Interfaces.IOrderRepository>>();
+            orderRepository.Setup(t => t.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((DataAccess.Entities.Order?)null);
+            var orderService = _fixture.Create<Application.Services.OrderService>();
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                await orderService.UpdateOrderAsync(model)
+            );
+            Assert.Equal($"The Order {model.Id} doesn't not exist", result.Message);
+        }
+        [Theory, AutoData]
+        public async Task UpdateOrderAsync_WithOrderIsCancel_ThrowsException(OrderUpdateModel model) {
+            var orderRepository = _fixture.Freeze<Mock<DataAccess.Interfaces.IOrderRepository>>();
+            orderRepository.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Order
+                {
+                    Id = model.Id,
+                    Status = DataAccess.Enums.OrderStatusEnum.Canceled
+                });
+            var orderService = _fixture.Create<Application.Services.OrderService>();
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                await orderService.UpdateOrderAsync(model)
+            );
+            Assert.Equal($"The Order {model.Id} haved canceled or completed", result.Message);
+        }
+        [Theory, AutoData]
+        public async Task UpdateOrderAsync_WithOrderIsCompleted_ThrowsException(OrderUpdateModel model) {
+            var orderRepository = _fixture.Freeze<Mock<DataAccess.Interfaces.IOrderRepository>>();
+            orderRepository.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Order
+                {
+                    Id = model.Id,
+                    Status = DataAccess.Enums.OrderStatusEnum.Completed
+                });
+            var orderService = _fixture.Create<Application.Services.OrderService>();
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                await orderService.UpdateOrderAsync(model)
+            );
+            Assert.Equal($"The Order {model.Id} haved canceled or completed", result.Message);
+        }
+
+        [Theory, AutoData]
+        public async Task UpdateOrderAsync_WithPartIsNotFoundInStock_ThrowsException(OrderUpdateModel model) {
+            var orderRepository = _fixture.Freeze<Mock<DataAccess.Interfaces.IOrderRepository>>();
+            orderRepository.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Order
+                {
+                    Id = model.Id,
+                    Status = DataAccess.Enums.OrderStatusEnum.Pending
+                });
+            
+            var unitOfWorkMock = _fixture.Freeze<Mock<IUnitOfWork>>();
+            unitOfWorkMock
+                .Setup(u => u.ExecuteInTransactionAsync(It.IsAny<Func<Task>>()))
+                .Returns<Func<Task>>(action => action());
+            orderRepository.Setup(o => o.GetOrderPartsByOrderId(model.Id))
+                .ReturnsAsync(new Order
+                {
+                    Id = model.Id,
+                    OrderParts = new List<OrderPart>
+                    {
+                        new OrderPart { PartId = 1, Quantity = 2 },
+                        new OrderPart { PartId = 2, Quantity = 3 }
+                    }
+                });
+            var partRepositoryMock = _fixture.Freeze<Mock<DataAccess.Interfaces.IPartRepository>>();
+            partRepositoryMock.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(()=>null);
+            var orderService = _fixture.Create<Application.Services.OrderService>();
+            var result = Assert.ThrowsAsync<Exception>(async () =>
+                await orderService.UpdateOrderAsync(model)
+            );
+            Assert.Equal("Part 1 not found", result.Result.Message);
+
+        }
+
+        [Theory,AutoData]
+        public async Task UpdateOrderAsync_WithPartInModelNotFound_ThrowsException(OrderUpdateModel model) {
+            var orderRepository = _fixture.Freeze<Mock<DataAccess.Interfaces.IOrderRepository>>();
+            orderRepository.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Order
+                {
+                    Id = model.Id,
+                    Status = DataAccess.Enums.OrderStatusEnum.Pending
+                });
+            orderRepository.Setup(t => t.RemoveOrderPartsAsync(It.IsAny<int>())).Returns(Task.CompletedTask);
+
+            var unitOfWorkMock = _fixture.Freeze<Mock<IUnitOfWork>>();
+            unitOfWorkMock
+                .Setup(u => u.ExecuteInTransactionAsync(It.IsAny<Func<Task>>()))
+                .Returns<Func<Task>>(action => action());
+            orderRepository.Setup(o => o.GetOrderPartsByOrderId(model.Id))
+                .ReturnsAsync(new Order
+                {
+                    Id = model.Id,
+                    OrderParts = new List<OrderPart>
+                    {
+                        new OrderPart { PartId = 1, Quantity = 2 },
+                        new OrderPart { PartId = 2, Quantity = 3 }
+                    }
+                });
+            var partRepositoryMock = _fixture.Freeze<Mock<DataAccess.Interfaces.IPartRepository>>();
+            partRepositoryMock
+                     .SetupSequence(x => x.GetByIdAsync(It.IsAny<int>()))
+                     .ReturnsAsync(new Part { Id = 10, Stock = 5 })   
+                     .ReturnsAsync(new Part { Id = 11, Stock = 5 })  
+                     .ReturnsAsync((Part?)null);
+            model.OrderParts = new List<OrderPartUpdateModel>
+            {
+                new OrderPartUpdateModel
+                {
+                    PartId = 5,
+                    Quantity = 5
+                },
+            };
+
+            var orderService = _fixture.Create<Application.Services.OrderService>();
+            var result = Assert.ThrowsAsync<Exception>(async () =>
+                await orderService.UpdateOrderAsync(model)
+            );
+            Assert.Equal("Part 5 not found", result.Result.Message);
+        }
+
+        [Theory, AutoData]
+        public async Task UpdateOrderAsync_WithPartInModelIsOutOfStock_ThrowsException(OrderUpdateModel model) {
+            var orderRepository = _fixture.Freeze<Mock<DataAccess.Interfaces.IOrderRepository>>();
+            orderRepository.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Order
+                {
+                    Id = model.Id,
+                    Status = DataAccess.Enums.OrderStatusEnum.Pending
+                });
+            orderRepository.Setup(t => t.RemoveOrderPartsAsync(It.IsAny<int>())).Returns(Task.CompletedTask);
+
+            var unitOfWorkMock = _fixture.Freeze<Mock<IUnitOfWork>>();
+            unitOfWorkMock
+                .Setup(u => u.ExecuteInTransactionAsync(It.IsAny<Func<Task>>()))
+                .Returns<Func<Task>>(action => action());
+            orderRepository.Setup(o => o.GetOrderPartsByOrderId(model.Id))
+                .ReturnsAsync(new Order
+                {
+                    Id = model.Id,
+                    OrderParts = new List<OrderPart>
+                    {
+                        new OrderPart { PartId = 1, Quantity = 2 },
+                        new OrderPart { PartId = 2, Quantity = 3 }
+                    }
+                });
+            var partRepositoryMock = _fixture.Freeze<Mock<DataAccess.Interfaces.IPartRepository>>();
+            partRepositoryMock
+                     .SetupSequence(x => x.GetByIdAsync(It.IsAny<int>()))
+                     .ReturnsAsync(new Part { Id = 10, Stock = 5 })
+                     .ReturnsAsync(new Part { Id = 11, Stock = 5 })
+                     .ReturnsAsync(new Part { Id = 12,Stock = 4});
+            model.OrderParts = new List<OrderPartUpdateModel>
+            {
+                new OrderPartUpdateModel
+                {
+                    PartId = 5,
+                    Quantity = 5
+                },
+            };
+
+            var orderService = _fixture.Create<Application.Services.OrderService>();
+            var result = Assert.ThrowsAsync<Exception>(async () =>
+                await orderService.UpdateOrderAsync(model)
+            );
+            Assert.Equal("Part 5 doesn't have enough stock", result.Result.Message);
+        }
+
+        [Theory, AutoData]
+        public async Task UpdateOrderAsync_WithValidData_UpdateSuccessfully(OrderUpdateModel model) {
+            var orderRepository = _fixture.Freeze<Mock<DataAccess.Interfaces.IOrderRepository>>();
+            orderRepository.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Order
+                {
+                    Id = model.Id,
+                    Status = DataAccess.Enums.OrderStatusEnum.Pending
+                });
+            orderRepository.Setup(t => t.RemoveOrderPartsAsync(It.IsAny<int>())).Returns(Task.CompletedTask);
+            orderRepository.Setup(t=>t.AddOrderPartAsync(It.IsAny<OrderPart>())).Returns(Task.CompletedTask);
+            var unitOfWorkMock = _fixture.Freeze<Mock<IUnitOfWork>>();
+            unitOfWorkMock
+                .Setup(u => u.ExecuteInTransactionAsync(It.IsAny<Func<Task>>()))
+                .Returns<Func<Task>>(action => action());
+            orderRepository.Setup(o => o.GetOrderPartsByOrderId(model.Id))
+                .ReturnsAsync(new Order
+                {
+                    Id = model.Id,
+                    OrderParts = new List<OrderPart>
+                    {
+                        new OrderPart { PartId = 1, Quantity = 2 },
+                        new OrderPart { PartId = 2, Quantity = 3 }
+                    }
+                });
+            var partRepositoryMock = _fixture.Freeze<Mock<DataAccess.Interfaces.IPartRepository>>();
+            partRepositoryMock
+                     .SetupSequence(x => x.GetByIdAsync(It.IsAny<int>()))
+                     .ReturnsAsync(new Part { Id = 10, Stock = 5 })
+                     .ReturnsAsync(new Part { Id = 11, Stock = 5 })
+                     .ReturnsAsync(new Part { Id = 10, Stock = 5 })
+                      .ReturnsAsync(new Part {Id = 11 ,Stock = 5 })
+                      .ReturnsAsync(new Part { Id = 12, Stock = 5 });
+            model.OrderParts = new List<OrderPartUpdateModel>
+            {
+                new OrderPartUpdateModel
+                {
+                    PartId = 10,
+                    Quantity = 2
+                },
+                new OrderPartUpdateModel
+                {
+                    PartId = 11,
+                    Quantity = 3
+                },
+                new OrderPartUpdateModel
+                {
+                    PartId = 12,
+                    Quantity = 4
+                }
+            };
+            var orderService = _fixture.Create<Application.Services.OrderService>();
+            await orderService.UpdateOrderAsync(model);
+            unitOfWorkMock.Verify(u => u.ExecuteInTransactionAsync(It.IsAny<Func<Task>>()), Times.Once);
+            orderRepository.Verify(x => x.RemoveOrderPartsAsync(It.IsAny<int>()), Times.Once);
+        }
+     }
 }
