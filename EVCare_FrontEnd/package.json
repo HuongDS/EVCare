@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-beta.4",
@@ -97,6 +98,8 @@
     "@types/react": "^19.1.14",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.0",
+    "@vitest/coverage-istanbul": "^4.0.7",
+    "@vitest/ui": "^4.0.6",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^7.0.0",
