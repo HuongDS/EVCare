@@ -41,7 +41,7 @@ namespace Application.Service
             _s3 = new AmazonS3Client(accessKey, secretKey, s3cfg);
         }
 
-        public async Task<string> UploadImageAsync(FileUploadModel file  )
+        public virtual async Task<string> UploadImageAsync(FileUploadModel file  )
         {
             if(file == null || file.FileStream == null || file.FileStream.Length == 0)
             {
@@ -75,7 +75,6 @@ namespace Application.Service
                 return uploadResult.SecureUrl.ToString();
             }
             throw new Exception("Upload failed");
-
         }
 
         public async Task<List<FileUploadResult>> UploadImagesAsync(List<FileUploadModel> fileUploadModels)

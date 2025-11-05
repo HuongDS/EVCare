@@ -120,5 +120,19 @@ namespace Application.Tests {
             var result = await Assert.ThrowsAsync<Exception>(async () => await fileService.UploadImageAsync(file));
             Assert.Equal("Invalid file extension", result.Message);
         }
+        [Fact]
+        public async Task UploadImagesAsync_WithEmptyList_ThrowsException() {
+            var fileService = CreateFileService();
+            var files = new List<FileUploadModel>();
+            var result = await Assert.ThrowsAsync<Exception>(async () => await fileService.UploadImagesAsync(files));
+            Assert.Equal("No files to upload", result.Message);
+        }
+        [Fact]
+        public async Task UploadImagesAsync_WithFileIsNull_ThrowsException() {
+            var fileService = CreateFileService();
+            FileUploadModel file = null;
+            var result = await Assert.ThrowsAsync<Exception>(async () => await fileService.UploadImageAsync(file));
+            Assert.Equal("File is null or empty", result.Message);
+        }
     }
 }
