@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import * as THREE from "three";
 import styled from "styled-components";
 import { Model3dScence } from "./Model3dScence";
 import PartsPanel from "./PartsPanel";
@@ -9,18 +10,42 @@ import { useAppDispatch } from "../../states/store";
 import { closeModel3d } from "../../states/uiSlice";
 import ShowButton from "../../components/Button/ShowButton";
 import { TriangleAlert } from "lucide-react";
+import { useGLTF } from "@react-three/drei";
+import type { GLTF } from "three-stdlib";
 
 interface Model3dProps {
   data?: number;
 }
+type GLTFResult = GLTF & {
+  nodes: Record<string, THREE.Mesh>;
+  materials: Record<string, THREE.MeshStandardMaterial>;
+};
 
 export default function Model3dViewer({ data }: Model3dProps) {
   const { data: apiResponse, error, isLoading } = useGetPartDamage(data || 0);
+
+  // if (!apiResponse?.data) {
+  //   return null;
+  // }
   const dispatch = useAppDispatch();
   const [selectedPart, setSelectedPart] = useState<PartDamagedModel | null>(
     null
   );
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  const { nodes } = useGLTF(
+    apiResponse?.data?.vehicleModel3DUrl || ""
+  ) as unknown as GLTFResult;
+
+  const meshNameSet = useMemo(() => {
+    const names = new Set<string>();
+    Object.keys(nodes).forEach((nodeName) => {
+      if (nodes[nodeName].isMesh) {
+        names.add(nodeName);
+      }
+    });
+    return names;
+  }, [nodes]);
 
   if (isLoading) {
     return (
@@ -78,6 +103,7 @@ export default function Model3dViewer({ data }: Model3dProps) {
           categories={apiResponse?.data || []}
           onSelectPart={handlePartSelected as (nodeName: string | null) => void}
           selectedPart={selectedPart}
+          meshes={meshNameSet}
         />
       </LeftPanel>
 
@@ -85,6 +111,7 @@ export default function Model3dViewer({ data }: Model3dProps) {
         <CanvasWrapper>
           <Model3dScence
             data={apiResponse?.data}
+            nodes={nodes}
             onPartClick={(name) => handlePartSelected(name || "")}
             selectedPart={selectedPart}
             hiddenMeshes={[""]}

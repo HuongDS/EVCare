@@ -17,7 +17,9 @@ export const useGetPartDamage = (appointmentId: number) => {
       try {
         const response = await api.get<
           ResponseDto<DataDto<PartCategoryViewModel<PartDamagedModel>>>
-        >("/api/Appointment/vehicle-category/" + `${appointmentId}`);
+        >(`/api/Appointment/vehicle-category/${appointmentId}`);
+        console.log(response.data);
+
         return response.data;
       } catch (error) {
         handleError(error);

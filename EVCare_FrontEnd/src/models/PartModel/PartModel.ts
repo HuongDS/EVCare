@@ -1,7 +1,7 @@
 export type PartDetailDto = {
   id: number;
   name: string;
-  stock: number;
+  quantity: number;
   description: string;
   replacementPrice: number;
   price: number;
@@ -12,7 +12,7 @@ export type PartDetailDto = {
 
 export type GetPartParams = {
   partName?: string;
-  categoryId?: number[];
+  CategoryIds?: number[];
   pageSize?: number;
   pageIndex?: number;
   sortField?: string;

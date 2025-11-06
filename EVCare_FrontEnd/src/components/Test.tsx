@@ -3,6 +3,9 @@
 // import OrderHistorySort from "../pages/Customer/CustomerComponent/OrderHistorySort";
 // import OrderHistoryCard from "../pages/Customer/OrderHistory/Orders/OrderHistoryCard";
 
+import StockPredictionTable from "../pages/Staff/StaffManageInventory/AIPrediction";
+// import StockPredictionDashboard from "../pages/Staff/StaffManageInventory/AIPrediction";
+
 // import OTPForm from "../pages/Auth/sections/OTPForm";
 // import { useAppDispatch } from "../states/store";
 // import { closeModel3d, openModel3d } from "../states/uiSlice";
@@ -52,6 +55,7 @@ export default function Test() {
 
       <Skeleton /> */}
       {/* <BackButton /> */}
+      {/* <StockPredictionTable onPageChange={() => 1} /> */}
     </>
   );
 }
