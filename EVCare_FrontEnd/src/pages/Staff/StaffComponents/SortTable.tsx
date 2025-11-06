@@ -11,7 +11,7 @@ const SortWrapperStyled = styled.div`
 `;
 const Container = styled.div`
   display: flex;
-  gap: 8px;
+  gap: 5px;
   padding: 5px;
   background: linear-gradient(to bottom, #ffffff, #f8f9fa);
   border-radius: 12px;
@@ -39,7 +39,7 @@ interface CategoryProps {
 }
 
 const Category = styled(Link)<CategoryProps>`
-  padding: 6px 12px;
+  padding: 2px 8px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: ${({ $active }) => ($active ? "600" : "500")};

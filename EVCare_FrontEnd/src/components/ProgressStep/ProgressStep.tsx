@@ -1,6 +1,5 @@
 import { Steps } from "@chakra-ui/react";
 import type React from "react";
-import type { AppointmentStatusEnum } from "../../models/enums";
 
 interface Steps {
   title: string;
