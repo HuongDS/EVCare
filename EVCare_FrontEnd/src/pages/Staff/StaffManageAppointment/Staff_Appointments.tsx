@@ -9,10 +9,10 @@ import {
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import SearchBar from "../../../components/SearchBar/Search";
 import { useEffect, useState } from "react";
-import Appoinment_Progress_Modal from "./Appoinment_Progress_Modal";
+import Appoinment_Progress_Modal from "./Appointment_Progress_Modal";
 import { useQueryClient } from "@tanstack/react-query";
 import { Pagination } from "../../../components/Paginations/Pagination";
-import { LIST_APPOINTMENTS_MESSAGE } from "./../../../constants/messages/Message";
+import { LIST_APPOINTMENTS_MESSAGE } from "../../../constants/messages/Message";
 import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
 import Appointment_Reassign from "./Appointment_Reassign";
 import type {
@@ -143,7 +143,7 @@ export default function Staff_Appoinments() {
       <PageTransition $isCreating={isCreating}>
         <AppoitmentWrapper>
           <TitleWrapper>
-            <h2>Appoinments</h2>
+            <h2>Appointments</h2>
             <ButtonGroup>
               <SearchBar
                 placeholder="Search appointments..."

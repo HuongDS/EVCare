@@ -2,7 +2,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import authSlice from "../states/authSlice";
 import uiSlice from "../states/uiSlice";
 import errorSlice from "../states/errorSlice";
-import appointmentsSlice from "../states/appointmentSlice";
 import {
   useDispatch,
   useSelector,
@@ -14,7 +13,6 @@ export const store = configureStore({
     auth: authSlice,
     ui: uiSlice,
     error: errorSlice,
-    appointments: appointmentsSlice,
   },
 });
 

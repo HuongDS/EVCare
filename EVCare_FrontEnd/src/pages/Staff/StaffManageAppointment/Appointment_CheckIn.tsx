@@ -70,14 +70,17 @@ export default function Appointment_CheckIn({ data, close }: Props) {
     try {
       const order = await newOrder(createNewOrderParams);
 
-      if (order.data?.orderID !== null) {
-        // data.orderId = order.data?.orderID || 0;
-        setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_SUCCESS);
-        setIsCheckInSuccessOpen(true);
-        await queryClient.invalidateQueries({
-          queryKey: ["AppointmentDetail"],
-        });
+      if (!order.data?.orderID) {
+        setTitle("Create Order Failed");
+        setModalMessage("Order ID is missing.");
+        setIsErrorModalOpen(true);
+        return;
       }
+
+      // success flow
+      setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_SUCCESS);
+      setIsCheckInSuccessOpen(true);
+      await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
     } catch (error) {
       setTitle("Create Order Failed");
       setModalMessage(String(error));
@@ -154,7 +157,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
                 <InfoLabel>
                   <Phone size={14} /> Phone Number
                 </InfoLabel>
-                <InfoValue>{data.phoneNumber ?? "N/A"}</InfoValue>
+                <InfoValue>{data.phoneNumber}</InfoValue>
               </InfoItem>
 
               <InfoItem>

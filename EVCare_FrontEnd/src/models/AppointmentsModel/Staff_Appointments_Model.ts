@@ -93,7 +93,7 @@ export type MultipleImageDto = {
 //appointment detail
 export type AppointmentDetailModel<T> = {
   id: number;
-  appointmentDate: Dayjs;
+  appointmentDate: string;
   status: string;
   note: string;
   vehicleId: number;
