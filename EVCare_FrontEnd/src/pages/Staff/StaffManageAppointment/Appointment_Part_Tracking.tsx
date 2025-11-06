@@ -246,8 +246,8 @@ export default function Appointment_Part_Tracking({
             </div>
           </SectionTitle>
 
-          {parts.map((part) => (
-            <PartCard key={part.id}>
+          {parts.map((part, i) => (
+            <PartCard key={i}>
               <PartLeft>
                 <PartImage src={part.imageUrl} alt={part.name} />
                 <PartInfo>
@@ -759,7 +759,8 @@ const TotalRow = styled(SummaryRow)`
 `;
 
 const ActionButton = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   button:nth-child(1) {
     background: linear-gradient(135deg, #c12a2a 0%, #eec0bc 100%);

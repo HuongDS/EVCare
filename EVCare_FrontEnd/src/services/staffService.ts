@@ -13,9 +13,15 @@ import type {
 import axios from "axios";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import dayjs from "dayjs";
-import type { UpdateInventoryPayload } from "../models/Inventory/InventoryModel";
+import type {
+  AIPredictionItems,
+  AIPredictionPageModel,
+  AIPreditionParams,
+  UpdateInventoryPayload,
+} from "../models/Inventory/InventoryModel";
 import type { MultipleImageDto } from "../models/AppointmentsModel/Staff_Appointments_Model";
 import type { EmployeeStatusViewModel } from "../models/Employee/EmployeeStatusViewModel";
+import QueryString from "qs";
 interface GetPartCategoryParams {
   pageSize?: number;
   pageIndex?: number;
@@ -64,7 +70,11 @@ export const useGetParts = (params: GetPartParams) => {
       try {
         const response = await api.get<
           ResponseDto<PageResultDto<PartDetailDto>>
-        >("/api/Part", { params });
+        >("/api/Part", {
+          params,
+          paramsSerializer: (p) =>
+            QueryString.stringify(p, { arrayFormat: "repeat" }),
+        });
         return response.data;
       } catch (error) {
         handleError(error);
@@ -185,3 +195,127 @@ export async function checkStaffAvailable(data: number) {
     throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }
+
+export const useGetInventoryValue = () => {
+  return useQuery({
+    queryKey: ["InventoryValue"],
+    queryFn: async () => {
+      try {
+        const response = await api.get<ResponseDto<number>>(
+          "/api/Part/total-price"
+        );
+        return response.data.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data?.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+export const useGetLowStocks = () => {
+  return useQuery({
+    queryKey: ["LowStocks"],
+    queryFn: async () => {
+      try {
+        const response = await api.get<ResponseDto<PartDetailDto[]>>(
+          "/api/Part/low-stock"
+        );
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data?.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+type params = {
+  status: string;
+};
+export const useGetNumberOfTechnician = (params: params) => {
+  return useQuery({
+    queryKey: ["techns", params],
+    queryFn: async () => {
+      try {
+        const response = await api.get<ResponseDto<number>>(
+          "/api/Technician/status",
+          { params }
+        );
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data?.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+export const useGetBannedCustomers = () => {
+  return useQuery({
+    queryKey: ["BannedCus"],
+    queryFn: async () => {
+      try {
+        const response = await api.get<ResponseDto<number>>(
+          "/api/Customer/banned"
+        );
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data?.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+//[STAFF] - AI prediction
+export const useGetPredictedParts = (params: AIPreditionParams) => {
+  return useQuery({
+    queryKey: ["AIPrediction", params?.LeadDate || 0],
+    queryFn: async () => {
+      try {
+        const response = await api.get<
+          ResponseDto<AIPredictionPageModel<AIPredictionItems>>
+        >("/api/AI/replenishment-gemini", { params });
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data?.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+    enabled: !!params.LeadDate,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
+  });
+};

@@ -5,11 +5,18 @@ interface props {
   text: string;
   width?: string;
   height?: string;
+  icon?: React.ReactNode;
 }
-const ShowButton = ({ onclick, text, width, height }: props) => {
+const ShowButton = ({ onclick, text, width, height, icon }: props) => {
   return (
     <StyledWrapper $width={width ?? "auto"} $height={height ?? "auto"}>
-      <button onClick={onclick}>{text}</button>
+      <button
+        onClick={onclick}
+        style={{ display: "flex", alignItems: "center", gap: "2px" }}
+      >
+        {icon}
+        {text}
+      </button>
     </StyledWrapper>
   );
 };

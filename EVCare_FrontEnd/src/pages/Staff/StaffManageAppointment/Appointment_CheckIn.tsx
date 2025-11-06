@@ -177,7 +177,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
               Services Requested
             </CardTitle>
 
-            <ServicesList>
+            <ServicesList style={{ overflowX: "hidden" }}>
               {data.services.map((service, index) => (
                 <ServiceItem key={index}>
                   <ServiceNumber>{index + 1}</ServiceNumber>
