@@ -120,6 +120,9 @@ namespace Application.Service
             ".obj" => "text/plain",
             _ => "application/octet-stream"
         };
+        protected virtual Task PutToS3Async(PutObjectRequest request) {
+            return _s3.PutObjectAsync(request);
+        }
         public async Task<string> UploadModel3DAsync(FileUploadModel fileUploadModel) {
             if (fileUploadModel == null)
                 throw new ArgumentNullException(nameof(fileUploadModel));
@@ -167,7 +170,7 @@ namespace Application.Service
                 put.Headers.ContentLength = uploadStream.Length;
             }
 
-            await _s3.PutObjectAsync(put);
+            await PutToS3Async(put);
 
             var displayUrl = $"{_publicBase.TrimEnd('/')}/{key}";
             return displayUrl;
