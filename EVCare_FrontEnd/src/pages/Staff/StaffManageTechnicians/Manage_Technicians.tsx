@@ -1,14 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Select, Badge, Avatar, Card, Typography } from "antd";
 import { Phone, Award, Wrench, User } from "lucide-react";
 import { useGetTechniciansToday } from "../../../services/appointmentServiceApi";
 import SearchBar from "../../../components/SearchBar/Search";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import type {
-  TechnicianModel,
-  TechnicianSkills,
-} from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import { useGetNumberOfTechnician } from "../../../services/staffService";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -29,34 +26,28 @@ const getStatusColor = (status: string) => {
 const Manage_Technicians = () => {
   // const [technicians] = useState(mockTechnicians);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [allTechnicians, setAllTechnicians] =
-    useState<TechnicianModel<TechnicianSkills>[]>();
+  const [statusFilter, setStatusFilter] = useState<string>("Available");
 
   const { data: technicians, isLoading } = useGetTechniciansToday({
-    ...(statusFilter !== "all" ? { Status: statusFilter } : {}),
+    ...(statusFilter ? { Status: statusFilter } : {}),
     ...((searchTerm && { FullName: searchTerm }) || {}),
   });
 
-  useEffect(() => {
-    if (technicians?.data?.items) {
-      setAllTechnicians(technicians.data.items);
-    }
-  }, []);
+  const { data: techsAvailableCount } = useGetNumberOfTechnician({
+    status: "Available",
+  });
+  const { data: techsBusyCount } = useGetNumberOfTechnician({ status: "Busy" });
+  const { data: techsOnleaveCount } = useGetNumberOfTechnician({
+    status: "OnLeave",
+  });
 
-  const { availableCount, busyCount, total } = useMemo(() => {
-    const techniciansList = allTechnicians || [];
-    const availableCount = techniciansList?.filter(
-      (t) => t.status === "Available"
-    ).length;
-
-    const busyCount = techniciansList?.filter(
-      (t) => t.status === "Busy"
-    ).length;
-
-    const total = techniciansList?.length;
-    return { availableCount, busyCount, total };
-  }, [allTechnicians]);
+  const { total } = useMemo(() => {
+    const total =
+      (techsAvailableCount?.data || 0) +
+      (techsBusyCount?.data || 0) +
+      (techsOnleaveCount?.data || 0);
+    return { total };
+  }, [techsAvailableCount?.data, techsBusyCount?.data]);
 
   return (
     <Container>
@@ -76,7 +67,7 @@ const Manage_Technicians = () => {
               <Award size={24} />
             </div>
             <div className="content">
-              <h3>{availableCount}</h3>
+              <h3>{techsAvailableCount?.data}</h3>
               <p>Available Now</p>
             </div>
           </StatCard>
@@ -85,8 +76,17 @@ const Manage_Technicians = () => {
               <Wrench size={24} />
             </div>
             <div className="content">
-              <h3>{busyCount}</h3>
+              <h3>{techsBusyCount?.data}</h3>
               <p>Currently Busy</p>
+            </div>
+          </StatCard>
+          <StatCard>
+            <div className="icon">
+              <Wrench size={24} />
+            </div>
+            <div className="content">
+              <h3>{techsOnleaveCount?.data}</h3>
+              <p>Onleave</p>
             </div>
           </StatCard>
         </StatsBar>
@@ -102,7 +102,6 @@ const Manage_Technicians = () => {
             onChange={(value) => setStatusFilter(String(value))}
             style={{ width: 200 }}
           >
-            <Option value="all">All Status</Option>
             <Option value="Available">Available</Option>
             <Option value="Busy">Busy</Option>
             <Option value="OnLeave">OnLeave</Option>

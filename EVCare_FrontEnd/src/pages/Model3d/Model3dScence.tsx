@@ -1,18 +1,13 @@
 import * as THREE from "three";
 import { Suspense, useRef } from "react";
-import { useGLTF, OrbitControls, Environment } from "@react-three/drei";
-import type { GLTF } from "three-stdlib";
+import { OrbitControls, Environment } from "@react-three/drei";
 import type {
   DataDto,
   PartCategoryViewModel,
   PartDamagedModel,
 } from "../../models/Model3d/Model3d";
 import { Canvas } from "@react-three/fiber";
-
-type GLTFResult = GLTF & {
-  nodes: Record<string, THREE.Mesh>;
-  materials: Record<string, THREE.MeshStandardMaterial>;
-};
+import ErrorPage from "../Staff/StaffComponents/Error";
 
 const DAMAGE_COLORS: Record<string, string> = {
   NotAssessed: "#FFFFFF",
@@ -24,6 +19,7 @@ const DAMAGE_COLORS: Record<string, string> = {
 
 interface ModelProps {
   data: DataDto<PartCategoryViewModel<PartDamagedModel>>;
+  nodes: Record<string, THREE.Mesh>;
   selectedPart: PartDamagedModel | null;
   onPartClick: (nodeName: string | null) => void;
   hiddenMeshes: string[];
@@ -31,12 +27,22 @@ interface ModelProps {
 
 export function Model3dScence({
   data,
+  nodes,
   selectedPart,
   onPartClick,
   hiddenMeshes,
 }: ModelProps) {
-  const { nodes } = useGLTF(data.vehicleModel3DUrl) as unknown as GLTFResult;
   const groupRef = useRef<THREE.Group>(null);
+
+  if (
+    typeof nodes === "string" ||
+    (nodes as any)?.includes?.("<!DOCTYPE") ||
+    nodes?.scene?.type === "Scene"
+      ? false
+      : (nodes as any)?.isHTMLElement
+  ) {
+    <ErrorPage />;
+  }
 
   // Tô màu theo damage level
   const damageMap = new Map<string, string>();

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Zap, ChevronRight, Box } from "lucide-react";
+import { Zap, ChevronRight, Box, AlertTriangle } from "lucide-react";
 import styled, { keyframes, css } from "styled-components";
 import type {
   PartDamagedModel,
@@ -9,17 +9,20 @@ import type {
 import { useAppDispatch } from "../../states/store";
 import BackButton from "../../components/Button/BackButton";
 import { closeModel3d } from "../../states/uiSlice";
+import { Tooltip } from "antd";
 
 interface PartsPanelProps {
   categories?: DataDto<PartCategoryViewModel<PartDamagedModel>>;
   onSelectPart: (nodeName: string | null) => void;
   selectedPart?: PartDamagedModel | null;
+  meshes: Set<string>;
 }
 
 export default function PartsPanel({
   categories,
   onSelectPart,
   selectedPart = null,
+  meshes,
 }: PartsPanelProps) {
   const dispatch = useAppDispatch();
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
@@ -76,22 +79,41 @@ export default function PartsPanel({
                 <PartsWrapper>
                   {cat?.damagedPartViewModels?.map((part, j) => {
                     const isSelected = selectedPart?.nodeName === part.nodeName;
+                    const isMissing = !meshes.has(part.nodeName);
                     return (
                       <PartItem
                         key={j}
                         $isSelected={isSelected}
+                        $isDisabled={isMissing}
                         $delay={j * 0.05}
-                        onClick={() =>
-                          onSelectPart(isSelected ? null : part.nodeName)
-                        }
+                        onClick={(e) => {
+                          if (isMissing) {
+                            e.stopPropagation();
+                          } else {
+                            onSelectPart(isSelected ? null : part.nodeName);
+                          }
+                        }}
                       >
                         <PartItemContent>
                           <StatusDot $isSelected={isSelected} />
                           <PartContent>
-                            <PartName $isSelected={isSelected}>
-                              {part.partName}
-                            </PartName>
-                            <DamageLevel>{part.damageLevel}</DamageLevel>
+                            <PartNameContainer>
+                              <PartName $isSelected={isSelected}>
+                                {part.partName}
+                              </PartName>
+                              {isMissing && (
+                                <Tooltip
+                                  title="This part is not in 3D Model"
+                                  placement="top"
+                                  color="#00AD4E"
+                                >
+                                  <AlertTriangle color="#FFCC00" size={20} />
+                                </Tooltip>
+                              )}
+                            </PartNameContainer>
+                            {!isMissing && (
+                              <DamageLevel>{part.damageLevel}</DamageLevel>
+                            )}
                           </PartContent>
                         </PartItemContent>
                       </PartItem>
@@ -288,7 +310,11 @@ const PartsWrapper = styled.div`
   gap: 0.375rem;
 `;
 
-const PartItem = styled.div<{ $isSelected: boolean; $delay: number }>`
+const PartItem = styled.div<{
+  $isSelected: boolean;
+  $delay: number;
+  $isDisabled: boolean;
+}>`
   cursor: pointer;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
@@ -318,6 +344,13 @@ const PartItem = styled.div<{ $isSelected: boolean; $delay: number }>`
             background: rgba(30, 41, 59, 0.45);
           }
         `}
+  ${(props) =>
+    props.$isDisabled &&
+    css`
+      cursor: not-allowed;
+      opacity: 0.5;
+      filter: grayscale(0.5);
+    `}
 `;
 
 const PartItemContent = styled.div`
@@ -345,6 +378,16 @@ const PartContent = styled.div`
   flex: 1;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  min-width: 0;
+  gap: 0.5rem;
+`;
+
+const PartNameContainer = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
   min-width: 0;
 `;
 

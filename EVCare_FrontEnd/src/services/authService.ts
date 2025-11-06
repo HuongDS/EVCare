@@ -6,7 +6,6 @@ import type {
   RegisterRequestDto,
   ResetPasswordRequestDto,
   ResponseDto,
-  VerifyOTPDto,
   VerifyOtpSignUp,
 } from "../models/AuthModel/authModel";
 import { clearToken, setTokens } from "../token/tokenStore";

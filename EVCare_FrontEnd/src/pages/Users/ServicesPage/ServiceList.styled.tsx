@@ -46,7 +46,7 @@ export const MainTitle = styled.h1`
   }
 `;
 
-export const BookButton = styled(Button)`
+export const BookButton = styled(Button as any)`
   background: linear-gradient(135deg, #00c656 0%, ${EVCareGreen} 100%);
   color: #fff;
   border: none;
