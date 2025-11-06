@@ -26,7 +26,7 @@ namespace Application.Services
         {
             var secretKey = _configuration["Jwt:Key"];
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256); // sign's information
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256); 
 
             var claims = new[]
             {
