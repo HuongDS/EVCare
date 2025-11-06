@@ -107,5 +107,67 @@ namespace Application.Tests {
 
         }
 
+        [Fact]
+        public async Task CreatePayOSUrl_WithExistInvoice_ThrowsException() {
+            var invoiceRepositoryMock = _fixture.Freeze<Mock<IInvoiceRepository>>();
+            invoiceRepositoryMock.Setup(i => i.GetInvoiceByOrderId(It.IsAny<int>()))
+                .ReturnsAsync(new Invoice
+                {
+                    OrderId = 1,
+                });
+            var invoiceService = _fixture.Create<Application.Services.InvoiceService>();
+            var model = new InvoiceCreateModel
+            {
+                OrderId = 1,
+                Payment_Method = DataAccess.Enums.PaymentMethodEnum.PayOs
+            };
+          var result =  await Assert.ThrowsAsync<Exception>(async () =>
+            {
+                await invoiceService.CreatePayOSUrl(model);
+            });
+            Assert.Equal("Order has existed", result.Message);
+
+        }
+
+        [Fact]
+        public async Task CreatePayOSUrl_WithValidData_ReturnsURL() {
+            var invoiceRepositoryMock = _fixture.Freeze<Mock<IInvoiceRepository>>();
+            invoiceRepositoryMock.Setup(i => i.GetInvoiceByOrderId(It.IsAny<int>()))
+                .ReturnsAsync((Invoice?)null);
+            var mapperMock = _fixture.Freeze<Mock<AutoMapper.IMapper>>();
+            mapperMock.Setup(m => m.Map<DataAccess.Entities.Invoice>(It.IsAny<InvoiceCreateModel>()))
+                .Returns(new Invoice
+                {
+                    Id = 1000,
+                    CustomerId = 5,
+                    OrderId = 1,
+                    Total_Price = 100,
+                    Create_At = DateTime.Now,
+                    Updated_At = DateTime.Now
+                });
+            var orderRepositoryMock = _fixture.Freeze<Mock<IOrderRepository>>();
+            orderRepositoryMock.Setup(o => o.GetCustomerIdByOrderId(It.IsAny<int>()))
+                .ReturnsAsync(5);
+            orderRepositoryMock.Setup(o => o.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Order
+                {
+                    Id = 1,
+                });
+            var payOsServiceMock = _fixture.Freeze<Mock<Application.Interfaces.IPayOSService>>();
+            payOsServiceMock.Setup(p => p.CreateCheckoutUrlAsync(It.IsAny<InvoiceCreateModel>()))
+                .ReturnsAsync(("https://payos.vn/pay/abcdefg123456",123));
+            var invoiceRepoMock = _fixture.Freeze<Mock<IInvoiceRepository>>();
+            invoiceRepoMock.Setup(i => i.AddAsync(It.IsAny<Invoice>()))
+                .ReturnsAsync(1000);
+            var invoiceService = _fixture.Create<Application.Services.InvoiceService>();
+            var result = await invoiceService.CreatePayOSUrl( new InvoiceCreateModel
+            {
+                OrderId = 1,
+                Payment_Method = DataAccess.Enums.PaymentMethodEnum.PayOs
+            });
+            Assert.NotNull(result);
+            Assert.Contains("https://payos.vn/pay/", result);
+        }
+
     }
 }
