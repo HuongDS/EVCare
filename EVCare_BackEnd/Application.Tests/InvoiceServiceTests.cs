@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using API.Hubs;
+using Application.DomainEvents;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
@@ -61,23 +62,50 @@ namespace Application.Tests {
                     return x.Id;
                 });
 
-            var onInvoiceCompleteHandlerMock = new Mock<Application.DomainEvents.OnInvoiceCompleteHandler>(
-                   MockBehavior.Loose,
-                    null, null, null
-                );
-            onInvoiceCompleteHandlerMock.Setup(h=>h.HandleAsync())
-                .Returns(Task.CompletedTask);
-            _fixture.Inject(onInvoiceCompleteHandlerMock.Object);
+            
+            var handlerMock = _fixture.Freeze<Mock<OnInvoiceCompleteHandler>>();
+            handlerMock.Setup(h => h.HandleAsync()).Returns(Task.CompletedTask);
+            _fixture.Inject(handlerMock.Object);    
             var invoiceService = _fixture.Create<Application.Services.InvoiceService>();
             var defaultContext = new Microsoft.AspNetCore.Http.DefaultHttpContext();
             var result =  await invoiceService.CreateInvoice(_fixture.Create<InvoiceCreateModel>());
             Assert.NotNull(result);
-            Assert.Equal(1000,result);
+            Assert.Equal(1000, result);
+        }
+
+        [Fact]
+        public async Task CreatePaymentUrl_WithValidData_ReturnsURL() {
+            var orderRepositoryMock = _fixture.Freeze<Mock<IOrderRepository>>();
+
+            orderRepositoryMock.Setup(o => o.GetCustomerIdByOrderId(It.IsAny<int>()))
+                .ReturnsAsync(5);
+            var mapperMock = _fixture.Freeze<Mock<AutoMapper.IMapper>>();
+            mapperMock.Setup(m => m.Map<DataAccess.Entities.Invoice>(It.IsAny<InvoiceCreateModel>()))
+                .Returns(new Invoice
+                {
+                    Id = 1000,
+                    CustomerId = 5,
+                    OrderId = 1,
+                    Total_Price = 100,
+
+                    Create_At = DateTime.Now,
+                    Updated_At = DateTime.Now
+                });
+             var redisServiceMock = _fixture.Freeze<Mock<Application.Interfaces.IRedisService>>();
+            redisServiceMock.Setup(r => r.SaveDate(It.IsAny<Invoice>(), It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+            var vnpayServiceMock = _fixture.Freeze<Mock<Application.Interfaces.IVnPayService>>();
+            var defaultContext = new Microsoft.AspNetCore.Http.DefaultHttpContext();
+            vnpayServiceMock
+                .Setup(v => v.CreatePaymentUrl(defaultContext,It.IsAny<InvoiceCreateModel>(),It.IsAny<long>()))
+                .Returns("https://pay.vnpay.vn/123456789");
+            var invoiceService = _fixture.Create<Application.Services.InvoiceService>();
+            var result = await invoiceService.CreatePaymentUrl(defaultContext, _fixture.Create<InvoiceCreateModel>());
+            Assert.NotNull(result);
+            Assert.Equal("https://pay.vnpay.vn/123456789", result);
 
 
         }
-
-
 
     }
 }
