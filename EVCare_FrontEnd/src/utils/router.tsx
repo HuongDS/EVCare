@@ -72,7 +72,7 @@ const Manage_Customer = lazy(
   () => import("../pages/Staff/StaffManageCustomer/Manage_Customer")
 );
 const Staff_Appoinments = lazy(
-  () => import("../pages/Staff/StaffManageAppointment/Staff_Appoinments")
+  () => import("../pages/Staff/StaffManageAppointment/Staff_Appointments")
 );
 const AdminServiceCenter = lazy(
   () => import("../pages/Admin/AdminServiceCenter/AdminServiceCenter")
