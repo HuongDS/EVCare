@@ -3,7 +3,7 @@
 // import OrderHistorySort from "../pages/Customer/CustomerComponent/OrderHistorySort";
 // import OrderHistoryCard from "../pages/Customer/OrderHistory/Orders/OrderHistoryCard";
 
-import StockPredictionTable from "../pages/Staff/StaffManageInventory/AIPrediction";
+// import StockPredictionTable from "../pages/Staff/StaffManageInventory/AIPrediction";
 // import StockPredictionDashboard from "../pages/Staff/StaffManageInventory/AIPrediction";
 
 // import OTPForm from "../pages/Auth/sections/OTPForm";
