@@ -7,6 +7,7 @@ using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Service;
 using DataAccess.Dtos.Technician;
 using DataAccess.Entities;
+using DataAccess.Enums;
 using DataAccess.Helpers;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -77,6 +78,7 @@ namespace DataAccess.Repositories
                     Id = x.Id,
                     FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
                     ExpYears = x.ExpYear,
+                    Email = x.Employee.Account.Email,
                     Phone = x.Employee.Account.Phone,
                     Skills = x.TechnicianSkills.Select(x => new Dtos.Service.ServiceViewFormModel
                     {
@@ -111,6 +113,19 @@ namespace DataAccess.Repositories
                 })
                 .ToListAsync();
             return data;
+        }
+
+        public Task<int> GetTechnicianStatus(EmployeeStatusEnum? status) {
+            var query = _dbContext.Technicians
+                .Include(x => x.Employee)
+                .AsNoTracking()
+                .Where(x => x.Employee.Account.Deleted_At == DateTime.MinValue);
+            if (status.HasValue) {
+
+                query = query.Where(x => x.Employee.Status == status.Value);
+              
+            }
+            return query.CountAsync();
         }
     }
 }

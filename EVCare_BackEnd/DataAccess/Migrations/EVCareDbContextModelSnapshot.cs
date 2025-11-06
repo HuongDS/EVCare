@@ -1394,13 +1394,16 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal?>("ScaleX")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 7)
+                        .HasColumnType("decimal(18,7)");
 
                     b.Property<decimal?>("ScaleY")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 7)
+                        .HasColumnType("decimal(18,7)");
 
                     b.Property<decimal?>("ScaleZ")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 7)
+                        .HasColumnType("decimal(18,7)");
 
                     b.HasKey("Id");
 

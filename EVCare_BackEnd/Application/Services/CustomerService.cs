@@ -24,6 +24,10 @@ namespace Application.Services
             return await _customerRepository.GetAllCustomers(model);
         }
 
+        public async Task<int> GetBannedCustomers() {
+            return await _customerRepository.GetBannedCustomers();
+        }
+
         public async Task<CustomerViewDto> GetCustomerByAccountId(int accountId)
         {
             try

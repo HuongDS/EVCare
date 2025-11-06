@@ -4,6 +4,7 @@ using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Technician;
+using DataAccess.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,19 +13,15 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TechnicianController : ControllerBase
-    {
+    public class TechnicianController : ControllerBase {
         private readonly ITechnicianService _technicianService;
-        public TechnicianController(ITechnicianService technicianService)
-        {
+        public TechnicianController(ITechnicianService technicianService) {
             _technicianService = technicianService;
         }
         [HttpGet("get-technician-today")]
         [Authorize(Roles = "Staff")]
-        public async Task<IActionResult> GetTechnicianToday([FromQuery] TechnicianQueryDto model)
-        {
-            try
-            {
+        public async Task<IActionResult> GetTechnicianToday([FromQuery] TechnicianQueryDto model) {
+            try {
                 var data = await _technicianService.GetTechnicianToday(model);
                 return Ok(new ResponseDto<PageResultDto<TechnicianViewModel>>
                 {
@@ -34,8 +31,7 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 {
                     return BadRequest(new ResponseDto<object>
                     {
@@ -52,10 +48,8 @@ namespace API.Controllers
         [HttpGet("detail/{technicianId}")]
         [Authorize(Roles = "Staff,Admin,Technician")]
         //[ServiceFilter(typeof(AuthorizeTechnicianDetail))]
-        public async Task<IActionResult> GetTechnicianDeatil(int technicianId)
-        {
-            try
-            {
+        public async Task<IActionResult> GetTechnicianDeatil(int technicianId) {
+            try {
                 var data = await _technicianService.GetTechnicianDetail(technicianId);
                 return Ok(new ResponseDto<TechnicianViewModel>
                 {
@@ -66,8 +60,7 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -79,10 +72,8 @@ namespace API.Controllers
 
         [HttpGet("technicians-by-orderId/{orderId}")]
         [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> GetTechniciansByOrderId(int orderId)
-        {
-            try
-            {
+        public async Task<IActionResult> GetTechniciansByOrderId(int orderId) {
+            try {
                 var data = await _technicianService.GetTechniciansByOrderId(orderId);
                 return Ok(new ResponseDto<IEnumerable<TechnicianCusViewModel>>
                 {
@@ -91,8 +82,28 @@ namespace API.Controllers
                     message = Message.GET_TECHNICIAN_SUCCESSFULLY
                 });
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                });
+            }
+        }
+
+        [HttpGet("status")]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> GetTechnicianStatus(EmployeeStatusEnum? status) {
+            try {
+                var data = await _technicianService.GetTechnicianStatus(status);
+                return Ok(new ResponseDto<int>
+                {
+                    data = data,
+                    statusCode = HttpStatus.OK,
+                    message = Message.GET_TECHNICIAN_SUCCESSFULLY
+                });
+            }
+            catch (Exception ex) {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
