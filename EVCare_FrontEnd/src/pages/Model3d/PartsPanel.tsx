@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Zap, ChevronRight, Box, AlertTriangle } from "lucide-react";
 import styled, { keyframes, css } from "styled-components";
 import type {
@@ -10,24 +10,42 @@ import { useAppDispatch } from "../../states/store";
 import BackButton from "../../components/Button/BackButton";
 import { closeModel3d } from "../../states/uiSlice";
 import { Tooltip } from "antd";
+import * as THREE from "three";
+import { useGLTF } from "@react-three/drei";
+import type { GLTF } from "three-stdlib";
+
+type GLTFResult = GLTF & {
+  nodes: Record<string, THREE.Mesh>;
+  materials: Record<string, THREE.Material>;
+};
 
 interface PartsPanelProps {
-  categories?: DataDto<PartCategoryViewModel<PartDamagedModel>>;
+  data: DataDto<PartCategoryViewModel<PartDamagedModel>>;
   onSelectPart: (nodeName: string | null) => void;
   selectedPart?: PartDamagedModel | null;
-  meshes: Set<string>;
 }
 
 export default function PartsPanel({
-  categories,
+  data,
   onSelectPart,
   selectedPart = null,
-  meshes,
 }: PartsPanelProps) {
   const dispatch = useAppDispatch();
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
-    new Set(categories?.partCategoryAppointmentViewModels.map((_, i) => i))
+    new Set(data?.partCategoryAppointmentViewModels.map((_, i) => i))
   );
+
+  const { nodes } = useGLTF(data?.vehicleModel3DUrl) as unknown as GLTFResult;
+
+  const meshes = useMemo(() => {
+    const names = new Set<string>();
+    Object.keys(nodes).forEach((nodeName) => {
+      if (nodes[nodeName].isMesh) {
+        names.add(nodeName);
+      }
+    });
+    return names;
+  }, [nodes]);
 
   const toggleCategory = (index: number) => {
     const newExpanded = new Set(expandedCategories);
@@ -40,7 +58,7 @@ export default function PartsPanel({
   };
 
   const totalParts =
-    categories?.partCategoryAppointmentViewModels?.reduce((sum, cat) => {
+    data?.partCategoryAppointmentViewModels?.reduce((sum, cat) => {
       const parts = cat?.damagedPartViewModels ?? [];
       return sum + parts.length;
     }, 0) ?? 0;
@@ -62,7 +80,7 @@ export default function PartsPanel({
         </Header>
 
         <CategoriesWrapper>
-          {categories?.partCategoryAppointmentViewModels?.map((cat, i) => (
+          {data?.partCategoryAppointmentViewModels?.map((cat, i) => (
             <div key={i}>
               <CategoryButton onClick={() => toggleCategory(i)}>
                 <CategoryButtonLeft>
