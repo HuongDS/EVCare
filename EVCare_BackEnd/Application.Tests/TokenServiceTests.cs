@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
+using DataAccess.Entities;
 using Microsoft.Extensions.Configuration;
 using Moq;
 
@@ -44,5 +45,40 @@ namespace Application.Tests {
             Assert.Contains(jwt.Claims, c => c.Type == ClaimTypes.Role && c.Value == account.Role.ToString());
 
         }
-      }
+        [Fact]
+        public void GenerateRefreshToken_ShouldReturnBase64String_AndBe64Bytes() {
+            var configMock = _fixture.Freeze<Mock<IConfiguration>>();
+            configMock.Setup(c => c["Jwt:Key"]).Returns("ThisisASecretKeyForJwtTokenGeneration123");
+            configMock.Setup(c => c["Jwt:Issuer"]).Returns("TestIssuer");
+            configMock.Setup(c => c["Jwt:Audience"]).Returns("TestAudience");
+            configMock.Setup(c => c["Jwt:AccessTokenMinutes"]).Returns("30");
+            var tokenService = _fixture.Create<Application.Services.TokenServices>();
+           
+            var token1 = tokenService.GenerateRefreshToken();
+            var token2 = tokenService.GenerateRefreshToken();
+
+            Assert.False(string.IsNullOrWhiteSpace(token1));
+            Assert.False(string.IsNullOrWhiteSpace(token2));
+
+            var bytes1 = Convert.FromBase64String(token1);
+            var bytes2 = Convert.FromBase64String(token2);
+            Assert.Equal(64, bytes1.Length); 
+            Assert.Equal(64, bytes2.Length);
+            Assert.NotEqual(token1, token2);
+        }
+        [Fact]
+        public void HashToken_ShouldBeDeterministic_AndSHA256Base64() {
+            var configMock = _fixture.Freeze<Mock<IConfiguration>>();
+            configMock.Setup(c => c["Jwt:Key"]).Returns("ThisisASecretKeyForJwtTokenGeneration123");
+            configMock.Setup(c => c["Jwt:Secret"]).Returns("ThisisASecretKeyForJwtTokenGeneration123");
+            var tokenService = _fixture.Create<Application.Services.TokenServices>();
+            var raw = "hello-world";
+            var h1 = tokenService.HashToken(raw);
+            var h2 = tokenService.HashToken(raw);
+            Assert.False(string.IsNullOrWhiteSpace(h1));
+            Assert.Equal(h1, h2);
+            var hashBytes = Convert.FromBase64String(h1);
+            Assert.Equal(32, hashBytes.Length);
+        }
     }
+  }
