@@ -1,9 +1,18 @@
 import styled from "styled-components";
 
-const ColorSpinner = () => {
+interface props {
+  width?: string;
+  height?: string;
+}
+const ColorSpinner = ({ width, height }: props) => {
   return (
     <StyledWrapper>
-      <svg viewBox="0 0 240 240" height={240} width={240} className="pl">
+      <svg
+        viewBox="0 0 240 240"
+        height={150}
+        width={150}
+        style={{ width: width, height: height }}
+      >
         <circle
           strokeLinecap="round"
           strokeDashoffset={-330}
@@ -57,8 +66,8 @@ const ColorSpinner = () => {
 
 const StyledWrapper = styled.div`
   .pl {
-    width: 6em;
-    height: 6em;
+    width: 2em;
+    height: 2em;
   }
 
   .pl__ring {
