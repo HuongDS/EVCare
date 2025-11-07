@@ -6,7 +6,7 @@ import {
 } from "../../../components/ProgressStep/ProgressStep";
 import Appointment_CheckIn from "./Appointment_CheckIn";
 import styled from "styled-components";
-import AssignTechnicianPage from "./Appointment_Assign";
+import Appointment_Assign from "./Appointment_Assign";
 import Appointment_Part_Tracking from "./Appointment_Part_Tracking";
 import PaymentPage from "./Appointment_Payment";
 import { InvoicePage } from "./Appointment_Invoice";
@@ -64,7 +64,7 @@ export default function Appoinment_Progress_Modal({
                 alignItems: "center",
               }}
             >
-              <ColorSpinner />
+              <ColorSpinner width="6em" height="6em" />
             </ModalBodyStyled>
           </ProgressSteps>
         </ModalBodyStyled>
@@ -88,7 +88,7 @@ export default function Appoinment_Progress_Modal({
       case 0:
         return <Appointment_CheckIn data={data} close={close} />;
       case 1:
-        return <AssignTechnicianPage data={data} />;
+        return <Appointment_Assign data={data} />;
       case 2:
         return <WaitingAddingPart data={data} />;
       case 3:

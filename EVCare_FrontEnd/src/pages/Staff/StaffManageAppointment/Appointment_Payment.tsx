@@ -28,6 +28,8 @@ import {
   SUCCESS_MESSAGE,
 } from "../../../constants/messages/Message";
 import { useNotification } from "../../../context/useNotification";
+import ColorSpinner from "../StaffComponents/ColorSpinner";
+import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
 
 interface PaymentPageProps {
   data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
@@ -227,7 +229,11 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
 
             {paymentMethod === "PayOs" && (
               <QRSection>
-                {isPending ? <SpinnerComponent /> : <iframe src={qrcode} />}
+                {isPending ? (
+                  <ColorSpinner width="6em" height="6em" />
+                ) : (
+                  <iframe src={qrcode} />
+                )}
                 <QRInfo>
                   <p>Scan QR code to complete payment</p>
                   <AmountTag>
@@ -263,7 +269,16 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
             onClick={handlePayment}
             disabled={!paymentMethod}
           >
-            Confirm Payment
+            {isPending ? (
+              <div style={{ textAlign: "center" }}>
+                <TextWaitingEffect
+                  text="Waiting for processing"
+                  fontSize="20px"
+                />
+              </div>
+            ) : (
+              <text>Confirm Payment</text>
+            )}
           </ConfirmButton>
         </Footer>
       </ContentWrapper>
