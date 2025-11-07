@@ -131,5 +131,23 @@ namespace Application.Tests {
             Assert.Null(jwt.Issuer);
             Assert.Empty(jwt.Audiences);
         }
-    }
+
+        [Fact]
+        public void Validate_ShouldReturnCorrectValues_ForValidToken() {
+            var configMock = _fixture.Freeze<Mock<IConfiguration>>();
+            configMock.Setup(c => c["ActionToken:Secret"]).Returns("SuperSecretKey_123456789_forUnitTest!!");
+            var tokenService = _fixture.Create<Application.Services.TokenServices>();
+            int customerId = 20;
+            int appointmentId = 99;
+            string action = "CONFIRM";
+            TimeSpan ttl = TimeSpan.FromMinutes(15);
+            var token = tokenService.Issue(customerId, appointmentId, action, ttl);
+            var (isValid, cid, aid, act, err) = tokenService.Validate(token);
+            Assert.True(isValid);
+            Assert.Equal(customerId, cid);
+            Assert.Equal(appointmentId, aid);
+            Assert.Equal(action, act);
+           ;
+        }
+       }
   }
