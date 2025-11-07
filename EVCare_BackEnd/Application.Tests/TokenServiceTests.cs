@@ -95,5 +95,41 @@ namespace Application.Tests {
            
             Assert.Equal(before.Date, dt.Date);
         }
+        [Fact]
+        public void Issue_ShouldGenerateValidJwt_WithCorrectClaimsAndExpiry() {
+            var configMock = _fixture.Freeze<Mock<IConfiguration>>();
+            configMock.Setup(c => c["ActionToken:Secret"]).Returns("SuperSecretKey_123456789_forUnitTest!!");
+
+            var tokenService = _fixture.Create<Application.Services.TokenServices>();
+
+            int customerId = 10;
+            int appointmentId = 88;
+            string action = "BOOKING";
+            TimeSpan ttl = TimeSpan.FromMinutes(30);
+
+          
+            var token = tokenService.Issue(customerId, appointmentId, action, ttl);
+
+          
+            Assert.False(string.IsNullOrWhiteSpace(token));
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+
+           
+            Assert.Equal(customerId.ToString(), jwt.Claims.First(c => c.Type == "cid").Value);
+            Assert.Equal(appointmentId.ToString(), jwt.Claims.First(c => c.Type == "aid").Value);
+            Assert.Equal(action, jwt.Claims.First(c => c.Type == "act").Value);
+
+          
+            var jti = jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.Jti).Value;
+            Assert.False(string.IsNullOrWhiteSpace(jti));
+            var expires = jwt.ValidTo;
+            var expected = DateTime.UtcNow.Add(ttl);
+            Assert.True((expires - expected).TotalSeconds < 3, "Expiry should match TTL within tolerance");
+
+            Assert.Null(jwt.Issuer);
+            Assert.Empty(jwt.Audiences);
+        }
     }
   }
