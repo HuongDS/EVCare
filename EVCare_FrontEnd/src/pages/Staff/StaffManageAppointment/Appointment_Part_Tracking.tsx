@@ -27,7 +27,6 @@ import {
   useChangeAppointmentStatus,
   useGetAllAppointments,
 } from "../../../services/appointmentServiceApi";
-import SpinnerComponent from "../../../components/SpinnerComponent";
 import { useNotification } from "../../../context/useNotification";
 import {
   MSG_TITLE,
@@ -36,6 +35,7 @@ import {
 import { closeModel3d, openModel3d } from "../../../states/uiSlice";
 import ShowButton from "../../../components/Button/ShowButton";
 import { useLocation } from "react-router";
+import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
 
 interface Props {
   data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
@@ -138,9 +138,11 @@ export default function Appointment_Part_Tracking({
   };
 
   //Khi nhấn confirm thì gọi hàm này
-  const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
+  const { mutateAsync: updateOrderStatus, isPending: statusPending } =
+    useUpdateOrderStatus();
 
-  const { mutateAsync: updateOrder, isPending } = useStaffUpdateOrder();
+  const { mutateAsync: updateOrder, isPending: orderPending } =
+    useStaffUpdateOrder();
   const queryClient = useQueryClient();
 
   const handleConfirmOrder = async () => {
@@ -365,17 +367,22 @@ export default function Appointment_Part_Tracking({
             <span>{calculateTotal().toLocaleString()}₫</span>
           </TotalRow>
           <ActionButton>
-            <ConfirmButton onClick={() => setConfirmCancel(true)}>
-              <SquareX size={20} />
-              Cancel
-            </ConfirmButton>
-            {isPending ? (
-              <SpinnerComponent />
+            {orderPending || statusPending ? (
+              <TextWaitingEffect
+                text="Waiting for processing"
+                fontSize="20px"
+              />
             ) : (
-              <ConfirmButton onClick={handleConfirmOrder}>
-                <CheckCircle size={20} />
-                Confirm Order
-              </ConfirmButton>
+              <>
+                <ConfirmButton onClick={() => setConfirmCancel(true)}>
+                  <SquareX size={20} />
+                  Cancel
+                </ConfirmButton>
+                <ConfirmButton onClick={handleConfirmOrder}>
+                  <CheckCircle size={20} />
+                  Confirm Order
+                </ConfirmButton>
+              </>
             )}
           </ActionButton>
         </Card>

@@ -32,6 +32,7 @@ import { useGetCustomerID } from "../../../services/customerServices";
 import { useCreateNewOrder } from "../../../services/orderServiceApi";
 import type { Dayjs } from "dayjs";
 import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
+import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
 
 interface Props {
   onBack: () => void;
@@ -80,9 +81,14 @@ export default function CreateAppointmentPage({ onBack }: Props) {
   );
 
   //gọi api create appointment
-  const { mutateAsync: staffCreateAppointment } = useStaffCreateAppointment();
-  const { mutateAsync: createOrder } = useCreateNewOrder();
-  const { mutateAsync: uploadImages } = useUploadAppointmentImage();
+  const {
+    mutateAsync: staffCreateAppointment,
+    isPending: appointmentCreating,
+  } = useStaffCreateAppointment();
+  const { mutateAsync: createOrder, isPending: orderCreating } =
+    useCreateNewOrder();
+  const { mutateAsync: uploadImages, isPending: uploading } =
+    useUploadAppointmentImage();
 
   const handleSubmit = async () => {
     if (
@@ -370,13 +376,20 @@ export default function CreateAppointmentPage({ onBack }: Props) {
                   </FormItem>
                 </FormSection>
 
-                <ActionButtons>
-                  <CancelButton onClick={onBack}>Cancel</CancelButton>
-                  <SubmitButton onClick={handleSubmit}>
-                    <CheckCircle size={20} />
-                    Create Appointment
-                  </SubmitButton>
-                </ActionButtons>
+                {appointmentCreating || orderCreating || uploading ? (
+                  <TextWaitingEffect
+                    text="Waiting for processing"
+                    fontSize="20px"
+                  />
+                ) : (
+                  <ActionButtons>
+                    <CancelButton onClick={onBack}>Cancel</CancelButton>
+                    <SubmitButton onClick={handleSubmit}>
+                      <CheckCircle size={20} />
+                      Create Appointment
+                    </SubmitButton>
+                  </ActionButtons>
+                )}
               </>
             )}
           </Card>

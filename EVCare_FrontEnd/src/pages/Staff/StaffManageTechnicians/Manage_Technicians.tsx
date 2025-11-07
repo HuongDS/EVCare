@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import styled from "styled-components";
-import { Select, Badge, Avatar, Card, Typography } from "antd";
+import { Select, Badge, Avatar, Typography } from "antd";
 import { Phone, Award, Wrench, User } from "lucide-react";
 import { useGetTechniciansToday } from "../../../services/appointmentServiceApi";
 import SearchBar from "../../../components/SearchBar/Search";
