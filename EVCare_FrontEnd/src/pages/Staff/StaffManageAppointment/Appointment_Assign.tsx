@@ -12,8 +12,8 @@ import {
 import { handleError } from "../../../utils/errorHandler";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
-import SpinnerComponent from "../../../components/SpinnerComponent";
 import { useQueryClient } from "@tanstack/react-query";
+import ColorSpinner from "../StaffComponents/ColorSpinner";
 
 interface AssignedTechnician {
   technicianID: number;
@@ -24,7 +24,7 @@ interface AssignedTechnician {
 interface props {
   data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
 }
-const AssignTechnicianPage = ({ data }: props) => {
+export default function Appointment_Assign({ data }: props) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTechnicians, setSelectedTechnicians] = useState<
     AssignedTechnician[]
@@ -34,7 +34,7 @@ const AssignTechnicianPage = ({ data }: props) => {
   const [modalMessage, setModalMessage] = useState("");
   const queryClient = useQueryClient();
 
-  const allSkills = data.services.map((service) => service.id).flat();
+  const allSkills = data.services.map((service) => service.id);
 
   const { data: technicians } = useGetTechniciansToday({
     Skills: allSkills,
@@ -43,7 +43,7 @@ const AssignTechnicianPage = ({ data }: props) => {
 
   //search technician hiện có
   const filteredTechnicians =
-    technicians?.data?.items?.flat().filter((tech) => {
+    technicians?.data?.items?.filter((tech) => {
       const nameMatch = tech.fullName
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
@@ -132,20 +132,23 @@ const AssignTechnicianPage = ({ data }: props) => {
             gap: "5px",
           }}
         >
-          <Card>
+          <Card data-testid="assigned-technicians-list">
             <SectionHeader>
               <h2>Assigned Technicians ({selectedTechnicians.length})</h2>
               {selectedTechnicians.length > 0 && (
                 <ButtonGroup>
-                  <ClearButton onClick={() => setSelectedTechnicians([])}>
+                  <ClearButton
+                    onClick={() => setSelectedTechnicians([])}
+                    disabled={isPending}
+                  >
                     Clear All
                   </ClearButton>
                   {isPending ? (
-                    <SpinnerComponent />
+                    <ColorSpinner width="3em" height="3em" />
                   ) : (
                     <SubmitButton onClick={handleAssignTechnician}>
                       <CheckCircle size={20} />
-                      Assign Technicians
+                      Assign
                     </SubmitButton>
                   )}
                 </ButtonGroup>
@@ -185,7 +188,7 @@ const AssignTechnicianPage = ({ data }: props) => {
             ) : (
               <ServiceGrid>
                 {data.services.map((service) => (
-                  <ServiceTag>{service.name}</ServiceTag>
+                  <ServiceTag key={service.id}>{service.name}</ServiceTag>
                 ))}
               </ServiceGrid>
             )}
@@ -205,12 +208,13 @@ const AssignTechnicianPage = ({ data }: props) => {
             </SearchInput>
           </SearchWrapper>
 
-          <SearchResultsContainer>
+          <SearchResultsContainer data-testid="search-results-container">
             <TechnicianGrid>
               {filteredTechnicians.map((technician) => (
                 <TechnicianCard
                   key={technician.id}
                   technician={technician}
+                  data-testid={`technician-card-${technician.id}`}
                   onAdd={() => handleAddTechnician(technician)}
                 />
               ))}
@@ -241,7 +245,7 @@ const AssignTechnicianPage = ({ data }: props) => {
       )}
     </PageContainer>
   );
-};
+}
 
 interface TechnicianCardProps {
   technician: TechnicianModel<TechnicianSkills>;
@@ -255,11 +259,12 @@ const TechnicianCard = ({
   onAdd,
   onRemove,
   isSelected = false,
+  ...rest
 }: TechnicianCardProps) => {
   return (
-    <TechnicianCardWrapper $isSelected={isSelected}>
+    <TechnicianCardWrapper $isSelected={isSelected} {...rest}>
       {isSelected && onRemove && (
-        <RemoveButton onClick={onRemove}>
+        <RemoveButton onClick={onRemove} data-testid="remove-button">
           <CircleX />
         </RemoveButton>
       )}
@@ -283,7 +288,7 @@ const TechnicianCard = ({
       <InfoSection>
         {technician.phone && (
           <InfoItem>
-            <Phone size={14} /> {technician.phone ?? "default"}
+            <Phone size={14} /> {technician.phone}
           </InfoItem>
         )}
       </InfoSection>
@@ -294,9 +299,6 @@ const TechnicianCard = ({
           {technician.skills.map((skill) => (
             <SkillTag key={skill.id}>{skill.name}</SkillTag>
           ))}
-          {technician.skills.length > 2 && (
-            <SkillTag $isMore>+{technician.skills.length - 3} more</SkillTag>
-          )}
         </SkillTags>
       </SkillsSection>
 
@@ -312,8 +314,6 @@ const TechnicianCard = ({
     </TechnicianCardWrapper>
   );
 };
-
-export default AssignTechnicianPage;
 
 const PageContainer = styled.div`
   min-height: 100vh;

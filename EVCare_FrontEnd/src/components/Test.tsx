@@ -3,6 +3,9 @@
 // import OrderHistorySort from "../pages/Customer/CustomerComponent/OrderHistorySort";
 // import OrderHistoryCard from "../pages/Customer/OrderHistory/Orders/OrderHistoryCard";
 
+import ColorSpinner from "../pages/Staff/StaffComponents/ColorSpinner";
+import TextWaitingEffect from "../pages/Staff/StaffComponents/TextWaitingEffect";
+
 // import StockPredictionTable from "../pages/Staff/StaffManageInventory/AIPrediction";
 // import StockPredictionDashboard from "../pages/Staff/StaffManageInventory/AIPrediction";
 
@@ -56,6 +59,8 @@ export default function Test() {
       <Skeleton /> */}
       {/* <BackButton /> */}
       {/* <StockPredictionTable onPageChange={() => 1} /> */}
+      <ColorSpinner width="3em" height="3em" />
+      <TextWaitingEffect text="Waiting for processing" fontSize="20px" />
     </>
   );
 }

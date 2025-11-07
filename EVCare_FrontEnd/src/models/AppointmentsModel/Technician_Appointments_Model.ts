@@ -37,6 +37,7 @@ export type TechnicianAppointmentsDto = {
 export type TechnicianModel<T> = {
   id: number;
   fullName: string;
+  email: string;
   phone: string;
   expYears: number;
   status: string;

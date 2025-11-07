@@ -134,7 +134,7 @@ export default function StockPredictionTable({ onBack }: Props) {
 
         {isFetching ? (
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <ColorSpinner />
+            <ColorSpinner width="6em" height="6em" />
           </div>
         ) : (
           predictedParts?.data?.items && (

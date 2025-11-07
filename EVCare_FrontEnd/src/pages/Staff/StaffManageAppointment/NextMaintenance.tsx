@@ -23,6 +23,7 @@ import {
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import { useQueryClient } from "@tanstack/react-query";
+import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
 
 interface NextMaintenanceProps {
   data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
@@ -41,7 +42,8 @@ export default function NextMaintenance({
   const queryClient = useQueryClient();
 
   //handle submit schedule
-  const { mutateAsync: enterRemindSchedule } = useEnterRemindSchedule();
+  const { mutateAsync: enterRemindSchedule, isPending } =
+    useEnterRemindSchedule();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -243,14 +245,22 @@ export default function NextMaintenance({
             </ReminderCard>
 
             <ActionButtons>
-              <SkipButton type="button" onClick={onSkip}>
-                Skip This Step
-                <ArrowRight size={20} />
-              </SkipButton>
-              <ConfirmButton type="submit">
-                <CheckCircle size={20} />
-                Confirm & Schedule
-              </ConfirmButton>
+              {isPending ? (
+                <div style={{ textAlign: "center" }}>
+                  <TextWaitingEffect text="Waiting for processing" />
+                </div>
+              ) : (
+                <>
+                  <SkipButton type="button" onClick={onSkip}>
+                    Skip This Step
+                    <ArrowRight size={20} />
+                  </SkipButton>
+                  <ConfirmButton type="submit">
+                    <CheckCircle size={20} />
+                    Confirm & Schedule
+                  </ConfirmButton>
+                </>
+              )}
             </ActionButtons>
           </FormSection>
         </MainContent>
