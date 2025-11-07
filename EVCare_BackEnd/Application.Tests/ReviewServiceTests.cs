@@ -27,7 +27,7 @@ namespace Application.Tests {
             _fixture.Inject(appointmentRepository.Object);
             var reviewService = _fixture.Create<Application.Services.ReviewService>();
 
-          var result =   await Assert.ThrowsAsync<Exception>(async () => await reviewService.CreateAsync(model));
+            var result = await Assert.ThrowsAsync<Exception>(async () => await reviewService.CreateAsync(model));
 
             Assert.Equal("Appointment not found", result.Message);
         }
@@ -81,7 +81,7 @@ namespace Application.Tests {
                 {
                     Id = model.AppointmentId,
                     Status = DataAccess.Enums.AppointmentStatusEnum.Done,
-                    
+
                 });
             appointmentRepository.Setup(x => x.UpdateAsync(It.IsAny<DataAccess.Entities.Appointment>()))
                 .ReturnsAsync((DataAccess.Entities.Appointment appt) => appt);
@@ -106,17 +106,46 @@ namespace Application.Tests {
                     return review;
                 });
             _fixture.Inject(reviewRepository.Object);
-           
+
             var reviewService = _fixture.Create<Application.Services.ReviewService>();
             var result = await reviewService.CreateAsync(model);
             Assert.Equal(1, result);
-
+        }
+        [Theory, AutoData]
+        public async Task GetByAppointmentId_AppointmentNotFound_ShouldThrowException(
+            int appointmentId
+            ) {
+            var appointmentRepository = new Mock<IAppointmentRepository>();
+            appointmentRepository.Setup(x => x.GetByIdAsync(appointmentId))
+                .ReturnsAsync((DataAccess.Entities.Appointment?)null);
+            _fixture.Inject(appointmentRepository.Object);
+            var reviewService = _fixture.Create<Application.Services.ReviewService>();
+            var result = await Assert.ThrowsAsync<Exception>(async () => await reviewService.GetByAppointmentId(appointmentId));
+            Assert.Equal("Appointment not found", result.Message);
 
         }
+        [Theory, AutoData]
+        public async Task GetByAppointmentId_AppointmentValid_ReturnsReviewViewDetailModel(
+            int appointmentId,
+            ReviewViewDetailModel expectedReview
+            ) {
+            var appointmentRepository = new Mock<IAppointmentRepository>();
+            appointmentRepository.Setup(x => x.GetByIdAsync(appointmentId))
+                .ReturnsAsync(new DataAccess.Entities.Appointment
+                {
+                    Id = appointmentId,
+                    Status = DataAccess.Enums.AppointmentStatusEnum.Done,
+                    ReviewId = 1
+                });
+            _fixture.Inject(appointmentRepository.Object);
+            var reviewRepository = new Mock<IReviewRepository>();
+            reviewRepository.Setup(x => x.GetByAppointmentId(appointmentId))
+                .ReturnsAsync(expectedReview);
+            _fixture.Inject(reviewRepository.Object);
+            var reviewService = _fixture.Create<Application.Services.ReviewService>();
+            var result = await reviewService.GetByAppointmentId(appointmentId);
+            Assert.Equal(expectedReview, result);
+        }
 
-
-
-
-
-    }
+     }
 }
