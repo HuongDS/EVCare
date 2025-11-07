@@ -80,5 +80,20 @@ namespace Application.Tests {
             var hashBytes = Convert.FromBase64String(h1);
             Assert.Equal(32, hashBytes.Length);
         }
+        [Fact]
+        public void GetExpireDays_ShouldRespectConfigDays() {
+            var configMock = _fixture.Freeze<Mock<IConfiguration>>();
+            configMock.Setup(c => c["Jwt:RefreshTokenDays"]).Returns("7");
+            configMock.Setup(c => c["Jwt:Key"]).Returns("ThisisASecretKeyForJwtTokenGeneration123");
+            configMock.Setup(c => c["Jwt:Secret"]).Returns("ThisisASecretKeyForJwtTokenGeneration123");
+
+            var tokenService = _fixture.Create<Application.Services.TokenServices>();
+
+            var before = DateTime.UtcNow.AddDays(7);
+            var dt = tokenService.GetExpireDays();
+
+           
+            Assert.Equal(before.Date, dt.Date);
+        }
     }
   }
