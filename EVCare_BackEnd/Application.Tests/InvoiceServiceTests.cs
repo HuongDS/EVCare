@@ -278,5 +278,99 @@ namespace Application.Tests {
 
 
         }
+
+        [Fact]
+        public async Task HandleWebhook_InvalidSignature_Returns_NoSideEffects(){
+            var gw = new Mock<IPayOSGateWay>();
+            gw.Setup(g => g.Verify(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+
+            _fixture.Inject(gw.Object); 
+
+            var svc = _fixture.Create<InvoiceService>();
+            await svc.HandleWebhookAsync("{}", "sig");
+
+            gw.Verify(g => g.Verify(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+
+        }
+        [Fact]
+        public async Task HandleWebhook_MissingOrderCode_Returns_NoSideEffects() {
+            var gw = _fixture.Freeze<Mock<IPayOSGateWay>>();
+            gw.Setup(g => g.Verify(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            var redis = _fixture.Freeze<Mock<IRedisService>>();
+            var raw = "{\"data\":{\"code\":\"00\",\"desc\":\"success\"}}";
+            var svc = _fixture.Create<InvoiceService>();
+            await svc.HandleWebhookAsync(raw, "sig");
+            redis.Verify(r => r.GetObjectData<Invoice>(It.IsAny<string>()), Times.Never);
+        }
+        [Fact]
+        public async Task HandleWebhook_InvoiceMissingInRedis_Returns_NoSideEffects() {
+            var gw = _fixture.Freeze<Mock<IPayOSGateWay>>();
+            gw.Setup(g => g.Verify(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            var redis = _fixture.Freeze<Mock<IRedisService>>();
+            redis.Setup(r => r.GetObjectData<Invoice>("123")).ReturnsAsync((Invoice)null);
+            var raw = "{\"data\":{\"orderCode\":123,\"code\":\"00\",\"desc\":\"success\"}}";
+            var svc = _fixture.Create<InvoiceService>();
+            await svc.HandleWebhookAsync(raw, "sig");
+            redis.Verify(r => r.GetObjectData<Invoice>("123"), Times.Once);
+        }
+
+        [Fact]
+        public async Task HandleWebhook_Success_ByCode00_PerformsSideEffects() {
+            long code = 777;
+            var raw = $"{{\"data\":{{\"orderCode\":{code},\"code\":\"00\",\"desc\":\"ok\"}}}}";
+            var gw = _fixture.Freeze<Mock<IPayOSGateWay>>();
+            gw.Setup(g => g.Verify(raw, "sig")).Returns(true);
+            var redis = _fixture.Freeze<Mock<IRedisService>>();
+            redis.Setup(r => r.GetObjectData<Invoice>(code.ToString()))
+                 .ReturnsAsync(new Invoice { Id = 10, OrderId = 55 });
+            var orderRepo = _fixture.Freeze<Mock<IOrderRepository>>();
+            orderRepo.Setup(o => o.GetByIdAsync(55)).ReturnsAsync(new Order { Id = 55 });
+            var apptRepo = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            apptRepo.Setup(a => a.GetAppointmentByOrderIdAsync(55)).ReturnsAsync(new Appointment());
+            var invRepo = _fixture.Freeze<Mock<IInvoiceRepository>>();
+            invRepo.Setup(i => i.AddAsync(It.IsAny<Invoice>())).ReturnsAsync(999);
+            var handler = new Mock<OnInvoiceCompleteHandler>(MockBehavior.Loose, null, null, null); 
+            handler.Setup(h => h.HandleAsync()).Returns(Task.CompletedTask);
+            _fixture.Inject(handler.Object);
+            var svc = _fixture.Create<InvoiceService>();
+            await svc.HandleWebhookAsync(raw, "sig");
+            invRepo.Verify(i => i.AddAsync(It.IsAny<Invoice>()), Times.Once);
+            handler.Verify(h => h.HandleAsync(), Times.Once);
+        }
+        [Fact]
+        public async Task HandleWebhook_Success_ByDesc_ReturnsSideEffects() {
+            long code = 888;
+            var raw = $"{{\"data\":{{\"orderCode\":{code},\"code\":\"xx\",\"desc\":\"SUCCESS\"}}}}";
+            var gw = _fixture.Freeze<Mock<IPayOSGateWay>>();
+            gw.Setup(g => g.Verify(raw, "sig")).Returns(true);
+            var redis = _fixture.Freeze<Mock<IRedisService>>();
+            redis.Setup(r => r.GetObjectData<Invoice>(code.ToString()))
+                 .ReturnsAsync(new Invoice { Id = 10, OrderId = 55 });
+            var invRepo = _fixture.Freeze<Mock<IInvoiceRepository>>();
+            invRepo.Setup(i => i.AddAsync(It.IsAny<Invoice>())).ReturnsAsync(200);
+            var svc = _fixture.Create<InvoiceService>();
+            await svc.HandleWebhookAsync(raw, "sig");
+
+            invRepo.Verify(i => i.AddAsync(It.IsAny<Invoice>()), Times.Once);
+        }
+        [Fact]
+        public async Task HandleWebhook_NotSuccess_NoSideEffects() {
+            long code = 999;
+            var raw = $"{{\"data\":{{\"orderCode\":{code},\"code\":\"24\",\"desc\":\"FAILED\"}}}}";
+
+            var gw = _fixture.Freeze<Mock<IPayOSGateWay>>();
+            gw.Setup(g => g.Verify(raw, "sig")).Returns(true);
+
+            var redis = _fixture.Freeze<Mock<IRedisService>>();
+            redis.Setup(r => r.GetObjectData<Invoice>(code.ToString()))
+                 .ReturnsAsync(new Invoice { Id = 10, OrderId = 55 });
+
+            var invRepo = _fixture.Freeze<Mock<IInvoiceRepository>>();
+
+            var svc = _fixture.Create<InvoiceService>();
+            await svc.HandleWebhookAsync(raw, "sig");
+
+            invRepo.Verify(i => i.AddAsync(It.IsAny<Invoice>()), Times.Never);
+        }
     }
 }
