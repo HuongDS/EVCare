@@ -270,6 +270,7 @@ describe("Staff Appointments UI", () => {
   });
 
   it("TC08: shows 'Technician On Leave' warning if API returns matching ID", () => {
+    //ARRANGE
     const mockAppt = {
       ...mockAppointment,
       id: 5,
@@ -292,11 +293,13 @@ describe("Staff Appointments UI", () => {
 
     renderWithProviders(<Staff_Appointments />);
 
+    //ASSERT
     expect(screen.getByTestId("onleave-5")).toBeInTheDocument();
     expect(screen.getByText("Technician On Leave")).toBeInTheDocument();
   });
 
   it("TC09: calls API with new keyword when typing in SearchBar", () => {
+    //ARRANGE
     const mockAppt = {
       ...mockAppointment,
       id: 5,
