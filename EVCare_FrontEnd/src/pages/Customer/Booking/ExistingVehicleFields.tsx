@@ -5,11 +5,12 @@ import { FormGroup, Input, Label, Required } from "./BookingForm.styled";
 interface ExistingProps {
   listCategories: VehicleCategoryViewDto[];
   vehicleCategory: number;
+  vehicleCategoryName: string | undefined;
 }
 
-function ExistingVehicleFields({ listCategories, vehicleCategory }: ExistingProps) {
+function ExistingVehicleFields({ listCategories, vehicleCategory, vehicleCategoryName }: ExistingProps) {
   const categoryName = useMemo(() => {
-    return listCategories.find((c) => c.id === vehicleCategory)?.name ?? "N/A";
+    return listCategories.find((c) => c.id === vehicleCategory)?.name ?? vehicleCategoryName;
   }, [listCategories, vehicleCategory]);
 
   return (

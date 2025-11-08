@@ -25,7 +25,7 @@ export const ChatWidget: React.FC = () => {
         />
       )}
 
-      {isOpen && (
+      {isOpen && role === RoleEnum.CUSTOMER && (
         <div className="chat-widget-container">
           <ChatPage isWidgetMode={true} />
         </div>
