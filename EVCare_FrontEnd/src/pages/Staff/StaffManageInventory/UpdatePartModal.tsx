@@ -1,13 +1,32 @@
 import { useEffect, useState } from "react";
-import { Modal, Input, InputNumber, Button, Upload, message, Tooltip } from "antd";
+import {
+  Modal,
+  Input,
+  InputNumber,
+  Button,
+  Upload,
+  message,
+  Tooltip,
+} from "antd";
 import styled from "styled-components";
-import { UploadOutlined, PictureOutlined, DollarOutlined, InboxOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  PictureOutlined,
+  DollarOutlined,
+  InboxOutlined,
+} from "@ant-design/icons";
 import type { PartDetailDto } from "../../../models/PartModel/PartModel";
 import type { UpdateInventoryPayload } from "../../../models/Inventory/InventoryModel";
-import { useUpdateInventoryImage, useUpdateInventoryQuantity } from "../../../services/staffService";
+import {
+  useUpdateInventoryImage,
+  useUpdateInventoryQuantity,
+} from "../../../services/staffService";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "../../../context/useNotification";
-import { MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
+import {
+  MSG_TITLE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
 
 const { TextArea } = Input;
 
@@ -21,10 +40,11 @@ interface ModalProps {
   part?: PartDetailDto;
 }
 
-// Component
 const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
   const notification = useNotification();
-  const [previewImage, setPreviewImage] = useState<string | undefined>(part?.imageUrl);
+  const [previewImage, setPreviewImage] = useState<string | undefined>(
+    part?.imageUrl
+  );
   const [errors, setErrors] = useState<FormErrors>({});
 
   const [formData, setFormData] = useState<UpdateInventoryPayload>({
@@ -41,7 +61,7 @@ const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
         id: part.id,
         description: part.description,
         unitPrice: part.price,
-        stock: part.stock,
+        stock: part.quantity,
         image: part.imageUrl,
       });
       setPreviewImage(part.imageUrl);
@@ -95,7 +115,8 @@ const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const { mutateAsync: updateQuantity, isPending: updating } = useUpdateInventoryQuantity();
+  const { mutateAsync: updateQuantity, isPending: updating } =
+    useUpdateInventoryQuantity();
   const queryClient = useQueryClient();
   const handleSave = async () => {
     if (!validateForm()) {
@@ -126,15 +147,29 @@ const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
         <div style={{ position: "relative" }}>
           <ImagePreview src={previewImage || part?.imageUrl} alt="Preview" />
           <ImageOverlay>
-            <Upload accept="image/*" maxCount={1} showUploadList={false} customRequest={handleCustomRequest}>
-              <Button icon={<UploadOutlined />} size="small" style={{ borderRadius: "6px", backgroundColor: "white" }}>
+            <Upload
+              accept="image/*"
+              maxCount={1}
+              showUploadList={false}
+              customRequest={handleCustomRequest}
+            >
+              <Button
+                icon={<UploadOutlined />}
+                size="small"
+                style={{ borderRadius: "6px", backgroundColor: "white" }}
+              >
                 Change Image
               </Button>
             </Upload>
           </ImageOverlay>
         </div>
       ) : (
-        <Upload accept="image/*" maxCount={1} showUploadList={false} customRequest={handleCustomRequest}>
+        <Upload
+          accept="image/*"
+          maxCount={1}
+          showUploadList={false}
+          customRequest={handleCustomRequest}
+        >
           <UploadPlaceholder>
             <PlaceholderIcon />
             <PlaceholderText>Click to upload image</PlaceholderText>

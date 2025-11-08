@@ -12,7 +12,8 @@ namespace DataAccess.Dtos.Technician
     {
         public int Id { get; set; }
         public string FullName { get; set; }
-        public string Phone {  get; set; }
+        public string? Email { get; set; }
+        public string? Phone {  get; set; }
         public double ExpYears { get; set; }        
         public EmployeeStatusEnum Status { get; set; }
         public IEnumerable<ServiceViewFormModel> Skills { get; set; }

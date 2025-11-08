@@ -17,7 +17,9 @@ namespace DataAccess.Configuration
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).IsRequired().HasMaxLength(50);
-
+            builder.Property(x => x.ScaleX).HasPrecision(18, 7);
+            builder.Property(x => x.ScaleY).HasPrecision(18, 7);
+            builder.Property(x => x.ScaleZ).HasPrecision(18, 7);
             builder.HasData(
                 new VehiclesCategory { Id = 1, Name = "Sedan" },
                 new VehiclesCategory { Id = 2, Name = "SUV" },

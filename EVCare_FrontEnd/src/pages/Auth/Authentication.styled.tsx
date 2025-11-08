@@ -68,7 +68,6 @@ export const FormContainer = styled(Modal.Body as any)<{ $isSignUp: boolean }>`
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
   z-index: 2;
   transition: right 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: #fff;

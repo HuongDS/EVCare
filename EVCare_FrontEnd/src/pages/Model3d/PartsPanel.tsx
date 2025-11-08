@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Zap, ChevronRight, Box } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Zap, ChevronRight, Box, AlertTriangle } from "lucide-react";
 import styled, { keyframes, css } from "styled-components";
 import type {
   PartDamagedModel,
@@ -9,22 +9,43 @@ import type {
 import { useAppDispatch } from "../../states/store";
 import BackButton from "../../components/Button/BackButton";
 import { closeModel3d } from "../../states/uiSlice";
+import { Tooltip } from "antd";
+import * as THREE from "three";
+import { useGLTF } from "@react-three/drei";
+import type { GLTF } from "three-stdlib";
+
+type GLTFResult = GLTF & {
+  nodes: Record<string, THREE.Mesh>;
+  materials: Record<string, THREE.Material>;
+};
 
 interface PartsPanelProps {
-  categories?: DataDto<PartCategoryViewModel<PartDamagedModel>>;
-  onSelectPart: (nodeName: string) => void;
+  data: DataDto<PartCategoryViewModel<PartDamagedModel>>;
+  onSelectPart: (nodeName: string | null) => void;
   selectedPart?: PartDamagedModel | null;
 }
 
 export default function PartsPanel({
-  categories,
+  data,
   onSelectPart,
   selectedPart = null,
 }: PartsPanelProps) {
   const dispatch = useAppDispatch();
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
-    new Set(categories?.partCategoryAppointmentViewModels.map((_, i) => i))
+    new Set(data?.partCategoryAppointmentViewModels.map((_, i) => i))
   );
+
+  const { nodes } = useGLTF(data?.vehicleModel3DUrl) as unknown as GLTFResult;
+
+  const meshes = useMemo(() => {
+    const names = new Set<string>();
+    Object.keys(nodes).forEach((nodeName) => {
+      if (nodes[nodeName].isMesh) {
+        names.add(nodeName);
+      }
+    });
+    return names;
+  }, [nodes]);
 
   const toggleCategory = (index: number) => {
     const newExpanded = new Set(expandedCategories);
@@ -37,7 +58,7 @@ export default function PartsPanel({
   };
 
   const totalParts =
-    categories?.partCategoryAppointmentViewModels?.reduce((sum, cat) => {
+    data?.partCategoryAppointmentViewModels?.reduce((sum, cat) => {
       const parts = cat?.damagedPartViewModels ?? [];
       return sum + parts.length;
     }, 0) ?? 0;
@@ -59,7 +80,7 @@ export default function PartsPanel({
         </Header>
 
         <CategoriesWrapper>
-          {categories?.partCategoryAppointmentViewModels?.map((cat, i) => (
+          {data?.partCategoryAppointmentViewModels?.map((cat, i) => (
             <div key={i}>
               <CategoryButton onClick={() => toggleCategory(i)}>
                 <CategoryButtonLeft>
@@ -76,20 +97,41 @@ export default function PartsPanel({
                 <PartsWrapper>
                   {cat?.damagedPartViewModels?.map((part, j) => {
                     const isSelected = selectedPart?.nodeName === part.nodeName;
+                    const isMissing = !meshes.has(part.nodeName);
                     return (
                       <PartItem
                         key={j}
                         $isSelected={isSelected}
+                        $isDisabled={isMissing}
                         $delay={j * 0.05}
-                        onClick={() => onSelectPart(part.nodeName)}
+                        onClick={(e) => {
+                          if (isMissing) {
+                            e.stopPropagation();
+                          } else {
+                            onSelectPart(isSelected ? null : part.nodeName);
+                          }
+                        }}
                       >
                         <PartItemContent>
                           <StatusDot $isSelected={isSelected} />
                           <PartContent>
-                            <PartName $isSelected={isSelected}>
-                              {part.partName}
-                            </PartName>
-                            <DamageLevel>{part.damageLevel}</DamageLevel>
+                            <PartNameContainer>
+                              <PartName $isSelected={isSelected}>
+                                {part.partName}
+                              </PartName>
+                              {isMissing && (
+                                <Tooltip
+                                  title="This part is not in 3D Model"
+                                  placement="top"
+                                  color="#00AD4E"
+                                >
+                                  <AlertTriangle color="#FFCC00" size={20} />
+                                </Tooltip>
+                              )}
+                            </PartNameContainer>
+                            {!isMissing && (
+                              <DamageLevel>{part.damageLevel}</DamageLevel>
+                            )}
                           </PartContent>
                         </PartItemContent>
                       </PartItem>
@@ -286,7 +328,11 @@ const PartsWrapper = styled.div`
   gap: 0.375rem;
 `;
 
-const PartItem = styled.div<{ $isSelected: boolean; $delay: number }>`
+const PartItem = styled.div<{
+  $isSelected: boolean;
+  $delay: number;
+  $isDisabled: boolean;
+}>`
   cursor: pointer;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
@@ -316,6 +362,13 @@ const PartItem = styled.div<{ $isSelected: boolean; $delay: number }>`
             background: rgba(30, 41, 59, 0.45);
           }
         `}
+  ${(props) =>
+    props.$isDisabled &&
+    css`
+      cursor: not-allowed;
+      opacity: 0.5;
+      filter: grayscale(0.5);
+    `}
 `;
 
 const PartItemContent = styled.div`
@@ -343,6 +396,16 @@ const PartContent = styled.div`
   flex: 1;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  min-width: 0;
+  gap: 0.5rem;
+`;
+
+const PartNameContainer = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
   min-width: 0;
 `;
 

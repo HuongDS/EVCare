@@ -1,11 +1,13 @@
 import { api } from "../api/api";
 import type {
+  AppointmentDetailModel,
   ChangeAppointmentStatusParams,
   GetAppointmentsParams,
   GetAppointmentWithTechnician,
   PageModel,
   RemindSchedulePayload,
   ResponseDto,
+  ResponseDtoCreateAppointment,
   StaffAppointmentsDto,
   StaffCreateAppointmentPayload,
 } from "../models/AppointmentsModel/Staff_Appointments_Model";
@@ -110,20 +112,23 @@ export const useChangeAppointmentStatus = () => {
   return useMutation({
     mutationFn: async (payload: ChangeAppointmentStatusParams) => {
       try {
-        const response = await api.put<ResponseDto<boolean | null>>(
+        const response = await api.put<ResponseDto<null>>(
           "/api/Appointment/staff",
           payload
         );
+
         return response.data;
       } catch (error) {
         handleError(error);
+
         if (axios.isAxiosError(error)) {
           const errMsg =
-            error.response?.data.message ||
+            error.response?.data?.message ||
             error.message ||
             ERROR_MESSAGE.CHANGE_APPOINTMENT_STATUS_FAILED;
           throw new Error(errMsg);
         }
+
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
       }
     },
@@ -268,12 +273,12 @@ export const useGetAppointmentHaveTech = (params: GetAppointmentsParams) => {
 //[STAFF] - Lấy appointment detail sử dụng tanstack
 export const useGetAppointmentById = (appointmentId: number) => {
   return useQuery({
-    queryKey: ["Appointment", appointmentId],
+    queryKey: ["AppointmentDetail", appointmentId],
     queryFn: async () => {
       try {
-        const response = await api.get<ResponseDto<AppointmentViewDetailModel>>(
-          `/api/Appointment/${appointmentId}`
-        );
+        const response = await api.get<
+          ResponseDto<AppointmentDetailModel<TechnicianModel<TechnicianSkills>>>
+        >(`/api/Appointment/${appointmentId}`);
         return response.data;
       } catch (error) {
         handleError(error);
@@ -287,6 +292,8 @@ export const useGetAppointmentById = (appointmentId: number) => {
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
       }
     },
+    enabled: !!appointmentId,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -317,7 +324,7 @@ export const useStaffCreateAppointment = () => {
   return useMutation({
     mutationFn: async (payload: StaffCreateAppointmentPayload) => {
       try {
-        const response = await api.post<number>(
+        const response = await api.post<ResponseDtoCreateAppointment<number>>(
           "/api/Appointment/staff",
           payload
         );

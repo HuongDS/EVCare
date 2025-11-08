@@ -2,28 +2,36 @@ import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Badge, Avatar, Card, Typography } from "antd";
 import { Phone, Mail, Car, User, Users, UserCheck, Ban } from "lucide-react";
-import { useGetAllCustomer } from "../../../services/staffService";
+import {
+  useGetAllCustomer,
+  useGetBannedCustomers,
+} from "../../../services/staffService";
 import SearchBar from "../../../components/SearchBar/Search";
-
 const { Title, Text } = Typography;
 
 const Manage_Customer: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
+  const { data: bannedCus } = useGetBannedCustomers();
+
+  const { data: allCustomersRaw } = useGetAllCustomer({
+    keyword: "",
+  });
+
   const { data: customers } = useGetAllCustomer({
     keyword: searchTerm,
   });
 
-  const { activeCount, bannedCount, totalVehicles } = useMemo(() => {
-    const customerList = customers?.data?.items;
-    const activeCount = customerList?.filter((c) => !c.banned).length;
-    const bannedCount = customerList?.filter((c) => c.banned).length;
-    const totalVehicles = customerList?.reduce(
+  const { totalCus, activeCustomer, totalVehicles } = useMemo(() => {
+    const totalCus = allCustomersRaw?.data?.items.length;
+    const activeCustomer =
+      (allCustomersRaw?.data?.items.length || 0) - (bannedCus?.data || 0);
+    const totalVehicles = allCustomersRaw?.data?.items.reduce(
       (sum, c) => sum + c.vehicles.length,
       0
     );
-    return { activeCount, bannedCount, totalVehicles };
-  }, [customers]);
+    return { totalCus, activeCustomer, totalVehicles };
+  }, [allCustomersRaw?.data?.items, bannedCus?.data]);
 
   return (
     <Container>
@@ -34,7 +42,7 @@ const Manage_Customer: React.FC = () => {
               <Users size={24} />
             </div>
             <div className="content">
-              <h3>{customers?.data?.items.length}</h3>
+              <h3>{totalCus}</h3>
               <p>Total Customers</p>
             </div>
           </StatCard>
@@ -43,7 +51,7 @@ const Manage_Customer: React.FC = () => {
               <UserCheck size={24} />
             </div>
             <div className="content">
-              <h3>{activeCount}</h3>
+              <h3>{activeCustomer}</h3>
               <p>Active Customers</p>
             </div>
           </StatCard>
@@ -52,7 +60,7 @@ const Manage_Customer: React.FC = () => {
               <Ban size={24} />
             </div>
             <div className="content">
-              <h3>{bannedCount}</h3>
+              <h3>{bannedCus?.data}</h3>
               <p>Banned</p>
             </div>
           </StatCard>

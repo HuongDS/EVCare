@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Technician;
+using DataAccess.Enums;
 
 namespace Application.Interfaces
 {
@@ -12,6 +13,7 @@ namespace Application.Interfaces
     {
         Task<TechnicianViewModel> GetTechnicianDetail(int technicianId);
         Task<IEnumerable<TechnicianCusViewModel>> GetTechniciansByOrderId(int orderId);
+        Task<int> GetTechnicianStatus(EmployeeStatusEnum? status);
 
         //Task<IEnumerable<>>
         Task<PageResultDto<TechnicianViewModel>> GetTechnicianToday(TechnicianQueryDto model);

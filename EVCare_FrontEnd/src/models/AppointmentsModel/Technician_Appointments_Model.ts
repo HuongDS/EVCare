@@ -34,13 +34,12 @@ export type TechnicianAppointmentsDto = {
 };
 
 //Get technicians for assigning appointment
-
 export type TechnicianModel<T> = {
   id: number;
   fullName: string;
+  email: string;
   phone: string;
   expYears: number;
-  rating: null;
   status: string;
   skills: T[];
   avatar?: string;

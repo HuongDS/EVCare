@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import styled from "styled-components";
-import { Select, Badge, Avatar, Card, Typography } from "antd";
+import { Select, Badge, Avatar, Typography } from "antd";
 import { Phone, Award, Wrench, User } from "lucide-react";
 import { useGetTechniciansToday } from "../../../services/appointmentServiceApi";
 import SearchBar from "../../../components/SearchBar/Search";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import { useGetNumberOfTechnician } from "../../../services/staffService";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -25,26 +26,29 @@ const getStatusColor = (status: string) => {
 const Manage_Technicians = () => {
   // const [technicians] = useState(mockTechnicians);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("Available");
+  const [flippedCardId, setFlippedCardId] = useState<number | null>(null);
 
   const { data: technicians, isLoading } = useGetTechniciansToday({
-    ...(statusFilter !== "all" ? { Status: statusFilter } : {}),
+    ...(statusFilter ? { Status: statusFilter } : {}),
     ...((searchTerm && { FullName: searchTerm }) || {}),
   });
 
-  const { availableCount, busyCount, total } = useMemo(() => {
-    const techniciansList = technicians?.data?.items;
-    const availableCount = techniciansList?.filter(
-      (t) => t.status === "Available"
-    ).length;
+  const { data: techsAvailableCount } = useGetNumberOfTechnician({
+    status: "Available",
+  });
+  const { data: techsBusyCount } = useGetNumberOfTechnician({ status: "Busy" });
+  const { data: techsOnleaveCount } = useGetNumberOfTechnician({
+    status: "OnLeave",
+  });
 
-    const busyCount = techniciansList?.filter(
-      (t) => t.status === "Busy"
-    ).length;
-
-    const total = techniciansList?.length;
-    return { availableCount, busyCount, total };
-  }, [technicians]);
+  const { total } = useMemo(() => {
+    const total =
+      (techsAvailableCount?.data || 0) +
+      (techsBusyCount?.data || 0) +
+      (techsOnleaveCount?.data || 0);
+    return { total };
+  }, [techsAvailableCount?.data, techsBusyCount?.data]);
 
   return (
     <Container>
@@ -64,7 +68,7 @@ const Manage_Technicians = () => {
               <Award size={24} />
             </div>
             <div className="content">
-              <h3>{availableCount}</h3>
+              <h3>{techsAvailableCount?.data}</h3>
               <p>Available Now</p>
             </div>
           </StatCard>
@@ -73,8 +77,17 @@ const Manage_Technicians = () => {
               <Wrench size={24} />
             </div>
             <div className="content">
-              <h3>{busyCount}</h3>
+              <h3>{techsBusyCount?.data}</h3>
               <p>Currently Busy</p>
+            </div>
+          </StatCard>
+          <StatCard>
+            <div className="icon">
+              <Wrench size={24} />
+            </div>
+            <div className="content">
+              <h3>{techsOnleaveCount?.data}</h3>
+              <p>Onleave</p>
             </div>
           </StatCard>
         </StatsBar>
@@ -90,7 +103,6 @@ const Manage_Technicians = () => {
             onChange={(value) => setStatusFilter(String(value))}
             style={{ width: 200 }}
           >
-            <Option value="all">All Status</Option>
             <Option value="Available">Available</Option>
             <Option value="Busy">Busy</Option>
             <Option value="OnLeave">OnLeave</Option>
@@ -105,51 +117,98 @@ const Manage_Technicians = () => {
           <SpinnerComponent />
         ) : (
           <TechGrid>
-            {technicians?.data?.items?.map((tech) => (
-              <TechCard key={tech.id}>
-                <TechHeader>
-                  <TechAvatar
-                    src={`https://ui-avatars.com/api/?name=${tech.fullName}&background=3b82f6&color=fff&bold=true`}
-                  >
-                    {tech.fullName.charAt(0)}
-                  </TechAvatar>
-                  <TechInfo>
-                    <h3>{tech.fullName}</h3>
-                    <Text className="tech-id">ID: #{tech.id}</Text>
-                  </TechInfo>
-                  <StatusBadge
-                    status={getStatusColor(tech.status)}
-                    text={tech.status}
-                  />
-                </TechHeader>
+            {technicians?.data?.items?.map((tech) => {
+              const isFlipped = flippedCardId === tech.id;
 
-                <InfoRow>
-                  <Phone size={18} />
-                  <span className="label">Phone:</span>
-                  <span style={{ marginLeft: "auto" }}>{tech.phone}</span>
-                </InfoRow>
+              return (
+                <FlipCardContainer key={tech.id} onClick={() => {}}>
+                  <FlipCardInner $flipped={isFlipped}>
+                    <FlipCardFront>
+                      <TechHeader>
+                        <TechAvatar
+                          src={`https://ui-avatars.com/api/?name=${tech.fullName}&background=3b82f6&color=fff&bold=true`}
+                        >
+                          {tech.fullName.charAt(0)}
+                        </TechAvatar>
+                        <TechInfo>
+                          <h3>{tech.fullName}</h3>
+                          <Text className="tech-id">ID: #{tech.id}</Text>
+                        </TechInfo>
+                        <StatusBadge
+                          status={getStatusColor(tech.status)}
+                          text={tech.status}
+                        />
+                      </TechHeader>
 
-                <InfoRow>
-                  <Award size={18} />
-                  <span className="label">Experience:</span>
-                  <span style={{ marginLeft: "auto" }}>
-                    {tech.expYears} {tech.expYears === 1 ? "year" : "years"}
-                  </span>
-                </InfoRow>
+                      <InfoRow>
+                        <Phone size={18} />
+                        <span className="label">Phone:</span>
+                        <span style={{ marginLeft: "auto" }}>{tech.phone}</span>
+                      </InfoRow>
+                      <InfoRow>
+                        <Phone size={18} />
+                        <span className="label">Email:</span>
+                        <span style={{ marginLeft: "auto" }}>{tech.email}</span>
+                      </InfoRow>
 
-                <SkillsSection>
-                  <div className="skills-label">
-                    <Wrench size={16} />
-                    <span>Skills & Expertise</span>
-                  </div>
-                  <div className="skills-list">
-                    {tech.skills.map((skill) => (
-                      <SkillTag key={skill.id}>{skill.name}</SkillTag>
-                    ))}
-                  </div>
-                </SkillsSection>
-              </TechCard>
-            ))}
+                      <InfoRow>
+                        <Award size={18} />
+                        <span className="label">Experience:</span>
+                        <span style={{ marginLeft: "auto" }}>
+                          {tech.expYears}{" "}
+                          {tech.expYears === 1 ? "year" : "years"}
+                        </span>
+                      </InfoRow>
+
+                      <button
+                        onClick={() =>
+                          setFlippedCardId(isFlipped ? null : tech.id)
+                        }
+                        style={{
+                          marginTop: "1rem",
+                          background: "#3b82f6",
+                          color: "white",
+                          border: "none",
+                          padding: "0.5rem 1rem",
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          fontWeight: 500,
+                        }}
+                      >
+                        View Skills
+                      </button>
+                    </FlipCardFront>
+
+                    <FlipCardBack>
+                      <h3 style={{ marginBottom: "1rem", color: "#1e293b" }}>
+                        Skills & Expertise
+                      </h3>
+                      <div className="skills-list">
+                        {tech.skills.map((skill) => (
+                          <SkillTag key={skill.id}>{skill.name}</SkillTag>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={() => setFlippedCardId(null)}
+                        style={{
+                          marginTop: "auto",
+                          background: "#64748b",
+                          color: "white",
+                          border: "none",
+                          padding: "0.5rem 1rem",
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          fontWeight: 500,
+                        }}
+                      >
+                        Back
+                      </button>
+                    </FlipCardBack>
+                  </FlipCardInner>
+                </FlipCardContainer>
+              );
+            })}
           </TechGrid>
         )}
 
@@ -273,29 +332,11 @@ const StatCard = styled.div`
 
 const TechGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-  }
-`;
-
-const TechCard = styled(Card)`
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  height: 100%;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    border-color: #3b82f6;
-  }
-
-  .ant-card-body {
-    padding: 1.5rem;
   }
 `;
 
@@ -368,27 +409,6 @@ const InfoRow = styled.div`
   }
 `;
 
-const SkillsSection = styled.div`
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #f1f5f9;
-
-  .skills-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #b2c8ac;
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 0.75rem;
-  }
-
-  .skills-list {
-    max-height: 200px;
-    overflow-y: auto;
-  }
-`;
-
 const SkillTag = styled.span`
   display: inline-block;
   background: #d3f1d8;
@@ -400,4 +420,52 @@ const SkillTag = styled.span`
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
   border: 1px solid #dbeafe;
+`;
+
+const FlipCardContainer = styled.div`
+  perspective: 1000px;
+  width: 100%;
+  height: 350px;
+`;
+
+const FlipCardInner = styled.div<{ $flipped: boolean }>`
+  position: relative;
+  width: 100%;
+  height: 350px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  transform: ${({ $flipped }) => ($flipped ? "rotateY(180deg)" : "rotateY(0)")};
+`;
+
+const FlipCardSide = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 350px;
+  backface-visibility: hidden;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+`;
+
+const FlipCardFront = styled(FlipCardSide)`
+  display: flex;
+  flex-direction: column;
+`;
+
+const FlipCardBack = styled(FlipCardSide)`
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
 `;

@@ -41,6 +41,10 @@ export type RegisterRequestDto = {
   phone: string;
 };
 
+export type VerifyOtpSignUp = {
+  email: string;
+  otp: string;
+};
 export type VerifyOTPDto = {
   email: string;
   newPassword: string;

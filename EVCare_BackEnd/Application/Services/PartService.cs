@@ -256,7 +256,10 @@ namespace Application.Services
             return await _partRepository.GetAllParts(model);
         }
 
-       
+        public async Task<IEnumerable<PartViewModel>> GetLowStockParts() {
+            return await _partRepository.GetLowStockParts();
+        }
+
         public async Task<byte[]> GetPartImportTemplate() {
             using var wb = new XLWorkbook();
 
@@ -346,6 +349,9 @@ namespace Application.Services
             return ms.ToArray();
         }
 
+        public async Task<decimal> GetTotalPriceOfParts() {
+            return await _partRepository.GetTotalPriceOfParts();
+        }
 
         public async Task<PartImportResult> ImportPartAsync(IFormFile file, int accountId)
         {

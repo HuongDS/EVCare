@@ -1,13 +1,13 @@
-import { Modal } from "antd";
+import { Modal, notification } from "antd";
 
 import styled from "styled-components";
-import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import {
   useAssignTechnician,
+  useGetAppointmentById,
   useGetTechniciansToday,
 } from "../../../services/appointmentServiceApi";
 import { useState } from "react";
@@ -16,14 +16,20 @@ import { useQueryClient } from "@tanstack/react-query";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import { handleError } from "../../../utils/errorHandler";
+import ErrorPage from "../StaffComponents/Error";
+import ColorSpinner from "../StaffComponents/ColorSpinner";
 
 interface props {
   show: boolean;
   close: () => void;
-  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
+  appointmentId: number;
 }
 
-export default function Appointment_Reassign({ show, close, data }: props) {
+export default function Appointment_Reassign({
+  show,
+  close,
+  appointmentId,
+}: props) {
   interface AssignedTechnician {
     technicianID: number;
     technician: TechnicianModel<TechnicianSkills>;
@@ -38,10 +44,65 @@ export default function Appointment_Reassign({ show, close, data }: props) {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
+  const {
+    data: appointmentDetail,
+    isLoading,
+    error,
+    refetch,
+  } = useGetAppointmentById(appointmentId);
+  const { mutateAsync: reAssign } = useAssignTechnician();
   //lấy tất cả technicians trừ các technicians đã gán
-  const { data: technicians } = useGetTechniciansToday({
+  const { data: technicians, isFetching } = useGetTechniciansToday({
     Status: "Available",
   });
+
+  if (isLoading) {
+    return (
+      <ModalStyled open={show} onCancel={close} footer={null}>
+        <ContentWrapper>
+          <div
+            style={{
+              position: "absolute",
+              // display: "flex",
+              // justifyContent: "center",
+              // alignItems: "center",
+              top: "50%",
+              left: "50%",
+            }}
+          >
+            <ColorSpinner />
+          </div>
+        </ContentWrapper>
+      </ModalStyled>
+    );
+  }
+
+  if (error) {
+    notification.error({
+      message: "Appointment",
+      description: error?.message || "Failed to load appointment details",
+      showProgress: true,
+    });
+    return (
+      <ModalStyled open={show} onCancel={close} footer={null}>
+        <ContentWrapper>
+          <ErrorPage onGoHome={close} onRetry={refetch} />
+        </ContentWrapper>
+      </ModalStyled>
+    );
+  }
+
+  if (!appointmentDetail?.data) {
+    return (
+      <ModalStyled open={show} onCancel={close} footer={null}>
+        <ContentWrapper>
+          <ErrorPage onGoHome={close} onRetry={refetch} />
+        </ContentWrapper>
+      </ModalStyled>
+    );
+  }
+
+  const appointment = appointmentDetail.data;
 
   // Lấy danh sách ID của technician đã được gán (cả trước đó và mới chọn)
   const assignedTechnicianIDs = [
@@ -75,12 +136,10 @@ export default function Appointment_Reassign({ show, close, data }: props) {
     );
   };
 
-  const { mutateAsync: reAssign } = useAssignTechnician();
-
   const queryClient = useQueryClient();
   const handleReAssign = async () => {
-    const checkStatusForTechnicianAssign = () => {
-      if (data.status === "AddingPart") {
+    const checkStatusForTechnicianAssign = (): "Pending" | "InProgress" => {
+      if (appointment.status === "AddingPart") {
         return "Pending";
       } else {
         return "InProgress";
@@ -88,11 +147,11 @@ export default function Appointment_Reassign({ show, close, data }: props) {
     };
     try {
       await reAssign({
-        orderId: data.orderId,
+        orderId: appointment.orderId,
         technicianIds: assignedTechnicianIDs,
         status: checkStatusForTechnicianAssign(),
       });
-      queryClient.invalidateQueries({ queryKey: ["Staff Appointments"] });
+      queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
       setSelectedTechnicians([]);
       setIsSuccessModalOpen(true);
       setModalMessage("ReAssign Technicians successfully");
@@ -115,23 +174,21 @@ export default function Appointment_Reassign({ show, close, data }: props) {
       <ModalStyled open={show} onCancel={close} footer={null}>
         <PageContainer>
           <ContentWrapper>
-            {/* Header */}
             <Card>
               <Header>
                 <h1>Re-Assign Technicians</h1>
-                <p>Manage technicians for appointment #{data.id}</p>
+                <p>Manage technicians for appointment #{appointment.id}</p>
               </Header>
             </Card>
 
-            {/* Previously Assigned Technicians */}
-            {data.technicians.length > 0 && (
+            {appointment.technicians.length > 0 && (
               <Card>
                 <SectionHeader>
-                  <h2>Currently Assigned ({data.technicians.length})</h2>
+                  <h2>Currently Assigned ({appointment.technicians.length})</h2>
                 </SectionHeader>
 
                 <TechnicianGrid>
-                  {data.technicians.map((assignment) => (
+                  {appointment.technicians.map((assignment) => (
                     <TechnicianCard
                       key={assignment.id}
                       technician={assignment}
@@ -145,7 +202,6 @@ export default function Appointment_Reassign({ show, close, data }: props) {
               </Card>
             )}
 
-            {/* New Selected Technicians */}
             <Card>
               <SectionHeader>
                 <h2>New Assignments ({selectedTechnicians.length})</h2>
@@ -204,13 +260,17 @@ export default function Appointment_Reassign({ show, close, data }: props) {
 
               <SearchResultsContainer>
                 <TechnicianGrid>
-                  {filteredTechnicians.map((technician) => (
-                    <TechnicianCard
-                      key={technician.id}
-                      technician={technician}
-                      onAdd={() => handleAddTechnician(technician)}
-                    />
-                  ))}
+                  {isFetching ? (
+                    <ColorSpinner />
+                  ) : (
+                    filteredTechnicians.map((technician) => (
+                      <TechnicianCard
+                        key={technician.id}
+                        technician={technician}
+                        onAdd={() => handleAddTechnician(technician)}
+                      />
+                    ))
+                  )}
                 </TechnicianGrid>
 
                 {filteredTechnicians.length === 0 && searchQuery && (
@@ -333,7 +393,7 @@ const ModalStyled = styled(Modal)`
   top: 2%;
   .ant-modal-content {
     width: 1000px !important;
-    height: 90vh !important;
+    height: 94vh !important;
     overflow: hidden;
   }
 `;
@@ -709,6 +769,7 @@ const ActionButton = styled.button<{ $disabled?: boolean }>`
   cursor: ${(props) => (props.$disabled ? "not-allowed" : "pointer")};
   transition: all 0.3s ease;
   font-family: "Outfit", sans-serif;
+  margin-top: auto;
 
   ${(props) =>
     props.$disabled
