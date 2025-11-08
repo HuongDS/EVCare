@@ -13,19 +13,19 @@ import {
   InboxOutlined,
   LineChartOutlined,
   LogoutOutlined,
+  ScheduleOutlined,
   SettingOutlined,
-  ShoppingOutlined,
   SolutionOutlined,
   TeamOutlined,
   ToolOutlined,
   UserOutlined,
+  WechatWorkOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { deleteToken, logout } from "../../services/authService";
 import { useNavigate } from "react-router";
 import { useAppDispatch } from "../../states/store";
 import { logoutRedux } from "../../states/authSlice";
-import { MessageCircleMore } from "lucide-react";
 
 interface MenuItem {
   key: string;
@@ -126,7 +126,7 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "5",
-      icon: <ShoppingOutlined size={20} />,
+      icon: <ScheduleOutlined size={20} />,
       label: "Appointments",
       route: "/staff/appointments",
     },
@@ -138,7 +138,7 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "7",
-      icon: <MessageCircleMore size={20} />,
+      icon: <WechatWorkOutlined size={20} />,
       label: "Chat",
       route: "/staff/chat-with-customer",
     },
@@ -202,7 +202,9 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
   useEffect(() => {
     const currentPath = window.location.pathname;
-    const foundKey = menuByRole[role].find((item) => item.route === currentPath)?.key;
+    const foundKey = menuByRole[role].find(
+      (item) => item.route === currentPath
+    )?.key;
 
     if (foundKey) {
       setSelectedKey([foundKey]);
