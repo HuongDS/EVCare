@@ -225,22 +225,6 @@ const LoadingContent = styled.div`
   color: #e2e8f0;
 `;
 
-const Spinner = styled.div`
-  width: 48px;
-  height: 48px;
-  border: 4px solid rgba(59, 130, 246, 0.2);
-  border-top-color: #3b82f6;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 16px;
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`;
-
 const ErrorContainer = styled.div`
   display: flex;
   align-items: center;
