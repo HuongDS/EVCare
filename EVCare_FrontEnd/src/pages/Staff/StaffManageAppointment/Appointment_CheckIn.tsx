@@ -1,4 +1,7 @@
+<<<<<<< HEAD
+=======
 // import styled from "styled-components";
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
 import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import { useCreateNewOrder } from "../../../services/orderServiceApi";
 import Zoom from "react-medium-image-zoom";
@@ -15,6 +18,18 @@ import FailedModal from "../../../components/StatusModal/FailModal";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
 import { APPOINTMENT_MESSAGE } from "../../../constants/messages/Message";
 import { useChangeAppointmentStatus } from "../../../services/appointmentServiceApi";
+<<<<<<< HEAD
+import {
+  User,
+  Car,
+  Phone,
+  FileText,
+  CheckCircle,
+  XCircle,
+  Image as ImageIcon,
+  Wrench,
+} from "lucide-react";
+=======
 import { User, Car, Phone, FileText, CheckCircle, XCircle, Image as ImageIcon, Wrench } from "lucide-react";
 import {
   ActionButtons,
@@ -42,6 +57,7 @@ import {
   SpinnerWrapper,
   VehicleImage,
 } from "./styles/Appointment_CheckIn.styled";
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
 
 interface Props {
   data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
@@ -265,3 +281,30 @@ export default function Appointment_CheckIn({ data, close }: Props) {
     </PageContainer>
   );
 }
+
+import {
+  ActionButtons,
+  AppointmentId,
+  CancelButton,
+  Card,
+  CardTitle,
+  CheckInButton,
+  ContentWrapper,
+  Header,
+  HeaderIcon,
+  HeaderText,
+  ImageGrid,
+  InfoGrid,
+  InfoItem,
+  InfoLabel,
+  InfoValue,
+  MainContent,
+  NotesBox,
+  PageContainer,
+  ServiceItem,
+  ServiceName,
+  ServiceNumber,
+  ServicesList,
+  SpinnerWrapper,
+  VehicleImage,
+} from "./styles/Appointment_CheckIn.styled";

@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
-import styled, { keyframes } from "styled-components";
-import { Card, Divider, Button, Tag } from "antd";
+import { Divider } from "antd";
 import {
   CreditCardOutlined,
   DollarOutlined,
@@ -20,10 +19,15 @@ import { useHandlePayment } from "../../../services/PaymentServiceApi";
 import { handleError } from "../../../utils/errorHandler";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { useQueryClient } from "@tanstack/react-query";
+<<<<<<< HEAD
+import CancelPaymentButton from "../StaffComponents/CancelPaymentButton";
+import { useStaffDashboardHub } from "../../../hooks/useStaffHub";
+=======
 // import SpinnerComponent from "../../../components/SpinnerComponent";
 import CancelPaymentButton from "../StaffComponents/CancelPaymentButton";
 import { useStaffDashboardHub } from "../../../hooks/useStaffHub";
 import { MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
 import { useNotification } from "../../../context/useNotification";
 import ColorSpinner from "../StaffComponents/ColorSpinner";
 import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
@@ -33,22 +37,29 @@ interface PaymentPageProps {
   onPaymentSuccess: () => void;
 }
 
+<<<<<<< HEAD
+export default function Appointment_Payment({
+  data,
+  onPaymentSuccess,
+}: PaymentPageProps) {
+  const [paymentMethod, setPaymentMethod] = useState<
+    "VnPay" | "PayOs" | "Cash"
+  >();
+=======
 const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
   const [paymentMethod, setPaymentMethod] = useState<"VnPay" | "PayOs" | "Cash">();
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
   const [vnPayPending, setVnPayPending] = useState(false);
   const [qrcode, setQrCode] = useState("");
+  const [openQrCode, setOpenQrcode] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const { data: orderDetail } = useGetOrderDetail(data.orderId);
   const queryClient = useQueryClient();
   const notification = useNotification();
 
   useStaffDashboardHub<string>((type) => {
     if (type === "InvoiceComplete") {
-      notification.success({
-        message: MSG_TITLE.PAYMENT,
-        description: SUCCESS_MESSAGE.PAID_SUCCESSFULLY,
-        showProgress: true,
-      });
-      onPaymentSuccess();
+      setIsSuccess(true);
     }
   });
 
@@ -57,6 +68,7 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
       const response = await handlePaymentMethod();
 
       if (paymentMethod === "PayOs" && response?.data) {
+        setOpenQrcode(true);
         return;
       }
 
@@ -213,7 +225,7 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
               </PaymentBtn>
             </PaymentButtons>
 
-            {paymentMethod === "PayOs" && (
+            {paymentMethod === "PayOs" && openQrCode && (
               <QRSection>
                 {isPending ? <ColorSpinner width="6em" height="6em" /> : <iframe src={qrcode} />}
                 <QRInfo>
@@ -226,7 +238,7 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
             {vnPayPending && (
               <PaymentCard>
                 <FlexContainer>
-                  <Spinner />
+                  <ColorSpinner width="3em" height="3em" />
                   <TextContainer>
                     <MainText>Awaiting Payment</MainText>
                     <Description>Payment instructions have been sent to customer email via VNPay</Description>
@@ -251,382 +263,47 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
           </ConfirmButton>
         </Footer>
       </ContentWrapper>
+      {isSuccess && (
+        <SuccessModal
+          header="Appointment Payment"
+          message="Appointment is paid successfully"
+          action={onPaymentSuccess}
+        />
+      )}
     </PageContainer>
   );
-};
+}
 
-export default PaymentPage;
-
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: linear-gradient(135deg, #3bf695 0%, #00ab66 100%);
-  padding: 32px 20px;
-  border-radius: 20px;
-  * {
-    font-family: "Outfit", sans-serif !important;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  max-width: 90%;
-  margin: 0 auto;
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-`;
-
-const Header = styled.div`
-  padding: 24px 32px;
-  background: linear-gradient(135deg, #1da1f2 0%, #1877f2 100%);
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  h1 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 700;
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
-
-    h1 {
-      font-size: 24px;
-    }
-  }
-`;
-
-const AppointmentTag = styled.div`
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-`;
-
-const MainContent = styled.div`
-  padding: 24px 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-
-  @media (max-width: 768px) {
-    padding: 20px;
-  }
-`;
-
-const StyledCard = styled(Card)`
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-  .ant-card-head {
-    background: #f8f9fa;
-    font-weight: 700;
-    font-size: 16px;
-  }
-`;
-
-const InfoGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-`;
-
-const InfoItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const InfoLabel = styled.div`
-  font-size: 12px;
-  color: #999;
-  font-weight: 600;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-const InfoValue = styled.div`
-  font-size: 15px;
-  color: #333;
-  font-weight: 600;
-`;
-
-const TotalRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const TotalLabel = styled.div`
-  font-size: 18px;
-  font-weight: 700;
-  color: #333;
-`;
-
-const TotalAmount = styled.div`
-  font-size: 24px;
-  font-weight: 700;
-  color: #667eea;
-`;
-
-const PaymentButtons = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const PaymentBtn = styled(Button)<{ $selected: boolean }>`
-  height: 64px !important;
-  border-radius: 12px !important;
-  font-weight: 600 !important;
-  font-size: 15px !important;
-  transition: all 0.3s ease !important;
-
-  ${(props) =>
-    props.$selected
-      ? `
-    background: #667eea !important;
-    color: white !important;
-    border-color: #667eea !important;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
-    transform: translateY(-2px);
-  `
-      : `
-    background: white !important;
-    color: #667eea !important;
-    border: 2px solid #667eea !important;
-    
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
-    }
-    
-    &:disabled {
-    opacity: 0.6 !important;
-    pointer-events: none !important;
-    background: #f0f0f0 !important;
-    color: #999 !important;
-    border-color: #ddd !important;
-    box-shadow: none !important;
-    transform: none !important;
-    }
-  `}
-`;
-
-const QRSection = styled.div`
-  margin-top: 24px;
-  padding: 24px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  iframe {
-    width: 100%;
-    height: 60vh;
-  }
-`;
-
-const QRInfo = styled.div`
-  text-align: center;
-
-  p {
-    margin: 0 0 8px 0;
-    color: #666;
-    font-size: 14px;
-  }
-`;
-
-const AmountTag = styled(Tag)`
-  font-size: 16px !important;
-  padding: 8px 16px !important;
-  font-weight: 700 !important;
-  background: #667eea !important;
-  color: white !important;
-  border: none !important;
-`;
-
-const Footer = styled.div`
-  display: flex;
-  gap: 10px;
-  padding: 24px 32px;
-  background: #f8f9fa;
-  border-top: 1px solid #e0e0e0;
-
-  @media (max-width: 768px) {
-    padding: 20px;
-  }
-`;
-
-const ConfirmButton = styled(Button)`
-  width: 100%;
-  height: 56px !important;
-  font-size: 18px !important;
-  font-weight: 700 !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  border: none !important;
-  border-radius: 12px !important;
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
-
-  &:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5) !important;
-  }
-
-  &:disabled {
-    background: #e0e0e0 !important;
-    box-shadow: none !important;
-    transform: none !important;
-  }
-`;
-
-const TableSection = styled.div`
-  margin-bottom: 32px;
-`;
-
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-`;
-
-const TableHeader = styled.thead`
-  background: #f5f5f5;
-
-  th {
-    padding: 12px;
-    text-align: left;
-    font-size: 13px;
-    font-weight: 700;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-
-    &:nth-child(2) {
-      text-align: center;
-    }
-
-    &:nth-child(3),
-    &:nth-child(4),
-    &:nth-child(5) {
-      text-align: right;
-    }
-  }
-
-  @media (max-width: 768px) {
-    th {
-      padding: 10px 8px;
-      font-size: 12px;
-    }
-  }
-`;
-
-const TableBody = styled.tbody`
-  tr {
-    border-bottom: 1px solid #e0e0e0;
-
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-
-  td {
-    padding: 14px 12px;
-    font-size: 14px;
-    color: #333;
-
-    &:nth-child(2) {
-      text-align: center;
-      font-weight: 600;
-    }
-
-    &:nth-child(3),
-    &:nth-child(4),
-    &:nth-child(5) {
-      text-align: right;
-      font-weight: 600;
-    }
-  }
-
-  @media (max-width: 768px) {
-    td {
-      padding: 12px 8px;
-      font-size: 13px;
-    }
-  }
-`;
-
-const spin = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`;
-
-const PaymentCard = styled.div`
-  margin-top: 10px;
-  padding: 16px;
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 8px;
-`;
-
-const FlexContainer = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-`;
-
-const Spinner = styled.div`
-  width: 20px;
-  height: 20px;
-  border: 2px solid #3b82f6;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: ${spin} 1s linear infinite;
-  margin-top: 2px;
-  flex-shrink: 0;
-`;
-
-const TextContainer = styled.div`
-  flex: 1;
-`;
-
-const MainText = styled.p`
-  font-size: 14px;
-  color: #1e3a8a;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-`;
-
-const Description = styled.p`
-  font-size: 14px;
-  color: #1e40af;
-  margin: 0 0 8px 0;
-`;
-
-const HintText = styled.p`
-  font-size: 12px;
-  color: #2563eb;
-  margin: 0;
-`;
+import {
+  AmountTag,
+  AppointmentTag,
+  ConfirmButton,
+  ContentWrapper,
+  Description,
+  FlexContainer,
+  Footer,
+  Header,
+  HintText,
+  InfoGrid,
+  InfoItem,
+  InfoLabel,
+  InfoValue,
+  MainContent,
+  MainText,
+  PageContainer,
+  PaymentBtn,
+  PaymentButtons,
+  PaymentCard,
+  QRInfo,
+  QRSection,
+  StyledCard,
+  Table,
+  TableBody,
+  TableHeader,
+  TableSection,
+  TextContainer,
+  TotalAmount,
+  TotalLabel,
+  TotalRow,
+} from "./styles/Appointment_Payment.styled";
+import SuccessModal from "../../../components/StatusModal/SuccessModal";

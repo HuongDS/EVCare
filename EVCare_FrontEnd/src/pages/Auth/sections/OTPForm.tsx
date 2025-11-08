@@ -15,7 +15,7 @@ type OTPFormProps = {
 
 export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disable }: OTPFormProps) {
   const handleChange = (i: number, val: string) => {
-    if (!ONE_NUMBER_REGEX.test(val)) return;
+    if (val !== "" && !ONE_NUMBER_REGEX.test(val)) return;
 
     setOtp((prev) => {
       const next = [...prev];
@@ -23,6 +23,15 @@ export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disab
       return next;
     });
 
+<<<<<<< HEAD
+    if (val && i < 5) {
+      const nextInput = document.getElementById(`otp-${i + 1}`);
+      nextInput?.focus();
+    } else if (!val && i > 0) {
+      const prevInput = document.getElementById(`otp-${i - 1}`);
+      prevInput?.focus();
+    }
+=======
     // if (val && i < 5) {
     //   const nextInput = document.getElementById(`otp-${i + 1}`);
     //   nextInput?.focus();
@@ -33,6 +42,7 @@ export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disab
         document.getElementById(`otp-${i + 1}`)?.focus();
       }
     });
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
   };
 
   const handleKeyDown = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -48,6 +58,17 @@ export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disab
     const pastedData = e.clipboardData.getData("text").slice(0, 6);
     const digits = pastedData.split("").filter((ch) => ONE_NUMBER_REGEX.test(ch));
 
+<<<<<<< HEAD
+    for (let i = 0; i < pastedData.length; i++) {
+      if (ONE_NUMBER_REGEX.test(pastedData[i])) {
+        newOtp[i] = pastedData[i];
+      }
+    }
+
+    setOtp(newOtp);
+    requestAnimationFrame(() => {
+      document.getElementById(`otp-${pastedData.length - 1}`)?.focus();
+=======
     setOtp(() => {
       const newArr = new Array(6).fill("");
       digits.forEach((d, i) => (newArr[i] = d));
@@ -57,6 +78,7 @@ export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disab
       const nextIndex = Math.min(digits.length, 5);
       const nextInput = document.getElementById(`otp-${nextIndex}`);
       nextInput?.focus();
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
     });
   };
 
