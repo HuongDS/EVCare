@@ -90,7 +90,7 @@ export const SortLabel = styled.span`
   font-size: 20px;
 `;
 
-export const SortButton = styled(Button)`
+export const SortButton = styled(Button as any)`
   margin: 0 0.25rem;
   border-radius: 12px;
   font-weight: 500;

@@ -14,9 +14,9 @@ using DataAccess.Interfaces;
 using Moq;
 
 namespace Application.Tests {
-    public class AppointmentPartConditionTests {
+    public class AppointmentPartConditionServiceTests {
         private readonly IFixture _fixture;
-        public AppointmentPartConditionTests() {
+        public AppointmentPartConditionServiceTests() {
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization { ConfigureMembers = false });
         }

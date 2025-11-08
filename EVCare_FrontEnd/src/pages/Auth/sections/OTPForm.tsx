@@ -13,13 +13,7 @@ type OTPFormProps = {
   disable: boolean;
 };
 
-export default function OTPForm({
-  setIsOpen,
-  otp,
-  setOtp,
-  handleVerifyOTP,
-  disable,
-}: OTPFormProps) {
+export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disable }: OTPFormProps) {
   const handleChange = (i: number, val: string) => {
     if (val !== "" && !ONE_NUMBER_REGEX.test(val)) return;
 
@@ -29,6 +23,7 @@ export default function OTPForm({
       return next;
     });
 
+<<<<<<< HEAD
     if (val && i < 5) {
       const nextInput = document.getElementById(`otp-${i + 1}`);
       nextInput?.focus();
@@ -36,12 +31,21 @@ export default function OTPForm({
       const prevInput = document.getElementById(`otp-${i - 1}`);
       prevInput?.focus();
     }
+=======
+    // if (val && i < 5) {
+    //   const nextInput = document.getElementById(`otp-${i + 1}`);
+    //   nextInput?.focus();
+    // }
+
+    requestAnimationFrame(() => {
+      if (val && i < 5) {
+        document.getElementById(`otp-${i + 1}`)?.focus();
+      }
+    });
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
   };
 
-  const handleKeyDown = (
-    i: number,
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
+  const handleKeyDown = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace" && !otp[i] && i > 0) {
       const prevInput = document.getElementById(`otp-${i - 1}`);
       prevInput?.focus();
@@ -50,9 +54,11 @@ export default function OTPForm({
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").slice(0, 6);
-    const newOtp = [...otp];
 
+    const pastedData = e.clipboardData.getData("text").slice(0, 6);
+    const digits = pastedData.split("").filter((ch) => ONE_NUMBER_REGEX.test(ch));
+
+<<<<<<< HEAD
     for (let i = 0; i < pastedData.length; i++) {
       if (ONE_NUMBER_REGEX.test(pastedData[i])) {
         newOtp[i] = pastedData[i];
@@ -62,6 +68,17 @@ export default function OTPForm({
     setOtp(newOtp);
     requestAnimationFrame(() => {
       document.getElementById(`otp-${pastedData.length - 1}`)?.focus();
+=======
+    setOtp(() => {
+      const newArr = new Array(6).fill("");
+      digits.forEach((d, i) => (newArr[i] = d));
+      return newArr;
+    });
+    requestAnimationFrame(() => {
+      const nextIndex = Math.min(digits.length, 5);
+      const nextInput = document.getElementById(`otp-${nextIndex}`);
+      nextInput?.focus();
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
     });
   };
 
@@ -107,12 +124,7 @@ export default function OTPForm({
           <SpinnerComponent />
         </SpinnerWrapper>
       ) : (
-        <VerifyButton
-          type="button"
-          onClick={handleVerifyOTP}
-          disabled={!isComplete}
-          $enabled={isComplete}
-        >
+        <VerifyButton type="button" onClick={handleVerifyOTP} disabled={!isComplete} $enabled={isComplete}>
           Verify Code
         </VerifyButton>
       )}
@@ -231,10 +243,7 @@ const OTPInput = styled.input<{ $filled: boolean }>`
 const VerifyButton = styled.button<{ $enabled: boolean }>`
   width: 100%;
   padding: 16px;
-  background: ${(props) =>
-    props.$enabled
-      ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)"
-      : "#e0e0e0"};
+  background: ${(props) => (props.$enabled ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)" : "#e0e0e0")};
   color: ${(props) => (props.$enabled ? "white" : "#9e9e9e")};
   border: none;
   border-radius: 12px;
@@ -243,8 +252,7 @@ const VerifyButton = styled.button<{ $enabled: boolean }>`
   font-family: "Outfit", sans-serif;
   cursor: ${(props) => (props.$enabled ? "pointer" : "not-allowed")};
   transition: all 0.3s ease;
-  box-shadow: ${(props) =>
-    props.$enabled ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none"};
+  box-shadow: ${(props) => (props.$enabled ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none")};
   margin-bottom: 20px;
 
   &:hover {

@@ -86,8 +86,7 @@ export const LIST_SERVICES_MESSAGE = {
 
 //List of appointment
 export const LIST_APPOINTMENTS_MESSAGE = {
-  EMPTY_PENDING: (status: string) =>
-    `There are currently no ${status} appointments`,
+  EMPTY_PENDING: (status: string) => `There are currently no ${status} appointments`,
   NO_APPOINTMENT_FOUND: "No appointments found for: ",
 };
 
@@ -96,11 +95,11 @@ export const APPOINTMENT_MESSAGE = {
   APPOINTMENT_CHECKIN_SUCCESS: "Appointment is checked in successfully",
   APPOINTMENT_CANCEL_SUCCESS: "Appointment is cancelled successfully",
   APPOINTMENT_CANCEL_FAIL: "Failed to cancel this appointment",
-  APPOINTMENT_CHECKIN_FAIL:
-    "Oops! You can only check in on customer's appointment day.",
+  APPOINTMENT_CHECKIN_FAIL: "Oops! You can only check in on customer's appointment day.",
   CREATE_APPOINTMENT_SUCCESS: "Appointment is created successfully",
 };
 
 export const FORM_MESSAGES = {
   NAME: "Please enter your name.",
+  INVALID_NAME: "Your name is invalid",
 };
