@@ -1,5 +1,4 @@
 import { useState } from "react";
-import styled from "styled-components";
 import { Model3dScence } from "./Model3dScence";
 import PartsPanel from "./PartsPanel";
 import { useGetPartDamage } from "../../services/Model3dService";
@@ -10,6 +9,17 @@ import { closeModel3d } from "../../states/uiSlice";
 import ShowButton from "../../components/Button/ShowButton";
 import { TriangleAlert } from "lucide-react";
 import ColorSpinner from "../Staff/StaffComponents/ColorSpinner";
+import {
+  CanvasWrapper,
+  Container,
+  ErrorContainer,
+  ErrorContent,
+  LeftPanel,
+  LoadingContent,
+  LoadingOverlay,
+  PopupStyled,
+  RightPanel,
+} from "./styles/Model3dViewer.styled";
 
 interface Model3dProps {
   data?: number;
@@ -109,6 +119,8 @@ export default function Model3dViewer({ data }: Model3dProps) {
     </Container>
   );
 }
+<<<<<<< HEAD
+=======
 
 const PopupStyled = styled.div`
   position: fixed;
@@ -259,3 +271,4 @@ const CanvasWrapper = styled.div`
     outline: none;
   }
 `;
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
