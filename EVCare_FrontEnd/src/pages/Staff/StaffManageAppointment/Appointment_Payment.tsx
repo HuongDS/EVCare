@@ -10,13 +10,13 @@ import {
   CarOutlined,
 } from "@ant-design/icons";
 import { useGetOrderDetail } from "../../../services/orderServiceApi";
-import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import { formatDate } from "../../../utils/formatDate";
 import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import { usePayByPayOS } from "../../../services/PaymentServiceApi";
+import { useHandlePayment } from "../../../services/PaymentServiceApi";
 import { handleError } from "../../../utils/errorHandler";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,10 +28,11 @@ import {
   SUCCESS_MESSAGE,
 } from "../../../constants/messages/Message";
 import { useNotification } from "../../../context/useNotification";
+import ColorSpinner from "../StaffComponents/ColorSpinner";
+import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
 
 interface PaymentPageProps {
-  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
-  currentStep: number;
+  data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
   onPaymentSuccess: () => void;
 }
 
@@ -77,7 +78,7 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
   };
 
   //lấy qr code
-  const { mutateAsync: payment, isPending } = usePayByPayOS();
+  const { mutateAsync: payment, isPending } = useHandlePayment();
   const handlePaymentMethod = useCallback(async () => {
     try {
       const response = await payment({
@@ -135,17 +136,19 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
                 <InfoLabel>
                   <CarOutlined /> License Plate
                 </InfoLabel>
-                <InfoValue>{data.licensePlate}</InfoValue>
+                <InfoValue>{data.vehiclePlateNumber}</InfoValue>
               </InfoItem>
               <InfoItem>
                 <InfoLabel>Vehicle Model</InfoLabel>
-                <InfoValue>{data.vehicleModel}</InfoValue>
+                <InfoValue>{data.vehicleName}</InfoValue>
               </InfoItem>
               <InfoItem style={{ gridColumn: "1 / -1" }}>
                 <InfoLabel>
                   <CalendarOutlined /> Appointment Date
                 </InfoLabel>
-                <InfoValue>{formatDate(data.appointmentDate)}</InfoValue>
+                <InfoValue>
+                  {formatDate(data.appointmentDate.toString())}
+                </InfoValue>
               </InfoItem>
             </InfoGrid>
           </StyledCard>
@@ -226,7 +229,11 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
 
             {paymentMethod === "PayOs" && (
               <QRSection>
-                {isPending ? <SpinnerComponent /> : <iframe src={qrcode} />}
+                {isPending ? (
+                  <ColorSpinner width="6em" height="6em" />
+                ) : (
+                  <iframe src={qrcode} />
+                )}
                 <QRInfo>
                   <p>Scan QR code to complete payment</p>
                   <AmountTag>
@@ -262,7 +269,16 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
             onClick={handlePayment}
             disabled={!paymentMethod}
           >
-            Confirm Payment
+            {isPending ? (
+              <div style={{ textAlign: "center" }}>
+                <TextWaitingEffect
+                  text="Waiting for processing"
+                  fontSize="20px"
+                />
+              </div>
+            ) : (
+              <text>Confirm Payment</text>
+            )}
           </ConfirmButton>
         </Footer>
       </ContentWrapper>

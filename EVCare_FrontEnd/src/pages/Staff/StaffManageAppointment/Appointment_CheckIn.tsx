@@ -1,8 +1,6 @@
 import styled from "styled-components";
-import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
-import { useAppDispatch } from "../../../states/store";
-import { setStep } from "../../../states/appointmentSlice";
-import { CreateNewOrder } from "../../../services/orderServiceApi";
+import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import { useCreateNewOrder } from "../../../services/orderServiceApi";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import type {
@@ -29,23 +27,19 @@ import {
 } from "lucide-react";
 
 interface Props {
-  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
-  currentStep: number;
+  data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
   close: () => void;
 }
 
-export default function Appointment_CheckIn({
-  data,
-  currentStep,
-  close,
-}: Props) {
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+export default function Appointment_CheckIn({ data, close }: Props) {
+  const [isCheckInSuccessOpen, setIsCheckInSuccessOpen] = useState(false);
+  const [isCancelSuccessOpen, setIsCancelSuccessOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [confirm, setConfirm] = useState(false);
   const [title, setTitle] = useState("Check In");
-  const dispatch = useAppDispatch();
-  const { mutateAsync: newOrder } = CreateNewOrder();
+
+  const { mutateAsync: newOrder } = useCreateNewOrder();
   const { mutateAsync: appointmentStatus, isPending } =
     useChangeAppointmentStatus();
   const queryClient = useQueryClient();
@@ -60,7 +54,9 @@ export default function Appointment_CheckIn({
       return true;
     } catch (error) {
       setTitle("Check In Failed");
-      setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_FAIL);
+      setModalMessage(
+        (error as Error).message || APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_FAIL
+      );
       setIsErrorModalOpen(true);
       return false;
     }
@@ -74,17 +70,19 @@ export default function Appointment_CheckIn({
     try {
       const order = await newOrder(createNewOrderParams);
 
-      if (order.data?.orderID !== null) {
-        data.orderId = order.data?.orderID || 0;
-        setTitle("Check In");
-        setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_SUCCESS);
-        setIsSuccessModalOpen(true);
-        await queryClient.invalidateQueries({
-          queryKey: ["Staff Appointments"],
-        });
+      if (!order.data?.orderID) {
+        setTitle("Create Order Failed");
+        setModalMessage("Order ID is missing.");
+        setIsErrorModalOpen(true);
+        return;
       }
+
+      // success flow
+      setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_SUCCESS);
+      setIsCheckInSuccessOpen(true);
+      await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
     } catch (error) {
-      setTitle("Check In");
+      setTitle("Create Order Failed");
       setModalMessage(String(error));
       setIsErrorModalOpen(true);
     }
@@ -98,26 +96,31 @@ export default function Appointment_CheckIn({
   };
 
   const handleCancel = async (status: "Canceled") => {
-    const isStatusChanged = await handleChangeAppointmentStatus(status);
-    setTitle("Appointment Cancellation");
+    const changeStatus = {
+      appointmentId: data.id,
+      status: status,
+    };
 
-    if (isStatusChanged) {
+    try {
+      const response = await appointmentStatus(changeStatus);
+
+      if (response.statusCode !== 200) {
+        setModalMessage(
+          response.message || APPOINTMENT_MESSAGE.APPOINTMENT_CANCEL_FAIL
+        );
+        setIsErrorModalOpen(true);
+        return;
+      }
       setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CANCEL_SUCCESS);
-      setIsSuccessModalOpen(true);
-      await queryClient.invalidateQueries({
-        queryKey: ["Staff Appointments"],
-      });
-      setTimeout(() => {
-        close();
-      }, 2000);
-    } else {
-      setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CANCEL_FAIL);
+      setIsCancelSuccessOpen(true);
+      await queryClient.invalidateQueries({ queryKey: ["Staff Appointments"] });
+    } catch (error) {
+      setTitle("Cancellation Failed");
+      setModalMessage(
+        (error as Error).message || APPOINTMENT_MESSAGE.APPOINTMENT_CANCEL_FAIL
+      );
       setIsErrorModalOpen(true);
     }
-  };
-
-  const handleChangeSteps = () => {
-    dispatch(setStep({ id: data.id, step: currentStep + 1 }));
   };
 
   const handleCloseModal = () => {
@@ -154,19 +157,19 @@ export default function Appointment_CheckIn({
                 <InfoLabel>
                   <Phone size={14} /> Phone Number
                 </InfoLabel>
-                <InfoValue>{data.phoneNumber ?? "N/A"}</InfoValue>
+                <InfoValue>{data.phoneNumber}</InfoValue>
               </InfoItem>
 
               <InfoItem>
                 <InfoLabel>
                   <Car size={14} /> Vehicle Model
                 </InfoLabel>
-                <InfoValue>{data.vehicleModel}</InfoValue>
+                <InfoValue>{data.vehicleName}</InfoValue>
               </InfoItem>
 
               <InfoItem>
                 <InfoLabel>License Plate</InfoLabel>
-                <InfoValue>{data.licensePlate}</InfoValue>
+                <InfoValue>{data.vehiclePlateNumber}</InfoValue>
               </InfoItem>
             </InfoGrid>
           </Card>
@@ -177,7 +180,7 @@ export default function Appointment_CheckIn({
               Services Requested
             </CardTitle>
 
-            <ServicesList>
+            <ServicesList style={{ overflowX: "hidden" }}>
               {data.services.map((service, index) => (
                 <ServiceItem key={index}>
                   <ServiceNumber>{index + 1}</ServiceNumber>
@@ -187,7 +190,7 @@ export default function Appointment_CheckIn({
             </ServicesList>
           </Card>
 
-          {data?.appointmentImages && data.appointmentImages.length > 0 && (
+          {data?.imagesUrls && data.imagesUrls.length > 0 && (
             <Card>
               <CardTitle>
                 <ImageIcon size={20} />
@@ -195,7 +198,7 @@ export default function Appointment_CheckIn({
               </CardTitle>
 
               <ImageGrid>
-                {data.appointmentImages.map((img, i) => (
+                {data.imagesUrls.map((img, i) => (
                   <Zoom key={i}>
                     <VehicleImage src={img} alt={`Vehicle ${i + 1}`} />
                   </Zoom>
@@ -236,11 +239,18 @@ export default function Appointment_CheckIn({
         </ActionButtons>
       </ContentWrapper>
 
-      {isSuccessModalOpen && (
+      {isCheckInSuccessOpen && (
         <SuccessModal
-          header={title}
+          header="Check In"
           message={modalMessage}
-          action={handleChangeSteps}
+          action={() => setIsCheckInSuccessOpen(false)}
+        />
+      )}
+      {isCancelSuccessOpen && (
+        <SuccessModal
+          header="Appointment Canceled"
+          message={modalMessage}
+          action={close}
         />
       )}
       {isErrorModalOpen && (

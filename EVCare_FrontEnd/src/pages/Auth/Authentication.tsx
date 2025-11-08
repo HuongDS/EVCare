@@ -6,6 +6,7 @@ import ResetPasswordForm from "./sections/ResetPasswordForm";
 import { closeLogin } from "../../states/uiSlice";
 import ForgotPassword from "./sections/ForgotPassword";
 import { useAuthentication } from "../../hooks/useAuthentication";
+import OTPForm from "./sections/OTPForm";
 
 // interface AuthProps {
 //   show: boolean;
@@ -24,6 +25,8 @@ export default function Authentication() {
     phone,
     isLoading,
     isForgot,
+    isReset,
+    otp,
 
     dispatch,
     loginFormOpen,
@@ -36,12 +39,16 @@ export default function Authentication() {
     setLastName,
     setPhone,
     setIsForgot,
+    setIsOTP,
+    // setIsReset,
+    setOtp,
 
     handleLogin,
     handleSignUp,
     handleSubmitResetPassword,
     handChangeIsForgot,
     headerText,
+    handleVerifyOTP,
   } = useAuthentication();
 
   return (
@@ -59,12 +66,17 @@ export default function Authentication() {
           {!isOTP ? (
             <>
               {isForgot ? (
-                <ForgotPassword
-                  isLoading={isLoading}
-                  handChangeIsForgot={handChangeIsForgot}
-                  email={email}
-                  setEmail={setEmail}
-                />
+                !isReset ? (
+                  <ForgotPassword
+                    isLoading={isLoading}
+                    handChangeIsForgot={handChangeIsForgot}
+                    email={email}
+                    setEmail={setEmail}
+                    setIsForgot={setIsForgot}
+                  />
+                ) : (
+                  <ResetPasswordForm disable={isLoading} handleSubmit={handleSubmitResetPassword} />
+                )
               ) : (
                 <AuthForm
                   isSignUp={isSignUp}
@@ -89,7 +101,13 @@ export default function Authentication() {
               )}
             </>
           ) : (
-            <ResetPasswordForm disable={isLoading} handleSubmit={handleSubmitResetPassword} />
+            <OTPForm
+              setIsOpen={setIsOTP}
+              disable={isLoading}
+              otp={otp}
+              setOtp={setOtp}
+              handleVerifyOTP={handleVerifyOTP}
+            />
           )}
         </FormContainer>
       </StyledModal>

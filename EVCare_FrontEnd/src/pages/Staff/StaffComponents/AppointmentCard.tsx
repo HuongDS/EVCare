@@ -1,4 +1,4 @@
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import StatusTag from "../../../components/StatusTags/StatusTag";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import { formatDate } from "../../../utils/formatDate";
@@ -111,7 +111,10 @@ export default function AppointmentCard({
             </ActionButton>
           ) : data.status !== "Pending" && data.status !== "Canceled" ? (
             data.status === "AddingPart" ? (
-              <WaitingText>Adding parts...</WaitingText>
+              <ActionButton $variant="primary" onClick={onOpenProgress}>
+                <RefreshCw size={16} />
+                View
+              </ActionButton>
             ) : (
               <ActionButton $variant="primary" onClick={onOpenProgress}>
                 <RefreshCw size={16} />
@@ -384,20 +387,4 @@ const ActionButton = styled.button<{
   &:active {
     transform: translateY(0);
   }
-`;
-
-const blink = keyframes`
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-`;
-
-const WaitingText = styled.p`
-  color: #fa8c16;
-  font-style: italic;
-  font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-  margin: 0;
-  animation: ${blink} 2s infinite;
-  padding: 10px;
 `;

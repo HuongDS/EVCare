@@ -26,7 +26,7 @@
             _staffHub = staffHub;
         }
 
-        public async Task HandleAsync()
+        public virtual async Task HandleAsync()
         {
             var today = DateTime.Today;
             var performance = await _adminDashboardServices.GetPerformanceAsync(today, today);

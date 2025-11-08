@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { InputNumber } from "antd";
 import styled from "styled-components";
 import { Package, CheckCircle, Edit3, X, Users, SquareX } from "lucide-react";
-import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import {
   useGetOrderDetail,
   useStaffUpdateOrder,
@@ -15,7 +15,6 @@ import type {
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { formatCurrency } from "./../../../utils/formatCurrency";
 import { useAppDispatch } from "../../../states/store";
-import { setStep } from "../../../states/appointmentSlice";
 import type {
   OrderPartDto,
   UpdateOrderRequest,
@@ -24,37 +23,44 @@ import { useQueryClient } from "@tanstack/react-query";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
-import { useChangeAppointmentStatus } from "../../../services/appointmentServiceApi";
-import SpinnerComponent from "../../../components/SpinnerComponent";
+import {
+  useChangeAppointmentStatus,
+  useGetAllAppointments,
+} from "../../../services/appointmentServiceApi";
 import { useNotification } from "../../../context/useNotification";
 import {
   MSG_TITLE,
   SUCCESS_MESSAGE,
 } from "../../../constants/messages/Message";
 import { closeModel3d, openModel3d } from "../../../states/uiSlice";
-import ReFreshButton from "../../../components/Button/ReFreshButton";
 import ShowButton from "../../../components/Button/ShowButton";
 import { useLocation } from "react-router";
+import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
 
 interface Props {
-  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
-  currentStep: number;
+  data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
   closeModal: () => void;
+  onConfirmSuccess?: () => void;
 }
 
 export default function Appointment_Part_Tracking({
   data,
-  currentStep,
   closeModal,
+  onConfirmSuccess,
 }: Props) {
   const dispatch = useAppDispatch();
   const [parts, setParts] = useState<PartsDetailDto[]>([]);
-  const [editingPartId, setEditingPartId] = useState<number | null>(null);
+  const [editingPartId, setEditingPartId] = useState<{
+    partId: number;
+    techId: number;
+  } | null>(null);
   const [tempValue, setTempValue] = useState(1);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [confirm, setConfirm] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [stockMessage, setStockMessage] = useState("");
   const notification = useNotification();
 
   const location = useLocation();
@@ -65,6 +71,18 @@ export default function Appointment_Part_Tracking({
 
   //gọi hàm để lấy order detail
   const { data: order, isSuccess } = useGetOrderDetail(data.orderId);
+  const { data: appointments } = useGetAllAppointments({
+    pageSize: 20,
+    sortOrder: "desc",
+    sortField: "Appointment_Date",
+  });
+
+  const appointment = appointments?.data?.items?.find(
+    (appointment) => appointment.id === data.id
+  );
+
+  // Get working technicians from appointment data
+  const workingTechnicians = appointment?.technicians || [];
 
   //nếu lấy thành công thì set mảng parts vào trong state
   useEffect(() => {
@@ -75,35 +93,56 @@ export default function Appointment_Part_Tracking({
 
   //hàm này thay đổi quantity được nhập từ staff
   const handleQuantityChange = async (
-    partId: number,
-    newQuantity: number | null
+    partId: number | null,
+    technicianId: number,
+    newQuantity: number,
+    stock: number
   ) => {
-    if (newQuantity !== null) {
-      const updatedParts = parts.map((part) =>
-        part.id === partId ? { ...part, quantity: newQuantity } : part
-      );
-      setParts(updatedParts);
-      setEditingPartId(null);
-    } else {
-      notification.error({
-        message: "Change quantity error",
-        showProgress: true,
-      });
+    if (newQuantity > stock) {
+      setStockMessage(`Exceeds stock by ${newQuantity - stock} items`);
+      return;
     }
+    if (newQuantity)
+      if (newQuantity !== null) {
+        const updatedParts = parts.map((part) =>
+          part.technicianId === technicianId && part.id === partId
+            ? { ...part, quantity: newQuantity }
+            : part
+        );
+        setParts(updatedParts);
+        setEditingPartId(null);
+      } else {
+        notification.error({
+          message: "Change quantity error",
+          showProgress: true,
+        });
+      }
   };
 
   //hàm này xóa 1 part trong order
-  const handleDeletePart = (partId: number) => {
-    const updatedParts = parts.map((part) =>
-      part.id === partId ? { ...part, quantity: 0 } : part
+  const handleDeletePart = (
+    edittingPart: {
+      partId: number;
+      techId: number;
+    } | null
+  ) => {
+    setParts((prevParts) =>
+      prevParts.filter(
+        (part) =>
+          !(
+            part.id === editingPartId?.partId &&
+            part.technicianId === edittingPart?.techId
+          )
+      )
     );
-    setParts(updatedParts);
   };
 
   //Khi nhấn confirm thì gọi hàm này
-  const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
+  const { mutateAsync: updateOrderStatus, isPending: statusPending } =
+    useUpdateOrderStatus();
 
-  const { mutateAsync: updateOrder, isPending } = useStaffUpdateOrder();
+  const { mutateAsync: updateOrder, isPending: orderPending } =
+    useStaffUpdateOrder();
   const queryClient = useQueryClient();
 
   const handleConfirmOrder = async () => {
@@ -128,18 +167,11 @@ export default function Appointment_Part_Tracking({
 
       setIsSuccessModalOpen(true);
 
-      dispatch(setStep({ id: data.id, step: currentStep + 1 }));
+      onConfirmSuccess?.();
     } catch (error) {
       setModalMessage(String(error));
       setIsErrorModalOpen(true);
     }
-  };
-
-  //refresh order detail
-  const RefreshOrderDetail = () => {
-    queryClient.refetchQueries({
-      queryKey: ["OrderDetail", data.orderId],
-    });
   };
 
   const subtotal = parts.reduce(
@@ -150,9 +182,6 @@ export default function Appointment_Part_Tracking({
   const vatAmount = (subtotal * (order?.data?.vat ?? 0)) / 100;
 
   const calculateTotal = () => subtotal + vatAmount;
-
-  // Get working technicians from appointment data
-  const workingTechnicians = data.technicians || [];
 
   //đóng success, fail modal
   const handleCloseModal = () => {
@@ -188,7 +217,8 @@ export default function Appointment_Part_Tracking({
   };
 
   const handleCloseConfirm = () => {
-    setConfirm(false);
+    setConfirmCancel(false);
+    setConfirmDelete(false);
   };
 
   return (
@@ -200,7 +230,9 @@ export default function Appointment_Part_Tracking({
           </HeaderIcon>
           <HeaderText>
             <h1>Order Tracking</h1>
-            <OrderId>Order #{order?.data?.id}</OrderId>
+            <OrderId>
+              Order #{order?.data?.id} - Appointment ID: #{appointment?.id}
+            </OrderId>
           </HeaderText>
         </Header>
 
@@ -208,7 +240,6 @@ export default function Appointment_Part_Tracking({
           <SectionTitle>
             Order Parts ({parts.length})
             <div style={{ display: "flex", gap: "5px" }}>
-              <ReFreshButton action={RefreshOrderDetail} />
               <ShowButton
                 onclick={() => dispatch(openModel3d())}
                 text="Model 3D"
@@ -217,69 +248,104 @@ export default function Appointment_Part_Tracking({
             </div>
           </SectionTitle>
 
-          {parts.map((part) => (
-            <PartCard key={part.id}>
-              <PartImage src={part.imageUrl} alt={part.name} />
+          {parts.map((part, i) => (
+            <PartCard key={i}>
+              <PartLeft>
+                <PartImage src={part.imageUrl} alt={part.name} />
+                <PartInfo>
+                  <PartName>{part.name}</PartName>
+                  <TechInfo>
+                    Technician ID: {part.technicianId} — {part.technicianName}
+                  </TechInfo>
+                  <PriceRow>
+                    <PriceItem>
+                      <Label>Unit:</Label>
+                      <Value>{formatCurrency(part.price)}₫</Value>
+                    </PriceItem>
+                    <PriceItem>
+                      <Label>Replace:</Label>
+                      <Value>{formatCurrency(part.replacementPrice)}₫</Value>
+                    </PriceItem>
+                  </PriceRow>
+                </PartInfo>
+              </PartLeft>
 
-              <PartInfo>
-                <PartName>{part.name}</PartName>
-                <TechInfo>Technician ID: {part.technicianId}</TechInfo>
-                <PriceRow>
-                  <PriceItem>
-                    <Label>Unit:</Label>
-                    <Value>{formatCurrency(part.price)}₫</Value>
-                  </PriceItem>
-                  <PriceItem>
-                    <Label>Replace:</Label>
-                    <Value>{part.replacementPrice.toLocaleString()}₫</Value>
-                  </PriceItem>
-                </PriceRow>
-              </PartInfo>
+              <PartRight>
+                <QuantitySection>
+                  {editingPartId?.partId === part.id &&
+                  editingPartId.techId === part.technicianId ? (
+                    <QuantityEdit>
+                      <InputNumber
+                        min={1}
+                        defaultValue={part.quantity}
+                        onChange={(value) => setTempValue(value || 0)}
+                        onPressEnter={() =>
+                          handleQuantityChange(
+                            part.id,
+                            part.technicianId,
+                            tempValue,
+                            part.stock
+                          )
+                        }
+                        autoFocus
+                        style={{ fontFamily: "Outfit" }}
+                      />
+                      <IconButton
+                        onClick={() => {
+                          setEditingPartId(null);
+                          setStockMessage("");
+                        }}
+                      >
+                        <X size={16} />
+                      </IconButton>
+                    </QuantityEdit>
+                  ) : (
+                    <QuantityDisplay>
+                      <QuantityLabel>Qty</QuantityLabel>
+                      <QuantityValue>{part.quantity}</QuantityValue>
+                      <IconButton
+                        onClick={() => {
+                          setEditingPartId({
+                            partId: part.id,
+                            techId: part.technicianId,
+                          });
+                          setStockMessage("");
+                        }}
+                      >
+                        <Edit3 size={16} />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          setEditingPartId({
+                            partId: part.id,
+                            techId: part.technicianId,
+                          });
+                          setConfirmDelete(true);
+                          setStockMessage("");
+                        }}
+                        className="danger"
+                      >
+                        <X size={16} />
+                      </IconButton>
+                    </QuantityDisplay>
+                  )}
+                  {editingPartId?.partId === part.id &&
+                    editingPartId.techId === part.technicianId && (
+                      <StockWarning>{stockMessage}</StockWarning>
+                    )}
+                </QuantitySection>
 
-              <QuantitySection>
-                {editingPartId === part.id ? (
-                  <QuantityEdit>
-                    <InputNumber
-                      min={1}
-                      defaultValue={part.quantity}
-                      onChange={(value) => setTempValue(value || 0)}
-                      onPressEnter={() =>
-                        handleQuantityChange(part.id, tempValue)
-                      }
-                      autoFocus
-                      style={{ fontFamily: "Outfit" }}
-                    />
-                    <IconButton onClick={() => setEditingPartId(null)}>
-                      <X size={16} />
-                    </IconButton>
-                  </QuantityEdit>
-                ) : (
-                  <QuantityDisplay>
-                    <QuantityLabel>Qty</QuantityLabel>
-                    <QuantityValue>{part.quantity}</QuantityValue>
-                    <IconButton onClick={() => setEditingPartId(part.id)}>
-                      <Edit3 size={16} />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => handleDeletePart(part.id)}
-                      style={{ background: "#dc3545" }}
-                    >
-                      <X size={16} />
-                    </IconButton>
-                  </QuantityDisplay>
-                )}
-              </QuantitySection>
-
-              <PartTotal>
-                <TotalLabel>Total</TotalLabel>
-                <TotalValue>
-                  {(
-                    (part.price + part.replacementPrice) *
-                    part.quantity
-                  ).toLocaleString()}
-                  ₫
-                </TotalValue>
-              </PartTotal>
+                <PartTotal>
+                  <TotalLabel>Total</TotalLabel>
+                  <TotalValue>
+                    {(
+                      (part.price + part.replacementPrice) *
+                      part.quantity
+                    ).toLocaleString()}
+                    ₫
+                  </TotalValue>
+                </PartTotal>
+              </PartRight>
             </PartCard>
           ))}
         </Card>
@@ -301,17 +367,22 @@ export default function Appointment_Part_Tracking({
             <span>{calculateTotal().toLocaleString()}₫</span>
           </TotalRow>
           <ActionButton>
-            <ConfirmButton onClick={() => setConfirm(true)}>
-              <SquareX size={20} />
-              Cancel
-            </ConfirmButton>
-            {isPending ? (
-              <SpinnerComponent />
+            {orderPending || statusPending ? (
+              <TextWaitingEffect
+                text="Waiting for processing"
+                fontSize="20px"
+              />
             ) : (
-              <ConfirmButton onClick={handleConfirmOrder}>
-                <CheckCircle size={20} />
-                Confirm Order
-              </ConfirmButton>
+              <>
+                <ConfirmButton onClick={() => setConfirmCancel(true)}>
+                  <SquareX size={20} />
+                  Cancel
+                </ConfirmButton>
+                <ConfirmButton onClick={handleConfirmOrder}>
+                  <CheckCircle size={20} />
+                  Confirm Order
+                </ConfirmButton>
+              </>
             )}
           </ActionButton>
         </Card>
@@ -338,6 +409,7 @@ export default function Appointment_Part_Tracking({
                   <TechDetails>
                     <TechName>{tech.fullName}</TechName>
                     <TechId>ID: {tech.id}</TechId>
+                    <TechId>Phone: {tech.phone}</TechId>
                   </TechDetails>
                   <StatusBadge $status={tech.status}>{tech.status}</StatusBadge>
                 </TechnicianItem>
@@ -366,12 +438,20 @@ export default function Appointment_Part_Tracking({
         />
       )}
 
-      {confirm && (
+      {confirmCancel && (
         <ConfirmModal
-          open={confirm}
+          open={confirmCancel}
           onClose={handleCloseConfirm}
           onConfirm={handleCancelOrder}
           message="Do you want to cancel this order?"
+        />
+      )}
+      {confirmDelete && (
+        <ConfirmModal
+          open={confirmDelete}
+          onClose={handleCloseConfirm}
+          onConfirm={() => handleDeletePart(editingPartId)}
+          message="Do you want to delete this part?"
         />
       )}
     </PageContainer>
@@ -443,29 +523,61 @@ const SectionTitle = styled.h2`
 `;
 
 const PartCard = styled.div`
-  display: grid;
-  grid-template-columns: 70px 1fr auto auto;
-  gap: 16px;
-  align-items: center;
-  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 18px 20px;
   border: 2px solid #f0f0f0;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  transition: all 0.3s ease;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  background: #ffffff;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
 
   &:hover {
     border-color: #667eea;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
-  }
-
-  &:last-child {
-    margin-bottom: 0;
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
   }
 
   @media (max-width: 768px) {
-    grid-template-columns: 60px 1fr;
-    gap: 12px;
+    flex-direction: column;
+    gap: 14px;
   }
+`;
+
+const PartLeft = styled.div`
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
+  }
+`;
+
+const PartRight = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-width: 180px;
+  gap: 8px;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    min-width: auto;
+  }
+`;
+
+const StockWarning = styled.p`
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 600;
 `;
 
 const PartImage = styled.img`
@@ -519,12 +631,12 @@ const Label = styled.span`
 
 const Value = styled.span`
   font-size: 13px;
-  color: #666;
+  color: #000000;
   font-weight: 600;
 `;
 
 const QuantitySection = styled.div`
-  display: flex;
+  /* display: flex; */
   justify-content: center;
 
   @media (max-width: 768px) {
@@ -535,13 +647,12 @@ const QuantitySection = styled.div`
 
 const QuantityDisplay = styled.div`
   display: flex;
-  flex-direction: column;
+  justify-content: flex-end;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   padding: 10px 14px;
   background: #f8f9fa;
   border-radius: 8px;
-  min-width: 100px;
 `;
 
 const QuantityLabel = styled.div`
@@ -568,21 +679,24 @@ const QuantityEdit = styled.div`
 `;
 
 const IconButton = styled.button`
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border: none;
-  background: #667eea;
+  background: #00ad4e;
   color: white;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 
   &:hover {
-    background: #5568d3;
     transform: scale(1.1);
+  }
+
+  &.danger {
+    background: #dc3545;
   }
 `;
 
@@ -652,7 +766,8 @@ const TotalRow = styled(SummaryRow)`
 `;
 
 const ActionButton = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   button:nth-child(1) {
     background: linear-gradient(135deg, #c12a2a 0%, #eec0bc 100%);

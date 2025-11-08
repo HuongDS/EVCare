@@ -12,6 +12,7 @@ namespace DataAccess.Interfaces
     public interface ICustomerRepository : IGenericRepository<Customer>
     {
         Task<PageResultDto<CustomerViewModel>> GetAllCustomers(CustomerQueryDto model);
+        Task<int> GetBannedCustomers();
         public Task<CustomerViewDto?> GetCustomerByAccountId(int accountId);
     }
 }

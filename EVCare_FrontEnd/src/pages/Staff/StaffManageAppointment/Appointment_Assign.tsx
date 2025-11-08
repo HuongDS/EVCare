@@ -3,20 +3,17 @@ import styled from "styled-components";
 import { Search, User, Phone, CheckCircle, CircleX } from "lucide-react";
 import type { TechnicianModel } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import type { TechnicianSkills } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
+import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import {
-  // changeAppointmentStatus,
   useAssignTechnician,
   useChangeAppointmentStatus,
   useGetTechniciansToday,
 } from "../../../services/appointmentServiceApi";
-import { useAppDispatch } from "../../../states/store";
-import { setStep } from "../../../states/appointmentSlice";
 import { handleError } from "../../../utils/errorHandler";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
-import SpinnerComponent from "../../../components/SpinnerComponent";
 import { useQueryClient } from "@tanstack/react-query";
+import ColorSpinner from "../StaffComponents/ColorSpinner";
 
 interface AssignedTechnician {
   technicianID: number;
@@ -25,11 +22,9 @@ interface AssignedTechnician {
 }
 
 interface props {
-  data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
-  currentStep: number;
+  data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
 }
-const AssignTechnicianPage = ({ data, currentStep }: props) => {
-  const dispatch = useAppDispatch();
+export default function Appointment_Assign({ data }: props) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTechnicians, setSelectedTechnicians] = useState<
     AssignedTechnician[]
@@ -39,7 +34,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
   const [modalMessage, setModalMessage] = useState("");
   const queryClient = useQueryClient();
 
-  const allSkills = data.services.map((service) => service.id).flat();
+  const allSkills = data.services.map((service) => service.id);
 
   const { data: technicians } = useGetTechniciansToday({
     Skills: allSkills,
@@ -48,13 +43,18 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
 
   //search technician hiện có
   const filteredTechnicians =
-    technicians?.data?.items
-      ?.flat()
-      .filter(
-        (tech) =>
-          tech.fullName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          !selectedTechnicians.some((st) => st.technicianID === tech.id)
-      ) || [];
+    technicians?.data?.items?.filter((tech) => {
+      const nameMatch = tech.fullName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const skillMatch = tech.skills.some((skill) =>
+        skill.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      const notSelected = !selectedTechnicians.some(
+        (st) => st.technicianID === tech.id
+      );
+      return (nameMatch || skillMatch) && notSelected;
+    }) || [];
 
   //Add technician vào list
   const handleAddTechnician = async (
@@ -83,18 +83,21 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
 
   //Thay đổi appointment status - gán technicians vào appointment
   const { mutateAsync: assignTech, isPending } = useAssignTechnician();
+  const { mutateAsync: appointmentStatus } = useChangeAppointmentStatus();
   const handleAssignTechnician = async () => {
     try {
-      console.log("Orderid: " + data.orderId);
       await assignTech({
         orderId: data.orderId,
         technicianIds: techniciansList,
         status: "Pending",
       });
 
-      await queryClient.invalidateQueries({ queryKey: ["Staff Appointments"] });
-      setIsSuccessModalOpen(true);
+      await appointmentStatus({
+        appointmentId: data.id,
+        status: "AddingPart",
+      });
       setModalMessage("Assign Technicians successfully!");
+      setIsSuccessModalOpen(true);
     } catch (error) {
       handleError(error);
       setIsErrorModalOpen(true);
@@ -102,15 +105,9 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
     }
   };
 
-  //đổi trang thái appointment
-  const { mutateAsync: appointmentStatus } = useChangeAppointmentStatus();
-  const handleChangeStep = async () => {
+  const onAssignSuccess = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
     setIsSuccessModalOpen(false);
-    await appointmentStatus({
-      appointmentId: data.id,
-      status: "AddingPart",
-    });
-    dispatch(setStep({ id: data.id, step: currentStep + 1 }));
   };
 
   //đóng error modal
@@ -128,47 +125,75 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
           </Header>
         </Card>
 
-        <Card>
-          <SectionHeader>
-            <h2>Assigned Technicians ({selectedTechnicians.length})</h2>
-            {selectedTechnicians.length > 0 && (
-              <ButtonGroup>
-                <ClearButton onClick={() => setSelectedTechnicians([])}>
-                  Clear All
-                </ClearButton>
-                {isPending ? (
-                  <SpinnerComponent />
-                ) : (
-                  <SubmitButton onClick={handleAssignTechnician}>
-                    <CheckCircle size={20} />
-                    Assign Technicians
-                  </SubmitButton>
-                )}
-              </ButtonGroup>
-            )}
-          </SectionHeader>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "2fr 1fr",
+            gap: "5px",
+          }}
+        >
+          <Card data-testid="assigned-technicians-list">
+            <SectionHeader>
+              <h2>Assigned Technicians ({selectedTechnicians.length})</h2>
+              {selectedTechnicians.length > 0 && (
+                <ButtonGroup>
+                  <ClearButton
+                    onClick={() => setSelectedTechnicians([])}
+                    disabled={isPending}
+                  >
+                    Clear All
+                  </ClearButton>
+                  {isPending ? (
+                    <ColorSpinner width="3em" height="3em" />
+                  ) : (
+                    <SubmitButton onClick={handleAssignTechnician}>
+                      <CheckCircle size={20} />
+                      Assign
+                    </SubmitButton>
+                  )}
+                </ButtonGroup>
+              )}
+            </SectionHeader>
 
-          {selectedTechnicians.length === 0 ? (
-            <EmptyState>
-              <User size={48} />
-              <p>No technicians assigned yet</p>
-              <p>Scroll down to "Add Technician"</p>
-            </EmptyState>
-          ) : (
-            <TechnicianGrid>
-              {selectedTechnicians.map((assignment) => (
-                <TechnicianCard
-                  key={assignment.technicianID}
-                  technician={assignment.technician}
-                  onRemove={() =>
-                    handleRemoveTechnician(assignment.technicianID)
-                  }
-                  isSelected
-                />
-              ))}
-            </TechnicianGrid>
-          )}
-        </Card>
+            {selectedTechnicians.length === 0 ? (
+              <EmptyState>
+                <User size={48} />
+                <p>No technicians assigned yet</p>
+                <p>Scroll down to "Add Technician"</p>
+              </EmptyState>
+            ) : (
+              <TechnicianGrid>
+                {selectedTechnicians.map((assignment) => (
+                  <TechnicianCard
+                    key={assignment.technicianID}
+                    technician={assignment.technician}
+                    onRemove={() =>
+                      handleRemoveTechnician(assignment.technicianID)
+                    }
+                    isSelected
+                  />
+                ))}
+              </TechnicianGrid>
+            )}
+          </Card>
+          <Card>
+            <SectionHeader>
+              <h2>Services ({data.services.length})</h2>
+            </SectionHeader>
+            {data.services.length === 0 ? (
+              <EmptyState>
+                <User size={48} />
+                <p>No services</p>
+              </EmptyState>
+            ) : (
+              <ServiceGrid>
+                {data.services.map((service) => (
+                  <ServiceTag key={service.id}>{service.name}</ServiceTag>
+                ))}
+              </ServiceGrid>
+            )}
+          </Card>
+        </div>
 
         <Card>
           <SearchWrapper>
@@ -176,19 +201,20 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
               <Search size={20} />
               <input
                 type="text"
-                placeholder="Search technician by name..."
+                placeholder="Search technician by name or skills..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </SearchInput>
           </SearchWrapper>
 
-          <SearchResultsContainer>
+          <SearchResultsContainer data-testid="search-results-container">
             <TechnicianGrid>
               {filteredTechnicians.map((technician) => (
                 <TechnicianCard
                   key={technician.id}
                   technician={technician}
+                  data-testid={`technician-card-${technician.id}`}
                   onAdd={() => handleAddTechnician(technician)}
                 />
               ))}
@@ -207,7 +233,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
         <SuccessModal
           header="Assign Technician"
           message={modalMessage}
-          action={handleChangeStep}
+          action={onAssignSuccess}
         />
       )}
       {isErrorModalOpen && (
@@ -219,7 +245,7 @@ const AssignTechnicianPage = ({ data, currentStep }: props) => {
       )}
     </PageContainer>
   );
-};
+}
 
 interface TechnicianCardProps {
   technician: TechnicianModel<TechnicianSkills>;
@@ -233,11 +259,12 @@ const TechnicianCard = ({
   onAdd,
   onRemove,
   isSelected = false,
+  ...rest
 }: TechnicianCardProps) => {
   return (
-    <TechnicianCardWrapper $isSelected={isSelected}>
+    <TechnicianCardWrapper $isSelected={isSelected} {...rest}>
       {isSelected && onRemove && (
-        <RemoveButton onClick={onRemove}>
+        <RemoveButton onClick={onRemove} data-testid="remove-button">
           <CircleX />
         </RemoveButton>
       )}
@@ -261,7 +288,7 @@ const TechnicianCard = ({
       <InfoSection>
         {technician.phone && (
           <InfoItem>
-            <Phone size={14} /> {technician.phone ?? "default"}
+            <Phone size={14} /> {technician.phone}
           </InfoItem>
         )}
       </InfoSection>
@@ -269,12 +296,9 @@ const TechnicianCard = ({
       <SkillsSection>
         <p>SKILLS</p>
         <SkillTags>
-          {technician.skills.slice(0, 3).map((skill) => (
+          {technician.skills.map((skill) => (
             <SkillTag key={skill.id}>{skill.name}</SkillTag>
           ))}
-          {technician.skills.length > 3 && (
-            <SkillTag $isMore>+{technician.skills.length - 3} more</SkillTag>
-          )}
         </SkillTags>
       </SkillsSection>
 
@@ -290,8 +314,6 @@ const TechnicianCard = ({
     </TechnicianCardWrapper>
   );
 };
-
-export default AssignTechnicianPage;
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -390,6 +412,21 @@ const TechnicianGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+`;
+
+const ServiceGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  max-height: 200px;
+  width: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -630,6 +667,7 @@ const ActionButton = styled.button<{ $disabled?: boolean }>`
   cursor: ${(props) => (props.$disabled ? "not-allowed" : "pointer")};
   transition: all 0.3s ease;
   font-family: "Outfit", sans-serif;
+  margin-top: auto;
 
   ${(props) =>
     props.$disabled
@@ -714,7 +752,12 @@ const SubmitButton = styled.button`
   }
 `;
 
-// const StarIcon = styled(Star)`
-//   fill: #ffc107;
-//   color: #ffc107;
-// `;
+const ServiceTag = styled.span`
+  padding: 8px 10px;
+  background: #e8f5e9;
+  color: #00ad4e;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  white-space: nowrap;
+`;

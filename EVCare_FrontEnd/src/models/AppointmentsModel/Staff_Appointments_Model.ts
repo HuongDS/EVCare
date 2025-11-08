@@ -1,9 +1,16 @@
+import type { Dayjs } from "dayjs";
 import type { ServiceViewFormModel } from "../ServicesModel/ServiceViewFormModel";
 
 export type ResponseDto<T> = {
   statusCode: number;
   message?: string;
   data?: T;
+};
+
+export type ResponseDtoCreateAppointment<T> = {
+  statusCode: number;
+  message?: string;
+  appointmentId?: T;
 };
 
 //Get appointment
@@ -72,6 +79,32 @@ export type StaffCreateAppointmentPayload = {
   vehicleId: number;
   note: string;
   appointment_Date: any;
-  imagesUrls: string[];
+  imagesUrls: string[] | undefined;
   serviceIds: number[];
+};
+
+//UploadImage appointment
+export type MultipleImageDto = {
+  fileName: string;
+  url: string;
+  errorMessage: string | null;
+};
+
+//appointment detail
+export type AppointmentDetailModel<T> = {
+  id: number;
+  appointmentDate: string;
+  status: string;
+  note: string;
+  vehicleId: number;
+  vehicleName: string;
+  vehiclePlateNumber: string;
+  customerName: string;
+  phoneNumber: string;
+  customerEmail: string;
+  employeeName: string;
+  orderId: number;
+  imagesUrls: string[];
+  services: ServiceViewFormModel[];
+  technicians: T[];
 };

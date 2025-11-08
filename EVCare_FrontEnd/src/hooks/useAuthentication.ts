@@ -4,8 +4,8 @@ import { handleError } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/Code/HttpStatusCode";
 import { EMAIL_REGEX } from "../constants/regexs/EmailRegex";
 import { closeLogin, consumeAction, openAppointmentForm } from "../states/uiSlice";
-import { login, register, resetPassword, saveTokens, sendOtp } from "../services/authService";
-import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto } from "../models/AuthModel/authModel";
+import { login, register, resetPassword, saveTokens, sendOtp, verifyOtp } from "../services/authService";
+import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto, VerifyOtpSignUp } from "../models/AuthModel/authModel";
 import { PASSWORD_REGEX } from "../constants/regexs/PasswordRegex";
 import { LENGTH } from "../constants/Code/Constants";
 import { OTP_REGEX } from "../constants/regexs/OTPRegex";
@@ -39,6 +39,8 @@ export const useAuthentication = () => {
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
+  const [isReset, setIsReset] = useState(false);
+  const [otp, setOtp] = useState<string[]>(Array(LENGTH.OTP_LENGTH).fill(""));
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
@@ -287,6 +289,31 @@ export const useAuthentication = () => {
     return AUTH_FORM_MESSAGE.LOGIN;
   }, [isOTP, isSignUp, isForgot]);
 
+  const handleVerifyOTP = useCallback(async () => {
+    setIsLoading(true);
+    const code = otp.join("");
+    if (code.length != LENGTH.OTP_LENGTH || !OTP_REGEX.test(code)) {
+      notification.warning({
+        message: `OTP must be ${LENGTH.OTP_LENGTH} numbers`,
+        showProgress: true,
+      });
+      return;
+    }
+    try {
+      const data: VerifyOtpSignUp = {
+        email: email,
+        otp: code,
+      };
+      const response = await verifyOtp(data);
+      notification.success({ message: response.message });
+    } catch (error) {
+      notification.error({
+        message: (error as Error).message,
+        showProgress: true,
+      });
+    }
+  }, []);
+
   return {
     isSignUp,
     isOTP,
@@ -299,6 +326,8 @@ export const useAuthentication = () => {
     isLoading,
     isForgot,
     pending,
+    isReset,
+    otp,
 
     navigate,
     notification,
@@ -315,11 +344,14 @@ export const useAuthentication = () => {
     setPhone,
     setIsLoading,
     setIsForgot,
+    setIsReset,
+    setOtp,
 
     handleLogin,
     handleSignUp,
     handleSubmitResetPassword,
     handChangeIsForgot,
     headerText,
+    handleVerifyOTP,
   };
 };

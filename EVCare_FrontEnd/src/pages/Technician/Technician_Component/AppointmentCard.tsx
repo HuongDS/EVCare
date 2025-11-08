@@ -169,7 +169,7 @@ const AppointmentCard: React.FC<Props> = ({
 
         <SectionBox>
           <SectionTitle>
-            Parts
+            Parts{" "}
             <SubTitle
               style={{
                 fontSize: "0.7rem",

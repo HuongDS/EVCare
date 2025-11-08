@@ -51,7 +51,7 @@ namespace Application.Services
 
         }
 
-        private async Task<bool> CheckAppointmentsForApointmentDate(DateTime appointment_Date)
+        public virtual async Task<bool> CheckAppointmentsForApointmentDate(DateTime appointment_Date)
         {
             int cnt = await _appointmentRepository.CountAppointment(DateOnly.FromDateTime(appointment_Date));
             int capacity = await _serviceCenterRepository.GetAppactityOfServiceCenter();
@@ -64,7 +64,7 @@ namespace Application.Services
 
         }
 
-        private async Task<bool> CheckCustomerCreate(int customerId)
+        public virtual async  Task<bool> CheckCustomerCreate(int customerId)
         {
             int appointments = await _appointmentRepository.CountAppointmentsPerDay(customerId);
             int dailyLimit = await _serviceCenterRepository.GetLimitBookingOfServiceCenter();
@@ -126,19 +126,14 @@ namespace Application.Services
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
         }
-        public async Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId)
+        public async Task<AppointmentViewDetailModel> GetAppointmentById(int appointmentId)
         {
-            try
-            {
-                var result = await _appointmentRepository.GetAppointmentWithDetails(appointmentIdId);
-                if (result == null) throw new Exception("Appointment not found");
-                return result;
+           
+            var result = await _appointmentRepository.GetAppointmentWithDetails(appointmentId);
+            if (result == null) throw new Exception("Appointment not found");
+            return result;
 
-            }
-            catch
-            {
-                throw new Exception("Appointment not found");
-            }
+           
         }
         public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentHistoryByCustomerId(int customerId)
         {
@@ -170,35 +165,32 @@ namespace Application.Services
                 throw new Exception("Error retrieving appointments with pagination");
             }
         }
-        public async Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId)
-        {
+        public async Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId) {
             var appointment = await _appointmentRepository.GetByIdAsync(model.AppointmentId);
 
-            if (appointment == null)
-            {
+            if (appointment == null) {
                 throw new Exception("Appointment not found");
             }
-           
-            if (appointment.Status == AppointmentStatusEnum.Done || appointment.Status == AppointmentStatusEnum.Canceled)
-            {
+
+            if (appointment.Status == AppointmentStatusEnum.Done || appointment.Status == AppointmentStatusEnum.Canceled) {
                 throw new Exception("Cannot update status of completed or canceled appointment");
             }
-            if (model.Status == AppointmentStatusEnum.CheckedIn)
-            {
+            if (model.Status == AppointmentStatusEnum.CheckedIn) {
                 var utcNow = DateTime.UtcNow;
                 var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 var vnTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vnZone);
-                if (DateOnly.FromDateTime(appointment.Appointment_Date) != DateOnly.FromDateTime(vnTime))
-                {
+                if (DateOnly.FromDateTime(appointment.Appointment_Date) != DateOnly.FromDateTime(vnTime)) {
                     throw new Exception("Can only check-in on the day of the appointment");
-                }
 
+                }
             }
             _mapper.Map(model, appointment);
-            if(appointment.Employee == null) appointment.EmployeeId = employeeId;
+            if (appointment.Employee == null)
+                appointment.EmployeeId = employeeId;
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
 
+            
         }
         public async Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex)
         {

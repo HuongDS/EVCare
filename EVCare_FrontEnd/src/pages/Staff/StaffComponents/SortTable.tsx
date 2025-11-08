@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import styled from "styled-components";
 import { SortDateButton } from "./SortDateButton";
 import SortDateRange from "./SortDateRange";
@@ -11,7 +11,7 @@ const SortWrapperStyled = styled.div`
 `;
 const Container = styled.div`
   display: flex;
-  gap: 8px;
+  gap: 5px;
   padding: 5px;
   background: linear-gradient(to bottom, #ffffff, #f8f9fa);
   border-radius: 12px;
@@ -39,7 +39,7 @@ interface CategoryProps {
 }
 
 const Category = styled(Link)<CategoryProps>`
-  padding: 6px 12px;
+  padding: 2px 8px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: ${({ $active }) => ($active ? "600" : "500")};
@@ -107,7 +107,10 @@ const SortTable: React.FC<MyComponentProps> = ({
   setEndDate,
   disabled,
 }) => {
-  const [activeCategory, setActiveCategory] = useState<string>(sortName[0]);
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const sortParam = params.get("sortBy") || sortName[0];
+  const [activeCategory, setActiveCategory] = useState<string>(sortParam);
 
   const selectCategory = (category: string) => {
     setActiveCategory(category);
@@ -119,7 +122,9 @@ const SortTable: React.FC<MyComponentProps> = ({
       <Container>
         {sortName.map((name) => (
           <Category
-            to={`/staff/appointments`}
+            to={`/staff/appointments?sortBy=${encodeURIComponent(
+              name.split(/\s+/).join("")
+            )}`}
             key={name}
             $active={activeCategory === name}
             onClick={() => selectCategory(name)}

@@ -10,6 +10,9 @@ namespace DataAccess.Dtos.VehicleCategory
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        
+        public decimal ScaleX{ get; set; }
+        public decimal ScaleY{ get; set; }
+        public decimal ScaleZ{ get; set; }
+
     }
 }

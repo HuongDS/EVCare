@@ -8,6 +8,11 @@ export type DataDto<T> = {
   id: number;
   vehicleCategoryId: number;
   vehicleModel3DUrl: string;
+  scale: {
+    x: number;
+    y: number;
+    z: number;
+  };
   partCategoryAppointmentViewModels: T[];
 };
 

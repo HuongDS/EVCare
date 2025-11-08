@@ -41,7 +41,7 @@ namespace Application.Service
             _s3 = new AmazonS3Client(accessKey, secretKey, s3cfg);
         }
 
-        public async Task<string> UploadImageAsync(FileUploadModel file  )
+        public virtual async Task<string> UploadImageAsync(FileUploadModel file  )
         {
             if(file == null || file.FileStream == null || file.FileStream.Length == 0)
             {
@@ -75,7 +75,6 @@ namespace Application.Service
                 return uploadResult.SecureUrl.ToString();
             }
             throw new Exception("Upload failed");
-
         }
 
         public async Task<List<FileUploadResult>> UploadImagesAsync(List<FileUploadModel> fileUploadModels)
@@ -121,6 +120,9 @@ namespace Application.Service
             ".obj" => "text/plain",
             _ => "application/octet-stream"
         };
+        protected virtual Task PutToS3Async(PutObjectRequest request) {
+            return _s3.PutObjectAsync(request);
+        }
         public async Task<string> UploadModel3DAsync(FileUploadModel fileUploadModel) {
             if (fileUploadModel == null)
                 throw new ArgumentNullException(nameof(fileUploadModel));
@@ -143,13 +145,11 @@ namespace Application.Service
                 ? fileUploadModel.ContentType
                 : GetMime(extension);
 
-            // --- Quan trọng: chuẩn bị stream có Content-Length ---
             Stream uploadStream = fileUploadModel.FileStream;
             if (uploadStream.CanSeek) {
                 uploadStream.Position = 0;
             }
             else {
-                // Buffer để có Length (tránh streaming-chunked)
                 var ms = new MemoryStream();
                 await fileUploadModel.FileStream.CopyToAsync(ms);
                 ms.Position = 0;
@@ -170,7 +170,7 @@ namespace Application.Service
                 put.Headers.ContentLength = uploadStream.Length;
             }
 
-            await _s3.PutObjectAsync(put);
+            await PutToS3Async(put);
 
             var displayUrl = $"{_publicBase.TrimEnd('/')}/{key}";
             return displayUrl;

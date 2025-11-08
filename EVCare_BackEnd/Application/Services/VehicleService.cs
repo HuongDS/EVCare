@@ -23,21 +23,16 @@ namespace Application.Services
         }
         public async Task<int> CreateVehicle(VehicleCreateModel model, int customerId)
         {
-            try
-            {
-                var ok = await _vehicleRepository.CheckLicensePlate(model.LicensePlate);
-                if (ok == true) throw new Exception("Licese Plate has exits");
-                var vehicle = _mapper.Map<Vehicle>(model);
-                vehicle.CustomerId = customerId;
-                vehicle.Deleted_At = DateTime.MinValue;
-                var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
-                return createdVehicle.Id;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
+           
+            var ok = await _vehicleRepository.CheckLicensePlate(model.LicensePlate);
+            if (ok == true) throw new Exception("Licese Plate has exits");
+            var vehicle = _mapper.Map<Vehicle>(model);
+            vehicle.CustomerId = customerId;
+            vehicle.Deleted_At = DateTime.MinValue;
+            var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
+            return createdVehicle.Id;
+            
+           
         }
 
         public Task<VehicleDetailViewModel> GetVehicleDetailById(int vehicleId)
@@ -87,6 +82,9 @@ namespace Application.Services
         {
             
             var vehicle = await _vehicleRepository.GetByIdAsync(model.Id);
+            if (vehicle == null) {
+                throw new Exception(Message.VEHICLE_NOT_FOUND);
+            }
              _mapper.Map(model, vehicle);
             vehicle.Last_Appointment = DateTime.Now;
             vehicle.NextServiceDate = DateTime.Now.AddMonths(model.ReminderIntervalMonths);

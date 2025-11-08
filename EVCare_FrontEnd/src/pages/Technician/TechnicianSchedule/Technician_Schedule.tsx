@@ -1,17 +1,15 @@
 import React, { useMemo } from "react";
 import dayjs from "dayjs";
-import { useQuery } from "@tanstack/react-query"; // Vẫn cần cho 2 hook kia
-
+import { useQuery } from "@tanstack/react-query";
 import type { EventInput, EventContentArg } from "@fullcalendar/core";
 import LazyPerformanceSchedule from "./LazyPerformanceSchedule";
 
-// 1. Import hook mới của bạn
 import { useGetTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
 import { getDateOff } from "../../../services/getApplicationApi";
 import { getBlockedDate } from "../../../services/serviceCenterService";
 
 import type { BlockedDateViewModel } from "../../../models/BlockedDate/BlockedDateViewModel";
-import { TechnicianWorkingSessionEnum } from "../../../models/enums"; // Import Enum
+import { TechnicianWorkingSessionEnum } from "../../../models/enums";
 
 import {
   ScheduleWrapper,
@@ -29,7 +27,6 @@ type SimpleAppointment = {
 };
 
 const TechnicianSchedule: React.FC = () => {
-  // 2. Xóa useEffect và useState. Gọi 6 hook cho 6 trạng thái
   const commonParams = { PageSize: 100, PageIndex: 1 };
 
   const queryPending = useGetTechnicianAppointments({
@@ -57,7 +54,6 @@ const TechnicianSchedule: React.FC = () => {
     ...commonParams,
   });
 
-  // Mảng chứa kết quả của 6 query trên
   const appointmentQueries = [
     queryPending,
     queryInProgress,
@@ -67,16 +63,21 @@ const TechnicianSchedule: React.FC = () => {
     queryCanceled,
   ];
 
-  // 3. Vẫn dùng useQuery cho Date Off và Blocked Dates
   const {
     data: applications = [],
     isLoading: isLoadingDateOff,
     error: errorDateOff,
-  } = useQuery({
+  } = useQuery<Date[]>({
     queryKey: ["dateOff"],
     queryFn: async () => {
       const res = await getDateOff();
-      return (res.data ?? []).map((d: string) => new Date(d));
+      const raw = res?.data;
+
+      if (!Array.isArray(raw)) return [];
+
+      return raw
+        .filter((d): d is string => typeof d === "string")
+        .map((d) => new Date(d));
     },
     staleTime: 1000 * 60 * 5,
   });
@@ -85,19 +86,34 @@ const TechnicianSchedule: React.FC = () => {
     data: blockedDates = [],
     isLoading: isLoadingBlocked,
     error: errorBlocked,
-  } = useQuery({
+  } = useQuery<BlockedDateViewModel[]>({
     queryKey: ["blockedDates"],
     queryFn: async () => {
       const res = await getBlockedDate();
-      return (res.data ?? []).map((d: BlockedDateViewModel) => ({
-        ...d,
-        dateTime: dayjs(d.dateTime),
-      }));
+      const raw = res?.data;
+
+      const list = Array.isArray(raw)
+        ? raw
+        : raw && typeof raw === "object"
+        ? Object.values(raw)
+        : [];
+
+      return list
+        .filter(
+          (d): d is { dateTime: string; reason: string } =>
+            typeof d === "object" &&
+            d !== null &&
+            "dateTime" in d &&
+            typeof (d as any).dateTime === "string"
+        )
+        .map((d) => ({
+          dateTime: dayjs(d.dateTime),
+          reason: d.reason,
+        }));
     },
     staleTime: 1000 * 60 * 5,
   });
 
-  // 4. Gộp chung state loading và error
   const loading =
     appointmentQueries.some((q) => q.isLoading) ||
     isLoadingDateOff ||
@@ -108,7 +124,6 @@ const TechnicianSchedule: React.FC = () => {
     errorDateOff ||
     errorBlocked;
 
-  // 5. Dùng useMemo để gộp data từ 6 hook
   const appointments: SimpleAppointment[] = useMemo(() => {
     const allAppointments = appointmentQueries.flatMap(
       (q) => q.data?.items ?? []
@@ -121,7 +136,6 @@ const TechnicianSchedule: React.FC = () => {
       vehicleModel: a.vehicleModel,
       extraProps: { ...a },
     }));
-    // Thêm dependencies là data của 6 hook
   }, [
     queryPending.data,
     queryInProgress.data,
@@ -131,9 +145,10 @@ const TechnicianSchedule: React.FC = () => {
     queryCanceled.data,
   ]);
 
-  // 6. useMemo cho events (như cũ)
-  const events: EventInput[] = useMemo(
-    () => [
+  const events: EventInput[] = useMemo(() => {
+    const safeBlockedDates = Array.isArray(blockedDates) ? blockedDates : [];
+
+    return [
       ...appointments.map((a) => ({
         title: `ID: ${a.id}\n${a.vehicleModel}\n${a.status}`,
         start: dayjs(a.appointmentDate).toDate(),
@@ -146,15 +161,14 @@ const TechnicianSchedule: React.FC = () => {
         className: "dayOff",
         extendedProps: { reason: "Day Off" },
       })),
-      ...blockedDates.map((d) => ({
+      ...safeBlockedDates.map((d) => ({
         title: d.reason || "Blocked",
         start: d.dateTime.toDate(),
         className: "blocked",
         extendedProps: { reason: d.reason },
       })),
-    ],
-    [appointments, applications, blockedDates]
-  );
+    ];
+  }, [appointments, applications, blockedDates]);
 
   const renderEventContent = (eventInfo: EventContentArg) => (
     <div>
