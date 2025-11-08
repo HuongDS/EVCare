@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import { useCreateNewOrder } from "../../../services/orderServiceApi";
 import Zoom from "react-medium-image-zoom";
@@ -25,32 +24,6 @@ import {
   Image as ImageIcon,
   Wrench,
 } from "lucide-react";
-import {
-  ActionButtons,
-  AppointmentId,
-  CancelButton,
-  Card,
-  CardTitle,
-  CheckInButton,
-  ContentWrapper,
-  Header,
-  HeaderIcon,
-  HeaderText,
-  ImageGrid,
-  InfoGrid,
-  InfoItem,
-  InfoLabel,
-  InfoValue,
-  MainContent,
-  NotesBox,
-  PageContainer,
-  ServiceItem,
-  ServiceName,
-  ServiceNumber,
-  ServicesList,
-  SpinnerWrapper,
-  VehicleImage,
-} from "./styles/Appointment_CheckIn.styled";
 
 interface Props {
   data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
@@ -297,3 +270,30 @@ export default function Appointment_CheckIn({ data, close }: Props) {
     </PageContainer>
   );
 }
+
+import {
+  ActionButtons,
+  AppointmentId,
+  CancelButton,
+  Card,
+  CardTitle,
+  CheckInButton,
+  ContentWrapper,
+  Header,
+  HeaderIcon,
+  HeaderText,
+  ImageGrid,
+  InfoGrid,
+  InfoItem,
+  InfoLabel,
+  InfoValue,
+  MainContent,
+  NotesBox,
+  PageContainer,
+  ServiceItem,
+  ServiceName,
+  ServiceNumber,
+  ServicesList,
+  SpinnerWrapper,
+  VehicleImage,
+} from "./styles/Appointment_CheckIn.styled";
