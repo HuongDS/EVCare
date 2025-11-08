@@ -4,12 +4,13 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 interface props {
   icon: React.ReactNode;
   message: React.ReactNode;
+  height?: string;
 }
 
 //dùng để hiện thông báo khi không có item nào match với searchValue
-export const NOT_FOUND_ITEMS = ({ icon, message }: props) => {
+export const NOT_FOUND_ITEMS = ({ icon, message, height }: props) => {
   return (
-    <Wrrapper>
+    <Wrrapper style={{ height: height }}>
       {icon}
       <h4>{message}</h4>
     </Wrrapper>
