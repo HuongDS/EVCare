@@ -19,14 +19,10 @@ import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import {
-  useAppDispatch,
-  useAppSelector,
-  type RootState,
-} from "../../../states/store";
+import { useAppSelector, type RootState } from "../../../states/store";
 // import Test from "../../../components/Test";
 import Model3dViewer from "../../Model3d/Model3dViewer";
-import { openModel3d } from "../../../states/uiSlice";
+// import { openModel3d } from "../../../states/uiSlice";
 import ShowButton from "../../../components/Button/ShowButton";
 import CreateAppointment from "./CreateAppointment";
 import SkeletonCount from "../../../components/Skeletons/Skeleton";
@@ -44,7 +40,7 @@ export default function Staff_Appoinments() {
     number | null
   >(null);
   const [isCreating, setIsCreating] = useState(false);
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
   const isOpen3dModel = useAppSelector(
     (state: RootState) => state.ui.model3dOpen
@@ -189,10 +185,10 @@ export default function Staff_Appoinments() {
               />
             )}
 
-            <ShowButton
+            {/* <ShowButton
               onclick={() => dispatch(openModel3d())}
               text="Show Model"
-            />
+            /> */}
 
             {!isLoading && (
               <Pagination
