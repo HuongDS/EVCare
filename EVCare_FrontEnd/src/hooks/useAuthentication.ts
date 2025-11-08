@@ -1,11 +1,32 @@
 import { useCallback, useMemo, useState } from "react";
-import { AUTH_FORM_MESSAGE, ERROR_MESSAGE, FORM_MESSAGES, MSG_TITLE } from "../constants/messages/Message";
+import {
+  AUTH_FORM_MESSAGE,
+  ERROR_MESSAGE,
+  FORM_MESSAGES,
+  MSG_TITLE,
+} from "../constants/messages/Message";
 import { handleError } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/Code/HttpStatusCode";
 import { EMAIL_REGEX } from "../constants/regexs/EmailRegex";
-import { closeLogin, consumeAction, openAppointmentForm } from "../states/uiSlice";
-import { login, register, resetPassword, saveTokens, sendOtp, verifyOtp } from "../services/authService";
-import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto, VerifyOtpSignUp } from "../models/AuthModel/authModel";
+import {
+  closeLogin,
+  consumeAction,
+  openAppointmentForm,
+} from "../states/uiSlice";
+import {
+  login,
+  register,
+  resetPassword,
+  saveTokens,
+  sendOtp,
+  verifyOtp,
+} from "../services/authService";
+import type {
+  LoginRequestDto,
+  RegisterRequestDto,
+  VerifyOTPDto,
+  VerifyOtpSignUp,
+} from "../models/AuthModel/authModel";
 import { PASSWORD_REGEX } from "../constants/regexs/PasswordRegex";
 import { LENGTH } from "../constants/Code/Constants";
 import { OTP_REGEX } from "../constants/regexs/OTPRegex";
@@ -45,7 +66,9 @@ export const useAuthentication = () => {
   // Redux
   const dispatch = useDispatch<AppDispatch>();
   const pending = useSelector((state: RootState) => state.ui.actionAfterLogin);
-  const loginFormOpen = useSelector((state: RootState) => state.ui.loginFormOpen);
+  const loginFormOpen = useSelector(
+    (state: RootState) => state.ui.loginFormOpen
+  );
 
   // Navigate
   const navigate = useNavigate();
@@ -119,7 +142,12 @@ export const useAuthentication = () => {
   }, [email, password, pending, dispatch, navigate, notification]);
 
   const handleSignUp = useCallback(async () => {
-    if (firstName == null || lastName == null || firstName.length === 0 || lastName.length === 0) {
+    if (
+      firstName == null ||
+      lastName == null ||
+      firstName.length === 0 ||
+      lastName.length === 0
+    ) {
       notification.warning({
         message: "Error",
         description: FORM_MESSAGES.NAME,
@@ -148,7 +176,10 @@ export const useAuthentication = () => {
         duration: 3,
       });
       return;
-    } else if (!PASSWORD_REGEX.test(password) || !PASSWORD_REGEX.test(confirm)) {
+    } else if (
+      !PASSWORD_REGEX.test(password) ||
+      !PASSWORD_REGEX.test(confirm)
+    ) {
       notification.warning({
         message: "Error",
         description: ERROR_MESSAGE.INVALID_PASSWORD,
@@ -322,7 +353,16 @@ export const useAuthentication = () => {
       });
       setIsLoading(false);
     }
-  }, []);
+  }, [
+    otp,
+    email,
+    setIsLoading,
+    setIsOTP,
+    notification,
+    verifyOtp,
+    LENGTH.OTP_LENGTH,
+    OTP_REGEX,
+  ]);
 
   return {
     isSignUp,

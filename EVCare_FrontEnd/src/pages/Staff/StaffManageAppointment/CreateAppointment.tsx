@@ -205,6 +205,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
                 <NOT_FOUND_ITEMS
                   icon={<UserPlus size={40} />}
                   message={"Enter customer information for searching"}
+                  height="175px"
                 />
               )
             )}
