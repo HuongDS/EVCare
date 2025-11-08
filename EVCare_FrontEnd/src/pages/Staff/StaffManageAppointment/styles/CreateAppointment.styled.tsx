@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const PageContainer = styled.div`
-  min-height: 100vh;
+  height: 100%;
   background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
   padding: 32px 20px;
   font-family: "Outfit", sans-serif;

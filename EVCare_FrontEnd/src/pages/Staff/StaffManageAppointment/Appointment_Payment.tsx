@@ -19,15 +19,8 @@ import { useHandlePayment } from "../../../services/PaymentServiceApi";
 import { handleError } from "../../../utils/errorHandler";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { useQueryClient } from "@tanstack/react-query";
-<<<<<<< HEAD
 import CancelPaymentButton from "../StaffComponents/CancelPaymentButton";
 import { useStaffDashboardHub } from "../../../hooks/useStaffHub";
-=======
-// import SpinnerComponent from "../../../components/SpinnerComponent";
-import CancelPaymentButton from "../StaffComponents/CancelPaymentButton";
-import { useStaffDashboardHub } from "../../../hooks/useStaffHub";
-import { MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
->>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
 import { useNotification } from "../../../context/useNotification";
 import ColorSpinner from "../StaffComponents/ColorSpinner";
 import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
@@ -37,7 +30,6 @@ interface PaymentPageProps {
   onPaymentSuccess: () => void;
 }
 
-<<<<<<< HEAD
 export default function Appointment_Payment({
   data,
   onPaymentSuccess,
@@ -45,10 +37,6 @@ export default function Appointment_Payment({
   const [paymentMethod, setPaymentMethod] = useState<
     "VnPay" | "PayOs" | "Cash"
   >();
-=======
-const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<"VnPay" | "PayOs" | "Cash">();
->>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
   const [vnPayPending, setVnPayPending] = useState(false);
   const [qrcode, setQrCode] = useState("");
   const [openQrCode, setOpenQrcode] = useState(false);
@@ -107,7 +95,10 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
   }, [orderDetail?.data?.id, orderDetail?.data?.price, paymentMethod]);
 
   const subtotal =
-    orderDetail?.data?.parts.reduce((sum, part) => sum + (part.price + part.replacementPrice) * part.quantity, 0) ?? 0;
+    orderDetail?.data?.parts.reduce(
+      (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
+      0
+    ) ?? 0;
 
   const vatAmount = (subtotal * (orderDetail?.data?.vat ?? 0)) / 100;
 
@@ -150,7 +141,9 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
                 <InfoLabel>
                   <CalendarOutlined /> Appointment Date
                 </InfoLabel>
-                <InfoValue>{formatDate(data.appointmentDate.toString())}</InfoValue>
+                <InfoValue>
+                  {formatDate(data.appointmentDate.toString())}
+                </InfoValue>
               </InfoItem>
             </InfoGrid>
           </StyledCard>
@@ -174,7 +167,11 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
                       <td>{part.quantity}</td>
                       <td>{formatCurrency(part.price)}</td>
                       <td>{formatCurrency(part.replacementPrice)}</td>
-                      <td>{formatCurrency((part.price + part.replacementPrice) * part.quantity)}</td>
+                      <td>
+                        {formatCurrency(
+                          (part.price + part.replacementPrice) * part.quantity
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </TableBody>
@@ -227,10 +224,16 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
 
             {paymentMethod === "PayOs" && openQrCode && (
               <QRSection>
-                {isPending ? <ColorSpinner width="6em" height="6em" /> : <iframe src={qrcode} />}
+                {isPending ? (
+                  <ColorSpinner width="6em" height="6em" />
+                ) : (
+                  <iframe src={qrcode} />
+                )}
                 <QRInfo>
                   <p>Scan QR code to complete payment</p>
-                  <AmountTag>Amount: {formatCurrency(calculateTotal())}</AmountTag>
+                  <AmountTag>
+                    Amount: {formatCurrency(calculateTotal())}
+                  </AmountTag>
                 </QRInfo>
               </QRSection>
             )}
@@ -241,7 +244,10 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
                   <ColorSpinner width="3em" height="3em" />
                   <TextContainer>
                     <MainText>Awaiting Payment</MainText>
-                    <Description>Payment instructions have been sent to customer email via VNPay</Description>
+                    <Description>
+                      Payment instructions have been sent to customer email via
+                      VNPay
+                    </Description>
                     <HintText>Wait for completing appointment</HintText>
                   </TextContainer>
                   <CancelPaymentButton onclick={() => setVnPayPending(false)} />
@@ -252,10 +258,18 @@ const PaymentPage = ({ data, onPaymentSuccess }: PaymentPageProps) => {
         </MainContent>
 
         <Footer>
-          <ConfirmButton type="primary" size="large" onClick={handlePayment} disabled={!paymentMethod}>
+          <ConfirmButton
+            type="primary"
+            size="large"
+            onClick={handlePayment}
+            disabled={!paymentMethod}
+          >
             {isPending ? (
               <div style={{ textAlign: "center" }}>
-                <TextWaitingEffect text="Waiting for processing" fontSize="20px" />
+                <TextWaitingEffect
+                  text="Waiting for processing"
+                  fontSize="20px"
+                />
               </div>
             ) : (
               <text>Confirm Payment</text>
