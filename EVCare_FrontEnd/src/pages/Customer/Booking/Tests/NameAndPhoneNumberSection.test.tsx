@@ -4,6 +4,7 @@ import { RoleEnum } from "../../../../models/enums";
 import { render, screen } from "@testing-library/react";
 import NameAndPhoneNumberSection from "../NameAndPhoneNumberSection";
 
+// Test Suit 01
 describe("NameAndPhoneNumberSection", () => {
   // TC01: Happy case - Render component with valid account information
   it("TC01: Happy case - Render component with valid account information - should render name and phone number correctly", () => {
@@ -16,10 +17,8 @@ describe("NameAndPhoneNumberSection", () => {
       last_Name: "Test01",
       phone: "0911111111",
     };
-
     // ACT
     render(<NameAndPhoneNumberSection accountInfor={mockAccountInfor} />);
-
     // ASSERT
     const nameInput = screen.getByLabelText("Name");
     const phoneInput = screen.getByLabelText("Phone Number");
@@ -41,10 +40,8 @@ describe("NameAndPhoneNumberSection", () => {
       first_Name: "Unit",
       last_Name: "Test01",
     };
-
     // ACT
     render(<NameAndPhoneNumberSection accountInfor={mockAccountInfor} />);
-
     // ASSERT
     const phoneInput = screen.getByLabelText("Phone Number");
     expect(phoneInput).toHaveValue("default");
