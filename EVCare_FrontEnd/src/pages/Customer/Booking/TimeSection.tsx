@@ -1,19 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  FormGroup,
-  Label,
-  Required,
-  TimeInput,
-  TimeInputGroup,
-} from "./BookingForm.styled";
+import { FormGroup, Label, Required, TimeInput, TimeInputGroup } from "./BookingForm.styled";
 import { DatePicker, TimePicker } from "antd";
 import { Dayjs } from "dayjs";
 // import dayjs from "dayjs";
-import { handleError } from "../../../utils/errorHandler";
-import {
-  getBlockedDate,
-  getCenterInformation,
-} from "../../../services/serviceCenterService";
+import { getBlockedDate, getCenterInformation } from "../../../services/serviceCenterService";
 import type { BlockedDateViewModel } from "../../../models/BlockedDate/BlockedDateViewModel";
 import { useNotification } from "../../../context/useNotification";
 import dayjs from "dayjs";
@@ -32,38 +22,21 @@ interface Props {
   errors?: { [key: string]: string };
 }
 
-function TimeComponent({
-  date,
-  time,
-  handleSelectDate,
-  handleSelectTime,
-  errors,
-}: Props) {
+function TimeComponent({ date, time, handleSelectDate, handleSelectTime, errors }: Props) {
   const [startTime, setStartTime] = useState<Dayjs | null>(null);
   const [endTime, setEndTime] = useState<Dayjs | null>(null);
-  const [listBlockedDays, setListBlockedDays] = useState<
-    BlockedDateViewModel[]
-  >([]);
+  const [listBlockedDays, setListBlockedDays] = useState<BlockedDateViewModel[]>([]);
   const notification = useNotification();
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response01 = await getCenterInformation();
-        setStartTime(
-          response01.data?.openTime
-            ? dayjs(response01.data.openTime, "HH:mm:ss")
-            : null
-        );
-        setEndTime(
-          response01.data?.closeTime
-            ? dayjs(response01.data.closeTime, "HH:mm:ss")
-            : null
-        );
+        setStartTime(response01.data?.openTime ? dayjs(response01.data.openTime, "HH:mm:ss") : null);
+        setEndTime(response01.data?.closeTime ? dayjs(response01.data.closeTime, "HH:mm:ss") : null);
 
         const response02 = await getBlockedDate();
         setListBlockedDays(response02.data ?? []);
       } catch (error) {
-        handleError(error);
         notification.error({
           message: "Error",
           description: "Failed to fetch data",
@@ -78,9 +51,7 @@ function TimeComponent({
     (current: Dayjs) => {
       if (!current) return false;
       const isPast = current.isBefore(dayjs().startOf("day"));
-      const isBlocked = listBlockedDays.some((d) =>
-        current.isSame(dayjs(d.dateTime, "YYYY-MM-DD"), "day")
-      );
+      const isBlocked = listBlockedDays.some((d) => current.isSame(dayjs(d.dateTime, "YYYY-MM-DD"), "day"));
       return isPast || isBlocked;
     },
     [listBlockedDays]
@@ -140,17 +111,13 @@ function TimeComponent({
       <TimeInputGroup>
         <TimeInput>
           <DatePicker
-            getPopupContainer={(triggerNode) =>
-              triggerNode.parentElement as HTMLElement
-            }
+            getPopupContainer={(triggerNode) => triggerNode.parentElement as HTMLElement}
             onChange={(value) => handleSelectDate(value)}
             value={date}
             disabledDate={disableDate}
             cellRender={(current, info) => {
               if (info.type === "date") {
-                const reason = listBlockedDays.find((item) =>
-                  (current as Dayjs).isSame(item.dateTime, "day")
-                )?.reason;
+                const reason = listBlockedDays.find((item) => (current as Dayjs).isSame(item.dateTime, "day"))?.reason;
 
                 return (
                   <div
@@ -169,18 +136,12 @@ function TimeComponent({
               }
             }}
           />
-          {errors?.date && (
-            <p style={{ color: "red", marginTop: "4px", marginBottom: 0 }}>
-              {errors.date}
-            </p>
-          )}
+          {errors?.date && <p style={{ color: "red", marginTop: "4px", marginBottom: 0 }}>{errors.date}</p>}
         </TimeInput>
         <TimeInput>
           <TimePicker
             showNow={false}
-            getPopupContainer={(triggerNode) =>
-              triggerNode.parentElement as HTMLElement
-            }
+            getPopupContainer={(triggerNode) => triggerNode.parentElement as HTMLElement}
             type="time"
             onChange={(value) => handleSelectTime(value ?? undefined)}
             placeholder="Time"
@@ -191,11 +152,7 @@ function TimeComponent({
             hideDisabledOptions
             disabledTime={disableTime}
           />
-          {errors?.time && (
-            <p style={{ color: "red", marginTop: "4px", marginBottom: 0 }}>
-              {errors.time}
-            </p>
-          )}
+          {errors?.time && <p style={{ color: "red", marginTop: "4px", marginBottom: 0 }}>{errors.time}</p>}
         </TimeInput>
       </TimeInputGroup>
     </FormGroup>
