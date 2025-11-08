@@ -2,17 +2,15 @@ import { configureStore } from "@reduxjs/toolkit";
 import authSlice from "../states/authSlice";
 import uiSlice from "../states/uiSlice";
 import errorSlice from "../states/errorSlice";
-import {
-  useDispatch,
-  useSelector,
-  type TypedUseSelectorHook,
-} from "react-redux";
+import appointmentsSlice from "../states/appointmentSlice";
+import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux";
 
 export const store = configureStore({
   reducer: {
     auth: authSlice,
     ui: uiSlice,
     error: errorSlice,
+    appointments: appointmentsSlice,
   },
 });
 

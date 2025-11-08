@@ -15,29 +15,26 @@ namespace Application.Services
     public class VehicleService : IVehicleService
     {
         private readonly IVehicleRepository _vehicleRepository;
+        private readonly IVehicleCategoryRepository _vehicleCategoryRepository;
         private readonly IMapper _mapper;
-        public VehicleService(IVehicleRepository vehicleRepository, IMapper mapper)
+        public VehicleService(IVehicleRepository vehicleRepository, IMapper mapper,IVehicleCategoryRepository vehicleCategoryRepository)
         {
             _vehicleRepository = vehicleRepository;
             _mapper = mapper;
+            _vehicleCategoryRepository = vehicleCategoryRepository;
         }
         public async Task<int> CreateVehicle(VehicleCreateModel model, int customerId)
         {
-            try
-            {
-                var ok = await _vehicleRepository.CheckLicensePlate(model.LicensePlate);
-                if (ok == true) throw new Exception("Licese Plate has exits");
-                var vehicle = _mapper.Map<Vehicle>(model);
-                vehicle.CustomerId = customerId;
-                vehicle.Deleted_At = DateTime.MinValue;
-                var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
-                return createdVehicle.Id;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
+           
+            var ok = await _vehicleRepository.CheckLicensePlate(model.LicensePlate);
+            if (ok == true) throw new Exception("Licese Plate has exits");
+            var vehicle = _mapper.Map<Vehicle>(model);
+            vehicle.CustomerId = customerId;
+            vehicle.Deleted_At = DateTime.MinValue;
+            var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
+            return createdVehicle.Id;
+            
+           
         }
 
         public Task<VehicleDetailViewModel> GetVehicleDetailById(int vehicleId)
@@ -59,7 +56,16 @@ namespace Application.Services
             try
             {
                 var vehicles = await _vehicleRepository.GetVehiclesByCustomerId(customerId);
-                return _mapper.Map<IEnumerable<VehicleViewModel>>(vehicles);
+                var datas =  _mapper.Map<IEnumerable<VehicleViewModel>>(vehicles);
+                foreach(var data in datas)
+                {
+                   var vehicleCategory = await _vehicleCategoryRepository.GetByIdAsync(data.cateId);
+                    if(vehicleCategory.Deleted_At!= DateTime.MinValue)
+                    {
+                        data.cateId = 0;
+                    }
+                }
+                return datas;
             }
             catch (Exception ex)
             {
@@ -87,6 +93,9 @@ namespace Application.Services
         {
             
             var vehicle = await _vehicleRepository.GetByIdAsync(model.Id);
+            if (vehicle == null) {
+                throw new Exception(Message.VEHICLE_NOT_FOUND);
+            }
              _mapper.Map(model, vehicle);
             vehicle.Last_Appointment = DateTime.Now;
             vehicle.NextServiceDate = DateTime.Now.AddMonths(model.ReminderIntervalMonths);

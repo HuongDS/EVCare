@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// import styled from "styled-components";
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
 import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import { useCreateNewOrder } from "../../../services/orderServiceApi";
 import Zoom from "react-medium-image-zoom";
@@ -14,6 +18,7 @@ import FailedModal from "../../../components/StatusModal/FailModal";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
 import { APPOINTMENT_MESSAGE } from "../../../constants/messages/Message";
 import { useChangeAppointmentStatus } from "../../../services/appointmentServiceApi";
+<<<<<<< HEAD
 import {
   User,
   Car,
@@ -24,6 +29,35 @@ import {
   Image as ImageIcon,
   Wrench,
 } from "lucide-react";
+=======
+import { User, Car, Phone, FileText, CheckCircle, XCircle, Image as ImageIcon, Wrench } from "lucide-react";
+import {
+  ActionButtons,
+  AppointmentId,
+  CancelButton,
+  Card,
+  CardTitle,
+  CheckInButton,
+  ContentWrapper,
+  Header,
+  HeaderIcon,
+  HeaderText,
+  ImageGrid,
+  InfoGrid,
+  InfoItem,
+  InfoLabel,
+  InfoValue,
+  MainContent,
+  NotesBox,
+  PageContainer,
+  ServiceItem,
+  ServiceName,
+  ServiceNumber,
+  ServicesList,
+  SpinnerWrapper,
+  VehicleImage,
+} from "./styles/Appointment_CheckIn.styled";
+>>>>>>> 976ae9084d9177a4400079fd28815d0f634395f9
 
 interface Props {
   data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
@@ -39,8 +73,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
   const [title, setTitle] = useState("Check In");
 
   const { mutateAsync: newOrder } = useCreateNewOrder();
-  const { mutateAsync: appointmentStatus, isPending } =
-    useChangeAppointmentStatus();
+  const { mutateAsync: appointmentStatus, isPending } = useChangeAppointmentStatus();
   const queryClient = useQueryClient();
 
   const handleChangeAppointmentStatus = async (status: string) => {
@@ -53,9 +86,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
       return true;
     } catch (error) {
       setTitle("Check In Failed");
-      setModalMessage(
-        (error as Error).message || APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_FAIL
-      );
+      setModalMessage((error as Error).message || APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_FAIL);
       setIsErrorModalOpen(true);
       return false;
     }
@@ -104,9 +135,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
       const response = await appointmentStatus(changeStatus);
 
       if (response.statusCode !== 200) {
-        setModalMessage(
-          response.message || APPOINTMENT_MESSAGE.APPOINTMENT_CANCEL_FAIL
-        );
+        setModalMessage(response.message || APPOINTMENT_MESSAGE.APPOINTMENT_CANCEL_FAIL);
         setIsErrorModalOpen(true);
         return;
       }
@@ -115,9 +144,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
       await queryClient.invalidateQueries({ queryKey: ["Staff Appointments"] });
     } catch (error) {
       setTitle("Cancellation Failed");
-      setModalMessage(
-        (error as Error).message || APPOINTMENT_MESSAGE.APPOINTMENT_CANCEL_FAIL
-      );
+      setModalMessage((error as Error).message || APPOINTMENT_MESSAGE.APPOINTMENT_CANCEL_FAIL);
       setIsErrorModalOpen(true);
     }
   };
@@ -239,26 +266,10 @@ export default function Appointment_CheckIn({ data, close }: Props) {
       </ContentWrapper>
 
       {isCheckInSuccessOpen && (
-        <SuccessModal
-          header="Check In"
-          message={modalMessage}
-          action={() => setIsCheckInSuccessOpen(false)}
-        />
+        <SuccessModal header="Check In" message={modalMessage} action={() => setIsCheckInSuccessOpen(false)} />
       )}
-      {isCancelSuccessOpen && (
-        <SuccessModal
-          header="Appointment Canceled"
-          message={modalMessage}
-          action={close}
-        />
-      )}
-      {isErrorModalOpen && (
-        <FailedModal
-          header={title}
-          message={modalMessage}
-          action={handleCloseModal}
-        />
-      )}
+      {isCancelSuccessOpen && <SuccessModal header="Appointment Canceled" message={modalMessage} action={close} />}
+      {isErrorModalOpen && <FailedModal header={title} message={modalMessage} action={handleCloseModal} />}
       {confirm && (
         <ConfirmModal
           onClose={() => setConfirm(false)}

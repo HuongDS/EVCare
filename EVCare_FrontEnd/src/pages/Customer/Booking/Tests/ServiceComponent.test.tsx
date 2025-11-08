@@ -94,7 +94,7 @@ describe("ServiceComponent", () => {
     expect(checkboxes[1]).not.toBeChecked();
   });
 
-  it("TC06: should not be checked if some services are selected", () => {
+  it("TC05: should not be checked if some services are selected", () => {
     // ARRANGE
     render(<ServiceSection {...mockProps} selectedServices={[999]} />);
     // ACT

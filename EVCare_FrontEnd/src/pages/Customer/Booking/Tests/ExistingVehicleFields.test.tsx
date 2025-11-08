@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import type { VehicleCategoryViewDto } from "../../../../models/VehicleModels/vehicleCategoryViewDto";
 import ExistingVehicleFields from "../ExistingVehicleFields";
+// import ExistingVehicleFields from "../ExistingVehicleFields";
 
 const mockCategories: VehicleCategoryViewDto[] = [
   { id: 999, name: "Sedan" },
