@@ -1,4 +1,3 @@
-import type { Dayjs } from "dayjs";
 import type { ServiceViewFormModel } from "../ServicesModel/ServiceViewFormModel";
 
 export type ResponseDto<T> = {
