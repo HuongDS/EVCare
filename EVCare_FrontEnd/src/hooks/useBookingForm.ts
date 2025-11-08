@@ -138,6 +138,9 @@ export const useBookingForm = ({ show, setLoading, handleClose, accountId, isAut
             newErrors.licensePlate = ERROR_MESSAGE.LICENSE_PLATE_WRONG;
           }
         }
+        if (vehicleCategory === 0) {
+          newErrors.vehicleSelect = "This model is not accepted at our center!";
+        }
       }
 
       if (stepIndex === 1 && selectedServices.length === 0) {
