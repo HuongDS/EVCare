@@ -18,9 +18,7 @@ interface Model3dProps {
 export default function Model3dViewer({ data }: Model3dProps) {
   const { data: apiResponse, error, isLoading } = useGetPartDamage(data || 0);
   const dispatch = useAppDispatch();
-  const [selectedPart, setSelectedPart] = useState<PartDamagedModel | null>(
-    null
-  );
+  const [selectedPart, setSelectedPart] = useState<PartDamagedModel | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   if (isLoading) {
@@ -30,9 +28,7 @@ export default function Model3dViewer({ data }: Model3dProps) {
           <div style={{ display: "flex", justifyContent: "center" }}>
             <ColorSpinner />
           </div>
-          <div style={{ fontSize: "16px", fontWeight: 600 }}>
-            Loading 3D Model...
-          </div>
+          <div style={{ fontSize: "16px", fontWeight: 600 }}>Loading 3D Model...</div>
           <div style={{ fontSize: "14px", color: "#64748b", marginTop: "8px" }}>
             Please wait while we prepare your vehicle model
           </div>
@@ -47,14 +43,9 @@ export default function Model3dViewer({ data }: Model3dProps) {
         <ErrorContainer>
           <ErrorContent>
             <TriangleAlert size={50} />
-            <h2
-              style={{ fontSize: "20px", fontWeight: 700, marginBottom: "8px" }}
-            >
-              Failed to Load 3D Model
-            </h2>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "8px" }}>Failed to Load 3D Model</h2>
             <p style={{ fontSize: "14px", color: "#94a3b8" }}>
-              We couldn't load the vehicle model. Please check your connection
-              and try again.
+              We couldn't load the vehicle model. Please check your connection and try again.
             </p>
             <ShowButton text="QUIT" onclick={() => dispatch(closeModel3d())} />
           </ErrorContent>
@@ -110,8 +101,7 @@ export default function Model3dViewer({ data }: Model3dProps) {
               <strong>Damage Level:</strong> {selectedPart.damageLevel}
             </p>
             <p>
-              <strong>Description:</strong>{" "}
-              {selectedPart.damageLevel || "No data"}
+              <strong>Description:</strong> {selectedPart.damageLevel || "No data"}
             </p>
           </PopupStyled>
         )}
@@ -154,8 +144,7 @@ const Container = styled.div`
   width: 100vw;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   overflow: hidden;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 `;
 
 const LeftPanel = styled.div<{ $isOpen: boolean }>`
@@ -175,12 +164,7 @@ const LeftPanel = styled.div<{ $isOpen: boolean }>`
     right: 0;
     width: 1px;
     height: 100%;
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      rgba(59, 130, 246, 0.5) 50%,
-      transparent
-    );
+    background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.5) 50%, transparent);
   }
 
   @media (max-width: 1024px) {
@@ -224,6 +208,22 @@ const LoadingContent = styled.div`
   text-align: center;
   color: #e2e8f0;
 `;
+
+// const Spinner = styled.div`
+//   width: 48px;
+//   height: 48px;
+//   border: 4px solid rgba(59, 130, 246, 0.2);
+//   border-top-color: #3b82f6;
+//   border-radius: 50%;
+//   animation: spin 0.8s linear infinite;
+//   margin: 0 auto 16px;
+
+//   @keyframes spin {
+//     to {
+//       transform: rotate(360deg);
+//     }
+//   }
+// `;
 
 const ErrorContainer = styled.div`
   display: flex;
