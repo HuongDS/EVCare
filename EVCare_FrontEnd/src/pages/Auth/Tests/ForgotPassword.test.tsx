@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 
 const mockSetEmail = vi.fn();
 const mockHandleChangeIsForgot = vi.fn();
+const mockSetIsForgot = vi.fn();
 
 vi.mock("../../../components/SpinnerComponent.tsx", () => ({
   default: () => {
@@ -26,6 +27,7 @@ describe("Forgot Password", () => {
         setEmail={mockSetEmail}
         isLoading={false}
         handChangeIsForgot={mockHandleChangeIsForgot}
+        setIsForgot={mockSetIsForgot}
       />
     );
     // ACT
@@ -42,6 +44,7 @@ describe("Forgot Password", () => {
         setEmail={mockSetEmail}
         isLoading={true}
         handChangeIsForgot={mockHandleChangeIsForgot}
+        setIsForgot={mockSetIsForgot}
       />
     );
     // ACT
@@ -57,6 +60,7 @@ describe("Forgot Password", () => {
         setEmail={mockSetEmail}
         isLoading={false}
         handChangeIsForgot={mockHandleChangeIsForgot}
+        setIsForgot={mockSetIsForgot}
       />
     );
     const input = screen.getByRole("textbox");
@@ -75,6 +79,7 @@ describe("Forgot Password", () => {
         setEmail={mockSetEmail}
         isLoading={false}
         handChangeIsForgot={mockHandleChangeIsForgot}
+        setIsForgot={mockSetIsForgot}
       />
     );
     const user = userEvent.setup();
