@@ -30,11 +30,9 @@ export default function ForgotPassword({
           <Mail size={48} />
         </IconWrapper>
 
-        <Title>Forgot Password?</Title>
+        {/* <Title>Forgot Password?</Title> */}
 
-        <Description>
-          No worries! Enter your email address and we'll send you a reset link.
-        </Description>
+        <Description>No worries! Enter your email address and we'll send you a reset link.</Description>
 
         <FormContent>
           <InputGroup>
@@ -58,12 +56,7 @@ export default function ForgotPassword({
               <SpinnerComponent />
             </SpinnerWrapper>
           ) : (
-            <SubmitButton
-              type="button"
-              onClick={handChangeIsForgot}
-              disabled={!email}
-              $enabled={!!email}
-            >
+            <SubmitButton type="button" onClick={handChangeIsForgot} disabled={!email} $enabled={!!email}>
               Send OTP
             </SubmitButton>
           )}
@@ -114,16 +107,16 @@ const IconWrapper = styled.div`
   box-shadow: 0 8px 20px rgba(0, 173, 78, 0.3);
 `;
 
-const Title = styled.h2`
-  font-size: 28px;
-  font-weight: 700;
-  color: #333;
-  margin: 0 0 12px 0;
+// const Title = styled.h2`
+//   font-size: 28px;
+//   font-weight: 700;
+//   color: #333;
+//   margin: 0 0 12px 0;
 
-  @media (max-width: 768px) {
-    font-size: 24px;
-  }
-`;
+//   @media (max-width: 768px) {
+//     font-size: 24px;
+//   }
+// `;
 
 const Description = styled.p`
   font-size: 15px;
@@ -194,10 +187,7 @@ const SubmitButton = styled.button<{ $enabled: boolean }>`
   gap: 8px;
   width: 100%;
   padding: 16px;
-  background: ${(props) =>
-    props.$enabled
-      ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)"
-      : "#e0e0e0"};
+  background: ${(props) => (props.$enabled ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)" : "#e0e0e0")};
   color: ${(props) => (props.$enabled ? "white" : "#9e9e9e")};
   border: none;
   border-radius: 12px;
@@ -206,8 +196,7 @@ const SubmitButton = styled.button<{ $enabled: boolean }>`
   font-family: "Outfit", sans-serif;
   cursor: ${(props) => (props.$enabled ? "pointer" : "not-allowed")};
   transition: all 0.3s ease;
-  box-shadow: ${(props) =>
-    props.$enabled ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none"};
+  box-shadow: ${(props) => (props.$enabled ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none")};
 
   &:hover {
     ${(props) =>
