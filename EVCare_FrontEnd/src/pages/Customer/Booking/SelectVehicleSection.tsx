@@ -30,6 +30,7 @@ function SelectVehicleComponent({
   licensePlate,
   errors,
 }: Props) {
+  const vehicleCategoryName = listVehicleOfCustomer.find((c) => c.id == selectedValue)?.categoryName;
   return (
     <>
       <SubTitle
@@ -69,7 +70,11 @@ function SelectVehicleComponent({
           errors={errors}
         />
       ) : (
-        <ExistingVehicleFields listCategories={listCategories} vehicleCategory={vehicleCategory} />
+        <ExistingVehicleFields
+          listCategories={listCategories}
+          vehicleCategory={vehicleCategory}
+          vehicleCategoryName={vehicleCategoryName}
+        />
       )}
     </>
   );

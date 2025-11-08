@@ -212,6 +212,7 @@ export const useAuthentication = () => {
           message: `OTP must be ${LENGTH.OTP_LENGTH} numbers`,
           showProgress: true,
         });
+        setIsLoading(false);
         return;
       }
       if (!PASSWORD_REGEX.test(formData.newPassword)) {
@@ -219,6 +220,7 @@ export const useAuthentication = () => {
           message: ERROR_MESSAGE.INVALID_PASSWORD,
           showProgress: true,
         });
+        setIsLoading(false);
         return;
       }
       if (formData.newPassword !== formData.confirmNewPassword) {
@@ -226,6 +228,7 @@ export const useAuthentication = () => {
           message: ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME,
           showProgress: true,
         });
+        setIsLoading(false);
         return;
       }
       try {
@@ -236,6 +239,8 @@ export const useAuthentication = () => {
         };
         const response = await resetPassword(data);
         notification.success({ message: response.message });
+        setIsForgot(false);
+        setIsReset(false);
       } catch (error) {
         notification.error({
           message: (error as Error).message,
@@ -255,6 +260,7 @@ export const useAuthentication = () => {
   const handChangeIsForgot = useCallback(async () => {
     setIsLoading(true);
     setIsForgot(true);
+    setIsReset(true);
     try {
       if (!EMAIL_REGEX.test(email.trim())) {
         notification.warning({ message: ERROR_MESSAGE.INVALID_EMAIL });
@@ -265,8 +271,8 @@ export const useAuthentication = () => {
       const response = await sendOtp(email);
       if (response.statusCode === HTTP_STATUS.OK) {
         notification.success({ message: response.message });
-        setIsOTP(true);
-        setIsForgot(false);
+        // setIsOTP(true);
+        // setIsForgot(false);
       }
     } catch (error) {
       notification.error({
@@ -283,9 +289,9 @@ export const useAuthentication = () => {
 
   // header text
   const headerText = useMemo(() => {
-    if (isOTP) return AUTH_FORM_MESSAGE.VERIFY;
+    if (isOTP) return "";
     if (isSignUp) return AUTH_FORM_MESSAGE.REGISTER;
-    if (isForgot) return AUTH_FORM_MESSAGE.FORGOT_PASSWORD;
+    if (isForgot) return "";
     return AUTH_FORM_MESSAGE.LOGIN;
   }, [isOTP, isSignUp, isForgot]);
 
@@ -297,6 +303,7 @@ export const useAuthentication = () => {
         message: `OTP must be ${LENGTH.OTP_LENGTH} numbers`,
         showProgress: true,
       });
+      setIsLoading(false);
       return;
     }
     try {
@@ -306,11 +313,14 @@ export const useAuthentication = () => {
       };
       const response = await verifyOtp(data);
       notification.success({ message: response.message });
+      setIsLoading(false);
+      setIsOTP(false);
     } catch (error) {
       notification.error({
         message: (error as Error).message,
         showProgress: true,
       });
+      setIsLoading(false);
     }
   }, []);
 
