@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
-import styled from "styled-components";
-import { Select, Badge, Avatar, Typography } from "antd";
+import { Select, Typography } from "antd";
 import { Phone, Award, Wrench, User } from "lucide-react";
 import { useGetTechniciansToday } from "../../../services/appointmentServiceApi";
 import SearchBar from "../../../components/SearchBar/Search";
@@ -95,7 +94,6 @@ const Manage_Technicians = () => {
         <FilterSection>
           <SearchBar
             handleSearchValue={setSearchTerm}
-            searchValue={searchTerm}
             placeholder="Search technician..."
           />
           <StyledSelect
@@ -126,7 +124,7 @@ const Manage_Technicians = () => {
                     <FlipCardFront>
                       <TechHeader>
                         <TechAvatar
-                          src={`https://ui-avatars.com/api/?name=${tech.fullName}&background=3b82f6&color=fff&bold=true`}
+                          src={`https://ui-avatars.com/api/?name=${tech.fullName}&background=00ad4e&color=fff&bold=true`}
                         >
                           {tech.fullName.charAt(0)}
                         </TechAvatar>
@@ -166,7 +164,7 @@ const Manage_Technicians = () => {
                         }
                         style={{
                           marginTop: "1rem",
-                          background: "#3b82f6",
+                          background: "#00ad4e",
                           color: "white",
                           border: "none",
                           padding: "0.5rem 1rem",
@@ -238,234 +236,22 @@ const Manage_Technicians = () => {
 
 export default Manage_Technicians;
 
-const Container = styled.div`
-  min-height: 100vh;
-  background: #f8fafc;
-  * {
-    font-family: "Outfit", sans-serif;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-`;
-
-const FilterSection = styled.div`
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  flex-wrap: wrap;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: stretch;
-  }
-`;
-
-const StyledSelect = styled(Select)`
-  min-width: 200px;
-
-  .ant-select-selector {
-    border-radius: 8px !important;
-    border: 1px solid #e5e7eb !important;
-    padding: 0.375rem 0.75rem !important;
-    height: auto !important;
-
-    &:hover {
-      border-color: #3b82f6 !important;
-    }
-  }
-
-  &.ant-select-focused .ant-select-selector {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-  }
-`;
-
-const StatsBar = styled.div`
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-`;
-
-const StatCard = styled.div`
-  background: white;
-  padding: 1.25rem 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex: 1;
-  min-width: 200px;
-
-  .icon {
-    background: #eff6ff;
-    padding: 0.75rem;
-    border-radius: 10px;
-    color: #3b82f6;
-  }
-
-  .content {
-    h3 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: #1e293b;
-      margin: 0;
-    }
-
-    p {
-      color: #64748b;
-      font-size: 0.875rem;
-      margin: 0;
-    }
-  }
-`;
-
-const TechGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const TechHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-`;
-
-const TechAvatar = styled(Avatar)`
-  width: 64px;
-  height: 64px;
-  font-size: 1.5rem;
-  font-weight: 600;
-  background: linear-gradient(135deg, #27ec4e 0%, #78d497 100%);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-`;
-
-const TechInfo = styled.div`
-  flex: 1;
-
-  h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 0 0 0.25rem;
-  }
-
-  .tech-id {
-    color: #64748b;
-    font-size: 0.875rem;
-  }
-`;
-
-const StatusBadge = styled(Badge)`
-  .ant-badge-status-dot {
-    width: 10px;
-    height: 10px;
-  }
-
-  .ant-badge-status-text {
-    font-size: 0.875rem;
-    font-weight: 500;
-  }
-`;
-
-const InfoRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: #f8fafc;
-  border-radius: 8px;
-  margin-bottom: 0.75rem;
-
-  svg {
-    color: #64748b;
-    flex-shrink: 0;
-  }
-
-  span {
-    color: #475569;
-    font-size: 0.9rem;
-  }
-
-  .label {
-    font-weight: 500;
-    color: #334155;
-  }
-`;
-
-const SkillTag = styled.span`
-  display: inline-block;
-  background: #d3f1d8;
-  color: #00ad4e;
-  padding: 0.375rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-  border: 1px solid #dbeafe;
-`;
-
-const FlipCardContainer = styled.div`
-  perspective: 1000px;
-  width: 100%;
-  height: 350px;
-`;
-
-const FlipCardInner = styled.div<{ $flipped: boolean }>`
-  position: relative;
-  width: 100%;
-  height: 350px;
-  transform-style: preserve-3d;
-  transition: transform 0.6s;
-  transform: ${({ $flipped }) => ($flipped ? "rotateY(180deg)" : "rotateY(0)")};
-`;
-
-const FlipCardSide = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 350px;
-  backface-visibility: hidden;
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  padding: 1.5rem;
-`;
-
-const FlipCardFront = styled(FlipCardSide)`
-  display: flex;
-  flex-direction: column;
-`;
-
-const FlipCardBack = styled(FlipCardSide)`
-  transform: rotateY(180deg);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-
-  .skills-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-`;
+import {
+  Container,
+  ContentWrapper,
+  FilterSection,
+  FlipCardBack,
+  FlipCardContainer,
+  FlipCardFront,
+  FlipCardInner,
+  InfoRow,
+  SkillTag,
+  StatCard,
+  StatsBar,
+  StatusBadge,
+  StyledSelect,
+  TechAvatar,
+  TechGrid,
+  TechHeader,
+  TechInfo,
+} from "./Manage_Technicians.styled";

@@ -32,11 +32,6 @@ const EmployeeLayout: React.FC<{
       <Layout style={{ flexDirection: "row" }}>
         <Sider
           width={230}
-          collapsible
-          collapsed={collapsed}
-          breakpoint="lg"
-          collapsedWidth={60}
-          onCollapse={(val) => setCollapsed(val)}
           style={{
             background: colorBgContainer,
             transition: "all 0.3s ease",
