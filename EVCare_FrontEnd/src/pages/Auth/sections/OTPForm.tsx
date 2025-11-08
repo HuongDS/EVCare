@@ -21,7 +21,7 @@ export default function OTPForm({
   disable,
 }: OTPFormProps) {
   const handleChange = (i: number, val: string) => {
-    if (!ONE_NUMBER_REGEX.test(val)) return;
+    if (val !== "" && !ONE_NUMBER_REGEX.test(val)) return;
 
     setOtp((prev) => {
       const next = [...prev];
@@ -32,6 +32,9 @@ export default function OTPForm({
     if (val && i < 5) {
       const nextInput = document.getElementById(`otp-${i + 1}`);
       nextInput?.focus();
+    } else if (!val && i > 0) {
+      const prevInput = document.getElementById(`otp-${i - 1}`);
+      prevInput?.focus();
     }
   };
 
@@ -57,6 +60,9 @@ export default function OTPForm({
     }
 
     setOtp(newOtp);
+    requestAnimationFrame(() => {
+      document.getElementById(`otp-${pastedData.length - 1}`)?.focus();
+    });
   };
 
   const isComplete = otp?.every((digit) => digit !== "");
