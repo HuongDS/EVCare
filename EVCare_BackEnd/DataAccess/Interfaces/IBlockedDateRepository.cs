@@ -11,5 +11,6 @@ namespace DataAccess.Interfaces
     public interface IBlockedDateRepository : IGenericRepository<CenterUnavailableDays>
     {
         public Task<IEnumerable<BlockedDateViewModel>> GetBlockedDateFromToday();
+        Task<CenterUnavailableDays> GetByDate(DateOnly date);
     }
 }
