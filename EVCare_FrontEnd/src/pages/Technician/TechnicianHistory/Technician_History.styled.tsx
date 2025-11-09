@@ -48,17 +48,10 @@ export const Title = styled.h2`
 
 export const ControlsWrapper = styled.div`
   display: flex;
-  flex-direction: column; /* stack sort + search theo cột */
+  flex-direction: column;
   align-items: center;
-  gap: 12px; /* khoảng cách giữa sort + search */
+  gap: 12px;
   margin-bottom: 16px;
-`;
-
-export const SortWrapper = styled.div`
-  width: 100%;
-  max-width: 300px; /* giới hạn độ rộng */
-  display: flex;
-  justify-content: center;
 `;
 
 export const SearchWrapper = styled.div`
@@ -68,26 +61,6 @@ export const SearchWrapper = styled.div`
   justify-content: center;
 `;
 
-export const SortSelect = styled.select`
-  padding: 8px 12px;
-  font-size: 14px;
-  border-radius: 8px;
-  border: 1px solid ${COLORS.grayMedium};
-  background-color: white;
-  color: ${COLORS.grayDark};
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: ${COLORS.primary};
-  }
-
-  &:focus {
-    outline: none;
-    border-color: ${COLORS.primary};
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
-  }
-`;
 export const AppointmentList = styled.div`
   display: flex;
   flex-direction: column;
@@ -128,4 +101,30 @@ export const PaginationWrapper = styled.div`
   left: 0;
   width: 100%;
   z-index: 10;
+`;
+export const SortWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+`;
+
+export const SortButton = styled.button`
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #15803d;
+    transform: translateY(-2px);
+  }
 `;
