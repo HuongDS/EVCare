@@ -10,7 +10,8 @@ namespace Application.Interfaces
     public interface IBlockedDateService
     {
         public Task<int> CreatePost(BlockedDatePostModel model);
+        Task DeleteBlockedDate(DateOnly date);
         public Task<IEnumerable<BlockedDateViewModel>> GetBlockedDateFromToday();
-
+        Task UpdateBlockedDate(BlockedDatePostModel model);
     }
 }
