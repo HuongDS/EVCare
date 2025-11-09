@@ -1,17 +1,12 @@
-import React, { useState, useEffect } from "react";
+// src/pages/Technician/Technician_Component/AppointmentCardProgress.tsx
+
+import React from "react";
 import { formatDate } from "../../../utils/formatDate";
-import { updateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
-import { getAppointmentPartCondition } from "../../../services/appointmentPartCondition";
-import { useNotification } from "../../../context/useNotification";
-import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
-import { ERROR_MESSAGE } from "../../../constants/messages/Message";
 import {
   DamageLevelEnum,
   DamageLevelLabels,
 } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
-import { getTechnicianAddedParts } from "../../../services/getTechnicianOrder";
 import {
   CardContainer,
   Header,
@@ -28,6 +23,11 @@ import {
   ButtonWrapper,
   SubTitle,
 } from "./Style/AppointmentCardProgress.styled";
+import SpinnerComponent from "../../../components/SpinnerComponent";
+import { useAppointmentCardProgress } from "../../../hooks/useAppointmentCardProgress";
+
+import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import type { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 
 type Props = {
   data: TechnicianAppointmentsDto;
@@ -43,74 +43,9 @@ const AppointmentCardProgress: React.FC<Props> = ({
   onStatusChange,
   onPartsUpdated,
 }) => {
-  const notification = useNotification();
-
-  const [currentStatus, setCurrentStatus] =
-    useState<TechnicianWorkingSessionEnum>(
-      data.status as TechnicianWorkingSessionEnum
-    );
-  const [damageLevels, setDamageLevels] = useState<
-    Record<number, DamageLevelEnum>
-  >({});
-
-  const { data: addedPartsResponse, isLoading: isLoadingParts } =
-    getTechnicianAddedParts(data.orderId);
-
-  const parts: any[] = addedPartsResponse?.data ?? [];
-
-  useEffect(() => {
-    const fetchDamageLevels = async () => {
-      try {
-        const response = await getAppointmentPartCondition(data.id);
-        const map: Record<number, DamageLevelEnum> = {};
-        response.data?.partDamageLevels?.forEach((d) => {
-          switch (d.damageLevel) {
-            case "Minor":
-              map[d.partId] = DamageLevelEnum.Minor;
-              break;
-            case "Moderate":
-              map[d.partId] = DamageLevelEnum.Moderate;
-              break;
-            case "Severe":
-              map[d.partId] = DamageLevelEnum.Severe;
-              break;
-            case "Critical":
-              map[d.partId] = DamageLevelEnum.Critical;
-              break;
-            default:
-              map[d.partId] = DamageLevelEnum.NotAssessed;
-          }
-        });
-        setDamageLevels(map);
-      } catch (err) {
-        console.error("Failed to load part condition:", err);
-      }
-    };
-
-    if (data.id) fetchDamageLevels();
-  }, [data.id]);
-
-  const handleAction = async (nextStatus: TechnicianWorkingSessionEnum) => {
-    const prevStatus = currentStatus;
-    setCurrentStatus(nextStatus);
-    onStatusChange?.(data.orderId, nextStatus);
-
-    try {
-      await updateTechnicianWorkingSession({
-        orderId: data.orderId,
-        status: nextStatus,
-      });
-      onPartsUpdated?.(data.orderId);
-    } catch (err) {
-      console.error(err);
-      setCurrentStatus(prevStatus);
-      onStatusChange?.(data.orderId, prevStatus);
-      notification.error({
-        message: ERROR_MESSAGE.CAN_NOT_UPDATE_STATUS,
-        showProgress: true,
-      });
-    }
-  };
+  // --- GỌI HOOK ---
+  const { currentStatus, damageLevels, parts, isLoadingParts, handleAction } =
+    useAppointmentCardProgress({ data, onStatusChange, onPartsUpdated });
 
   return (
     <CardContainer>
@@ -118,6 +53,7 @@ const AppointmentCardProgress: React.FC<Props> = ({
         <div>Appointment #{data.id}</div>
         <div>{currentStatus.replace("_", " ")}</div>
       </Header>
+
       {data.appointmentImages?.length > 0 && (
         <ImageCarousel>
           {data.appointmentImages.map((img, idx) => (
@@ -127,7 +63,9 @@ const AppointmentCardProgress: React.FC<Props> = ({
           ))}
         </ImageCarousel>
       )}
+
       <InfoBox>
+        {/* ... Info (giữ nguyên) ... */}
         <InfoColumn>
           <div>
             <strong>Customer:</strong> {data.customerName}
@@ -148,6 +86,7 @@ const AppointmentCardProgress: React.FC<Props> = ({
           </div>
         </InfoColumn>
       </InfoBox>
+
       <ListSection>
         <SectionContainer>
           <SectionTitle>Services</SectionTitle>
@@ -178,8 +117,8 @@ const AppointmentCardProgress: React.FC<Props> = ({
             </SubTitle>
           </SectionTitle>
           <ListWrapper>
-            {isLoadingParts ? (
-              <div className="empty">Loading parts...</div>
+            {isLoadingParts || Object.keys(damageLevels).length === 0 ? (
+              <SpinnerComponent />
             ) : parts.length > 0 ? (
               <ul>
                 {parts.map((p) => (
@@ -207,6 +146,7 @@ const AppointmentCardProgress: React.FC<Props> = ({
           </ListWrapper>
         </SectionContainer>
       </ListSection>
+
       <ButtonWrapper>
         <ReviewButton
           status={currentStatus}

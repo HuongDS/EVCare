@@ -18,11 +18,15 @@ interface ApplicationCardProps {
 }
 
 const ApplicationCard: React.FC<ApplicationCardProps> = ({ application }) => {
-  // ✅ Xác định trạng thái
   const getStatus = () => {
-    if (application.isApproved === true) return ApplicationStatusEnum.APPROVED;
-    if (application.isApproved === false) return ApplicationStatusEnum.REJECTED;
-    return ApplicationStatusEnum.PENDING;
+    switch (application.status?.toLowerCase()) {
+      case "approved":
+        return ApplicationStatusEnum.APPROVED;
+      case "rejected":
+        return ApplicationStatusEnum.REJECTED;
+      default:
+        return ApplicationStatusEnum.PENDING;
+    }
   };
 
   const statusColors: Record<ApplicationStatusEnum, string> = {

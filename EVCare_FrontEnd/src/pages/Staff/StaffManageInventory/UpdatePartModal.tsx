@@ -1,13 +1,30 @@
 import { useEffect, useState } from "react";
-import { Modal, Input, InputNumber, Button, Upload, message, Tooltip } from "antd";
-import styled from "styled-components";
-import { UploadOutlined, PictureOutlined, DollarOutlined, InboxOutlined } from "@ant-design/icons";
+import {
+  Modal,
+  Input,
+  InputNumber,
+  Button,
+  Upload,
+  message,
+  Tooltip,
+} from "antd";
+import {
+  UploadOutlined,
+  DollarOutlined,
+  InboxOutlined,
+} from "@ant-design/icons";
 import type { PartDetailDto } from "../../../models/PartModel/PartModel";
 import type { UpdateInventoryPayload } from "../../../models/Inventory/InventoryModel";
-import { useUpdateInventoryImage, useUpdateInventoryQuantity } from "../../../services/staffService";
+import {
+  useUpdateInventoryImage,
+  useUpdateInventoryQuantity,
+} from "../../../services/staffService";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "../../../context/useNotification";
-import { MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
+import {
+  MSG_TITLE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
 
 const { TextArea } = Input;
 
@@ -23,7 +40,9 @@ interface ModalProps {
 
 const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
   const notification = useNotification();
-  const [previewImage, setPreviewImage] = useState<string | undefined>(part?.imageUrl);
+  const [previewImage, setPreviewImage] = useState<string | undefined>(
+    part?.imageUrl
+  );
   const [errors, setErrors] = useState<FormErrors>({});
 
   const [formData, setFormData] = useState<UpdateInventoryPayload>({
@@ -40,7 +59,7 @@ const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
         id: part.id,
         description: part.description,
         unitPrice: part.price,
-        stock: part.stock,
+        stock: part.quantity,
         image: part.imageUrl,
       });
       setPreviewImage(part.imageUrl);
@@ -94,7 +113,8 @@ const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const { mutateAsync: updateQuantity, isPending: updating } = useUpdateInventoryQuantity();
+  const { mutateAsync: updateQuantity, isPending: updating } =
+    useUpdateInventoryQuantity();
   const queryClient = useQueryClient();
   const handleSave = async () => {
     if (!validateForm()) {
@@ -125,15 +145,29 @@ const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
         <div style={{ position: "relative" }}>
           <ImagePreview src={previewImage || part?.imageUrl} alt="Preview" />
           <ImageOverlay>
-            <Upload accept="image/*" maxCount={1} showUploadList={false} customRequest={handleCustomRequest}>
-              <Button icon={<UploadOutlined />} size="small" style={{ borderRadius: "6px", backgroundColor: "white" }}>
+            <Upload
+              accept="image/*"
+              maxCount={1}
+              showUploadList={false}
+              customRequest={handleCustomRequest}
+            >
+              <Button
+                icon={<UploadOutlined />}
+                size="small"
+                style={{ borderRadius: "6px", backgroundColor: "white" }}
+              >
                 Change Image
               </Button>
             </Upload>
           </ImageOverlay>
         </div>
       ) : (
-        <Upload accept="image/*" maxCount={1} showUploadList={false} customRequest={handleCustomRequest}>
+        <Upload
+          accept="image/*"
+          maxCount={1}
+          showUploadList={false}
+          customRequest={handleCustomRequest}
+        >
           <UploadPlaceholder>
             <PlaceholderIcon />
             <PlaceholderText>Click to upload image</PlaceholderText>
@@ -243,109 +277,19 @@ const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
 
 export default UpdatePartModal;
 
-const ModalContent = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 24px;
-  font-family: "Outfit", sans-serif;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const SectionHeader = styled.div`
-  margin-bottom: 16px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #8c8c8c;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-`;
-
-const FormField = styled.div`
-  margin-bottom: 20px;
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #262626;
-`;
-
-const Required = styled.span`
-  color: #ff4d4f;
-`;
-
-const ErrorText = styled.div`
-  color: #ff4d4f;
-  font-size: 12px;
-  margin-top: 4px;
-`;
-
-const FieldRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-`;
-
-const ImageUploadContainer = styled.div`
-  border: 2px dashed #d9d9d9;
-  border-radius: 12px;
-  overflow: hidden;
-  background-color: #fafafa;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  position: relative;
-
-  &:hover {
-    border-color: #1890ff;
-    background-color: #f0f5ff;
-  }
-`;
-
-const ImagePreview = styled.img`
-  width: 100%;
-  height: 280px;
-  object-fit: cover;
-  display: block;
-`;
-
-const ImageOverlay = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-  padding: 40px 16px 12px;
-`;
-
-const UploadPlaceholder = styled.div`
-  height: 280px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 20px;
-`;
-
-const PlaceholderIcon = styled(PictureOutlined)`
-  font-size: 48px;
-  color: #bfbfbf;
-`;
-
-const PlaceholderText = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  color: #595959;
-  text-align: center;
-`;
-
-const PlaceholderHint = styled.div`
-  font-size: 12px;
-  color: #8c8c8c;
-  text-align: center;
-`;
+import {
+  ErrorText,
+  FieldRow,
+  FormField,
+  ImageOverlay,
+  ImagePreview,
+  ImageUploadContainer,
+  Label,
+  ModalContent,
+  PlaceholderHint,
+  PlaceholderIcon,
+  PlaceholderText,
+  Required,
+  SectionHeader,
+  UploadPlaceholder,
+} from "./styles/UpdatePartModal.styled";

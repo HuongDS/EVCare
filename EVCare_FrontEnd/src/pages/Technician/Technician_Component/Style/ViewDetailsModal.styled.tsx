@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 export const ModalContainer = styled.div`
+  font-family: "Outfit", sans-serif;
   border-radius: 12px;
   padding: 20px 24px;
 `;

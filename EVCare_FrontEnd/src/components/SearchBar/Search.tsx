@@ -1,3 +1,4 @@
+import { debounce } from "@mui/material";
 import styled from "styled-components";
 // (Các import khác nếu có)
 
@@ -12,9 +13,12 @@ const SearchBar = ({
   placeholder,
   searchValue,
 }: handleSearchProps) => {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleSearchValue(event.target.value);
-  };
+  const handleChange = debounce(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      handleSearchValue(event.target.value);
+    },
+    400
+  );
   return (
     <StyledWrapper>
       <div className="group">
