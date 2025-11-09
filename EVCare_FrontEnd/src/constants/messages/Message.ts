@@ -96,7 +96,7 @@ export const APPOINTMENT_MESSAGE = {
   APPOINTMENT_CANCEL_SUCCESS: "Appointment is cancelled successfully",
   APPOINTMENT_CANCEL_FAIL: "Failed to cancel this appointment",
   APPOINTMENT_CHECKIN_FAIL: "Oops! You can only check in on customer's appointment day.",
-  CREATE_APPOINTMENT_SUCCESS: "Appointment is created successfully",
+  CREATE_APPOINTMENT_SUCCESS: "Appointment is created successfully!",
 };
 
 export const FORM_MESSAGES = {
