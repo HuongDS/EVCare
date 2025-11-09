@@ -2,10 +2,7 @@
 
 import React from "react";
 import { formatDate } from "../../../utils/formatDate";
-import {
-  DamageLevelEnum,
-  DamageLevelLabels,
-} from "../../../models/enums/DamageLevelEnum";
+import { DamageLevelEnum, DamageLevelLabels } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import {
   CardContainer,
@@ -31,21 +28,17 @@ import type { TechnicianWorkingSessionEnum } from "../../../models/enums/Technic
 
 type Props = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
+  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
   onPartsUpdated?: (orderId: number) => void;
 };
 
-const AppointmentCardProgress: React.FC<Props> = ({
-  data,
-  onStatusChange,
-  onPartsUpdated,
-}) => {
+const AppointmentCardProgress: React.FC<Props> = ({ data, onStatusChange, onPartsUpdated }) => {
   // --- GỌI HOOK ---
-  const { currentStatus, damageLevels, parts, isLoadingParts, handleAction } =
-    useAppointmentCardProgress({ data, onStatusChange, onPartsUpdated });
+  const { currentStatus, damageLevels, parts, isLoadingParts, handleAction } = useAppointmentCardProgress({
+    data,
+    onStatusChange,
+    onPartsUpdated,
+  });
 
   return (
     <CardContainer>
@@ -126,16 +119,8 @@ const AppointmentCardProgress: React.FC<Props> = ({
                     <span>
                       {p.partName} × {p.quantity} — {p.price.toLocaleString()}₫
                     </span>
-                    <DamageLevelBadgeStyled
-                      $level={
-                        damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed
-                      }
-                    >
-                      {
-                        DamageLevelLabels[
-                          damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed
-                        ]
-                      }
+                    <DamageLevelBadgeStyled $level={damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed}>
+                      {DamageLevelLabels[damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed]}
                     </DamageLevelBadgeStyled>
                   </PartItem>
                 ))}
@@ -148,12 +133,7 @@ const AppointmentCardProgress: React.FC<Props> = ({
       </ListSection>
 
       <ButtonWrapper>
-        <ReviewButton
-          status={currentStatus}
-          onAction={handleAction}
-          appointment={data}
-          orderId={data.orderId}
-        />
+        <ReviewButton status={currentStatus} onAction={handleAction} appointment={data} orderId={data.orderId} />
       </ButtonWrapper>
     </CardContainer>
   );
