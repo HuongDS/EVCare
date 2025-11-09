@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { formatDate } from "../../../utils/formatDate";
 import { updateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
 import { getAppointmentPartCondition } from "../../../services/appointmentPartCondition";
+import { fetchTechnicianAddedParts } from "../../../services/getTechnicianOrder";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
@@ -11,16 +12,8 @@ import {
 } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import { useNotification } from "../../../context/useNotification";
-import { getTechnicianAddedParts } from "../../../services/getTechnicianOrder";
+import { useQuery } from "@tanstack/react-query";
 
-type Props = {
-  data: TechnicianAppointmentsDto;
-  onStatusChange?: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
-  onPartsUpdated?: (orderId: number) => void;
-};
 import {
   CardContainer,
   Header,
@@ -38,6 +31,15 @@ import {
   SubTitle,
 } from "./Style/AppointmentCard.styled";
 
+type Props = {
+  data: TechnicianAppointmentsDto;
+  onStatusChange?: (
+    orderId: number,
+    newStatus: TechnicianWorkingSessionEnum
+  ) => void;
+  onPartsUpdated?: (orderId: number) => void;
+};
+
 const AppointmentCard: React.FC<Props> = ({
   data,
   onStatusChange,
@@ -49,20 +51,27 @@ const AppointmentCard: React.FC<Props> = ({
     useState<TechnicianWorkingSessionEnum>(
       data.status as TechnicianWorkingSessionEnum
     );
+
   const [damageLevels, setDamageLevels] = useState<
     Record<number, DamageLevelEnum>
   >({});
 
-  const { data: addedPartsResponse, isLoading: isLoadingParts } =
-    getTechnicianAddedParts(data.orderId);
+  // ✅ Fetch parts bằng React Query (dùng fetchTechnicianAddedParts mới)
+  const {
+    data: parts = [],
+    isLoading: isLoadingParts,
+    refetch: refetchParts,
+  } = useQuery({
+    queryKey: ["TechnicianAddedParts", data.orderId],
+    queryFn: () => fetchTechnicianAddedParts(data.orderId),
+    enabled: !!data.orderId,
+    staleTime: 1000 * 60,
+  });
 
-  const parts: any[] = addedPartsResponse?.data ?? [];
-
+  // ✅ Fetch damage levels riêng bằng useEffect
   useEffect(() => {
     const fetchDamageLevels = async () => {
       try {
-        await new Promise((res) => setTimeout(res, Math.random() * 300));
-
         const response = await getAppointmentPartCondition(data.id);
         const map: Record<number, DamageLevelEnum> = {};
         response.data?.partDamageLevels?.forEach((d) => {
@@ -92,15 +101,18 @@ const AppointmentCard: React.FC<Props> = ({
     if (data.id) fetchDamageLevels();
   }, [data.id]);
 
+  // ✅ Handle action (update status)
   const handleAction = async (nextStatus: TechnicianWorkingSessionEnum) => {
     const prevStatus = currentStatus;
     setCurrentStatus(nextStatus);
     onStatusChange?.(data.orderId, nextStatus);
+
     try {
       await updateTechnicianWorkingSession({
         orderId: data.orderId,
         status: nextStatus,
       });
+      await refetchParts(); // cập nhật lại parts sau khi đổi status
       onPartsUpdated?.(data.orderId);
     } catch (err) {
       console.error(err);
@@ -119,6 +131,7 @@ const AppointmentCard: React.FC<Props> = ({
         <div>Appointment #{data.id}</div>
         <div>{currentStatus.replace("_", " ")}</div>
       </Header>
+
       {data.appointmentImages?.length > 0 && (
         <ImageCarousel>
           {data.appointmentImages.map((img, idx) => (
@@ -210,6 +223,7 @@ const AppointmentCard: React.FC<Props> = ({
           </ListWrapper>
         </SectionBox>
       </ListSection>
+
       <ButtonWrapper>
         <ReviewButton
           status={currentStatus}
