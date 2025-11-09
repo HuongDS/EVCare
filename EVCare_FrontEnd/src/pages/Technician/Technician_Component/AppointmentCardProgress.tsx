@@ -2,10 +2,7 @@
 
 import React from "react";
 import { formatDate } from "../../../utils/formatDate";
-import {
-  DamageLevelEnum,
-  DamageLevelLabels,
-} from "../../../models/enums/DamageLevelEnum";
+import { DamageLevelEnum, DamageLevelLabels } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import {
   CardContainer,
@@ -23,39 +20,32 @@ import {
   ButtonWrapper,
   SubTitle,
 } from "./Style/AppointmentCardProgress.styled";
-
-import { useAppointmentCardProgress } from "../../../hooks/useAppointmentCardProgress"; // <-- Import Hook mới
+import SpinnerComponent from "../../../components/SpinnerComponent";
+import { useAppointmentCardProgress } from "../../../hooks/useAppointmentCardProgress";
 
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import type { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 
 type Props = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
+  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
   onPartsUpdated?: (orderId: number) => void;
 };
 
-const AppointmentCardProgress: React.FC<Props> = ({
-  data,
-  onStatusChange,
-  onPartsUpdated,
-}) => {
+const AppointmentCardProgress: React.FC<Props> = ({ data, onStatusChange, onPartsUpdated }) => {
   // --- GỌI HOOK ---
-  const { currentStatus, damageLevels, parts, isLoadingParts, handleAction } =
-    useAppointmentCardProgress({ data, onStatusChange, onPartsUpdated });
+  const { currentStatus, damageLevels, parts, isLoadingParts, handleAction } = useAppointmentCardProgress({
+    data,
+    onStatusChange,
+    onPartsUpdated,
+  });
 
   return (
     <CardContainer>
       <Header>
         <div>Appointment #{data.id}</div>
-        {/* Dùng currentStatus từ hook */}
         <div>{currentStatus.replace("_", " ")}</div>
       </Header>
-      
-      {/* ... Phần UI (giữ nguyên) ... */}
 
       {data.appointmentImages?.length > 0 && (
         <ImageCarousel>
@@ -66,7 +56,7 @@ const AppointmentCardProgress: React.FC<Props> = ({
           ))}
         </ImageCarousel>
       )}
-      
+
       <InfoBox>
         {/* ... Info (giữ nguyên) ... */}
         <InfoColumn>
@@ -89,7 +79,7 @@ const AppointmentCardProgress: React.FC<Props> = ({
           </div>
         </InfoColumn>
       </InfoBox>
-      
+
       <ListSection>
         <SectionContainer>
           <SectionTitle>Services</SectionTitle>
@@ -120,9 +110,8 @@ const AppointmentCardProgress: React.FC<Props> = ({
             </SubTitle>
           </SectionTitle>
           <ListWrapper>
-            {/* Dùng isLoadingParts và parts từ hook */}
-            {isLoadingParts ? (
-              <div className="empty">Loading parts...</div>
+            {isLoadingParts || Object.keys(damageLevels).length === 0 ? (
+              <SpinnerComponent />
             ) : parts.length > 0 ? (
               <ul>
                 {parts.map((p) => (
@@ -130,16 +119,8 @@ const AppointmentCardProgress: React.FC<Props> = ({
                     <span>
                       {p.partName} × {p.quantity} — {p.price.toLocaleString()}₫
                     </span>
-                    <DamageLevelBadgeStyled
-                      $level={
-                        damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed
-                      }
-                    >
-                      {
-                        DamageLevelLabels[
-                          damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed
-                        ]
-                      }
+                    <DamageLevelBadgeStyled $level={damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed}>
+                      {DamageLevelLabels[damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed]}
                     </DamageLevelBadgeStyled>
                   </PartItem>
                 ))}
@@ -150,15 +131,9 @@ const AppointmentCardProgress: React.FC<Props> = ({
           </ListWrapper>
         </SectionContainer>
       </ListSection>
-      
+
       <ButtonWrapper>
-        {/* Dùng handleAction từ hook */}
-        <ReviewButton
-          status={currentStatus}
-          onAction={handleAction}
-          appointment={data}
-          orderId={data.orderId}
-        />
+        <ReviewButton status={currentStatus} onAction={handleAction} appointment={data} orderId={data.orderId} />
       </ButtonWrapper>
     </CardContainer>
   );

@@ -206,8 +206,11 @@ function BookingForm({ show, handleClose, setLoading, loading }: Props) {
                 <div
                   style={{
                     display: "flex",
+                    alignItems: "center",
                     justifyContent: "center",
+                    gap: "6px",
                     marginTop: "15px",
+                    flexWrap: "wrap",
                   }}
                 >
                   {!visible && (
