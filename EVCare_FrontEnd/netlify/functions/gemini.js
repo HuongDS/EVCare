@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const REAL_GEMINI_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
 exports.handler = async (event) => {
   const SECRET_KEY = process.env.GEMINI_KEY;
