@@ -38,16 +38,19 @@ export default function Appoinment_Progress_Modal({
   } = useGetAppointmentById(appointmentId ?? 0);
 
   const [subPage, setSubPage] = useState<
-    "payment" | "nextMaintenance" | "maintenance" | null
+    | "payment"
+    | "nextMaintenance"
+    | "maintenance"
+    | "nextMaintenanceSkipped"
+    | null
   >(null);
 
   useEffect(() => {
     setSubPage(null);
   }, [appointmentDetail?.data?.status]);
 
-  //Các step title trong quy trình appoinments
   const stepNames = stepsAppointment;
-  const currentStep = getAppointmentStepFromStatus(
+  let currentStep = getAppointmentStepFromStatus(
     appointmentDetail?.data?.status ?? "Pending"
   );
 
@@ -105,8 +108,13 @@ export default function Appoinment_Progress_Modal({
       case 4:
         if (subPage === "nextMaintenance") {
           return (
-            <NextMaintenance data={data} onSkip={() => setSubPage(null)} />
+            <NextMaintenance
+              data={data}
+              onSkip={() => setSubPage("nextMaintenanceSkipped")}
+            />
           );
+        } else if (subPage === "nextMaintenanceSkipped") {
+          return <InvoicePage data={data} />;
         }
         return (
           <PaymentPage
@@ -114,12 +122,8 @@ export default function Appoinment_Progress_Modal({
             onPaymentSuccess={() => setSubPage("nextMaintenance")}
           />
         );
+
       case 5:
-        if (subPage === "nextMaintenance") {
-          return (
-            <NextMaintenance data={data} onSkip={() => setSubPage(null)} />
-          );
-        }
         return <InvoicePage data={data} />;
     }
   };
