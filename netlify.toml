@@ -1,5 +1,8 @@
 [build]
-  functions = "EVCare_FrontEnd/netlify/functions"
+  base = "EVCare_FrontEnd"
+  command = "npm run build"
+  functions = "netlify/functions"
+  publish = "dist"
 
 [[redirects]]
   from = "/api/gemini"
