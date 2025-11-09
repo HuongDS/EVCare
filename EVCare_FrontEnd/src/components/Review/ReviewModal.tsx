@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import ReviewForm from "./ReviewForm";
 import SuccessMessage from "./SuccessMessage";
 import type { ReviewCreateDto } from "../../models/Review/ReviewCreateDto.ts";
-// import { ReviewWrapper } from "./Review.styled.tsx"; // <-- (XÓA) Không cần nữa
 import type { AppointmentViewDetailModel } from "../../models/AppointmentsModel/AppointmentViewDetailModel.ts";
 import { handleError } from "../../utils/errorHandler.ts";
 import { useAlert } from "../../context/useAlert.ts";
@@ -17,7 +16,11 @@ interface ReviewModalProps {
   appointmentData: AppointmentViewDetailModel;
 }
 
-const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, appointmentData }) => {
+const ReviewModal: React.FC<ReviewModalProps> = ({
+  open,
+  onClose,
+  appointmentData,
+}) => {
   const [submitted, setSubmitted] = useState(false);
   const { showAlert } = useAlert();
   const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +49,11 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, appointmentDat
             <SpinnerComponent />
           </ModalOverlay>
         ) : (
-          <ReviewForm appointmentData={appointmentData} onSubmit={handleSubmit} onCancel={onClose} />
+          <ReviewForm
+            appointmentData={appointmentData}
+            onSubmit={handleSubmit}
+            onCancel={onClose}
+          />
         )
       ) : (
         <SuccessMessage onClose={onClose} />
