@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Search,
   ArrowLeft,
@@ -12,7 +12,13 @@ import {
   FileText,
   UserPlus,
 } from "lucide-react";
-import { Select, DatePicker, Upload as AntUpload, message } from "antd";
+import {
+  Select,
+  DatePicker,
+  Upload as AntUpload,
+  message,
+  notification,
+} from "antd";
 import type { UploadFile } from "antd";
 import {
   useGetAllCustomer,
@@ -32,6 +38,9 @@ import { useCreateNewOrder } from "../../../services/orderServiceApi";
 import type { Dayjs } from "dayjs";
 import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
 import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
+import type { BlockedDateViewModel } from "../../../models/BlockedDate/BlockedDateViewModel";
+import { getBlockedDate } from "../../../services/serviceCenterService";
+import dayjs from "dayjs";
 
 interface Props {
   onBack: () => void;
@@ -49,6 +58,9 @@ export default function CreateAppointmentPage({ onBack }: Props) {
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [listBlockedDays, setListBlockedDays] = useState<
+    BlockedDateViewModel[]
+  >([]);
 
   const { data: customers } = useGetAllCustomer({
     keyword: searchQuery,
@@ -139,6 +151,22 @@ export default function CreateAppointmentPage({ onBack }: Props) {
   const selectedVehicleData = selectedCustomer?.vehicles.find(
     (v) => v.id === selectedVehicle
   );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response02 = await getBlockedDate();
+        setListBlockedDays(response02.data ?? []);
+      } catch (error) {
+        notification.error({
+          message: "Error",
+          description: "Failed to fetch data",
+          showProgress: true,
+        });
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <PageContainer>
@@ -242,30 +270,39 @@ export default function CreateAppointmentPage({ onBack }: Props) {
               </CardTitle>
 
               <VehicleList>
-                {selectedCustomer.vehicles.map((vehicle) => (
-                  <VehicleCard
-                    key={vehicle.id}
-                    onClick={() => setSelectedVehicle(vehicle.id)}
-                    $selected={selectedVehicle === vehicle.id}
-                  >
-                    <VehicleImage
-                      src={
-                        vehicle.image ||
-                        "https://i.pinimg.com/736x/79/74/12/797412081b120609d902b4966fa435b7.jpg"
-                      }
-                      alt={vehicle.licensePlate}
-                    />
-                    <VehicleInfo>
-                      <VehicleCategory>{vehicle.categoryName}</VehicleCategory>
-                      <VehiclePlate>{vehicle.licensePlate}</VehiclePlate>
-                    </VehicleInfo>
-                    {selectedVehicle === vehicle.id && (
-                      <SelectedBadge>
-                        <CheckCircle size={16} />
-                      </SelectedBadge>
-                    )}
-                  </VehicleCard>
-                ))}
+                {selectedCustomer.vehicles
+                  .filter(
+                    (veh) =>
+                      veh.categoryName !== "Coupe" &&
+                      veh.categoryName !== "test" &&
+                      veh.categoryName !== "string"
+                  )
+                  .map((vehicle) => (
+                    <VehicleCard
+                      key={vehicle.id}
+                      onClick={() => setSelectedVehicle(vehicle.id)}
+                      $selected={selectedVehicle === vehicle.id}
+                    >
+                      <VehicleImage
+                        src={
+                          vehicle.image ||
+                          "https://i.pinimg.com/736x/79/74/12/797412081b120609d902b4966fa435b7.jpg"
+                        }
+                        alt={vehicle.licensePlate}
+                      />
+                      <VehicleInfo>
+                        <VehicleCategory>
+                          {vehicle.categoryName}
+                        </VehicleCategory>
+                        <VehiclePlate>{vehicle.licensePlate}</VehiclePlate>
+                      </VehicleInfo>
+                      {selectedVehicle === vehicle.id && (
+                        <SelectedBadge>
+                          <CheckCircle size={16} />
+                        </SelectedBadge>
+                      )}
+                    </VehicleCard>
+                  ))}
               </VehicleList>
             </Card>
           )}
@@ -315,12 +352,22 @@ export default function CreateAppointmentPage({ onBack }: Props) {
                       Appointment Date & Time<Required>*</Required>
                     </FormLabel>
                     <DatePicker
-                      showTime
                       format="DD/MM/YYYY HH:mm"
-                      style={{ width: "100%" }}
-                      size="large"
-                      onChange={setAppointmentDate}
-                      placeholder="Select date and time"
+                      value={appointmentDate}
+                      onChange={(value) => setAppointmentDate(value)}
+                      disabledDate={(current) => {
+                        const isPast =
+                          current &&
+                          current.isBefore(dayjs().startOf("day"), "day");
+                        const isBlocked = listBlockedDays.some((d) =>
+                          current.isSame(dayjs(d.dateTime, "YYYY-MM-DD"), "day")
+                        );
+                        return !!isPast || !!isBlocked;
+                      }}
+                      showTime
+                      getPopupContainer={(triggerNode) =>
+                        triggerNode.parentElement as HTMLElement
+                      }
                     />
                   </FormItem>
 
