@@ -7,13 +7,15 @@ import type {
 } from "../models/OrderPartModel/OrderTechnicianAdded";
 import { requestQueue } from "./requestQueue";
 
-const fetchTechnicianAddedParts = async (orderId: number) => {
+export const fetchTechnicianAddedParts = async (
+  orderId: number
+): Promise<TechnicianAddedPart[]> => {
   return requestQueue.enqueue(async () => {
     const response = await api.get<ResponseDto<TechnicianAddedPart[]>>(
       "/api/Order/technician-orders",
       { params: { orderId } }
     );
-    return response.data;
+    return response.data.data ?? [];
   });
 };
 
