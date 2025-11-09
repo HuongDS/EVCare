@@ -132,9 +132,8 @@ export const ErrorContent = styled.div`
 export const CanvasWrapper = styled.div`
   width: 100%;
   height: 100%;
-  right: 10%;
   position: relative;
-
+  right: 5%;
   canvas {
     outline: none;
   }
