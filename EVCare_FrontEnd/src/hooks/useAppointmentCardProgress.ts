@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+// src/hooks/useAppointmentCardProgress.ts
 import { useNotification } from "../context/useNotification";
 import type { TechnicianAppointmentsDto } from "../models/AppointmentsModel/Technician_Appointments_Model";
 import type { TechnicianWorkingSessionEnum } from "../models/enums";
 import { DamageLevelEnum } from "../models/enums/DamageLevelEnum";
-import { getTechnicianAddedParts } from "../services/getTechnicianOrder";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTechnicianAddedParts } from "../services/getTechnicianOrder";
 import { getAppointmentPartCondition } from "../services/appointmentPartCondition";
 import { updateTechnicianWorkingSession } from "../services/TechnicianWorkingSessionApi";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
+import { useState } from "react";
 
 type UseAppointmentCardProgressProps = {
   data: TechnicianAppointmentsDto;
@@ -28,47 +30,44 @@ export const useAppointmentCardProgress = ({
     useState<TechnicianWorkingSessionEnum>(
       data.status as TechnicianWorkingSessionEnum
     );
-  const [damageLevels, setDamageLevels] = useState<
-    Record<number, DamageLevelEnum>
-  >({});
 
-  const { data: addedPartsResponse, isLoading: isLoadingParts } =
-    getTechnicianAddedParts(data.orderId);
+  // --- Fetch added parts ---
+  const { data: parts = [], isLoading: isLoadingParts } = useQuery({
+    queryKey: ["TechnicianAddedParts", data.orderId],
+    queryFn: () => fetchTechnicianAddedParts(data.orderId),
+    enabled: !!data.orderId,
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const parts: any[] = addedPartsResponse?.data ?? [];
+  // --- Fetch damage levels ---
+  const { data: damageResponse } = useQuery({
+    queryKey: ["AppointmentPartCondition", data.id],
+    queryFn: () => getAppointmentPartCondition(data.id),
+    enabled: !!data.id,
+    staleTime: 1000 * 60 * 5,
+  });
 
-  useEffect(() => {
-    const fetchDamageLevels = async () => {
-      try {
-        const response = await getAppointmentPartCondition(data.id);
-        const map: Record<number, DamageLevelEnum> = {};
-        response.data?.partDamageLevels?.forEach((d) => {
-          switch (d.damageLevel) {
-            case "Minor":
-              map[d.partId] = DamageLevelEnum.Minor;
-              break;
-            case "Moderate":
-              map[d.partId] = DamageLevelEnum.Moderate;
-              break;
-            case "Severe":
-              map[d.partId] = DamageLevelEnum.Severe;
-              break;
-            case "Critical":
-              map[d.partId] = DamageLevelEnum.Critical;
-              break;
-            default:
-              map[d.partId] = DamageLevelEnum.NotAssessed;
-          }
-        });
-        setDamageLevels(map);
-      } catch (err) {
-        console.error("Failed to load part condition:", err);
-      }
-    };
+  const damageLevels: Record<number, DamageLevelEnum> = {};
+  damageResponse?.data?.partDamageLevels?.forEach((d) => {
+    switch (d.damageLevel) {
+      case "Minor":
+        damageLevels[d.partId] = DamageLevelEnum.Minor;
+        break;
+      case "Moderate":
+        damageLevels[d.partId] = DamageLevelEnum.Moderate;
+        break;
+      case "Severe":
+        damageLevels[d.partId] = DamageLevelEnum.Severe;
+        break;
+      case "Critical":
+        damageLevels[d.partId] = DamageLevelEnum.Critical;
+        break;
+      default:
+        damageLevels[d.partId] = DamageLevelEnum.NotAssessed;
+    }
+  });
 
-    if (data.id) fetchDamageLevels();
-  }, [data.id]);
-
+  // --- Handle status update ---
   const handleAction = async (nextStatus: TechnicianWorkingSessionEnum) => {
     const prevStatus = currentStatus;
     setCurrentStatus(nextStatus);
@@ -96,7 +95,6 @@ export const useAppointmentCardProgress = ({
     damageLevels,
     parts,
     isLoadingParts,
-
     handleAction,
   };
 };

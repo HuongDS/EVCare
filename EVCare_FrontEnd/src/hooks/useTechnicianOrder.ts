@@ -54,12 +54,11 @@ export const useTechnicianOrder = ({
   const [isSending, setIsSending] = useState(false);
   const pageSize = LENGTH.VIEW_PARTCARD_MAX;
 
-  // Query hooks
   const {
     data: technicianPartsRes,
     isLoading: isPartsLoading,
     refetch: refetchTechnicianParts,
-  } = getTechnicianAddedParts(currentOrderId ?? 0);
+  } = getTechnicianAddedParts(currentOrderId ?? undefined);
 
   const { data: appointmentRes } = useGetTechnicianAppointments({
     Status: "AddingPart" as TechnicianWorkingSessionEnum,
@@ -67,7 +66,7 @@ export const useTechnicianOrder = ({
     PageIndex: 1,
   });
 
-  // Fetch all parts
+  // --- Fetch all parts ---
   useEffect(() => {
     const fetchAllParts = async () => {
       if (!currentOrderId) return;
@@ -90,11 +89,11 @@ export const useTechnicianOrder = ({
     fetchAllParts();
   }, [currentOrderId, appointmentRes]);
 
-  // Load parts added by technician
+  // --- Load parts added by technician ---
   useEffect(() => {
-    if (technicianPartsRes?.data) {
+    if (technicianPartsRes) {
       const mappedCart =
-        technicianPartsRes.data.map((p) => ({
+        technicianPartsRes.map((p: any) => ({
           part: {
             id: p.partID,
             name: p.partName,
@@ -107,7 +106,7 @@ export const useTechnicianOrder = ({
     }
   }, [technicianPartsRes]);
 
-  // Pagination & search
+  // --- Pagination & search ---
   const updateDisplayParts = useCallback(() => {
     const query = searchQuery.trim().toLowerCase();
     const filtered = allParts.filter(
@@ -124,7 +123,7 @@ export const useTechnicianOrder = ({
     updateDisplayParts();
   }, [updateDisplayParts]);
 
-  // === Cart logic ===
+  // --- Cart logic ---
   const handleAddToCart = (part: OrderPartsResponseDto, quantity: number) => {
     setCart((prev) => {
       const exist = prev.find((item) => item.part.id === part.id);
@@ -144,7 +143,7 @@ export const useTechnicianOrder = ({
     setCart((prev) => prev.filter((item) => item.part.id !== partId));
   };
 
-  // === API update logic ===
+  // --- API update logic ---
   const handleSendCart = async (
     damageLevels: Record<number, DamageLevelEnum>
   ) => {
@@ -191,7 +190,7 @@ export const useTechnicianOrder = ({
     setSelectedPart(part);
     setOpen(true);
   };
-  // Expose to component
+
   return {
     cart,
     displayParts,

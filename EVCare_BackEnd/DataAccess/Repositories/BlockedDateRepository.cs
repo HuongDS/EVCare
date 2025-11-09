@@ -24,6 +24,7 @@ namespace DataAccess.Repositories
                 {
                     DateTime= DateOnly.FromDateTime(x.Date),
                     Reason = x.Reason,
+                    UnavailableType = x.Type,
                 } )
                 .ToListAsync();
 
@@ -37,12 +38,17 @@ namespace DataAccess.Repositories
                 .Select(x => new BlockedDateViewModel
                 {
                     DateTime = x.Key,
-                    Reason = "Too limit capacity"
+                    Reason = "Too limit capacity",
+                    UnavailableType = Enums.UnavailableType.OverCapacity,
                 }).ToListAsync();
 
             lists.AddRange(date);
             return lists.OrderBy(x=>x.DateTime);
 
+        }
+
+        public async Task<CenterUnavailableDays> GetByDate(DateOnly date) {
+            return await _dbSet.FirstOrDefaultAsync(x => date == DateOnly.FromDateTime(x.Date));
         }
     }
 }

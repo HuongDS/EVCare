@@ -19,6 +19,7 @@ import {
   TeamOutlined,
   ToolOutlined,
   UserOutlined,
+  WarningOutlined,
   WechatWorkOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -94,6 +95,12 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "10",
+      icon: <WarningOutlined />,
+      label: "BlockDate",
+      route: "/admin/blockDate",
+    },
+    {
+      key: "11",
       icon: <LogoutOutlined />,
       label: "Logout",
       action: () => logout,

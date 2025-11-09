@@ -14,7 +14,8 @@ namespace Application.Mappings
         public BlockedDateProfile() {
 
             CreateMap<BlockedDatePostModel, CenterUnavailableDays>()
-                .ForMember(dest=>dest.CreatedAt,opt=>opt.MapFrom(src=>DateTime.Now));
+                .ForMember(dest=>dest.CreatedAt,opt=>opt.MapFrom(src=>DateTime.Now))
+                .ForMember(dest=>dest.Date,opt=>opt.MapFrom(src=>src.Date.ToDateTime(TimeOnly.MinValue)));
 
         
         }

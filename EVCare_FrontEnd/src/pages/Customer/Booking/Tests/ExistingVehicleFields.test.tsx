@@ -12,7 +12,9 @@ const mockCategories: VehicleCategoryViewDto[] = [
 describe("ExistingVehicleFields", () => {
   it("TC01: should render the disabled model input with the correct name", () => {
     // ARRANGE
-    render(<ExistingVehicleFields listCategories={mockCategories} vehicleCategory={999} />);
+    render(
+      <ExistingVehicleFields vehicleCategoryName="Test01" listCategories={mockCategories} vehicleCategory={999} />
+    );
 
     // ACT
     const modelInput = screen.getByDisplayValue("Sedan");
@@ -24,7 +26,9 @@ describe("ExistingVehicleFields", () => {
 
   it("TC02: should display 'N/A' if category is not found", () => {
     // ARRANGE
-    render(<ExistingVehicleFields listCategories={mockCategories} vehicleCategory={111} />);
+    render(
+      <ExistingVehicleFields vehicleCategoryName="Test01" listCategories={mockCategories} vehicleCategory={111} />
+    );
 
     // ACT
     const modelInput = screen.getByDisplayValue("N/A");
