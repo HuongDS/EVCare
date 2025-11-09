@@ -114,7 +114,7 @@ const Manage_Customer: React.FC = () => {
               <CustomerHeader>
                 <CustomerAvatar
                   size={40}
-                  src={`https://ui-avatars.com/api/?name=${customer.customerName}&background=3b82f6&color=fff&bold=true`}
+                  src={`https://ui-avatars.com/api/?name=${customer.customerName}&background=00ad4e&color=fff&bold=true`}
                 >
                   {customer.customerName.charAt(0)}
                 </CustomerAvatar>
