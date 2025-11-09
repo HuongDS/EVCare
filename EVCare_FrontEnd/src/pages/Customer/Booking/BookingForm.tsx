@@ -1,5 +1,9 @@
 import React from "react";
-import { PiNumberCircleOneFill, PiNumberCircleTwoFill, PiNumberCircleThreeFill } from "react-icons/pi";
+import {
+  PiNumberCircleOneFill,
+  PiNumberCircleTwoFill,
+  PiNumberCircleThreeFill,
+} from "react-icons/pi";
 import {
   BookingFormWrapper,
   BookingFormHeader,
@@ -37,8 +41,12 @@ interface Props {
 }
 
 function BookingForm({ show, handleClose, setLoading, loading }: Props) {
-  const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const accountId = useSelector(
+    (state: RootState) => state.auth.user?.accountId
+  );
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
 
   const {
     accountInfor,
@@ -115,7 +123,9 @@ function BookingForm({ show, handleClose, setLoading, loading }: Props) {
                     handleSelectVehicle={handleSelectVehicle}
                     listVehicleOfCustomer={listVehicleOfCustomer}
                     listCategories={listCategories}
-                    handleSelectVehicleCategory={(e) => setVehicleCategory(Number(e.target.value))}
+                    handleSelectVehicleCategory={(e) =>
+                      setVehicleCategory(Number(e.target.value))
+                    }
                     vehicleCategory={vehicleCategory}
                     setLicensePlate={setLicensePlate}
                     licensePlate={licensePlate}
@@ -123,13 +133,22 @@ function BookingForm({ show, handleClose, setLoading, loading }: Props) {
                   />
 
                   <FormGroup>
-                    <Label>Image (Max: 5 Images; Only send vehicle damage status)</Label>
+                    <Label>
+                      Image (Max: 5 Images; Only send vehicle damage status)
+                    </Label>
                     <UploadImage
                       existingImages={files}
-                      handleFileRemove={(url) => setFiles((prev) => prev.filter((item) => item.url !== url))}
+                      handleFileRemove={(url) =>
+                        setFiles((prev) =>
+                          prev.filter((item) => item.url !== url)
+                        )
+                      }
                       imgQuantity={LENGTH.IMAGES}
                       handleFileSubmit={(file) =>
-                        setFiles((prev) => [...prev, { url: file.url, name: file.name ?? "" }])
+                        setFiles((prev) => [
+                          ...prev,
+                          { url: file.url, name: file.name ?? "" },
+                        ])
                       }
                     />
                   </FormGroup>
@@ -152,7 +171,11 @@ function BookingForm({ show, handleClose, setLoading, loading }: Props) {
                   selectedServices={selectedServices}
                 />
                 {errors.services && (
-                  <p style={{ color: "red", marginTop: "10px", marginBottom: 0 }}>{errors.services}</p>
+                  <p
+                    style={{ color: "red", marginTop: "10px", marginBottom: 0 }}
+                  >
+                    {errors.services}
+                  </p>
                 )}
               </RightBody>
             </StepContent>
@@ -186,12 +209,19 @@ function BookingForm({ show, handleClose, setLoading, loading }: Props) {
                 <div
                   style={{
                     display: "flex",
+                    alignItems: "center",
                     justifyContent: "center",
+                    gap: "6px",
                     marginTop: "15px",
+                    flexWrap: "wrap",
                   }}
                 >
                   {!visible && (
-                    <Checkbox color="success" onChange={() => setCheckBox((prev) => !prev)} checked={checkbox} />
+                    <Checkbox
+                      color="success"
+                      onChange={() => setCheckBox((prev) => !prev)}
+                      checked={checkbox}
+                    />
                   )}
                   <AppointmentPolicySection
                     visible={visible}
@@ -213,7 +243,11 @@ function BookingForm({ show, handleClose, setLoading, loading }: Props) {
                     }}
                   >
                     <BookingFormButton>
-                      <button disabled={!checkbox} type="button" onClick={handleSubmit}>
+                      <button
+                        disabled={!checkbox}
+                        type="button"
+                        onClick={handleSubmit}
+                      >
                         SEND
                       </button>
                     </BookingFormButton>
