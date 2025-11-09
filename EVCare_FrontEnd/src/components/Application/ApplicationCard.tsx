@@ -18,7 +18,6 @@ interface ApplicationCardProps {
 }
 
 const ApplicationCard: React.FC<ApplicationCardProps> = ({ application }) => {
-  // ✅ Xác định trạng thái
   const getStatus = () => {
     switch (application.status?.toLowerCase()) {
       case "approved":
