@@ -2,7 +2,11 @@ import styled from "styled-components";
 
 export const PageContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #93c6a2 0%, #e8eaf6 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 116, 56, 0.5) 0%,
+    rgba(0, 176, 70, 0.5) 100%
+  );
   border-radius: 20px;
   padding: 24px;
   font-family: "Outfit", sans-serif;
@@ -108,7 +112,7 @@ export const ServiceGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
-  max-height: 200px;
+  max-height: 300px;
   width: 300px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -145,8 +149,8 @@ export const SearchInput = styled.div`
 
     &:focus {
       outline: none;
-      border-color: #2196f3;
-      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+      border-color: #00ad4e;
+      box-shadow: 0 0 0 3px rgba(93, 232, 125, 0.1);
     }
 
     @media (max-width: 768px) {
@@ -170,15 +174,16 @@ export const SearchResultsContainer = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #2196f3;
+    background: #00ad4e;
     border-radius: 10px;
   }
 `;
 
 export const TechnicianCardWrapper = styled.div<{ $isSelected?: boolean }>`
-  position: relative;
-  border: 2px solid ${(props) => (props.$isSelected ? "#2196f3" : "#e0e0e0")};
-  background: ${(props) => (props.$isSelected ? "#e3f2fd" : "white")};
+  display: flex;
+  flex-direction: column;
+  border: 2px solid ${(props) => (props.$isSelected ? "#00ad4e" : "#e0e0e0")};
+  background: ${(props) => (props.$isSelected ? "#f1fce9" : "white")};
   border-radius: 10px;
   padding: 16px;
   transition: all 0.3s ease;
@@ -187,7 +192,7 @@ export const TechnicianCardWrapper = styled.div<{ $isSelected?: boolean }>`
     !props.$isSelected &&
     `
     &:hover {
-      border-color: #2196f3;
+      border-color: #00ad4e;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       transform: translateY(-1px);
     }
@@ -199,9 +204,6 @@ export const TechnicianCardWrapper = styled.div<{ $isSelected?: boolean }>`
 `;
 
 export const RemoveButton = styled.button`
-  position: absolute;
-  top: 12px;
-  right: 12px;
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -335,16 +337,18 @@ export const SkillTags = styled.div`
 
 export const SkillTag = styled.span<{ $isMore?: boolean }>`
   padding: 4px 10px;
-  background: ${(props) => (props.$isMore ? "#f5f5f5" : "#e8eaf6")};
-  color: ${(props) => (props.$isMore ? "#666" : "#3f51b5")};
+  background: ${(props) => (props.$isMore ? "#9dc59e" : "#e9f6e8")};
+  color: ${(props) => (props.$isMore ? "#787878" : "#00ad4e")};
   font-size: 11px;
   font-weight: 500;
   border-radius: 12px;
+  border: 1px #ccc solid;
 `;
 
 export const ActionButton = styled.button<{ $disabled?: boolean }>`
   width: 100%;
   padding: 10px;
+  margin-top: auto;
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -352,7 +356,6 @@ export const ActionButton = styled.button<{ $disabled?: boolean }>`
   cursor: ${(props) => (props.$disabled ? "not-allowed" : "pointer")};
   transition: all 0.3s ease;
   font-family: "Outfit", sans-serif;
-  margin-top: auto;
 
   ${(props) =>
     props.$disabled
@@ -361,12 +364,12 @@ export const ActionButton = styled.button<{ $disabled?: boolean }>`
     color: #9e9e9e;
   `
       : `
-    background: #2196f3;
+    background: #00ad4e;
     color: white;
     box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
 
     &:hover {
-      background: #1976d2;
+      background: #2ede12;
       box-shadow: 0 3px 8px rgba(33, 150, 243, 0.4);
     }
   `}
@@ -437,12 +440,17 @@ export const SubmitButton = styled.button`
   }
 `;
 
-export const ServiceTag = styled.span`
-  padding: 8px 10px;
-  background: #e8f5e9;
-  color: #00ad4e;
-  font-size: 12px;
+export const ServiceTag = styled.div<{ $highlight?: boolean }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border: 2px solid ${(props) => (props.$highlight ? "#00ad4e" : "#cce8d6")};
+  border-radius: 10px;
+  background-color: ${(props) => (props.$highlight ? "#e8fff0" : "#fbffdb")};
+  color: ${(props) => (props.$highlight ? "#00ad4e" : "orange")};
   font-weight: 600;
-  border-radius: 6px;
-  white-space: nowrap;
+  font-size: 14px;
+  transition: all 0.25s ease;
+  cursor: default;
 `;
