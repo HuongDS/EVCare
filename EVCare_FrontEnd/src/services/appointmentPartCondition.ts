@@ -7,6 +7,7 @@ import type {
   UpdatePartDamageDto,
 } from "../models/OrderPartModel/AppointmentPartCondition";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
+import { requestQueue } from "./requestQueue";
 
 export async function createAppointmentPartCondition(
   data: AppointmentPartCondition
@@ -45,17 +46,17 @@ export async function updateAppointmentPartCondition(
 }
 
 export async function getAppointmentPartCondition(appointmentId: number) {
-  try {
-    const response = await api.get<ResponseDto<AppointmentPartCondition>>(
-      `/api/AppointmentPartCondition/`,
-      { params: { appointmentId } }
-    );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const errMsg = error.response?.data.message || error.message;
-      throw new Error(errMsg);
+  return requestQueue.enqueue(async () => {
+    try {
+      const response = await api.get<ResponseDto<AppointmentPartCondition>>(
+        "/api/AppointmentPartCondition/",
+        { params: { appointmentId } }
+      );
+      return response.data;
+    } catch (err: any) {
+      throw new Error(
+        err.response?.data?.message || ERROR_MESSAGE.FETCH_DATA_FAILED
+      );
     }
-    throw new Error(ERROR_MESSAGE.FETCH_DATA_FAILED);
-  }
+  });
 }
