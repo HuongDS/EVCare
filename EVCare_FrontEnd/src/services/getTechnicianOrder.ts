@@ -1,18 +1,20 @@
+// src/services/getTechnicianOrder.ts
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api/api";
 import type {
   ResponseDto,
   TechnicianAddedPart,
 } from "../models/OrderPartModel/OrderTechnicianAdded";
+import { requestQueue } from "./requestQueue";
 
 const fetchTechnicianAddedParts = async (orderId: number) => {
-  const response = await api.get<ResponseDto<TechnicianAddedPart[]>>(
-    "/api/Order/technician-orders",
-    {
-      params: { orderId },
-    }
-  );
-  return response.data;
+  return requestQueue.enqueue(async () => {
+    const response = await api.get<ResponseDto<TechnicianAddedPart[]>>(
+      "/api/Order/technician-orders",
+      { params: { orderId } }
+    );
+    return response.data;
+  });
 };
 
 export const getTechnicianAddedParts = (orderId: number) => {
@@ -20,5 +22,6 @@ export const getTechnicianAddedParts = (orderId: number) => {
     queryKey: ["TechnicianAddedParts", orderId],
     queryFn: () => fetchTechnicianAddedParts(orderId),
     enabled: !!orderId,
+    staleTime: 1000 * 60,
   });
 };
