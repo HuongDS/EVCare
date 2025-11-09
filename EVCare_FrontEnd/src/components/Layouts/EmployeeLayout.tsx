@@ -19,7 +19,7 @@ const EmployeeLayout: React.FC<{
   const location = useLocation();
   const isOrderPage = location.pathname.includes("/technician/order");
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed] = useState(false);
 
   return (
     <Layout
