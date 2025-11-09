@@ -105,7 +105,8 @@ export const PaginationWrapper = styled.div`
 
 export const SortWrapper = styled.div`
   text-align: right;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  margin-top: 8px;
 `;
 
 export const SortButton = styled.button`
