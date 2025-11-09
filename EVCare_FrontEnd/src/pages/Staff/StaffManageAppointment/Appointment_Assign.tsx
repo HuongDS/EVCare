@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, User, Phone, CheckCircle, CircleX } from "lucide-react";
+import { Search, User, Phone, CheckCircle, CircleX, Mail } from "lucide-react";
 import type { TechnicianModel } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import type { TechnicianSkills } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
@@ -13,35 +13,6 @@ import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import { useQueryClient } from "@tanstack/react-query";
 import ColorSpinner from "../StaffComponents/ColorSpinner";
-import {
-  ActionButton,
-  Avatar,
-  ButtonGroup,
-  ClearButton,
-  ContentWrapper,
-  EmptyState,
-  Header,
-  InfoItem,
-  InfoSection,
-  PageContainer,
-  RemoveButton,
-  SearchInput,
-  SearchResultsContainer,
-  SearchWrapper,
-  SectionHeader,
-  ServiceGrid,
-  ServiceTag,
-  SkillsSection,
-  SkillTag,
-  SkillTags,
-  StatusBadge,
-  SubmitButton,
-  TechnicianCardWrapper,
-  TechnicianGrid,
-  TechnicianHeader,
-  TechnicianInfo,
-} from "./styles/Appointment_Assign.styled";
-import { Card } from "antd";
 
 interface AssignedTechnician {
   technicianID: number;
@@ -138,9 +109,14 @@ export default function Appointment_Assign({ data }: props) {
     setIsSuccessModalOpen(false);
   };
 
-  //đóng error modal
   const handleCloseModal = () => {
     setIsErrorModalOpen(false);
+  };
+
+  const getTechnicianCountForService = (serviceId: number) => {
+    return selectedTechnicians.filter((tech) =>
+      tech.technician.skills.some((skill) => skill.id === serviceId)
+    ).length;
   };
 
   return (
@@ -215,9 +191,34 @@ export default function Appointment_Assign({ data }: props) {
               </EmptyState>
             ) : (
               <ServiceGrid>
-                {data.services.map((service) => (
-                  <ServiceTag key={service.id}>{service.name}</ServiceTag>
-                ))}
+                {data.services.map((service) => {
+                  const techCount = getTechnicianCountForService(service.id);
+                  const isHighlighted = techCount > 0;
+                  return (
+                    <ServiceTag key={service.id} $highlight={isHighlighted}>
+                      {service.name}
+                      {!isHighlighted && (
+                        <Tooltip
+                          title="No technicians have been assigned to this service yet"
+                          color="#00ad4e"
+                        >
+                          <PiWarning color="orange" size={20} />
+                        </Tooltip>
+                      )}
+                      {techCount > 0 && (
+                        <span
+                          style={{
+                            marginLeft: "6px",
+                            color: "#00ad4e",
+                            fontWeight: 600,
+                          }}
+                        >
+                          ({techCount} tech{techCount > 1 ? "s" : ""})
+                        </span>
+                      )}
+                    </ServiceTag>
+                  );
+                })}
               </ServiceGrid>
             )}
           </Card>
@@ -289,19 +290,17 @@ const TechnicianCard = ({
   isSelected = false,
   ...rest
 }: TechnicianCardProps) => {
+  const [showAllSkills, setShowAllSkills] = useState(false);
+  const displayedSkills = showAllSkills
+    ? technician.skills
+    : technician.skills.slice(0, 3);
   return (
     <TechnicianCardWrapper $isSelected={isSelected} {...rest}>
-      {isSelected && onRemove && (
-        <RemoveButton onClick={onRemove} data-testid="remove-button">
-          <CircleX />
-        </RemoveButton>
-      )}
-
       <TechnicianHeader>
         <Avatar
           src={
             technician.avatar ||
-            `https://ui-avatars.com/api/?name=${technician.fullName}&background=random`
+            `https://ui-avatars.com/api/?name=${technician.fullName}&background=00ad4e&color=fff&bold=true`
           }
           alt={technician.fullName}
         />
@@ -311,6 +310,11 @@ const TechnicianCard = ({
             {technician.status}
           </StatusBadge>
         </TechnicianInfo>
+        {isSelected && onRemove && (
+          <RemoveButton onClick={onRemove} data-testid="remove-button">
+            <CircleX />
+          </RemoveButton>
+        )}
       </TechnicianHeader>
 
       <InfoSection>
@@ -320,13 +324,36 @@ const TechnicianCard = ({
           </InfoItem>
         )}
       </InfoSection>
+      <InfoSection>
+        {technician.email && (
+          <InfoItem>
+            <Mail size={14} /> {technician.email}
+          </InfoItem>
+        )}
+      </InfoSection>
 
       <SkillsSection>
         <p>SKILLS</p>
         <SkillTags>
-          {technician.skills.map((skill) => (
+          {displayedSkills.map((skill) => (
             <SkillTag key={skill.id}>{skill.name}</SkillTag>
           ))}
+          {technician.skills.length > 3 && (
+            <button
+              onClick={() => setShowAllSkills(!showAllSkills)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#00ad4e",
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: "13px",
+                marginLeft: "4px",
+              }}
+            >
+              {showAllSkills ? "Show less" : "Show more"}
+            </button>
+          )}
         </SkillTags>
       </SkillsSection>
 
@@ -342,3 +369,35 @@ const TechnicianCard = ({
     </TechnicianCardWrapper>
   );
 };
+
+import {
+  ActionButton,
+  Avatar,
+  ButtonGroup,
+  Card,
+  ClearButton,
+  ContentWrapper,
+  EmptyState,
+  Header,
+  InfoItem,
+  InfoSection,
+  PageContainer,
+  RemoveButton,
+  SearchInput,
+  SearchResultsContainer,
+  SearchWrapper,
+  SectionHeader,
+  ServiceGrid,
+  ServiceTag,
+  SkillTag,
+  SkillTags,
+  SkillsSection,
+  StatusBadge,
+  SubmitButton,
+  TechnicianCardWrapper,
+  TechnicianGrid,
+  TechnicianHeader,
+  TechnicianInfo,
+} from "./styles/Appointment_Assign.styled";
+import { PiWarning } from "react-icons/pi";
+import { Tooltip } from "antd";
