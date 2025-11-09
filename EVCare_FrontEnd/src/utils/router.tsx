@@ -45,6 +45,7 @@ const StaffChatPage = lazy(() =>
 );
 const Admin_Applications = lazy(() => import("../pages/Admin/AdminAplication/Admin_Applications"));
 const AdminStatisticPage = lazy(() => import("../pages/Admin/AdminStatistic/AdminStatisticPage"));
+const BlockDateManagement = lazy(() => import("../pages/Admin/AdminBlockDates/BlockDateManagement"));
 
 const CancelPage = lazy(() => import("../pages/Users/CancelPage/CancelPage"));
 const ThankYouPage = lazy(() => import("../pages/Users/ThankYou/ThankYou"));
@@ -277,6 +278,14 @@ const router = createBrowserRouter([
         element: (
           <SuspenseWrapper>
             <AdminStatisticPage />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "blockDate",
+        element: (
+          <SuspenseWrapper>
+            <BlockDateManagement />
           </SuspenseWrapper>
         ),
       },
