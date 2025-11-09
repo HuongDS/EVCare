@@ -87,14 +87,7 @@ const Staff_Inventory = () => {
                   icon={<Sparkles color="#00ad4e" />}
                 />
               </Title>
-              {isPending ? (
-                <ColorSpinner />
-              ) : (
-                <DownloadButton
-                  action={() => exportToExcel()}
-                  text="Export to Excel"
-                />
-              )}
+              {isPending ? <ColorSpinner /> : <DownloadButton action={() => exportToExcel()} text="Export to Excel" />}
             </TitleRow>
             <StatsGrid>
               <StatCard>
@@ -110,22 +103,13 @@ const Staff_Inventory = () => {
               <StatCard>
                 <StatHeader>
                   <StatLabel>Low Stock Alert</StatLabel>
-                  <StatIcon
-                    $color={
-                      Number(lowStocks?.data?.length) > 0
-                        ? "#fff1f0"
-                        : "#f6ffed"
-                    }
-                  >
+                  <StatIcon $color={Number(lowStocks?.data?.length) > 0 ? "#fff1f0" : "#f6ffed"}>
                     <AlertCircle size={20} />
                   </StatIcon>
                 </StatHeader>
                 <StatValue
                   style={{
-                    color:
-                      Number(lowStocks?.data?.length) > 0
-                        ? "#cf1322"
-                        : "#1a1a1a",
+                    color: Number(lowStocks?.data?.length) > 0 ? "#cf1322" : "#1a1a1a",
                   }}
                 >
                   {lowStocks?.data?.length}
@@ -139,9 +123,7 @@ const Staff_Inventory = () => {
                     <ChartCandlestick size={20} />
                   </StatIcon>
                 </StatHeader>
-                <StatValue style={{ fontSize: "1.5rem" }}>
-                  {inventoryValue?.toLocaleString("vi-VN")}đ
-                </StatValue>
+                <StatValue style={{ fontSize: "1.5rem" }}>{inventoryValue?.toLocaleString("vi-VN")}đ</StatValue>
                 <StatSubtext>Total stock value</StatSubtext>
               </StatCard>
             </StatsGrid>
@@ -150,11 +132,7 @@ const Staff_Inventory = () => {
 
         <ContentWrapper>
           <FilterBar>
-            <SearchBar
-              handleSearchValue={handleSearch}
-              searchValue={searchValue}
-              placeholder="Search part..."
-            />
+            <SearchBar handleSearchValue={handleSearch} searchValue={searchValue} placeholder="Search part..." />
             <StyledSelect
               options={categoryOptions}
               placeholder="Filter by Category"
@@ -192,23 +170,16 @@ const Staff_Inventory = () => {
                     <th>Category</th>
                     <th>Unit Price (đ)</th>
                     <th>Stock</th>
-                    <th style={{ display: "flex", justifyContent: "center" }}>
-                      Action
-                    </th>
+                    <th style={{ display: "flex", justifyContent: "center" }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredParts.map((part) => {
                     const category =
-                      partCategories?.data?.items.find(
-                        (c) => c.id === part.categoryId
-                      )?.name || "Uncategorized";
+                      partCategories?.data?.items.find((c) => c.id === part.categoryId)?.name || "Uncategorized";
 
                     return (
-                      <tr
-                        key={part.id}
-                        className={part.quantity < 10 ? "low-stock" : ""}
-                      >
+                      <tr key={part.id} className={part.stock < 10 ? "low-stock" : ""}>
                         <td>
                           <img
                             src={part.imageUrl}
@@ -228,11 +199,11 @@ const Staff_Inventory = () => {
                         <td>{part.price.toLocaleString("vi-VN")}</td>
                         <td
                           style={{
-                            color: part.quantity < 10 ? "#cf1322" : "#1a1a1a",
+                            color: part.stock < 10 ? "#cf1322" : "#1a1a1a",
                             fontWeight: 500,
                           }}
                         >
-                          {part.quantity}
+                          {part.stock}
                         </td>
                         <td>
                           <div
@@ -272,13 +243,7 @@ const Staff_Inventory = () => {
           )}
         </ContentWrapper>
 
-        {isOpen && (
-          <UpdatePartModal
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            part={selectedPart}
-          />
-        )}
+        {isOpen && <UpdatePartModal isOpen={isOpen} setIsOpen={setIsOpen} part={selectedPart} />}
       </Container>
     );
   }
