@@ -4,7 +4,7 @@ import type { TechnicianAppointmentsDto } from "../models/AppointmentsModel/Tech
 import type { TechnicianWorkingSessionEnum } from "../models/enums";
 import { DamageLevelEnum } from "../models/enums/DamageLevelEnum";
 import { useQuery } from "@tanstack/react-query";
-import { getTechnicianAddedParts } from "../services/getTechnicianOrder";
+import { fetchTechnicianAddedParts } from "../services/getTechnicianOrder";
 import { getAppointmentPartCondition } from "../services/appointmentPartCondition";
 import { updateTechnicianWorkingSession } from "../services/TechnicianWorkingSessionApi";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
@@ -30,15 +30,14 @@ export const useAppointmentCardProgress = ({
     useState<TechnicianWorkingSessionEnum>(
       data.status as TechnicianWorkingSessionEnum
     );
+
   // --- Fetch added parts ---
-  const { data: partsResponse, isLoading: isLoadingParts } = useQuery({
+  const { data: parts = [], isLoading: isLoadingParts } = useQuery({
     queryKey: ["TechnicianAddedParts", data.orderId],
-    queryFn: () => getTechnicianAddedParts(data.orderId),
+    queryFn: () => fetchTechnicianAddedParts(data.orderId),
     enabled: !!data.orderId,
     staleTime: 1000 * 60 * 5,
   });
-
-  const parts = partsResponse?.data ?? [];
 
   // --- Fetch damage levels ---
   const { data: damageResponse } = useQuery({
