@@ -19,10 +19,10 @@ export const fetchTechnicianAddedParts = async (
   });
 };
 
-export const getTechnicianAddedParts = (orderId: number) => {
+export const getTechnicianAddedParts = (orderId?: number) => {
   return useQuery({
     queryKey: ["TechnicianAddedParts", orderId],
-    queryFn: () => fetchTechnicianAddedParts(orderId),
+    queryFn: () => fetchTechnicianAddedParts(orderId!),
     enabled: !!orderId,
     staleTime: 1000 * 60,
   });
