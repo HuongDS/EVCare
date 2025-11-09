@@ -9,21 +9,17 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BlockedDateController : ControllerBase
-    {
+    public class BlockedDateController : ControllerBase {
         private readonly IBlockedDateService _blockedDateService;
-        public BlockedDateController(IBlockedDateService blockedDateService)
-        {
+        public BlockedDateController(IBlockedDateService blockedDateService) {
             _blockedDateService = blockedDateService;
         }
 
         [HttpGet]
         [AllowAnonymous]
-        //trả về những ngày đã bị block tính từ hôm nay
-        public async Task<IActionResult> GetBlockedDate()
-        {
-            try
-            {
+     
+        public async Task<IActionResult> GetBlockedDate() {
+            try {
                 var dates = await _blockedDateService.GetBlockedDateFromToday();
                 return Ok(new ResponseDto<IEnumerable<BlockedDateViewModel>>
                 {
@@ -44,11 +40,9 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Staff,Admin")]
-        public async Task<IActionResult> PostBlockedDate(BlockedDatePostModel model)
-        {
-            try
-            {
+        [Authorize(Roles = "Staff,Admin")]
+        public async Task<IActionResult> PostBlockedDate(BlockedDatePostModel model) {
+            try {
                 int postId = await _blockedDateService.CreatePost(model);
                 return Ok(new ResponseDto<int>
                 {
@@ -67,9 +61,49 @@ namespace API.Controllers
 
 
                 });
-            
+
             }
 
         }
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> PutBlockedDate(BlockedDatePostModel model) {
+            try {
+                await _blockedDateService.UpdateBlockedDate(model);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = 200,
+                    message = "Update sucessfully",
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                });
+            }
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteBlockedDate(DateOnly date) {
+            try {
+                await _blockedDateService.DeleteBlockedDate(date);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = 204,
+                    message = "Delete sucessfully",
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = ex.Message,
+                });
+            }
+        }
     }
-}
+
+ }
