@@ -48,26 +48,6 @@ namespace Application.Services
             return (url, orderCode);
 
         }
-
-        public async Task HandleWebhookAsync(string rawBody, string? headerSignature)
-        {
-            if (!_gw.Verify(rawBody, headerSignature)) return;
-            dynamic p = JsonConvert.DeserializeObject(rawBody);
-            string? oc = p?.data?.orderCode;     
-            string? st = p?.data?.desc;
-            if (string.IsNullOrWhiteSpace(oc)) return;
-            var orderCode = long.Parse(oc);  
-            
-        }
-
-        public async Task CancelPayOSOrder(int orderCode)
-        {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("x-client-id", Cfg("ClientId"));
-            client.DefaultRequestHeaders.Add("x-api-key", Cfg("ApiKey"));
-
-            var response = await client.DeleteAsync($"https://api-merchant.payos.vn/v2/payment-requests/{orderCode}");
-            var result = await response.Content.ReadAsStringAsync();
-        }
+  
     }
 }

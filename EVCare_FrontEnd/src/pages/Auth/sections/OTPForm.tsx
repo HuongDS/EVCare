@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 import styled from "styled-components";
 import { Shield, Mail } from "lucide-react";
 import { ONE_NUMBER_REGEX } from "../../../constants/regexs/NumberRegex";
@@ -13,9 +13,15 @@ type OTPFormProps = {
   disable: boolean;
 };
 
-export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disable }: OTPFormProps) {
+export default function OTPForm({
+  setIsOpen,
+  otp,
+  setOtp,
+  handleVerifyOTP,
+  disable,
+}: OTPFormProps) {
   const handleChange = (i: number, val: string) => {
-    if (!ONE_NUMBER_REGEX.test(val)) return;
+    if (val !== "" && !ONE_NUMBER_REGEX.test(val)) return;
 
     setOtp((prev) => {
       const next = [...prev];
@@ -23,19 +29,19 @@ export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disab
       return next;
     });
 
-    // if (val && i < 5) {
-    //   const nextInput = document.getElementById(`otp-${i + 1}`);
-    //   nextInput?.focus();
-    // }
-
-    requestAnimationFrame(() => {
-      if (val && i < 5) {
-        document.getElementById(`otp-${i + 1}`)?.focus();
-      }
-    });
+    if (val && i < 5) {
+      const nextInput = document.getElementById(`otp-${i + 1}`);
+      nextInput?.focus();
+    } else if (!val && i > 0) {
+      const prevInput = document.getElementById(`otp-${i - 1}`);
+      prevInput?.focus();
+    }
   };
 
-  const handleKeyDown = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    i: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === "Backspace" && !otp[i] && i > 0) {
       const prevInput = document.getElementById(`otp-${i - 1}`);
       prevInput?.focus();
@@ -46,17 +52,14 @@ export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disab
     e.preventDefault();
 
     const pastedData = e.clipboardData.getData("text").slice(0, 6);
-    const digits = pastedData.split("").filter((ch) => ONE_NUMBER_REGEX.test(ch));
+    const digits = pastedData
+      .split("")
+      .filter((ch) => ONE_NUMBER_REGEX.test(ch));
 
     setOtp(() => {
       const newArr = new Array(6).fill("");
-      digits.forEach((d, i) => (newArr[i] = d));
+      digits.forEach((digit, i) => (newArr[i] = digit));
       return newArr;
-    });
-    requestAnimationFrame(() => {
-      const nextIndex = Math.min(digits.length, 5);
-      const nextInput = document.getElementById(`otp-${nextIndex}`);
-      nextInput?.focus();
     });
   };
 
@@ -65,7 +68,12 @@ export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disab
   return (
     <FormContainer>
       <div style={{ display: "flex", justifyContent: "flex-start" }}>
-        <ShowButton text="Back" onclick={() => setIsOpen(false)} />
+        <ShowButton
+          text="Back"
+          onclick={() => {
+            setIsOpen(false), setOtp([]);
+          }}
+        />
       </div>
       <IconWrapper>
         <Shield size={48} />
@@ -102,7 +110,12 @@ export default function OTPForm({ setIsOpen, otp, setOtp, handleVerifyOTP, disab
           <SpinnerComponent />
         </SpinnerWrapper>
       ) : (
-        <VerifyButton type="button" onClick={handleVerifyOTP} disabled={!isComplete} $enabled={isComplete}>
+        <VerifyButton
+          type="button"
+          onClick={handleVerifyOTP}
+          disabled={!isComplete}
+          $enabled={isComplete}
+        >
           Verify Code
         </VerifyButton>
       )}
@@ -221,7 +234,10 @@ const OTPInput = styled.input<{ $filled: boolean }>`
 const VerifyButton = styled.button<{ $enabled: boolean }>`
   width: 100%;
   padding: 16px;
-  background: ${(props) => (props.$enabled ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)" : "#e0e0e0")};
+  background: ${(props) =>
+    props.$enabled
+      ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)"
+      : "#e0e0e0"};
   color: ${(props) => (props.$enabled ? "white" : "#9e9e9e")};
   border: none;
   border-radius: 12px;
@@ -230,7 +246,8 @@ const VerifyButton = styled.button<{ $enabled: boolean }>`
   font-family: "Outfit", sans-serif;
   cursor: ${(props) => (props.$enabled ? "pointer" : "not-allowed")};
   transition: all 0.3s ease;
-  box-shadow: ${(props) => (props.$enabled ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none")};
+  box-shadow: ${(props) =>
+    props.$enabled ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none"};
   margin-bottom: 20px;
 
   &:hover {
