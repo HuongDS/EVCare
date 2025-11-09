@@ -1,5 +1,5 @@
 import { AdminGeneralStyled } from "./AdminGeneral.styled.tsx";
-import StatsGrid from "./StatsGrid.tsx";
+// import StatsGrid from "./StatsGrid.tsx";
 // import PerformanceChart from "./PerformanceChart.tsx";
 import InvoicesTable from "./InvoicesTable.tsx";
 import { useEffect, useState } from "react";
@@ -59,7 +59,7 @@ export default function Admin_General() {
         <h2>Monthly Overview</h2>
         <p>Statistics for {getCurrentMonthYear()}</p>
       </div>
-      <StatsGrid></StatsGrid>
+      {/* <StatsGrid></StatsGrid> */}
       <LazyPerformanceChart></LazyPerformanceChart>
       <InvoicesTable listInvoices={listInvoices}></InvoicesTable>
     </AdminGeneralStyled>
