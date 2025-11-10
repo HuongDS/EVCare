@@ -19,23 +19,23 @@ namespace IntegrationTests {
                     return;
                 }
                 using EVCareDbContext context = CreateContext();
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
+                SeedTestData(context);
+
                 _isDatabaseCreated = true;
             }
 
         }
 
+        private void SeedTestData(EVCareDbContext context) {
+            
+        }
+
         public  EVCareDbContext CreateContext() {
-            var configuration = new ConfigurationBuilder()
-               .AddJsonFile("appsettings.json")
-               .Build();
-
-            var connectionString = configuration.GetConnectionString("EVCareDb");
-
             var options = new DbContextOptionsBuilder<EVCareDbContext>()
-                .UseSqlServer(connectionString)
+                .UseInMemoryDatabase(databaseName: "EVCareTestDb") 
                 .Options;
+
+          
 
             var context = new EVCareDbContext(options);
             return context;
