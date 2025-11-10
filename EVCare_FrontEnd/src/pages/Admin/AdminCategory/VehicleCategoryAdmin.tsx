@@ -20,10 +20,10 @@ import type {
   VehicleCategoryViewDto,
   VehicleCategoryWithScaleViewDto,
 } from "../../../models/VehicleModels/vehicleCategoryViewDto";
-import VehicleCategoryForm from "./VehicleCategoryForm"; // <-- UPDATED
-import VehicleCategoryEditModal from "./VehicleCategoryEditModal"; // <-- UPDATED
 import { deleteVehicleCategory, getVehicleCategories } from "../../../services/vehicleServicesApi";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
+import VehicleCategoryForm from "./VehicleCategoryForm";
+import VehicleCategoryEditModal from "./VehicleCategoryEditModal";
 
 type SubTab = "view" | "add";
 

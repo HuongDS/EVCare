@@ -140,5 +140,9 @@ namespace Application.Services
         {
             return await _accountRepository.CheckAccountIsBanned(accountId);
         }
+        public async Task<IEnumerable<int>> GetAccountIdByTechnicianIds(IEnumerable<int> technicianIds)
+        {
+            return await _accountRepository.GetAccountIdByTechnicianIds(technicianIds);
+        }
     }
 }

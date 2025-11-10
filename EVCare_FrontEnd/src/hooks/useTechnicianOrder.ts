@@ -1,6 +1,8 @@
+// src/hooks/useTechnicianOrder.ts
 import { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useNotification } from "../context/useNotification";
+import { useQueryClient } from "@tanstack/react-query"; // <-- THÊM IMPORT NÀY
 
 import { updateOrderParts } from "../services/updateOrderPartApi";
 import { getAllParts } from "../services/partApi";
@@ -29,6 +31,7 @@ export const useTechnicianOrder = ({
   const navigate = useNavigate();
   const location = useLocation();
   const notification = useNotification();
+  const queryClient = useQueryClient(); // <-- KHỞI TẠO queryClient
 
   const stateOrderId = (location.state as { orderId?: number })?.orderId;
   const [currentOrderId] = useState<number | null>(
@@ -168,6 +171,19 @@ export const useTechnicianOrder = ({
         description: "Parts and damage levels updated successfully!",
         showProgress: true,
       });
+
+      // VÔ HIỆU HÓA CACHE ĐỂ BUỘC useAppointmentCardProgress REFECTH DỮ LIỆU MỚI
+
+      // Invalidate Parts
+      await queryClient.invalidateQueries({
+        queryKey: ["TechnicianAddedParts", currentOrderId],
+      });
+
+      // Invalidate Damage Levels
+      await queryClient.invalidateQueries({
+        queryKey: ["AppointmentPartCondition", appointmentId],
+      });
+
       onPartsUpdated?.(currentOrderId);
       setCartOpen(false);
       refetchTechnicianParts();

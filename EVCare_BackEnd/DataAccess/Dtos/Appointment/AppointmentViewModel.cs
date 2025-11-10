@@ -27,6 +27,7 @@ namespace DataAccess.Dtos.Appointment
         public int? OrderId { get; set; }
 
         public string? Note { get; set; }
+        public int? ReviewId { get; set; }
     }
 }
 

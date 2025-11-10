@@ -75,11 +75,7 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
       {status === TechnicianWorkingSessionEnum.ADDING_PART && (
         <>
           <ButtonAction
-            text={
-              appointment.parts && appointment.parts.length > 0
-                ? "Update Order"
-                : "Order"
-            }
+            text={"Order"}
             color="#fff"
             backgroundColor="#0073AD"
             action={handleNavigate}
@@ -108,8 +104,10 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
         status === TechnicianWorkingSessionEnum.INPROGRESS) && (
         <ButtonAction
           text="View Details"
-          color="#fff"
-          backgroundColor="#FFA500"
+          color="#00AD4E"
+          backgroundColor="#ffffffff"
+          borderColor="#00AD4E"
+          backgroundColorHover="#ffffffff"
           action={() => setIsModalOpen(true)}
         />
       )}

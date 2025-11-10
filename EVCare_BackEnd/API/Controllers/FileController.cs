@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application.Dtos;
+using Application.IService;
 using DataAccess.Dtos.File;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -74,7 +75,12 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(500, new { statusCode = 500, message = e.Message });
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = e.Message
+
+                });
             }
             
            

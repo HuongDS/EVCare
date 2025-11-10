@@ -31,13 +31,13 @@ namespace Application.Services
         private readonly IOrderPartRepository _orderPartRepository;
         private readonly IPartRepository _partRepository;
         private readonly ITechnicianWorkingSessionRepository _technicianWorkingSessionRepository;
-        
+
         private readonly IUnitOfWork _unitOfWork;
 
         public OrderService(IOrderRepository orderRepository,
             IAppointmentRepository appointmentRepository,
-            IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository,IUnitOfWork unitOfWork
-            ,ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
+            IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository, IUnitOfWork unitOfWork
+            , ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
             )
         {
             _orderRepository = orderRepository;
@@ -50,6 +50,9 @@ namespace Application.Services
         }
         public async Task<ResponseDto<OrderResponseDto>> CreateOrderAsync(OrderCreateRequestDto data)
         {
+
+
+
             var checkAppointment = await _appointmentRepository.GetByIdAsync(data.appointmentID);
             if (checkAppointment is null)
             {
@@ -90,6 +93,7 @@ namespace Application.Services
 
             await _orderPartRepository.AddRangeAsync(orderParts);
             var listParts = _mapper.Map<OrderPartsViewDto>(data);
+
             return new ResponseDto<OrderPartsViewDto>
             {
                 statusCode = 200,
@@ -105,15 +109,15 @@ namespace Application.Services
                 throw new Exception(Message.ORDER_NOT_FOUND);
             }
             order.Status = data.status;
-            if(order.Status == OrderStatusEnum.Canceled)
+            if (order.Status == OrderStatusEnum.Canceled)
             {
                 await _technicianWorkingSessionRepository.MakeCancel(order.Id);
                 await _technicianWorkingSessionRepository.MakeAvaliable(order.Id);
             }
-            if(order.Status == OrderStatusEnum.Processing)
+            if (order.Status == OrderStatusEnum.Processing)
             {
                 await _technicianWorkingSessionRepository.MakeProcessing(order.Id);
-               
+
             }
             await _orderRepository.UpdateAsync(order);
             return new ResponseDto<OrderResponseDto>
@@ -127,7 +131,7 @@ namespace Application.Services
         {
             var orderparts = await _orderPartRepository.GetOrderPartViewModelAsync(orderId);
             var orderPartRows = new StringBuilder();
-            
+
             foreach (var op in orderparts)
             {
                 orderPartRows.Append($@"
@@ -139,7 +143,7 @@ namespace Application.Services
                     <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{op.replacePrice:N0}</td>
                     <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{(op.quantity * (op.replacePrice + op.price)):N0}</td>
                 </tr>");
-                
+
             }
             return orderPartRows;
         }
@@ -157,11 +161,12 @@ namespace Application.Services
         {
 
             var entity = await _orderRepository.GetByIdAsync(model.Id);
-            if (entity == null) {
+            if (entity == null)
+            {
 
                 throw new Exception($"The Order {model.Id} doesn't not exist");
             }
-            if(entity.Status == DataAccess.Enums.OrderStatusEnum.Canceled || entity.Status == DataAccess.Enums.OrderStatusEnum.Completed)
+            if (entity.Status == DataAccess.Enums.OrderStatusEnum.Canceled || entity.Status == DataAccess.Enums.OrderStatusEnum.Completed)
             {
                 throw new Exception($"The Order {model.Id} haved canceled or completed");
 
@@ -198,11 +203,11 @@ namespace Application.Services
                 }
 
             });
-            
+
         }
 
 
-        public async Task UpdatePartToOrder(OrderPartAddModel model,int technicianId)
+        public async Task UpdatePartToOrder(OrderPartAddModel model, int technicianId)
         {
 
             var order = await _technicianWorkingSessionRepository.GetTechnicianWorkingSession(model.OrderId, technicianId);
@@ -217,27 +222,28 @@ namespace Application.Services
 
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
-             
+
                 var orderParts = await _orderPartRepository.GetOrderPart(model.OrderId, technicianId);
                 var partIds = orderParts.Select(x => x.PartId).ToList();
                 var partDics = await _partRepository.GetPartWithIDs(partIds);
 
-                foreach (var part in orderParts) {
+                foreach (var part in orderParts)
+                {
 
-                   if(partDics.ContainsKey(part.PartId)) partDics[part.PartId].Stock += part.Quantity;
-                
+                    if (partDics.ContainsKey(part.PartId)) partDics[part.PartId].Stock += part.Quantity;
+
                 }
 
-                 await  _orderPartRepository.RemoveRange(model.OrderId, technicianId);
+                await _orderPartRepository.RemoveRange(model.OrderId, technicianId);
 
-                 await AddOrder(model, technicianId);
+                await AddOrder(model, technicianId);
 
-                
+
             });
 
 
         }
-        public virtual async Task AddOrder(OrderPartAddModel model,int technicianId)
+        public virtual async Task AddOrder(OrderPartAddModel model, int technicianId)
         {
             var partIds = model.Parts.Select(p => p.Id).Distinct().ToList();
             var partsDict = await _partRepository.GetPartWithIDs(partIds);
@@ -268,7 +274,7 @@ namespace Application.Services
         }
         public async Task AddPartsToAnOrder(OrderPartAddModel model, int technicianId)
         {
-            var order = await _technicianWorkingSessionRepository.GetTechnicianWorkingSession(model.OrderId,technicianId);
+            var order = await _technicianWorkingSessionRepository.GetTechnicianWorkingSession(model.OrderId, technicianId);
             if (order == null)
             {
                 throw new Exception("Source not found");
@@ -278,10 +284,11 @@ namespace Application.Services
                 throw new Exception("You are only updated when in adding part status");
             }
 
-            await _unitOfWork.ExecuteInTransactionAsync( async()=> await AddOrder(model, technicianId));
+            await _unitOfWork.ExecuteInTransactionAsync(async () => await AddOrder(model, technicianId));
         }
 
-        public async Task<IEnumerable<OrderPartViewModel>> GetOrdersForTechnicianAsync(int technicianId, int orderId) {
+        public async Task<IEnumerable<OrderPartViewModel>> GetOrdersForTechnicianAsync(int technicianId, int orderId)
+        {
             return await _orderPartRepository.GetOrdersForTechnicianAsync(technicianId, orderId);
         }
     }
