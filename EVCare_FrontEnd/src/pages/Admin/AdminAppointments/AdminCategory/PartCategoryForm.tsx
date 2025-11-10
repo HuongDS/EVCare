@@ -10,11 +10,11 @@ import {
   LoadingSpinner,
 } from "./Admin_Category.styled";
 import { FaMagic, FaSave } from "react-icons/fa";
-import { useNotification } from "../../../context/useNotification";
-import type { PartCategoryCreateDto } from "../../../models/PartModel/PartCategoryCreateDto";
-import { createPartCategory } from "../../../services/partCategoryApi";
-import { callGemini } from "../../../services/geminiServices";
-import { GenerateButton } from "../AdminService&Parts/AdminService/Admin_Service.styled";
+import { useNotification } from "../../../../context/useNotification";
+import type { PartCategoryCreateDto } from "../../../../models/PartModel/PartCategoryCreateDto";
+import { createPartCategory } from "../../../../services/partCategoryApi";
+import { callGemini } from "../../../../services/geminiServices";
+import { GenerateButton } from "../../AdminService&Parts/AdminService/Admin_Service.styled";
 
 interface Props {
   onAddSuccess: () => void;
