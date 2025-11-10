@@ -52,7 +52,6 @@ namespace Application.Services
         {
 
 
-            
 
             var checkAppointment = await _appointmentRepository.GetByIdAsync(data.appointmentID);
             if (checkAppointment is null)
