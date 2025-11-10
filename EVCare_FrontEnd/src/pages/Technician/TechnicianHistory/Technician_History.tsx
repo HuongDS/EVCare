@@ -1,181 +1,107 @@
-import { useEffect, useState, useMemo } from "react";
-import AppointmentCard from "../Technician_Component/AppointmentCard";
-import SearchBar from "../Technician_Component/SearchBar";
-import LoadingOverlay from "../Technician_Component/LoadingOverlay";
+import { useState } from "react";
 import { useGetTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
-import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import {
-  AppointmentWrapper,
-  TitleWrapper,
+  PageWrapper,
   Title,
-  PaginationWrapper,
-  ControlsWrapper,
-  Watermark,
-  AppointmentList,
-  SortWrapper,
+  Header,
+  Instruction,
+  ContentWrapper,
+  FilterBar,
+  StatusFilterTabs,
+  TabButton,
   SortButton,
+  AppointmentList,
+  PaginationWrapper,
 } from "./Technician_History.styled";
 import { Pagination } from "../../../components/Paginations/Pagination";
 import { LENGTH } from "../../../constants/Code/Constants";
-import SortTable from "../Technician_Component/SortTable";
 import { ArrowDownWideNarrow, ArrowUpNarrowWide } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
+import SpinnerComponent from "../../../components/SpinnerComponent";
+import TechnicianAppointmentCard from "../Technician_Component/TechnicianAppointmentCard";
+import { EmptyState } from "../Technician_Component/EmptyState";
 
-const PAGE_SIZE = LENGTH.VIEW_HISTORY_MAX;
+const PAGE_SIZE = LENGTH.VIEW_HISTORY_MAX || 10;
 
 export default function TechnicianHistory() {
-  const [statusFilter, setStatusFilter] = useState<
-    "All" | "Completed" | "Canceled"
-  >("All");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"Completed" | "Canceled">("Completed");
   const [currentPage, setCurrentPage] = useState(1);
-  const [appointments, setAppointments] = useState<TechnicianAppointmentsDto[]>(
-    []
-  );
-  const [sortById, setSortById] = useState<"none" | "asc" | "desc">("none");
+  const [sortById, setSortById] = useState<"asc" | "desc">("desc");
 
-  const { data: completedData } = useGetTechnicianAppointments({
-    Status: "Completed",
-    PageSize: 50,
-    PageIndex: 1,
-  });
-  const { data: canceledData } = useGetTechnicianAppointments({
-    Status: "Canceled",
-    PageSize: 50,
-    PageIndex: 1,
+  const { data, isLoading } = useGetTechnicianAppointments({
+    Status: statusFilter,
+    PageIndex: currentPage,
+    PageSize: PAGE_SIZE,
+    SortField: "OrderId",
+    SortOrder: sortById,
   });
 
-  useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
-      try {
-        if (statusFilter === "All") {
-          const completed = completedData?.items ?? [];
-          const canceled = canceledData?.items ?? [];
-          setAppointments([...completed, ...canceled]);
-        } else if (statusFilter === "Completed") {
-          setAppointments(completedData?.items ?? []);
-        } else {
-          setAppointments(canceledData?.items ?? []);
-        }
-        setCurrentPage(1);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetch();
-  }, [statusFilter, completedData, canceledData]);
-
-  const filteredAppointments = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    let list = appointments;
-
-    if (query !== "") {
-      const words = query.split(/\s+/);
-      list = list.filter((a) => {
-        const text = (
-          a.customerName +
-          " " +
-          a.vehicleModel +
-          " " +
-          a.licensePlate +
-          " " +
-          a.id
-        ).toLowerCase();
-        return words.every((word) => text.includes(word));
-      });
-    }
-
-    // Sort by appointment.id
-    if (sortById !== "none") {
-      list = [...list].sort((a, b) =>
-        sortById === "asc" ? a.id - b.id : b.id - a.id
-      );
-    }
-
-    return list;
-  }, [appointments, searchQuery, sortById]);
-
-  const totalPages = Math.ceil(filteredAppointments.length / PAGE_SIZE);
-  const paginatedAppointments = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return filteredAppointments.slice(start, start + PAGE_SIZE);
-  }, [filteredAppointments, currentPage]);
+  const appointments = data?.items ?? [];
+  const totalItems = data?.totalItems ?? 0;
+  const totalPages = data?.totalPages ?? 1;
 
   const toggleSortById = () => {
-    setSortById((prev) =>
-      prev === "none" ? "asc" : prev === "asc" ? "desc" : "none"
-    );
+    setSortById((prev) => (prev === "desc" ? "asc" : "desc"));
+    setCurrentPage(1);
   };
 
   return (
-    <AppointmentWrapper>
-      {loading && <LoadingOverlay />}
+    <PageWrapper key="technician-history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <ContentWrapper>
+        <Header>
+          <Title>History Jobs</Title>
+          <Instruction>Review completed or canceled appointments assigned to you.</Instruction>
+        </Header>
 
-      <TitleWrapper>
-        <Title>Technician History</Title>
-      </TitleWrapper>
+        <FilterBar>
+          <StatusFilterTabs>
+            <TabButton $isActive={statusFilter === "Completed"} onClick={() => setStatusFilter("Completed")}>
+              Completed
+            </TabButton>
+            <TabButton $isActive={statusFilter === "Canceled"} onClick={() => setStatusFilter("Canceled")}>
+              Canceled
+            </TabButton>
+          </StatusFilterTabs>
 
-      <ControlsWrapper>
-        <SearchBar
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setCurrentPage(1);
-          }}
-          placeholder="Search"
-        />
+          <SortButton onClick={toggleSortById} style={{ marginLeft: "auto" }}>
+            {sortById === "asc" && (
+              <>
+                <ArrowUpNarrowWide size={16} /> ID Asc
+              </>
+            )}
 
-        <SortTable
-          sortName={["All", "Completed", "Canceled"]}
-          active={statusFilter}
-          onChange={(val) =>
-            setStatusFilter(val as "All" | "Completed" | "Canceled")
-          }
-        />
+            {sortById === "desc" && (
+              <>
+                <ArrowDownWideNarrow size={16} /> ID Desc
+              </>
+            )}
+          </SortButton>
+        </FilterBar>
 
-        {(statusFilter === "Completed" ||
-          statusFilter === "Canceled" ||
-          statusFilter === "All") && (
-          <SortWrapper>
-            <SortButton onClick={toggleSortById}>
-              {sortById === "none" && "Sort by ID"}
-              {sortById === "asc" && (
-                <>
-                  <ArrowDownWideNarrow size={16} /> ID
-                </>
-              )}
-              {sortById === "desc" && (
-                <>
-                  <ArrowUpNarrowWide size={16} /> ID
-                </>
-              )}
-            </SortButton>
-          </SortWrapper>
+        <AppointmentList layout transition={{ duration: 0.3 }}>
+          <AnimatePresence>
+            {isLoading ? (
+              <SpinnerComponent />
+            ) : appointments.length > 0 ? (
+              appointments.map((item) => <TechnicianAppointmentCard key={item.id} data={item} />)
+            ) : (
+              <EmptyState />
+            )}
+          </AnimatePresence>
+        </AppointmentList>
+
+        {totalPages > 1 && !isLoading && (
+          <PaginationWrapper>
+            <Pagination
+              pageIndex={currentPage}
+              totalPage={totalPages}
+              totalItems={totalItems}
+              pageSize={PAGE_SIZE}
+              onPageChange={setCurrentPage}
+            />
+          </PaginationWrapper>
         )}
-      </ControlsWrapper>
-
-      <AppointmentList>
-        {paginatedAppointments.length > 0 ? (
-          paginatedAppointments.map((item) => (
-            <AppointmentCard key={item.id} data={item} />
-          ))
-        ) : !loading ? (
-          <Watermark>No appointments found</Watermark>
-        ) : null}
-      </AppointmentList>
-
-      {totalPages > 1 && (
-        <PaginationWrapper style={{ marginTop: "auto" }}>
-          <Pagination
-            pageIndex={currentPage}
-            totalPage={totalPages}
-            totalItems={filteredAppointments.length}
-            pageSize={PAGE_SIZE}
-            onPageChange={setCurrentPage}
-          />
-        </PaginationWrapper>
-      )}
-    </AppointmentWrapper>
+      </ContentWrapper>
+    </PageWrapper>
   );
 }
