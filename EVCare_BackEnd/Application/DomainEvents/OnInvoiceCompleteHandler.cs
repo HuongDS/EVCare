@@ -13,7 +13,6 @@
     public class OnInvoiceCompleteHandler
     {
         private readonly IHubContext<AdminDashboardHub> _adminHub;
-
         private readonly IAdminDashboardServices _adminDashboardServices;
         private readonly IHubContext<StaffDashboardHub> _staffHub;
 
