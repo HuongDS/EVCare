@@ -26,6 +26,7 @@ namespace API.Controllers
         }
         [HttpPost("create-order")]
         [Authorize(Roles = "Staff")]
+        [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
         public async Task<IActionResult> CreateOrder(OrderCreateRequestDto data) {
             try {
                 var response = await _orderService.CreateOrderAsync(data);
