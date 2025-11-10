@@ -44,5 +44,6 @@ namespace DataAccess.Interfaces
         Task <Appointment> GetByOrderIdAsync(int orderId);
         Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId);
         Task<IEnumerable<ServiceSummaryViewModel>> GetTopServicesAsync(ServiceSummaryQueryDto model);
+        Task<bool> CheckInValidVehicleID(int vehicleId);
     }
 }
