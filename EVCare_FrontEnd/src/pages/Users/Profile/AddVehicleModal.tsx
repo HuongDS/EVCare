@@ -5,7 +5,11 @@ import UploadImage from "../../../components/UploadFields/uploadImage";
 import type { VehicleCreateDto } from "../../../models/VehicleModels/VehicleCreateDto";
 import { LICENSE_PLATE_REGEX } from "../../../constants/regexs/LicensePlateRegex";
 import { useAlert } from "../../../context/useAlert";
-import { ERROR_MESSAGE, MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
+import {
+  ERROR_MESSAGE,
+  MSG_TITLE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
 import type { VehicleCategoryViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import { getVehicleCategories } from "../../../services/vehicleServicesApi";
 import { handleError } from "../../../utils/errorHandler";
@@ -32,19 +36,27 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
   const [preview, setPreview] = useState<string | null>(null);
   const [categoryId, setCategoryId] = useState(0);
   const { showAlert } = useAlert();
-  const [listCategories, setListCategories] = useState<VehicleCategoryViewDto[]>([]);
+  const [listCategories, setListCategories] = useState<
+    VehicleCategoryViewDto[]
+  >([]);
   const notification = useNotification();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!LICENSE_PLATE_REGEX.test(licensePlate) || licensePlate.includes("-")) {
-      showAlert("error", MSG_TITLE.ADD_VEHICLE, ERROR_MESSAGE.LICENSE_PLATE_WRONG);
+      showAlert(
+        "error",
+        MSG_TITLE.ADD_VEHICLE,
+        ERROR_MESSAGE.LICENSE_PLATE_WRONG
+      );
       return;
     }
     const payload: VehicleCreateDto = {
       categoryId,
       licensePlate,
-      img: preview || "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=400&h=300&fit=crop",
+      img:
+        preview ||
+        "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=400&h=300&fit=crop",
     };
 
     try {
@@ -70,7 +82,16 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
   const handleUploadImage = ({ url }: { url: string }) => {
     setPreview(url);
   };
-
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [open]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -108,7 +129,8 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
                 listCategories.find((m) => m.id === categoryId)
                   ? {
                       value: categoryId,
-                      label: listCategories.find((m) => m.id === categoryId)?.name,
+                      label: listCategories.find((m) => m.id === categoryId)
+                        ?.name,
                     }
                   : null
               }
@@ -118,7 +140,9 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
                 control: (base, state) => ({
                   ...base,
                   borderColor: state.isFocused ? "#00ad4e" : "#d9d9d9",
-                  boxShadow: state.isFocused ? "0 0 0 3px rgba(0,173,78,0.15)" : "none",
+                  boxShadow: state.isFocused
+                    ? "0 0 0 3px rgba(0,173,78,0.15)"
+                    : "none",
                   "&:hover": { borderColor: "#bdbdbd" },
                   borderRadius: 8,
                   padding: "2px 2px",
