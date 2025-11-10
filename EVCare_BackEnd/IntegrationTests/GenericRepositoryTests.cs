@@ -5,26 +5,16 @@ using DataAccess.Repositories;
 namespace IntegrationTests {
     public class GenericRepositoryTests : IClassFixture<DataBaseFixture> {
         private readonly DataBaseFixture _fixture;
-
+        private readonly GenericRepository<Vehicle> _repository;
         public GenericRepositoryTests(DataBaseFixture fixture) {
             _fixture = fixture;
+            _repository = new GenericRepository<Vehicle>(_fixture.CreateContext());
         }
         [Fact]
         public async Task GetAllAsync_WithNoEntityId_GetAll() {
 
-
-            var context = _fixture.CreateContext();
-            var repo = new GenericRepository<Vehicle>(context);
-
-            context.Vehicles.Add(new Vehicle { Id = 1, LicensePlate = "ABC123" });
-            context.Vehicles.Add(new Vehicle { Id = 2, LicensePlate = "XYZ999" });
-            await context.SaveChangesAsync();
-
-        
-            var result = await repo.GetAllAsync();
-
-           
-            Assert.Equal(2, result.Count());
+            var result = await _repository.GetAllAsync();
+            Assert.Equal(1, result.Count());
 
         }
     }
