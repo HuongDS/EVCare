@@ -29,9 +29,7 @@ export default function ServiceCategoryForm({ onAddSuccess }: Props) {
   const notification = useNotification();
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -126,11 +124,7 @@ export default function ServiceCategoryForm({ onAddSuccess }: Props) {
         />
       </InputGroup>
 
-      <GenerateButton
-        type="button"
-        onClick={handleGeneratingDescription}
-        disabled={isGenerating}
-      >
+      <GenerateButton type="button" onClick={handleGeneratingDescription} disabled={isGenerating}>
         {isGenerating ? <LoadingSpinner /> : <FaMagic />}
         Generate Description
       </GenerateButton>

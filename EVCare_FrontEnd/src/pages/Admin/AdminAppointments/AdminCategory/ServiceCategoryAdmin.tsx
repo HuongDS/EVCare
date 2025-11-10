@@ -14,12 +14,12 @@ import {
   StatusBadge,
 } from "./Admin_Category.styled";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import { useNotification } from "../../../context/useNotification";
-import SpinnerComponent from "../../../components/SpinnerComponent";
+import { useNotification } from "../../../../context/useNotification";
+import SpinnerComponent from "../../../../components/SpinnerComponent";
 import CategoryEditModal from "./CategoryEditModal";
-import DeleteConfirmationModal from "../AdminService&Parts/DeleteConfirmModal";
-import type { ServiceCategoryAdminDto } from "../../../models/ServicesModel/ServiceCategoryAdminDto";
-import { deleteServiceCategory, getAllServiceCategories } from "../../../services/serviceServicesApi";
+import DeleteConfirmationModal from "../../AdminService&Parts/DeleteConfirmModal";
+import type { ServiceCategoryAdminDto } from "../../../../models/ServicesModel/ServiceCategoryAdminDto";
+import { deleteServiceCategory, getAllServiceCategories } from "../../../../services/serviceServicesApi";
 import ServiceCategoryForm from "./ServiceCategoryForm";
 
 type SubTab = "view" | "add";
