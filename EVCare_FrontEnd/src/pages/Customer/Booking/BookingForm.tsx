@@ -106,7 +106,6 @@ function BookingForm({ show, handleClose, setLoading, loading }: Props) {
           backButtonText="Back"
           hideNextOnLastStep={true}
         >
-          {/* Step 1 */}
           <Step>
             <StepContent>
               <LeftBody>
@@ -157,7 +156,6 @@ function BookingForm({ show, handleClose, setLoading, loading }: Props) {
             </StepContent>
           </Step>
 
-          {/* Step 2 */}
           <Step>
             <StepContent>
               <RightBody>
@@ -181,7 +179,6 @@ function BookingForm({ show, handleClose, setLoading, loading }: Props) {
             </StepContent>
           </Step>
 
-          {/* Step 3 */}
           <Step>
             <StepContent>
               <RightBody>

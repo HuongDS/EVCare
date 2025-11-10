@@ -89,7 +89,8 @@ namespace DataAccess.Repositories
                     AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
                     Note = a.Note,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
-                    PhoneNumber = a.Customer.Account.Phone
+                    PhoneNumber = a.Customer.Account.Phone,
+                    ReviewId = a.ReviewId
                 }).ToListAsync();
 
         }
