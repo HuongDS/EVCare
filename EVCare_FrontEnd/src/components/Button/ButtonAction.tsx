@@ -4,13 +4,20 @@ type ActionButtonProps = {
   text: string;
   color?: string;
   backgroundColor?: string;
+  borderColor?: string;
   action: () => void;
   icon?: React.ReactNode;
   type?: "button" | "submit";
   disabled?: boolean;
+  backgroundColorHover?: string;
 };
 
-const ActionButton = styled.button<{ $color: string; $bg: string }>`
+const ActionButton = styled.button<{
+  $color: string;
+  $bg: string;
+  $borderColor: string;
+  $backgroundColorHover: string;
+}>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -25,12 +32,13 @@ const ActionButton = styled.button<{ $color: string; $bg: string }>`
 
   color: ${({ $color }) => $color || "#ffffff"};
   background-color: ${({ $bg }) => $bg || "#007b55"};
-
+  border: 2px solid ${({ $borderColor }) => $borderColor || "#ffffffff"};
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 
   &:hover:not(:disabled) {
-    background-color: #153f00;
+    background-color: ${({ $backgroundColorHover }) =>
+      $backgroundColorHover || "#153f00"};
     transform: translateY(-1px);
   }
 
@@ -51,6 +59,8 @@ export default function ButtonAction({
   text,
   color = "white",
   backgroundColor = "#007b55",
+  borderColor = backgroundColor,
+  backgroundColorHover = "#153f00",
   action,
   type = "button",
   disabled = false,
@@ -58,7 +68,9 @@ export default function ButtonAction({
   return (
     <ActionButton
       $color={color}
+      $borderColor={borderColor}
       $bg={backgroundColor}
+      $backgroundColorHover={backgroundColorHover}
       onClick={action}
       type={type}
       disabled={disabled}
