@@ -10,11 +10,11 @@ import {
   LoadingSpinner,
 } from "./Admin_Category.styled";
 import { FaMagic, FaSave } from "react-icons/fa";
-import { useNotification } from "../../../context/useNotification";
-import type { PartCategoryCreateDto } from "../../../models/PartModel/PartCategoryCreateDto";
-import { createPartCategory } from "../../../services/partCategoryApi";
-import { callGemini } from "../../../services/geminiServices";
-import { GenerateButton } from "../AdminService&Parts/AdminService/Admin_Service.styled";
+import { useNotification } from "../../../../context/useNotification";
+import type { PartCategoryCreateDto } from "../../../../models/PartModel/PartCategoryCreateDto";
+import { createPartCategory } from "../../../../services/partCategoryApi";
+import { callGemini } from "../../../../services/geminiServices";
+import { GenerateButton } from "../../AdminService&Parts/AdminService/Admin_Service.styled";
 
 interface Props {
   onAddSuccess: () => void;
@@ -29,9 +29,7 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
   const notification = useNotification();
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -123,11 +121,7 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
         />
       </InputGroup>
 
-      <GenerateButton
-        type="button"
-        onClick={handleGeneratingDescription}
-        disabled={isGenerating}
-      >
+      <GenerateButton type="button" onClick={handleGeneratingDescription} disabled={isGenerating}>
         {isGenerating ? <LoadingSpinner /> : <FaMagic />}
         Generate Description
       </GenerateButton>

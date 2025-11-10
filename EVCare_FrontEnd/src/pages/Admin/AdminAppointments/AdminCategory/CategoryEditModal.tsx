@@ -13,12 +13,12 @@ import {
   ModalFooter,
   ModalButton,
   LoadingSpinner,
-} from "../AdminService&Parts/AdminService/Admin_Service.styled";
+} from "../../AdminService&Parts/AdminService/Admin_Service.styled";
 import { FaTimes, FaSave } from "react-icons/fa";
-import { useNotification } from "../../../context/useNotification";
-import { updatePartCategory } from "../../../services/partCategoryApi";
-import type { PartCategoryCreateDto } from "../../../models/PartModel/PartCategoryCreateDto";
-import { updateServiceCategory } from "../../../services/serviceServicesApi";
+import { useNotification } from "../../../../context/useNotification";
+import { updatePartCategory } from "../../../../services/partCategoryApi";
+import type { PartCategoryCreateDto } from "../../../../models/PartModel/PartCategoryCreateDto";
+import { updateServiceCategory } from "../../../../services/serviceServicesApi";
 
 type CategoryType = "Part" | "Service";
 
@@ -29,12 +29,7 @@ interface Props {
   handleAddOrUpdateSuccess: () => void;
 }
 
-export default function CategoryEditModal({
-  onClose,
-  categoryType,
-  itemToEdit,
-  handleAddOrUpdateSuccess,
-}: Props) {
+export default function CategoryEditModal({ onClose, categoryType, itemToEdit, handleAddOrUpdateSuccess }: Props) {
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const notification = useNotification();
@@ -48,9 +43,7 @@ export default function CategoryEditModal({
     }
   }, [itemToEdit]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -65,10 +58,7 @@ export default function CategoryEditModal({
           if (!formData.name || formData.name.trim().length <= 0) {
             throw new Error("Please enter a category name.");
           }
-          if (
-            !formData.description ||
-            formData.description.trim().length <= 0
-          ) {
+          if (!formData.description || formData.description.trim().length <= 0) {
             throw new Error("Please enter a category description.");
           }
           const data: PartCategoryCreateDto = {
@@ -81,10 +71,7 @@ export default function CategoryEditModal({
           if (!formData.name || formData.name.trim().length <= 0) {
             throw new Error("Please enter a category name.");
           }
-          if (
-            !formData.description ||
-            formData.description.trim().length <= 0
-          ) {
+          if (!formData.description || formData.description.trim().length <= 0) {
             throw new Error("Please enter a category description.");
           }
           const serviceData: PartCategoryCreateDto = {
@@ -113,12 +100,7 @@ export default function CategoryEditModal({
   const showDescription = categoryType === "Part" || categoryType === "Service";
 
   return (
-    <ModalBackdrop
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
+    <ModalBackdrop initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
       <ModalContainer
         as="form"
         onSubmit={handleSubmit}
@@ -162,12 +144,7 @@ export default function CategoryEditModal({
           )}
         </ModalBody>
         <ModalFooter>
-          <ModalButton
-            type="button"
-            $isConfirm={false}
-            onClick={onClose}
-            disabled={isSubmitting}
-          >
+          <ModalButton type="button" $isConfirm={false} onClick={onClose} disabled={isSubmitting}>
             Cancel
           </ModalButton>
           <ModalButton type="submit" $isConfirm={true} disabled={isSubmitting}>
