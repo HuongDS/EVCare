@@ -1,4 +1,5 @@
 ﻿using DataAccess.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.Filters {
@@ -14,11 +15,14 @@ namespace API.Filters {
                 await next();
            }
            else {
-                context.Result = new Microsoft.AspNetCore.Mvc.JsonResult(new {
-                    statusCode = 403,
+                context.Result = new JsonResult(new
+                {
                     message = "You are absent today so you don't have access this resource",
                     data = (object?)null
-                });
+                })
+                {
+                    StatusCode = 403
+                };
                 return;
             }
         }
