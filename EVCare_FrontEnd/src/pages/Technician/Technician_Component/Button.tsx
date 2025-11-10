@@ -14,13 +14,7 @@ interface ReviewButtonProps {
   onAfterAction?: () => void;
 }
 
-const ReviewButton: React.FC<ReviewButtonProps> = ({
-  status,
-  orderId,
-  appointment,
-  onAction,
-  onAfterAction,
-}) => {
+const ReviewButton: React.FC<ReviewButtonProps> = ({ status, orderId, appointment, onAction, onAfterAction }) => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -74,28 +68,13 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
 
       {status === TechnicianWorkingSessionEnum.ADDING_PART && (
         <>
-          <ButtonAction
-            text={"Order"}
-            color="#fff"
-            backgroundColor="#0073AD"
-            action={handleNavigate}
-          />
-          <ButtonAction
-            text="Continue"
-            color="#fff"
-            backgroundColor="#00AD4E"
-            action={() => setShowAlert(true)}
-          />
+          <ButtonAction text={"Order"} color="#00AD4E" backgroundColor="#fff" action={handleNavigate} />
+          <ButtonAction text="Continue" color="#fff" backgroundColor="#00AD4E" action={() => setShowAlert(true)} />
         </>
       )}
 
       {status === TechnicianWorkingSessionEnum.INPROGRESS && (
-        <ButtonAction
-          text="Done"
-          color="#fff"
-          backgroundColor="#00AD4E"
-          action={() => setShowAlert(true)}
-        />
+        <ButtonAction text="Done" color="#fff" backgroundColor="#00AD4E" action={() => setShowAlert(true)} />
       )}
 
       {(status === TechnicianWorkingSessionEnum.CONFIRM ||
@@ -119,11 +98,7 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
         onConfirm={handleConfirmAction}
       />
 
-      <ViewDetailsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        appointment={appointment}
-      />
+      <ViewDetailsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} appointment={appointment} />
     </>
   );
 };

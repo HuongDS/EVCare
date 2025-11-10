@@ -16,6 +16,8 @@ export const useGetTechnicianAppointments = (params?: {
   EndTime?: string;
   PageSize?: number;
   PageIndex?: number;
+  SortField?: string;
+  SortOrder?: string;
 }) => {
   return useQuery({
     queryKey: ["TechnicianAppointments", params],

@@ -1,10 +1,7 @@
+import { EmptyState } from "../../../components/EmptyState";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums";
-import {
-  AppointmentList,
-  ErrorMessage,
-  Watermark,
-} from "../TechnicianMyJob/Technician_MyJob.styled";
+import { AppointmentList } from "../TechnicianMyJob/Technician_MyJob.styled";
 
 import AppointmentCard from "./AppointmentCard";
 import AppointmentCardProgress from "./AppointmentCardProgress";
@@ -21,15 +18,11 @@ export const CardListSection = ({
   isError: boolean;
   fade: boolean;
   appointments: TechnicianAppointmentsDto[];
-  onStatusChange: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
+  onStatusChange: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
   onPartsUpdated: (orderId: number) => void;
   isLoading?: boolean;
 }) => {
-  if (isError)
-    return <ErrorMessage>Error loading technician appointments</ErrorMessage>;
+  if (isError) return <EmptyState message="Error Loading" description="Error loading technician appointments" />;
 
   if (isLoading)
     return (
@@ -38,8 +31,7 @@ export const CardListSection = ({
       </AppointmentList>
     );
 
-  if (appointments.length === 0)
-    return <Watermark>No appointments found</Watermark>;
+  if (appointments.length === 0) return <EmptyState message="Error Loading" description="No appointments found" />;
 
   return (
     <AppointmentList className={fade ? "fade-out" : ""}>
