@@ -34,7 +34,7 @@ export const UpdatePartForm = ({
     description: part.description || "",
     price: part.price,
     replacementPrice: part.replacementPrice,
-    stock: part.stock,
+    quantity: part.quantity,
     categoryId: part.categoryId,
     isDeleted: part.isDeleted,
     imageUrl: part.imageUrl,
@@ -185,7 +185,7 @@ export const UpdatePartForm = ({
               id="update-stock"
               name="stock"
               type="number"
-              value={formData.stock}
+              value={formData.quantity}
               onChange={handleInputChange}
               min={0}
               required
