@@ -1,4 +1,3 @@
-//TechnicianWorkingSessionEnum
 export enum TechnicianWorkingSessionEnum {
   INPROGRESS = "InProgress",
   PENDING = "Pending",
