@@ -1,23 +1,24 @@
 import React, { useMemo } from "react";
-import { Modal, Spin } from "antd";
+import { Modal, Spin, Table, Tag, Typography } from "antd";
 import { useQueries } from "@tanstack/react-query";
 import { useGetOrderDetail } from "../../../services/orderServiceApi";
 import { getTechnicianDetail } from "../../../services/technicianDetail";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-
+import { formatDate } from "../../../utils/formatDate";
 import {
   ModalContainer,
   Header,
-  MainGrid,
   InfoSection,
+  InfoColumn,
   InfoItem,
-  ListSection,
-  ListBox,
   SectionTitle,
-  ListWrapper,
+  ServiceTagContainer,
+  PartsTableWrapper,
+  EmptyText,
+  TagStyled,
 } from "./Style/ViewDetailsModal.styled";
-import { formatDate } from "../../../utils/formatDate";
-import { SubTitle } from "../../Customer/Booking/BookingForm.styled";
+
+const { Text } = Typography;
 
 interface Props {
   isOpen: boolean;
@@ -34,7 +35,6 @@ const ViewDetailsModal: React.FC<Props> = ({
   const { data: orderDetail, isLoading } = useGetOrderDetail(orderId);
   const parts = orderDetail?.data?.parts ?? [];
 
-  // Lấy danh sách unique technicianIds
   const technicianIds = useMemo(() => {
     if (!parts) return [];
     return Array.from(
@@ -44,7 +44,6 @@ const ViewDetailsModal: React.FC<Props> = ({
     );
   }, [parts]);
 
-  // Lấy thông tin từng technician bằng useQueries
   const techQueries = useQueries({
     queries: technicianIds.map((id) => ({
       queryKey: ["technicianDetail", id],
@@ -54,37 +53,56 @@ const ViewDetailsModal: React.FC<Props> = ({
     })),
   });
 
-  // Tạo map technicianId -> fullName
   const techMap = useMemo(() => {
     const map: Record<number, string> = {};
-    techQueries.forEach((q, index) => {
-      if (q.data) {
-        map[technicianIds[index]] = q.data.fullName;
-      }
+    techQueries.forEach((q, i) => {
+      if (q.data) map[technicianIds[i]] = q.data.fullName;
     });
     return map;
   }, [techQueries, technicianIds]);
 
   const isTechLoading = techQueries.some((q) => q.isLoading);
 
+  const columns = [
+    {
+      title: "Part Name",
+      dataIndex: "name",
+      key: "name",
+      render: (text: string) => <Text strong>{text}</Text>,
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+      align: "center" as const,
+    },
+    {
+      title: "Technician",
+      dataIndex: "technicianId",
+      key: "technicianId",
+      render: (id: number) => techMap[id] || "—",
+    },
+  ];
+
   return (
     <Modal
       open={isOpen}
       onCancel={onClose}
       footer={null}
-      width={800}
+      width={900}
       centered
       closable
     >
       <ModalContainer>
         <Header>
-          <h2>Details</h2>
+          <h2>Appointment Details</h2>
         </Header>
 
         {appointment && (
-          <MainGrid>
+          <>
             <InfoSection>
-              <div>
+              <InfoColumn>
+                <SectionTitle>Customer Information</SectionTitle>
                 <InfoItem>
                   <span className="label">Appointment ID:</span> #
                   {appointment.id}
@@ -97,8 +115,6 @@ const ViewDetailsModal: React.FC<Props> = ({
                   <span className="label">Vehicle:</span>{" "}
                   {appointment.vehicleModel}
                 </InfoItem>
-              </div>
-              <div>
                 <InfoItem>
                   <span className="label">License Plate:</span>{" "}
                   {appointment.licensePlate}
@@ -111,79 +127,41 @@ const ViewDetailsModal: React.FC<Props> = ({
                   <span className="label">Date:</span>{" "}
                   {formatDate(appointment.appointmentDate)}
                 </InfoItem>
-              </div>
+              </InfoColumn>
+
+              <InfoColumn>
+                <SectionTitle>Services</SectionTitle>
+                {appointment.services?.length ? (
+                  <ServiceTagContainer>
+                    {appointment.services.map((s, idx) => (
+                      <TagStyled key={idx}>{s}</TagStyled>
+                    ))}
+                  </ServiceTagContainer>
+                ) : (
+                  <EmptyText>No services</EmptyText>
+                )}
+              </InfoColumn>
             </InfoSection>
 
-            {/* --- service & part --- */}
-            <ListSection>
-              <ListBox>
-                <SectionTitle>Services</SectionTitle>
-                <ListWrapper>
-                  {appointment.services?.length ? (
-                    <ul>
-                      {appointment.services.map((s, idx) => (
-                        <li key={idx}>{s}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="empty">No services</div>
-                  )}
-                </ListWrapper>
-              </ListBox>
-
-              <ListBox>
-                <div>
-                  <SectionTitle>
-                    Part list
-                    <SubTitle
-                      style={{
-                        fontSize: "0.7rem",
-                        fontWeight: "400",
-                        color: "#777",
-                      }}
-                    >
-                      Parts that you and the other technicians added
-                    </SubTitle>
-                  </SectionTitle>
+            <PartsTableWrapper>
+              <SectionTitle>Parts Used</SectionTitle>
+              {isLoading || isTechLoading ? (
+                <div className="spinner">
+                  <Spin />
                 </div>
-
-                <ListWrapper>
-                  {isLoading || isTechLoading ? (
-                    <Spin />
-                  ) : parts?.length ? (
-                    <ul>
-                      {parts.map((p: any, idx: number) => (
-                        <li
-                          key={idx}
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: "4px 0",
-                          }}
-                        >
-                          <span>
-                            {p.name} × {p.quantity}
-                          </span>
-                          <span
-                            style={{
-                              fontStyle: "italic",
-                              color: "#555",
-                              fontSize: "0.9rem",
-                            }}
-                          >
-                            {techMap[p.technicianId] ?? "—"}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="empty">No parts</div>
-                  )}
-                </ListWrapper>
-              </ListBox>
-            </ListSection>
-          </MainGrid>
+              ) : parts?.length ? (
+                <Table
+                  columns={columns}
+                  dataSource={parts.map((p, idx) => ({ ...p, key: idx }))}
+                  pagination={false}
+                  bordered
+                  size="middle"
+                />
+              ) : (
+                <EmptyText>No parts</EmptyText>
+              )}
+            </PartsTableWrapper>
+          </>
         )}
       </ModalContainer>
     </Modal>

@@ -25,3 +25,15 @@ export interface Category {
   description: string;
   isDeleted: boolean;
 }
+
+export type PartDetail = {
+  id: number;
+  name: string;
+  quantity: number;
+  description: string;
+  replacementPrice: number;
+  price: number;
+  categoryId: number;
+  isDeleted: boolean;
+  imageUrl: string;
+};

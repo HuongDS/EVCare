@@ -83,7 +83,9 @@ export default function AuthForm({
         <span>OR</span>
       </Divider>
 
-      <GoogleButton />
+      <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+        <GoogleButton />
+      </div>
     </FormWrapper>
   );
 }

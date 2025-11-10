@@ -55,6 +55,11 @@ export const HeaderContent = styled.div`
   margin-bottom: 1rem;
 `;
 
+export const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 export const IconBox = styled.div`
   width: 4rem;
   height: 4rem;
@@ -66,7 +71,9 @@ export const IconBox = styled.div`
   box-shadow: 0 0 25px rgba(34, 197, 94, 0.3);
 `;
 
-export const HeaderText = styled.div``;
+export const HeaderText = styled.div`
+  width: 80%;
+`;
 
 export const Title = styled.h1`
   font-size: 1.5rem;
