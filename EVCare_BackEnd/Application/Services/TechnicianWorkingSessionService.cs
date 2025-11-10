@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.DomainEvents;
 using Application.Interfaces;
 using DataAccess.Dtos.Technician;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
+using DataAccess.Repositories;
 
 namespace Application.Services
 {
@@ -15,13 +17,18 @@ namespace Application.Services
         private readonly ITechnicianWorkingSessionRepository _technicianWorkingSessionRepository;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IOrderRepository _orderRepository;
-        private readonly INotificationServices _notificationServices;  
+        private readonly INotificationServices _notificationServices;
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly OnAssignTechnician _onAssignTechnician;
+        private readonly IAccountRepository _accountRepository;
+
         public TechnicianWorkingSessionService(ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
-            ,IOrderRepository orderRepository
-            ,IAppointmentRepository appointmentRepository
-            ,INotificationServices notificationServices
-            ,IEmployeeRepository employeeRepository
+            , IOrderRepository orderRepository
+            , IAppointmentRepository appointmentRepository
+            , INotificationServices notificationServices
+            , IEmployeeRepository employeeRepository
+            , OnAssignTechnician onAssignTechnician
+            , IAccountRepository accountRepository
             )
         {
             _orderRepository = orderRepository;
@@ -29,19 +36,21 @@ namespace Application.Services
             _technicianWorkingSessionRepository = technicianWorkingSessionRepository;
             _notificationServices = notificationServices;
             _employeeRepository = employeeRepository;
+            _onAssignTechnician = onAssignTechnician;
+            _accountRepository = accountRepository;
         }
 
         public async Task AddTechnicianToOrder(AssignTechniciansModel model)
         {
 
-            foreach(var technicianId in model.TechnicianIds)
+            foreach (var technicianId in model.TechnicianIds)
             {
                 var employee = await _employeeRepository.GetEmployeeByTechnicianId(technicianId);
-                if(employee.Status == DataAccess.Enums.EmployeeStatusEnum.Busy)
+                if (employee.Status == DataAccess.Enums.EmployeeStatusEnum.Busy)
                 {
                     throw new Exception($"Technician with id {technicianId} is currently busy.");
                 }
-                if(employee.Status == DataAccess.Enums.EmployeeStatusEnum.OnLeave)
+                if (employee.Status == DataAccess.Enums.EmployeeStatusEnum.OnLeave)
                 {
                     throw new Exception($"Technician with id {technicianId} is currently on leave.");
                 }
@@ -55,15 +64,20 @@ namespace Application.Services
                 StartTime = DateTime.Now,
                 Status = model.Status
             });
-            if(model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Pending)
+            if (model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Pending)
             {
                 var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(model.OrderId);
                 appointment.Status = DataAccess.Enums.AppointmentStatusEnum.AddingPart;
                 await _appointmentRepository.UpdateAsync(appointment);
 
             }
+
+            var technicianAccountIds = await _accountRepository.GetAccountIdByTechnicianIds(model.TechnicianIds);
+            var technicianAccountIdsString = technicianAccountIds.Select(t => t.ToString());
+
             await _employeeRepository.MarkBusyForTechnician(model.TechnicianIds);
             await _technicianWorkingSessionRepository.AddRange(lists);
+            await _onAssignTechnician.HandleAsync(technicianAccountIdsString);
         }
 
         public async Task<TechnicianWorkingSessionViewModel> GetTechnicianWorkingSession(int orderId, int technicianId)
@@ -71,14 +85,14 @@ namespace Application.Services
             return await _technicianWorkingSessionRepository.GetTechnicianWorkingSession(orderId, technicianId);
         }
 
-        public async Task UpdateWorkingSession(int technician,TechnicianWorkingSessionUpdateModel model)
+        public async Task UpdateWorkingSession(int technician, TechnicianWorkingSessionUpdateModel model)
         {
             await _technicianWorkingSessionRepository.UpdateStatusWorkingSession(technician, model);
-          
 
-            if(model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Confirm)
+
+            if (model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Confirm)
             {
-               if(await _technicianWorkingSessionRepository.CheckOrderConfirm(model.OrderId))
+                if (await _technicianWorkingSessionRepository.CheckOrderConfirm(model.OrderId))
                 {
                     var order = await _orderRepository.GetByIdAsync(model.OrderId);
                     order.Status = DataAccess.Enums.OrderStatusEnum.WaitingConfirm;
@@ -89,7 +103,7 @@ namespace Application.Services
                 }
 
             }
-            if(model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Completed)
+            if (model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Completed)
             {
                 //await _employeeRepository.MarkAvaliableTechnician(technician);
                 if (await _technicianWorkingSessionRepository.CheckOrderDone(model.OrderId))
@@ -99,23 +113,23 @@ namespace Application.Services
                     await _orderRepository.UpdateAsync(order);
                     var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(model.OrderId);
                     appointment.Status = DataAccess.Enums.AppointmentStatusEnum.ReadyForPickup;
-                   
+
                     await _appointmentRepository.UpdateAsync(appointment);
 
-                    if(await _appointmentRepository.CheckAllReadyForPickup(appointment.VehicleId))
+                    if (await _appointmentRepository.CheckAllReadyForPickup(appointment.VehicleId))
                     {
                         var ids = await _appointmentRepository.GetAppointmentReadyForPickUpByVehicleId(appointment.VehicleId);
-                        foreach(var id in ids)
+                        foreach (var id in ids)
                         {
                             var data = await _appointmentRepository.GetPaymentPendingPickupEmailModel(id);
                             await _notificationServices.SendPaymentPendingPickupEmailAsync(data);
 
                         }
-                        
+
                     }
                 }
             }
-           
+
 
         }
     }
