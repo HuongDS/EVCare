@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { PageWrapper, Header, Title, Instruction, MainTabContainer, MainTabButton } from "./Admin_Category.styled";
 import { FaCar, FaCogs, FaTools } from "react-icons/fa";
-import VehicleCategoryAdmin from "./VehicleCategoryAdmin";
 import PartCategoryAdmin from "./PartCategoryAdmin";
+import VehicleCategoryAdmin from "./VehicleCategoryAdmin";
 import ServiceCategoryAdmin from "./ServiceCategoryAdmin";
 
 type MainTab = "vehicle" | "part" | "service";

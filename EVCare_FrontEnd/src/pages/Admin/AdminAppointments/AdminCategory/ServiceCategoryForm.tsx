@@ -10,18 +10,18 @@ import {
   LoadingSpinner,
 } from "./Admin_Category.styled";
 import { FaMagic, FaSave } from "react-icons/fa";
-import { useNotification } from "../../../context/useNotification";
-import type { PartCategoryCreateDto } from "../../../models/PartModel/PartCategoryCreateDto";
-import { createPartCategory } from "../../../services/partCategoryApi";
-import { callGemini } from "../../../services/geminiServices";
-import { GenerateButton } from "../AdminService&Parts/AdminService/Admin_Service.styled";
+import { useNotification } from "../../../../context/useNotification";
+import type { ServiceCategoryCreateDto } from "../../../../models/ServicesModel/ServiceCategoryCreateDto";
+import { createServiceCategory } from "../../../../services/serviceServicesApi";
+import { callGemini } from "../../../../services/geminiServices";
+import { GenerateButton } from "../../AdminService&Parts/AdminService/Admin_Service.styled";
 
 interface Props {
   onAddSuccess: () => void;
 }
 
-export default function PartCategoryForm({ onAddSuccess }: Props) {
-  const [formData, setFormData] = useState<PartCategoryCreateDto>({
+export default function ServiceCategoryForm({ onAddSuccess }: Props) {
+  const [formData, setFormData] = useState<ServiceCategoryCreateDto>({
     name: "",
     description: "",
   });
@@ -36,19 +36,22 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || formData.name.trim().length <= 0) {
-      throw new Error("Please enter a part category name.");
-    }
-    if (!formData.description || formData.description.trim().length <= 0) {
-      throw new Error("Please enter a part category description.");
+    if (!formData.name) {
+      notification.warning({
+        message: "Warning",
+        description: "Please enter the category name.",
+        showProgress: true,
+      });
+      return;
     }
     setIsSubmitting(true);
     try {
-      const data: PartCategoryCreateDto = {
-        name: formData.name,
-        description: formData.description,
-      };
-      await createPartCategory(data);
+      const response = await createServiceCategory(formData);
+      notification.success({
+        message: "Add Service Category",
+        description: response.message,
+        showProgress: true,
+      });
       onAddSuccess();
       setFormData({ name: "", description: "" });
     } catch (error) {
@@ -72,13 +75,13 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
     }
     setIsGenerating(true);
 
-    const data = `Part Category Name: ${formData.name.trim()}`;
+    const data = `Service Category Name: ${formData.name.trim()}`;
     const prompt = `
-      You are an assistant for EVCare.
-      Your task is to generate a concise, professional description (1-2 sentences) for a given part category.
-      You MUST respond in the required JSON format.
-      You MUST set the 'duration' field to 0.
-    `;
+        You are an assistant for EVCare.
+        Your task is to generate a concise, professional description (1-2 sentences) for a given service category.
+        You MUST respond in the required JSON format.
+        You MUST set the 'duration' field to 0.
+      `;
 
     try {
       const response = await callGemini(data, prompt, 3, 1000);
@@ -109,9 +112,9 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
   return (
     <FormWrapper onSubmit={handleSubmit}>
       <InputGroup>
-        <StyledLabel htmlFor="part-name">Category Name</StyledLabel>
+        <StyledLabel htmlFor="service-name">Category Name</StyledLabel>
         <StyledInput
-          id="part-name"
+          id="service-name"
           name="name"
           type="text"
           value={formData.name}
@@ -127,9 +130,9 @@ export default function PartCategoryForm({ onAddSuccess }: Props) {
       </GenerateButton>
 
       <InputGroup>
-        <StyledLabel htmlFor="part-description">Description</StyledLabel>
+        <StyledLabel htmlFor="service-description">Description</StyledLabel>
         <StyledTextArea
-          id="part-description"
+          id="service-description"
           name="description"
           value={formData.description}
           onChange={handleInputChange}

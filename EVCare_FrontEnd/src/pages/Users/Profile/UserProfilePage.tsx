@@ -77,6 +77,7 @@ function UserProfileComponent() {
         image: a.img,
       };
       setVehicles((prev) => [...prev, { ...v, id: (prev.at(-1)?.id ?? 0) + 1 }]);
+      fetchVehicle();
     } catch (error) {
       handleError(error);
       throw Error((error as Error).message);
@@ -93,12 +94,36 @@ function UserProfileComponent() {
         throw new Error(ERROR_MESSAGE.FAILED_TO_DELETE_VEHICLE);
       }
       setVehicles((prev) => prev.filter((v) => v.id !== id));
+      fetchVehicle();
     } catch (error) {
       handleError(error);
       throw Error((error as Error).message);
     }
     setIsLoading(false);
   };
+
+  const fetchVehicle = async () => {
+    setIsLoading(true);
+    try {
+      if (!user?.accountId) {
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+      const response02 = await getCustomerId(user?.accountId);
+      if (user == null || response02 == null) {
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+      const response04 = await getVehicleByCustomerId(response02.data?.id || 0);
+      setVehicles(response04?.data || []);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // useEffect(() => {
+  //   fetchVehicle();
+  // }, [vehicles, setVehicles]);
 
   useEffect(() => {
     const fetchData = async () => {

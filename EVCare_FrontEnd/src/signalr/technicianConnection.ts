@@ -3,10 +3,10 @@ import { getAccessToken } from "../token/tokenStore";
 
 let connection: signalR.HubConnection | null = null;
 
-export function getStaffDashboardConnection(baseUrl: string) {
+export function getTechnicianConnection(baseUrl: string) {
   if (!connection) {
     connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${baseUrl}/hubs/staffDashboard`, {
+      .withUrl(`${baseUrl}/hubs/technicianHub`, {
         transport: signalR.HttpTransportType.WebSockets,
         withCredentials: true,
         accessTokenFactory: () => getAccessToken() || "",
@@ -18,7 +18,7 @@ export function getStaffDashboardConnection(baseUrl: string) {
   return connection;
 }
 
-export async function stopStaffDashboardConnection() {
+export async function stopTechnicianConnection() {
   if (connection && connection.state === signalR.HubConnectionState.Connected) {
     await connection.stop();
   }

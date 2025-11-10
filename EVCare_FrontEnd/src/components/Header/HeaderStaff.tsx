@@ -2,11 +2,7 @@ import React from "react";
 import { Space } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import {
-  HeaderContainer,
-  LogoContainer,
-  DateContainer,
-} from "./HeaderStaff.styled";
+import { HeaderContainer, LogoContainer, DateContainer } from "./HeaderStaff.styled";
 import EvCare from "../../assets/EVCare.png";
 import { logout, deleteToken } from "../../services/authService";
 import DropdownMenu from "../Header/DropdownMenu";
@@ -19,6 +15,7 @@ import { stopChatConnection } from "../../signalr/chatConnection";
 import { logoutRedux } from "../../states/authSlice";
 import type { AppDispatch } from "../../states/store";
 import { useDispatch } from "react-redux";
+import { stopTechnicianConnection } from "../../signalr/technicianConnection";
 const HeaderStaff: React.FC = () => {
   const today = dayjs().format("D MMM, YYYY");
   const navigate = useNavigate();
@@ -39,6 +36,7 @@ const HeaderStaff: React.FC = () => {
     await stopAdminDashboardConnection();
     await stopStaffDashboardConnection();
     await stopChatConnection();
+    await stopTechnicianConnection();
     navigate("/");
   };
 
