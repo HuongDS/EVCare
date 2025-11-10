@@ -1,125 +1,109 @@
+import { Tag } from "antd";
 import styled from "styled-components";
 
 export const ModalContainer = styled.div`
   font-family: "Outfit", sans-serif;
-  border-radius: 12px;
-  padding: 20px 24px;
+  padding: 24px;
+  color: #222;
 `;
 
 export const Header = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 24px;
 
   h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 30px;
+    font-weight: 600;
     color: #00ad4e;
-    margin: 0;
   }
-`;
-
-export const MainGrid = styled.div`
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 24px;
-  height: 100%;
 `;
 
 export const InfoSection = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  display: flex;
+  gap: 40px;
+  margin-bottom: 24px;
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
+`;
+
+export const InfoColumn = styled.div`
+  flex: 1;
 `;
 
 export const InfoItem = styled.div`
-  font-size: 0.9rem;
-  margin-bottom: 6px;
-
-  span.label {
-    display: inline-block;
-    min-width: 120px;
-    color: #555;
-    font-weight: 500;
-  }
-`;
-
-export const ListSection = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 cột: Services - Parts */
-  gap: 24px;
-  min-height: 200px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-export const ListBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  border-radius: 8px;
-  background: #fafafa;
-  padding: 12px;
-  overflow: hidden;
-`;
-
-export const SectionTitle = styled.div`
-  font-weight: 600;
-  font-size: 1rem;
+  grid-template-columns: 0.5fr 1fr;
   margin-bottom: 10px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid #e0e0e0;
+  font-size: 15px;
+  color: #00ad4e;
+  font-weight: bold;
+
+  .label {
+    font-weight: 200;
+    color: #2d2d2d;
+    margin-right: 4px;
+  }
 `;
 
-export const SubTitle = styled.div`
-  font-size: 0.85rem;
-  font-weight: 400;
-  color: #777;
+export const SectionTitle = styled.h3`
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d2d2d;
+  margin-bottom: 12px;
 `;
 
-export const ListWrapper = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  max-height: 220px;
+export const TagStyled = styled(Tag)`
+  font-family: "Outfit", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: #e6f7f1;
+  color: #00ad4e;
+  border-radius: 16px;
+  padding: 4px 12px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+`;
 
-  ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
+export const ServiceTagContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+
+export const PartsTableWrapper = styled.div`
+  margin-top: 16px;
+
+  strong {
+    font-family: "Outfit", sans-serif;
+  }
+  .ant-table {
+    border-radius: 12px;
+    overflow: hidden;
+    font-family: "Outfit", sans-serif;
   }
 
-  li {
-    font-size: 0.9rem;
-    padding: 6px 0;
-    border-bottom: 1px solid #f1f1f1;
-  }
-
-  li:last-child {
-    border-bottom: none;
-  }
-
-  .empty {
-    font-size: 0.9rem;
-    color: #888;
+  .ant-table-thead > tr > th {
+    background-color: #f0faf5;
+    color: #00ad4e;
+    font-weight: 600;
     text-align: center;
-    padding: 8px 0;
   }
 
-  /* Scroll bar gọn */
-  &::-webkit-scrollbar {
-    width: 6px;
+  .ant-table-tbody > tr:hover > td {
+    background: #f6fff9 !important;
   }
-  &::-webkit-scrollbar-thumb {
-    background: #d0d0d0;
-    border-radius: 4px;
+
+  .spinner {
+    text-align: center;
+    padding: 20px;
   }
-  &::-webkit-scrollbar-thumb:hover {
-    background: #aaa;
-  }
+`;
+
+export const EmptyText = styled.p`
+  color: #888;
+  font-size: 14px;
+  font-style: italic;
 `;

@@ -8,7 +8,6 @@ export const PageContainer = styled.div`
 `;
 
 export const Header = styled.div`
-  max-width: 1400px;
   margin: 0 auto 28px;
   display: flex;
   align-items: center;
@@ -180,7 +179,6 @@ export const CustomerCard = styled.div<{ $banned: boolean }>`
       `
       border-color: #00ad4e;
       background: #e8f5e9;
-      transform: translateX(4px);
     `}
   }
 `;
@@ -310,7 +308,6 @@ export const VehicleCard = styled.div<{ $selected: boolean }>`
 
   &:hover {
     border-color: #00ad4e;
-    transform: translateX(4px);
     box-shadow: 0 4px 12px rgba(0, 173, 78, 0.15);
   }
 `;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Search,
   ArrowLeft,
@@ -39,7 +39,10 @@ import type { Dayjs } from "dayjs";
 import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
 import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
 import type { BlockedDateViewModel } from "../../../models/BlockedDate/BlockedDateViewModel";
-import { getBlockedDate } from "../../../services/serviceCenterService";
+import {
+  getBlockedDate,
+  getCenterInformation,
+} from "../../../services/serviceCenterService";
 import dayjs from "dayjs";
 
 interface Props {
@@ -52,6 +55,8 @@ export default function CreateAppointmentPage({ onBack }: Props) {
     useState<FullCustomerInfor | null>(null);
   const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const [startTime, setStartTime] = useState<Dayjs | null>(null);
+  const [endTime, setEndTime] = useState<Dayjs | null>(null);
   const [appointmentDate, setAppointmentDate] = useState<Dayjs>();
   const [note, setNote] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -62,7 +67,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
     BlockedDateViewModel[]
   >([]);
 
-  const { data: customers } = useGetAllCustomer({
+  const { data: customers, isLoading } = useGetAllCustomer({
     keyword: searchQuery,
   });
   const { data: services } = useGetAllServices({});
@@ -91,7 +96,6 @@ export default function CreateAppointmentPage({ onBack }: Props) {
     selectedCustomer?.accountId || 0
   );
 
-  //gọi api create appointment
   const {
     mutateAsync: staffCreateAppointment,
     isPending: appointmentCreating,
@@ -100,6 +104,22 @@ export default function CreateAppointmentPage({ onBack }: Props) {
     useCreateNewOrder();
   const { mutateAsync: uploadImages, isPending: uploading } =
     useUploadAppointmentImage();
+
+  const handleUploadImages = async () => {
+    try {
+      const formData = new FormData();
+      fileList.forEach((file) => {
+        if (file.originFileObj) {
+          formData.append("files", file.originFileObj as Blob);
+        }
+      });
+
+      const Images = await uploadImages(formData);
+      return Images;
+    } catch (error) {
+      return { data: [] };
+    }
+  };
 
   const handleSubmit = async () => {
     if (
@@ -113,21 +133,14 @@ export default function CreateAppointmentPage({ onBack }: Props) {
     }
 
     try {
-      const formData = new FormData();
-      fileList.forEach((file) => {
-        if (file.originFileObj) {
-          formData.append("files", file.originFileObj as Blob);
-        }
-      });
-
-      const Images = await uploadImages(formData);
+      const Images = await handleUploadImages();
 
       const appointmentData = {
         customerId: customerDetail?.data?.id || 0,
         vehicleId: selectedVehicle,
         note: note || "",
         appointment_Date: appointmentDate.add(7, "hour").toISOString(),
-        imagesUrls: Images?.data?.map((image) => image.url || ""),
+        imagesUrls: Images?.data?.map((image) => image.url || "") || [],
         serviceIds: selectedServices,
       };
 
@@ -155,6 +168,18 @@ export default function CreateAppointmentPage({ onBack }: Props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const response01 = await getCenterInformation();
+        setStartTime(
+          response01.data?.openTime
+            ? dayjs(response01.data.openTime, "HH:mm:ss")
+            : null
+        );
+        setEndTime(
+          response01.data?.closeTime
+            ? dayjs(response01.data.closeTime, "HH:mm:ss")
+            : null
+        );
+
         const response02 = await getBlockedDate();
         setListBlockedDays(response02.data ?? []);
       } catch (error) {
@@ -167,6 +192,64 @@ export default function CreateAppointmentPage({ onBack }: Props) {
     };
     fetchData();
   }, []);
+
+  const disableDate = useCallback(
+    (current: Dayjs) => {
+      if (!current) return false;
+      const isPast = current.isBefore(dayjs().startOf("day"));
+      const isBlocked = listBlockedDays.some((d) =>
+        current.isSame(dayjs(d.dateTime, "YYYY-MM-DD"), "day")
+      );
+      return isPast || isBlocked;
+    },
+    [listBlockedDays]
+  );
+
+  const disableTime = useCallback(
+    (current: Dayjs) => {
+      void current;
+      const now = dayjs();
+      const cutoff = now.add(1, "hour");
+      return {
+        disabledHours: () => {
+          const hours = Array.from({ length: 24 }, (_, i) => i).filter(
+            (h) => h > (endTime?.hour() ?? 0) || h < (startTime?.hour() ?? 0)
+          );
+          return hours;
+        },
+        disabledMinutes: (selectedHour?: number) => {
+          const disabled: number[] = [];
+          if (selectedHour == null) return [];
+
+          if (appointmentDate && appointmentDate.isSame(now, "day")) {
+            if (selectedHour === cutoff.hour()) {
+              for (let m = 0; m < cutoff.minute(); m++) disabled.push(m);
+              return disabled;
+            }
+            if (selectedHour < cutoff.hour()) {
+              return Array.from({ length: 60 }, (_, i) => i);
+            }
+          }
+
+          // const cutoffStartDate = startTime?.add(1, "hour");
+          if (selectedHour === startTime?.hour()) {
+            for (let m = 0; m < startTime?.minute(); m++) disabled.push(m);
+            return disabled;
+          }
+
+          if (selectedHour === endTime?.hour()) {
+            for (let m = 0; m < 60; m++) disabled.push(m);
+            return disabled;
+          }
+          return disabled;
+        },
+        disabledSeconds: () => {
+          return [];
+        },
+      };
+    },
+    [startTime, endTime, appointmentDate]
+  );
 
   return (
     <PageContainer>
@@ -223,19 +306,34 @@ export default function CreateAppointmentPage({ onBack }: Props) {
                       </CustomerDetails>
                     </CustomerInfo>
                     <VehicleCount>
-                      {customer.vehicles.length} vehicles
+                      {
+                        customer.vehicles.filter((veh) => veh.cateId !== 0)
+                          .length
+                      }
+                      vehicles
                     </VehicleCount>
                   </CustomerCard>
                 ))}
               </CustomerResults>
             ) : (
-              selectedCustomer === null && (
+              selectedCustomer === null &&
+              (isLoading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    padding: "20px",
+                  }}
+                >
+                  <ColorSpinner width="4em" height="4em" />
+                </div>
+              ) : (
                 <NOT_FOUND_ITEMS
                   icon={<UserPlus size={40} />}
                   message={"Enter customer information for searching"}
                   height="175px"
                 />
-              )
+              ))
             )}
 
             {selectedCustomer && (
@@ -271,12 +369,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
 
               <VehicleList>
                 {selectedCustomer.vehicles
-                  .filter(
-                    (veh) =>
-                      veh.categoryName !== "Coupe" &&
-                      veh.categoryName !== "test" &&
-                      veh.categoryName !== "string"
-                  )
+                  .filter((veh) => veh.cateId !== 0)
                   .map((vehicle) => (
                     <VehicleCard
                       key={vehicle.id}
@@ -353,21 +446,11 @@ export default function CreateAppointmentPage({ onBack }: Props) {
                     </FormLabel>
                     <DatePicker
                       format="DD/MM/YYYY HH:mm"
+                      showTime={{ format: "HH:mm" }}
                       value={appointmentDate}
                       onChange={(value) => setAppointmentDate(value)}
-                      disabledDate={(current) => {
-                        const isPast =
-                          current &&
-                          current.isBefore(dayjs().startOf("day"), "day");
-                        const isBlocked = listBlockedDays.some((d) =>
-                          current.isSame(dayjs(d.dateTime, "YYYY-MM-DD"), "day")
-                        );
-                        return !!isPast || !!isBlocked;
-                      }}
-                      showTime
-                      getPopupContainer={(triggerNode) =>
-                        triggerNode.parentElement as HTMLElement
-                      }
+                      disabledDate={disableDate}
+                      disabledTime={disableTime}
                     />
                   </FormItem>
 
@@ -383,6 +466,14 @@ export default function CreateAppointmentPage({ onBack }: Props) {
                       size="large"
                       value={selectedServices}
                       onChange={setSelectedServices}
+                      showSearch
+                      optionFilterProp="label"
+                      filterOption={(input, option) =>
+                        (option?.label ?? "")
+                          .toString()
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
                       options={services?.data?.items?.map((service) => ({
                         label: service.name,
                         value: service.id,
@@ -506,3 +597,4 @@ import {
   VehicleList,
   VehiclePlate,
 } from "./styles/CreateAppointment.styled";
+import ColorSpinner from "../StaffComponents/ColorSpinner";

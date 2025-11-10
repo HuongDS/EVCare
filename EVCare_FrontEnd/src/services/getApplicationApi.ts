@@ -1,4 +1,5 @@
 //getApplicationApi.ts
+import { useQuery } from "@tanstack/react-query";
 import { api } from "../api/api";
 import type {
   ResponseDto,
@@ -8,8 +9,11 @@ import type {
   GetApplicationsParams,
 } from "../models/ApplicationModel/ApplicationModels";
 import { handleError } from "../utils/errorHandler";
+import axios from "axios";
+import { store } from "../states/store";
+import { setGlobalError } from "../states/errorSlice";
+import { ERROR_MESSAGE } from "../constants/messages/Message";
 
-// ===== GET date off =====
 export async function getDateOff(): Promise<ResponseDto<DateOffResponseDTO>> {
   try {
     const response = await api.get<ResponseDto<DateOffResponseDTO>>(
@@ -26,7 +30,6 @@ export async function getDateOff(): Promise<ResponseDto<DateOffResponseDTO>> {
   }
 }
 
-// ===== GET applications =====
 export async function getApplications(
   params?: GetApplicationsParams
 ): Promise<ResponseDto<PageModel<ApplicationResponseDTO>>> {
@@ -50,3 +53,28 @@ export async function getApplications(
     };
   }
 }
+
+export const useGetApplication = (params?: GetApplicationsParams) => {
+  return useQuery({
+    queryKey: ["Application", params],
+    queryFn: async () => {
+      try {
+        const response = await api.get<
+          ResponseDto<PageModel<ApplicationResponseDTO>>
+        >("/api/Application/get-application", { params });
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          store.dispatch(setGlobalError(errMsg));
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};

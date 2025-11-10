@@ -50,7 +50,7 @@ export default function Appoinment_Progress_Modal({
   }, [appointmentDetail?.data?.status]);
 
   const stepNames = stepsAppointment;
-  let currentStep = getAppointmentStepFromStatus(
+  const currentStep = getAppointmentStepFromStatus(
     appointmentDetail?.data?.status ?? "Pending"
   );
 
@@ -122,7 +122,6 @@ export default function Appoinment_Progress_Modal({
             onPaymentSuccess={() => setSubPage("nextMaintenance")}
           />
         );
-
       case 5:
         return <InvoicePage data={data} />;
     }

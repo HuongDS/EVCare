@@ -1,124 +1,233 @@
 import styled from "styled-components";
 
-const COLORS = {
-  primary: "#00ad4e",
-  primaryDark: "#008c3a",
-  grayDark: "#222",
-  grayMedium: "#555",
-  grayLight: "#f5f5f5",
-};
-
-const BREAKPOINTS = {
-  tablet: "768px",
-  mobile: "480px",
-};
-
 export const PageContainer = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  padding: 24px 20px;
   font-family: "Outfit", sans-serif;
-  display: flex;
-  flex-direction: column;
-  min-height: 95vh;
-  padding: 24px;
-  background-color: ${COLORS.grayLight};
+`;
 
-  @media (max-width: ${BREAKPOINTS.tablet}) {
-    padding: 16px;
+export const Header = styled.div`
+  max-width: 1400px;
+  margin: 0 auto 24px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 20px;
+  align-items: center;
+  background: white;
+  padding: 20px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 173, 78, 0.1);
+
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    text-align: center;
+  }
+`;
+
+export const BackButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: white;
+  color: #666;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #00ad4e;
+    color: #00ad4e;
+    background: #f1f8f4;
+    transform: translateX(-4px);
+  }
+
+  @media (max-width: 968px) {
+    justify-content: center;
+  }
+`;
+
+export const HeaderContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 968px) {
+    justify-content: center;
+  }
+`;
+
+export const HeaderIcon = styled.div`
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #00ad4e 0%, #00c853 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 173, 78, 0.3);
+`;
+
+export const HeaderText = styled.div``;
+
+export const Title = styled.h1`
+  font-size: 24px;
+  font-weight: 700;
+  color: #00ad4e;
+  margin: 0 0 4px 0;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+`;
+
+export const Subtitle = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+`;
+
+export const CartButton = styled.button<{ $hasItems: boolean }>`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: ${(props) =>
+    props.$hasItems
+      ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)"
+      : "#f5f5f5"};
+  color: ${(props) => (props.$hasItems ? "white" : "#999")};
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: ${(props) =>
+    props.$hasItems ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none"};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 173, 78, 0.4);
+  }
+
+  @media (max-width: 968px) {
+    width: 100%;
+    justify-content: center;
+  }
+`;
+
+export const CartBadge = styled.div<{ $show: boolean }>`
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 24px;
+  height: 24px;
+  background: #ff4d4f;
+  color: white;
+  border-radius: 50%;
+  display: ${(props) => (props.$show ? "flex" : "none")};
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(255, 77, 79, 0.4);
+`;
+
+export const SearchWrapper = styled.div`
+  position: relative;
+  margin-bottom: 12px;
+`;
+
+export const SearchIcon = styled.div`
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  pointer-events: none;
+`;
+
+export const SearchInput = styled.input`
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: "Outfit", sans-serif;
+  color: #333;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #00ad4e;
+    box-shadow: 0 0 0 3px rgba(0, 173, 78, 0.1);
+  }
+
+  &::placeholder {
+    color: #999;
   }
 `;
 
 export const ContentWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  max-width: 1400px;
+  margin: 0 auto;
 `;
 
-export const TitleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-
-  @media (max-width: ${BREAKPOINTS.mobile}) {
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
-  }
-`;
-
-export const CenterWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-`;
-
-export const Title = styled.h1`
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: ${COLORS.primary};
-  text-align: center;
-
-  @media (max-width: ${BREAKPOINTS.mobile}) {
-    font-size: 1.6rem;
-  }
-`;
-
-export const SearchWrapper = styled.div`
-  width: 100%;
-  max-width: 300px;
-  display: flex;
-  justify-content: center;
-`;
-
-export const CardWrapper = styled.div`
+export const CardGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
-  margin-top: 16px;
+  margin-bottom: 32px;
 
-  @media (max-width: ${BREAKPOINTS.mobile}) {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
   }
 `;
 
-export const PaginationContainer = styled.div`
+export const EmptyState = styled.div`
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  svg {
+    color: #00ad4e;
+    margin-bottom: 20px;
+  }
+`;
+
+export const EmptyText = styled.div`
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+`;
+
+export const EmptyHint = styled.div`
+  font-size: 14px;
+  color: #666;
+`;
+
+export const PaginationWrapper = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: auto;
-  padding-top: 24px;
-`;
-
-const BaseButton = styled.button`
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-export const BackButton = styled(BaseButton)`
-  background-color: ${COLORS.grayMedium};
-  color: #fff;
-
-  &:hover {
-    background-color: ${COLORS.grayDark};
-    transform: translateY(-1px);
-  }
-`;
-
-export const CartButton = styled(BaseButton)`
-  background-color: ${COLORS.primary};
-  color: #fff;
-
-  &:hover {
-    background-color: ${COLORS.primaryDark};
-    transform: translateY(-1px);
-  }
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 `;
