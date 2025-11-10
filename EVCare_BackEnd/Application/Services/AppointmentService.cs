@@ -43,6 +43,13 @@ namespace Application.Services
             {
                 throw new Exception("This day is fully booked");
             }
+
+            // neu ma co appointment khong phai complete and cancel thi khong dc tao them
+            var check = await _appointmentRepository.CheckInValidVehicleID(model.VehicleId);
+            if(check == true)
+            {
+                throw new Exception("This vehicle has an active appointment. Please complete or cancel the existing appointment before creating a new one.");
+            }
             var appointment = _mapper.Map<Appointment>(model);
             appointment.Status = AppointmentStatusEnum.Pending;
             await _appointmentRepository.AddAsync(appointment);
