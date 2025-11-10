@@ -26,6 +26,7 @@ namespace API.Controllers
         }
         [HttpPost("create-order")]
         [Authorize(Roles = "Staff")]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
         [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
         public async Task<IActionResult> CreateOrder(OrderCreateRequestDto data) {
             try {
