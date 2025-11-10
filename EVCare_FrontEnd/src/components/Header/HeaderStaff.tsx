@@ -1,6 +1,6 @@
 import React from "react";
-import { Badge, Space } from "antd";
-import { CalendarOutlined, BellOutlined } from "@ant-design/icons";
+import { Space } from "antd";
+import { CalendarOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { HeaderContainer, LogoContainer, DateContainer } from "./HeaderStaff.styled";
 import EvCare from "../../assets/EVCare.png";
@@ -49,10 +49,6 @@ const HeaderStaff: React.FC = () => {
           <CalendarOutlined />
           <span>{today}</span>
         </DateContainer>
-
-        <Badge dot offset={[0, 2]}>
-          <BellOutlined className="evc-icon" />
-        </Badge>
         <DropdownMenu handleLogout={handleLogout} />
       </Space>
     </HeaderContainer>
