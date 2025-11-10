@@ -110,7 +110,7 @@ export default function AppointmentHistoryCard({
                 action={() => onViewAppointmentDetail(appointmentId)}
               />
 
-              {data.status === AppointmentStatusEnum.IN_PROGRESS ||
+              {/* {data.status === AppointmentStatusEnum.INPROGRESS ||
                 (data.status === AppointmentStatusEnum.DONE && (
                   <ButtonAction
                     text="View 3D Model"
@@ -121,7 +121,21 @@ export default function AppointmentHistoryCard({
                       dispatch(openModel3d());
                     }}
                   />
-                ))}
+                ))} */}
+
+              {(data.status === AppointmentStatusEnum.IN_PROGRESS ||
+                data.status === AppointmentStatusEnum.READY_FOR_PICKUP ||
+                data.status === AppointmentStatusEnum.DONE) && (
+                <ButtonAction
+                  text="View 3D Model"
+                  color="white"
+                  backgroundColor="#00ad4e"
+                  action={() => {
+                    setModel3dData(data.id);
+                    dispatch(openModel3d());
+                  }}
+                />
+              )}
 
               {isDisplayReviewButton && !data.reviewId && (
                 <div style={{ marginLeft: "10px" }}>
