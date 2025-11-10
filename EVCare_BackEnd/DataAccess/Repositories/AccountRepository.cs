@@ -40,5 +40,11 @@ namespace DataAccess.Repositories
             return entity;
         }
 
+        public async Task<IEnumerable<int>> GetAccountIdByTechnicianIds(IEnumerable<int> technicianIds)
+        {
+            var res = await _dbSet.Include(a => a.Employee).ThenInclude(e => e.Technician)
+                .Where(t => technicianIds.Contains(t.Id)).Select(t => t.Id).ToListAsync();
+            return res;
+        }
     }
 }
