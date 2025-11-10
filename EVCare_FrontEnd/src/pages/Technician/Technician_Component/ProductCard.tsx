@@ -1,4 +1,10 @@
-import { CardContainer, Info } from "./Style/ProductCard.styled";
+import {
+  CardContainer,
+  Image,
+  Info,
+  Title,
+  Description,
+} from "./Style/ProductCard.styled";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 import ImageSkeleton from "./ImageSkeleton";
 
@@ -15,12 +21,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   if (isSkeleton) {
     return (
-      <CardContainer style={{ opacity: 0.5, pointerEvents: "none" }}>
-        <ImageSkeleton alt="loading" height={150} />
+      <CardContainer style={{ opacity: 0.6, pointerEvents: "none" }}>
+        <ImageSkeleton alt="loading" height={200} />
         <Info>
-          <div style={{ background: "#eee", height: 20, marginBottom: 5 }} />
-          <div style={{ background: "#eee", height: 20, marginBottom: 5 }} />
-          <div style={{ background: "#eee", height: 20 }} />
+          <div
+            style={{
+              background: "#eee",
+              height: 20,
+              margin: "8px 0",
+              borderRadius: 4,
+            }}
+          />
+          <div
+            style={{
+              background: "#eee",
+              height: 16,
+              width: "70%",
+              margin: "6px auto",
+              borderRadius: 4,
+            }}
+          />
         </Info>
       </CardContainer>
     );
@@ -30,7 +50,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const isUnavailable = part.isDeleted || part.quantity <= 0;
   const statusText = part.isDeleted
-    ? "Parts are no longer available"
+    ? "Discontinued"
     : part.quantity <= 0
     ? "Out of Stock"
     : null;
@@ -39,22 +59,49 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <CardContainer
       onClick={!isUnavailable ? onClick : undefined}
       style={{
-        opacity: isUnavailable ? 0.5 : 1,
+        opacity: isUnavailable ? 0.6 : 1,
         cursor: isUnavailable ? "not-allowed" : "pointer",
+        position: "relative",
       }}
     >
-      <ImageSkeleton
-        src={part.imageUrl || "https://via.placeholder.com/150"}
+      <Image
+        src={
+          part.imageUrl || "https://via.placeholder.com/250x200?text=No+Image"
+        }
         alt={part.name}
-        height={150}
       />
+
+      {statusText && (
+        <div
+          style={{
+            position: "absolute",
+            top: 12,
+            left: 12,
+            background: isUnavailable ? "#ff5252" : "#00ad4e",
+            color: "#fff",
+            fontSize: "0.8rem",
+            padding: "4px 8px",
+            borderRadius: "6px",
+            fontWeight: 600,
+          }}
+        >
+          {statusText}
+        </div>
+      )}
+
       <Info>
-        <div>{part.name}</div>
-        <div>Quantity: {part.quantity}</div>
-        <div>{part.price.toLocaleString("vi-VN")} VNĐ</div>
-        {statusText && (
-          <div style={{ color: "red", fontWeight: "bold" }}>{statusText}</div>
-        )}
+        <Title>{part.name}</Title>
+        <Description>Quantity: {part.quantity}</Description>
+        <div
+          style={{
+            fontWeight: "bold",
+            fontSize: "1rem",
+            color: "#00ad4e",
+            marginTop: "6px",
+          }}
+        >
+          {part.price.toLocaleString("vi-VN")} VNĐ
+        </div>
       </Info>
     </CardContainer>
   );

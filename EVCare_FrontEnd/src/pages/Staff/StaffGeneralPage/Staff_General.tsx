@@ -87,7 +87,7 @@ const StaffDashboard: React.FC = () => {
               <ProfileInfo>
                 <InfoRow>
                   <IdCard size={20} />
-                  <span>ID:</span>
+                  <span>Account ID:</span>
                   <span style={{ marginLeft: "auto", color: "#6b7280" }}>
                     {staffInfo.data?.id}
                   </span>
@@ -113,14 +113,6 @@ const StaffDashboard: React.FC = () => {
                   </span>
                 </InfoRow>
               </ProfileInfo>
-
-              <StyledButton
-                type="primary"
-                icon={<UserRoundPen size={18} />}
-                block
-              >
-                Edit Profile
-              </StyledButton>
             </ProfileCard>
           )}
 
@@ -175,7 +167,6 @@ const StaffDashboard: React.FC = () => {
           </StyledCard>
         </Grid>
 
-        {/* Recent Appointments */}
         <TableContainer>
           <TableHeader>
             <h3>Recent Appointments</h3>

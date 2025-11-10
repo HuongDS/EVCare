@@ -4,6 +4,57 @@ import styled from "styled-components";
 import { SortDateButton } from "./SortDateButton";
 import SortDateRange from "./SortDateRange";
 
+interface MyComponentProps {
+  sortName: string[];
+  setSortBy: (v: string) => void;
+  setSortOrder: (v: string) => void;
+  setBeginDate: (v: string) => void;
+  setEndDate: (v: string) => void;
+  disabled: boolean;
+}
+
+const SortTable: React.FC<MyComponentProps> = ({
+  sortName,
+  setSortBy,
+  setSortOrder,
+  setBeginDate,
+  setEndDate,
+  disabled,
+}) => {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const sortParam = params.get("sortBy") || sortName[0];
+  const [activeCategory, setActiveCategory] = useState<string>(sortParam);
+
+  const selectCategory = (category: string) => {
+    setActiveCategory(category);
+    setSortBy(category.trim().replace(/\s+/g, ""));
+  };
+
+  return (
+    <SortWrapperStyled>
+      <Container>
+        {sortName.map((name) => (
+          <Category
+            to={`/staff/appointments?sortBy=${encodeURIComponent(
+              name.split(/\s+/).join("")
+            )}`}
+            key={name}
+            $active={activeCategory === name}
+            onClick={() => selectCategory(name)}
+          >
+            {name}
+          </Category>
+        ))}
+      </Container>
+      <SortDateRange setBeginDate={setBeginDate} setEndDate={setEndDate} />
+      <SortDateButton onSort={setSortOrder} disabled={disabled} />
+    </SortWrapperStyled>
+  );
+};
+
+export default SortTable;
+
 const SortWrapperStyled = styled.div`
   display: flex;
   justify-content: space-between;
@@ -89,54 +140,3 @@ const Category = styled(Link)<CategoryProps>`
     transform: translateY(0);
   }
 `;
-
-interface MyComponentProps {
-  sortName: string[];
-  setSortBy: (v: string) => void;
-  setSortOrder: (v: string) => void;
-  setBeginDate: (v: string) => void;
-  setEndDate: (v: string) => void;
-  disabled: boolean;
-}
-
-const SortTable: React.FC<MyComponentProps> = ({
-  sortName,
-  setSortBy,
-  setSortOrder,
-  setBeginDate,
-  setEndDate,
-  disabled,
-}) => {
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const sortParam = params.get("sortBy") || sortName[0];
-  const [activeCategory, setActiveCategory] = useState<string>(sortParam);
-
-  const selectCategory = (category: string) => {
-    setActiveCategory(category);
-    setSortBy(category.trim().replace(/\s+/g, ""));
-  };
-
-  return (
-    <SortWrapperStyled>
-      <Container>
-        {sortName.map((name) => (
-          <Category
-            to={`/staff/appointments?sortBy=${encodeURIComponent(
-              name.split(/\s+/).join("")
-            )}`}
-            key={name}
-            $active={activeCategory === name}
-            onClick={() => selectCategory(name)}
-          >
-            {name}
-          </Category>
-        ))}
-      </Container>
-      <SortDateRange setBeginDate={setBeginDate} setEndDate={setEndDate} />
-      <SortDateButton onSort={setSortOrder} disabled={disabled} />
-    </SortWrapperStyled>
-  );
-};
-
-export default SortTable;

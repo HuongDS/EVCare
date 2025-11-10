@@ -55,32 +55,28 @@ export const useTechnician_MyJob = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [activeStatus, setActiveStatus] =
-    useState<TechnicianWorkingSessionEnum>(
-      TechnicianWorkingSessionEnum.ADDING_PART
-    );
-  const [appointments, setAppointments] = useState<TechnicianAppointmentsDto[]>(
-    []
+  const [activeStatus, setActiveStatus] = useState<TechnicianWorkingSessionEnum>(
+    TechnicianWorkingSessionEnum.ADDING_PART
   );
+  const [appointments, setAppointments] = useState<TechnicianAppointmentsDto[]>([]);
   const [isError, setIsError] = useState(false);
   const [fade, setFade] = useState(false);
-  const [sortById, setSortById] = useState<"none" | "asc" | "desc">("none");
+  const [sortById, setSortById] = useState<"asc" | "desc">("asc");
 
-  // --- API QUERIES ---
-  const { data, isLoading, isFetching, refetch } = useGetTechnicianAppointments(
-    { Status: String(activeStatus), PageSize: 1000, PageIndex: 1 }
-  );
+  const { data, isLoading, isFetching, refetch } = useGetTechnicianAppointments({
+    Status: String(activeStatus),
+    PageSize: 1000,
+    PageIndex: 1,
+  });
 
-  const { data: pendingData, isFetching: isPendingFetching } =
-    useGetTechnicianAppointments({
-      Status: "Pending",
-      PageSize: 1000,
-      PageIndex: 1,
-    });
+  const { data: pendingData, isFetching: isPendingFetching } = useGetTechnicianAppointments({
+    Status: "Pending",
+    PageSize: 1000,
+    PageIndex: 1,
+  });
 
   const debouncedRefetch = useRef(debounce(() => refetch(), 500)).current;
 
-  // --- Handle hidden pending order ---
   useEffect(() => {
     const handleHiddenPending = async () => {
       if (isPendingFetching) return;
@@ -119,41 +115,27 @@ export const useTechnician_MyJob = () => {
   }, [location.pathname, location.state, navigate]);
 
   // --- HANDLERS ---
-  const handleUpdateStatus = (
-    appointmentId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => {
-    setAppointments((prev) =>
-      prev.map((a) =>
-        a.id === appointmentId ? { ...a, status: newStatus } : a
-      )
-    );
+  const handleUpdateStatus = (appointmentId: number, newStatus: TechnicianWorkingSessionEnum) => {
+    setAppointments((prev) => prev.map((a) => (a.id === appointmentId ? { ...a, status: newStatus } : a)));
 
     requestQueue.enqueue(() => refetch()); // limit concurrent API call
   };
 
   const handlePartsUpdated = (appointmentId: number) => {
-    setAppointments((prev) =>
-      prev.map((a) => (a.id === appointmentId ? { ...a } : a))
-    );
+    setAppointments((prev) => prev.map((a) => (a.id === appointmentId ? { ...a } : a)));
     debouncedRefetch();
   };
 
   const handleSortById = debounce(() => {
-    setSortById((prev) =>
-      prev === "none" ? "asc" : prev === "asc" ? "desc" : "asc"
-    );
+    setSortById((prev) => (prev === "asc" ? "desc" : "asc"));
   }, 150);
 
   const sortedAppointments = useMemo(() => {
     if (
-      (activeStatus === TechnicianWorkingSessionEnum.COMPLETED ||
-        activeStatus === TechnicianWorkingSessionEnum.CANCELED) &&
-      sortById !== "none"
+      activeStatus === TechnicianWorkingSessionEnum.COMPLETED ||
+      activeStatus === TechnicianWorkingSessionEnum.CANCELED
     ) {
-      return [...appointments].sort((a, b) =>
-        sortById === "asc" ? a.id - b.id : b.id - a.id
-      );
+      return [...appointments].sort((a, b) => (sortById === "asc" ? a.id - b.id : b.id - a.id));
     }
     return appointments;
   }, [appointments, sortById, activeStatus]);
