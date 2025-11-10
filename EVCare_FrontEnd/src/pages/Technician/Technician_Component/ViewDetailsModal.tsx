@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Modal, Spin, Table, Tag, Typography } from "antd";
+import { Modal, Spin, Table, Typography } from "antd";
 import { useQueries } from "@tanstack/react-query";
 import { useGetOrderDetail } from "../../../services/orderServiceApi";
 import { getTechnicianDetail } from "../../../services/technicianDetail";
