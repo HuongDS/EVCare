@@ -254,7 +254,11 @@ export const SubmitButton = styled.button`
   box-shadow: 0 4px 12px rgba(0, 173, 78, 0.25);
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, ${lighten(0.05, EVCareGreen)} 0%, ${EVCareGreen} 100%);
+    background: linear-gradient(
+      135deg,
+      ${lighten(0.05, EVCareGreen)} 0%,
+      ${EVCareGreen} 100%
+    );
     box-shadow: 0 6px 20px rgba(0, 173, 78, 0.4);
     transform: translateY(-2px);
   }
@@ -349,4 +353,24 @@ export const SuccessText = styled.p`
 export const ReviewWrapper = styled.div`
   position: relative;
   z-index: 999;
+`;
+
+export const StarWrapper = styled.div`
+  position: relative;
+  z-index: 999;
+  .stars {
+    display: flex;
+    gap: 4px;
+  }
+
+  .star {
+    font-size: 22px;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .star.active {
+    color: #facc15;
+  }
 `;
