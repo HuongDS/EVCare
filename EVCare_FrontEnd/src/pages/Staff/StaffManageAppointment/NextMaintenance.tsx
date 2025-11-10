@@ -243,24 +243,20 @@ export default function NextMaintenance({
               </PreviewBox>
             </ReminderCard>
 
-            <ActionButtons>
-              {isPending ? (
-                <div style={{ textAlign: "center" }}>
-                  <TextWaitingEffect text="Waiting for processing" />
-                </div>
-              ) : (
-                <>
-                  <SkipButton type="button" onClick={onSkip}>
-                    Skip This Step
-                    <ArrowRight size={20} />
-                  </SkipButton>
-                  <ConfirmButton type="submit">
-                    <CheckCircle size={20} />
-                    Confirm & Schedule
-                  </ConfirmButton>
-                </>
-              )}
-            </ActionButtons>
+            {isPending ? (
+              <TextWaitingEffect text="Waiting for processing" />
+            ) : (
+              <ActionButtons>
+                <SkipButton type="button" onClick={onSkip}>
+                  Skip This Step
+                  <ArrowRight size={20} />
+                </SkipButton>
+                <ConfirmButton type="submit">
+                  <CheckCircle size={20} />
+                  Confirm & Schedule
+                </ConfirmButton>
+              </ActionButtons>
+            )}
           </FormSection>
         </MainContent>
       </ContentWrapper>

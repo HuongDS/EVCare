@@ -30,13 +30,7 @@ export default function MainteningPage() {
 
         <ExpectedBox>
           <Calendar size={16} />
-          Expected to be back:{" "}
-          {new Date(Date.now() + 2.5 * 60 * 60 * 1000).toLocaleString("en-US", {
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          We will back soon
         </ExpectedBox>
       </ContentCard>
     </PageContainer>
