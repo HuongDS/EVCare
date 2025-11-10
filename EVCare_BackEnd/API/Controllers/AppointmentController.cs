@@ -363,33 +363,18 @@ namespace API.Controllers
             var payload = _tokenServices.Validate(token);
             if (!payload.Item1 || payload.Item4 != "confirm")
             {
-                return BadRequest(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.INVALID_TOKEN,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
 
             var appointmentId = payload.Item3;
             var appointment = await _appointmentService.GetAppointmentById(appointmentId);
             if (appointment == null)
             {
-                return NotFound(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.NOT_FOUND,
-                    message = Message.APPOINTMENT_NOT_FOUND,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
             if (appointment.Status != AppointmentStatusEnum.Pending)
             {
-                return BadRequest(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.APPOINTMENT_CANNOT_BE_CONFIRMED,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
             var res = await _appointmentService.UpdateAppointmentStatus(new AppointmentUpdateDto
             {
@@ -408,33 +393,18 @@ namespace API.Controllers
             var payload = _tokenServices.Validate(token);
             if (!payload.Item1 || payload.Item4 != "cancel")
             {
-                return BadRequest(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.INVALID_TOKEN,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
 
             var appointmentId = payload.Item3;
             var appointment = await _appointmentService.GetAppointmentById(appointmentId);
             if (appointment == null)
             {
-                return NotFound(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.NOT_FOUND,
-                    message = Message.APPOINTMENT_NOT_FOUND,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
             if (appointment.Status != AppointmentStatusEnum.Pending)
             {
-                return BadRequest(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.APPOINTMENT_CANNOT_BE_CANCELED,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
             var res = await _appointmentService.UpdateAppointmentStatus(new AppointmentUpdateDto
             {
