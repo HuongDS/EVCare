@@ -13,6 +13,7 @@ namespace Application.Interfaces
         Task DeleteAccount(int accountId);
         public Task<AccountViewModel> GetAccountById(int accountId);
         Task<int> GetAccountIdByEmail(string email);
+        Task<IEnumerable<int>> GetAccountIdByTechnicianIds(IEnumerable<int> technicianIds);
         Task<int> UnbannedAccount(int accountId);
         Task<AccountViewModel> UpdateAccountByAccountID(AccountUpdateDto data, int accountId);
         Task<AccountViewModel> UpdatePasswordByAccountId(int accountId, AccountUpdatePasswordDto data);

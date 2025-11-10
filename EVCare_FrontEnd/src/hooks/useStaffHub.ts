@@ -7,9 +7,7 @@ type DashboardPayload<T> = {
   data: T;
 };
 
-export function useStaffDashboardHub<T>(
-  onUpdate: (type: string, data: T) => void
-) {
+export function useStaffDashboardHub<T>(onUpdate: (type: string, data: T) => void) {
   const onUpdateRef = useRef(onUpdate);
 
   useEffect(() => {

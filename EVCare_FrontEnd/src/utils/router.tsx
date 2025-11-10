@@ -413,6 +413,14 @@ const router = createBrowserRouter([
       </SuspenseWrapper>
     ),
   },
+  {
+    path: "/NotFound",
+    element: (
+      <SuspenseWrapper>
+        <PageNotFound />
+      </SuspenseWrapper>
+    ),
+  },
 ]);
 
 export default router;

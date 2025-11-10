@@ -13,12 +13,12 @@ import {
   ModalFooter,
   ModalButton,
   LoadingSpinner,
-} from "../AdminService&Parts/AdminService/Admin_Service.styled";
+} from "../../AdminService&Parts/AdminService/Admin_Service.styled";
 import { FaTimes, FaSave } from "react-icons/fa";
-import { useNotification } from "../../../context/useNotification";
-import { updatePartCategory } from "../../../services/partCategoryApi";
-import type { PartCategoryCreateDto } from "../../../models/PartModel/PartCategoryCreateDto";
-import { updateServiceCategory } from "../../../services/serviceServicesApi";
+import { useNotification } from "../../../../context/useNotification";
+import { updatePartCategory } from "../../../../services/partCategoryApi";
+import type { PartCategoryCreateDto } from "../../../../models/PartModel/PartCategoryCreateDto";
+import { updateServiceCategory } from "../../../../services/serviceServicesApi";
 
 type CategoryType = "Part" | "Service";
 
