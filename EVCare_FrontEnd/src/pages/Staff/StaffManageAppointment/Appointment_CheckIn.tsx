@@ -75,8 +75,6 @@ export default function Appointment_CheckIn({ data, close }: Props) {
         setIsErrorModalOpen(true);
         return;
       }
-
-      // success flow
       setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_SUCCESS);
       setIsCheckInSuccessOpen(true);
       await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });

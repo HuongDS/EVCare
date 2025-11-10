@@ -8,6 +8,7 @@ import { handleError } from "../utils/errorHandler";
 import type { CategoryResponseDTO } from "../models/OrderPartModel/Category_Model";
 import type {
   GetPartParams,
+  PartDetail,
   PartDetailDto,
 } from "../models/PartModel/PartModel";
 import axios from "axios";
@@ -68,13 +69,14 @@ export const useGetParts = (params: GetPartParams) => {
     queryKey: ["PartList", params],
     queryFn: async () => {
       try {
-        const response = await api.get<
-          ResponseDto<PageResultDto<PartDetailDto>>
-        >("/api/Part", {
-          params,
-          paramsSerializer: (p) =>
-            QueryString.stringify(p, { arrayFormat: "repeat" }),
-        });
+        const response = await api.get<ResponseDto<PageResultDto<PartDetail>>>(
+          "/api/Part",
+          {
+            params,
+            paramsSerializer: (p) =>
+              QueryString.stringify(p, { arrayFormat: "repeat" }),
+          }
+        );
         return response.data;
       } catch (error) {
         handleError(error);

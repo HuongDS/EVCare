@@ -63,6 +63,7 @@ export default function GoogleButton() {
       text="signin_with"
       shape="pill"
       theme="outline"
+      width={100}
       onSuccess={handleSuccess}
       onError={handleError}
     />
