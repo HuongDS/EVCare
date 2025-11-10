@@ -2,7 +2,11 @@ import styled from "styled-components";
 
 export const PageContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(170, 255, 211, 0.5) 0%,
+    rgba(174, 255, 206, 0.5) 20%
+  );
   padding: 32px 20px;
   font-family: "Outfit", sans-serif;
 `;
@@ -24,6 +28,7 @@ export const HeaderIcon = styled.div`
   width: 64px;
   height: 64px;
   background: rgba(255, 255, 255, 0.2);
+  border: 1px #00ad4e solid;
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -36,7 +41,6 @@ export const HeaderText = styled.div`
     font-size: 28px;
     font-weight: 700;
     margin: 0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -44,6 +48,8 @@ export const OrderId = styled.div`
   font-size: 14px;
   opacity: 0.9;
   margin-top: 4px;
+  color: #00ad4e;
+  font-weight: bold;
 `;
 
 export const Card = styled.div`
@@ -77,7 +83,7 @@ export const PartCard = styled.div`
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
 
   &:hover {
-    border-color: #667eea;
+    border-color: #00ad4e;
     box-shadow: 0 6px 16px rgba(102, 126, 234, 0.15);
     transform: translateY(-2px);
   }
@@ -207,7 +213,7 @@ export const QuantityLabel = styled.div`
 export const QuantityValue = styled.div`
   font-size: 18px;
   font-weight: 700;
-  color: #667eea;
+  color: #00ad4e;
 `;
 
 export const QuantityEdit = styled.div`
@@ -264,7 +270,7 @@ export const TotalLabel = styled.div`
 export const TotalValue = styled.div`
   font-size: 18px;
   font-weight: 700;
-  color: #667eea;
+  color: #00ad4e;
 `;
 
 export const SummaryTitle = styled.h3`
@@ -303,7 +309,7 @@ export const TotalRow = styled(SummaryRow)`
   }
 
   span:last-child {
-    color: #667eea;
+    color: #00ad4e;
   }
 `;
 
@@ -312,7 +318,9 @@ export const ActionButton = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   button:nth-child(1) {
-    background: linear-gradient(135deg, #c12a2a 0%, #eec0bc 100%);
+    color: #e01919;
+    background-color: white;
+    border: 2px #e01919 solid;
   }
 `;
 
@@ -324,19 +332,18 @@ export const ConfirmButton = styled.button`
   gap: 10px;
   padding: 16px;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #75e76f 100%);
+  background-color: #00ad4e;
   color: white;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   font-family: "Outfit", sans-serif;
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
   transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+    box-shadow: 0 8px 24px rgba(10, 130, 64, 0.5);
   }
 
   &:active {
@@ -348,7 +355,7 @@ export const TechnicianHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #667eea;
+  color: #00ad4e;
   margin-bottom: 20px;
 
   h2 {
@@ -373,7 +380,7 @@ export const TechnicianItem = styled.div`
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: #667eea;
+    border-color: #00ad4e;
     background: #f8f9ff;
   }
 `;

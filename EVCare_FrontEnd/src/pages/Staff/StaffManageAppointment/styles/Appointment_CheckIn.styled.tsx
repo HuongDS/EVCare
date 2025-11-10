@@ -164,7 +164,6 @@ export const ServiceItem = styled.div`
   padding: 12px;
   background: #f8fdf9;
   border-radius: 10px;
-  border-left: 4px solid #00ad4e;
   transition: all 0.3s ease;
 
   &:hover {
