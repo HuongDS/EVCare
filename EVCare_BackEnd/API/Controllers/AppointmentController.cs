@@ -22,7 +22,8 @@ namespace API.Controllers
     //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class AppointmentController : ControllerBase {
+    public class AppointmentController : ControllerBase
+    {
         private readonly IAppointmentService _appointmentService;
         private readonly INotificationServices _notificationServices;
         private readonly ITokenServices _tokenServices;
@@ -30,21 +31,24 @@ namespace API.Controllers
 
         public AppointmentController(IAppointmentService appointmentService, INotificationServices notificationServices,
             ITokenServices tokenServices,
-            OnAppointmentConfirmHandler onAppointmentConfirmHandler) {
+            OnAppointmentConfirmHandler onAppointmentConfirmHandler)
+        {
             _appointmentService = appointmentService;
             _notificationServices = notificationServices;
             _tokenServices = tokenServices;
-           
+
             _onAppointmentConfirmHandler = onAppointmentConfirmHandler;
         }
         [Authorize(Roles = "Staff")]
         [HttpPost("staff")]
         [ServiceFilter(typeof(SetEmployeeIdFilter))]
         [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
-        public async Task<IActionResult> CreateAppointment(AppointmentCreateModel model) {
-            try {
+        public async Task<IActionResult> CreateAppointment(AppointmentCreateModel model)
+        {
+            try
+            {
                 int employeeId = (int)HttpContext.Items["EmployeeId"];
-                var appointmentId = await _appointmentService.CreateAppointmentForStaff(model,employeeId);
+                var appointmentId = await _appointmentService.CreateAppointmentForStaff(model, employeeId);
                 return Ok(new
                 {
                     StatusCode = HttpStatus.CREATED,
@@ -53,7 +57,8 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new
                 {
                     StatusCode = HttpStatus.BAD_REQUEST,
@@ -63,8 +68,10 @@ namespace API.Controllers
         }
         [HttpPost("update-appointment-status")]
         [Authorize(Roles = "Staff, Technician")]
-        public async Task<IActionResult> UpdateAppointmentStatus(AppointmentUpdateDto data) {
-            try {
+        public async Task<IActionResult> UpdateAppointmentStatus(AppointmentUpdateDto data)
+        {
+            try
+            {
                 var appointmentID = await _appointmentService.UpdateAppointmentStatus(data);
                 return Ok(new
                 {
@@ -73,7 +80,8 @@ namespace API.Controllers
                     AppointmentId = appointmentID
                 });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new
                 {
                     StatusCode = HttpStatus.BAD_REQUEST,
@@ -149,8 +157,10 @@ namespace API.Controllers
         [HttpPost("customer")]
         [Authorize(Roles = "Customer")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
-        public async Task<IActionResult> CreateAppointmentForCustomer(AppointmentCustomerCreateModel model) {
-            try {
+        public async Task<IActionResult> CreateAppointmentForCustomer(AppointmentCustomerCreateModel model)
+        {
+            try
+            {
                 var newModel = new AppointmentCreateModel
                 {
                     CustomerId = (int)HttpContext.Items["CustomerId"],
@@ -172,7 +182,8 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new
                 {
                     StatusCode = HttpStatus.BAD_REQUEST,
@@ -185,8 +196,10 @@ namespace API.Controllers
         [HttpPut("staff")]
         [ServiceFilter(typeof(SetEmployeeIdFilter))]
         [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
-        public async Task<IActionResult> UpdateAppointment(AppointmentUpdateModel model) {
-            try {
+        public async Task<IActionResult> UpdateAppointment(AppointmentUpdateModel model)
+        {
+            try
+            {
                 var employeeId = (int)HttpContext.Items["EmployeeId"];
                 var result = await _appointmentService.UpdateAppointment(model, employeeId);
                 return Ok(new ResponseDto<bool>
@@ -197,7 +210,8 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -212,8 +226,10 @@ namespace API.Controllers
         [HttpDelete("{appointmentId}")]
         [ServiceFilter(typeof(SetEmployeeIdFilter))]
         [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
-        public async Task<IActionResult> DeleteAppointment(int appointmentId) {
-            try {
+        public async Task<IActionResult> DeleteAppointment(int appointmentId)
+        {
+            try
+            {
                 var result = await _appointmentService.DeleteAppointment(appointmentId);
                 return Ok(new ResponseDto<bool>
                 {
@@ -222,7 +238,8 @@ namespace API.Controllers
                     data = result
                 });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -236,8 +253,10 @@ namespace API.Controllers
         [HttpGet("{appointmentId}")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
         [ServiceFilter(typeof(AppointmentAuthorizationFilter))]
-        public async Task<IActionResult> GetAppointmentDetailByAppointmetId(int appointmentId) {
-            try {
+        public async Task<IActionResult> GetAppointmentDetailByAppointmetId(int appointmentId)
+        {
+            try
+            {
 
                 var appointment = await _appointmentService.GetAppointmentById(appointmentId);
 
@@ -248,7 +267,8 @@ namespace API.Controllers
                     data = appointment
                 });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -261,8 +281,10 @@ namespace API.Controllers
         [Authorize]
         [HttpGet("history")]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
-        public async Task<IActionResult> GetAppointmentHistory() {
-            try {
+        public async Task<IActionResult> GetAppointmentHistory()
+        {
+            try
+            {
                 int customerId = (int)HttpContext.Items["CustomerId"];
 
                 var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
@@ -273,7 +295,8 @@ namespace API.Controllers
                     data = appointments
                 });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -285,8 +308,10 @@ namespace API.Controllers
 
         [HttpGet("staff/history/{customerId}")]
         [Authorize(Roles = "Staff")]
-        public async Task<IActionResult> GetAppointmentHistoryByCustomerId(int customerId) {
-            try {
+        public async Task<IActionResult> GetAppointmentHistoryByCustomerId(int customerId)
+        {
+            try
+            {
 
                 var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
@@ -296,7 +321,8 @@ namespace API.Controllers
                     data = appointments
                 });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = 400,
@@ -307,8 +333,10 @@ namespace API.Controllers
 
         [HttpGet("appointments/paged")]
         [Authorize(Roles = "Staff")]
-        public async Task<IActionResult> GetAppointmentsWithPagination([FromQuery] AppointmentQueryDto model) {
-            try {
+        public async Task<IActionResult> GetAppointmentsWithPagination([FromQuery] AppointmentQueryDto model)
+        {
+            try
+            {
 
                 var appointments = await _appointmentService.GetAppointmentsWithPagination(model);
                 return Ok(new ResponseDto<PageResultDto<AppointmentViewModel>>
@@ -319,7 +347,8 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -329,9 +358,11 @@ namespace API.Controllers
         }
         [HttpGet("customer-confirm-appointment")]
         [AllowAnonymous]
-        public async Task<IActionResult> UpdateConfirmAppointmentDateAsync([FromQuery] string token) {
+        public async Task<IActionResult> UpdateConfirmAppointmentDateAsync([FromQuery] string token)
+        {
             var payload = _tokenServices.Validate(token);
-            if (!payload.Item1 || payload.Item4 != "confirm") {
+            if (!payload.Item1 || payload.Item4 != "confirm")
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -342,7 +373,8 @@ namespace API.Controllers
 
             var appointmentId = payload.Item3;
             var appointment = await _appointmentService.GetAppointmentById(appointmentId);
-            if (appointment == null) {
+            if (appointment == null)
+            {
                 return NotFound(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.NOT_FOUND,
@@ -350,7 +382,8 @@ namespace API.Controllers
                     data = null
                 });
             }
-            if (appointment.Status != AppointmentStatusEnum.Pending) {
+            if (appointment.Status != AppointmentStatusEnum.Pending)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -364,15 +397,17 @@ namespace API.Controllers
                 status = AppointmentStatusEnum.Confirmed
             });
             await _onAppointmentConfirmHandler.HandleAsync();
-            
-            return Ok(res);
+
+            return Redirect("https://ev-care.netlify.app/ThankYou");
         }
 
         [HttpGet("customer-cancel-appointment")]
         [AllowAnonymous]
-        public async Task<IActionResult> UpdateCancelAppointmentDateAsync([FromQuery] string token) {
+        public async Task<IActionResult> UpdateCancelAppointmentDateAsync([FromQuery] string token)
+        {
             var payload = _tokenServices.Validate(token);
-            if (!payload.Item1 || payload.Item4 != "cancel") {
+            if (!payload.Item1 || payload.Item4 != "cancel")
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -383,7 +418,8 @@ namespace API.Controllers
 
             var appointmentId = payload.Item3;
             var appointment = await _appointmentService.GetAppointmentById(appointmentId);
-            if (appointment == null) {
+            if (appointment == null)
+            {
                 return NotFound(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.NOT_FOUND,
@@ -391,7 +427,8 @@ namespace API.Controllers
                     data = null
                 });
             }
-            if (appointment.Status != AppointmentStatusEnum.Pending) {
+            if (appointment.Status != AppointmentStatusEnum.Pending)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
@@ -405,14 +442,16 @@ namespace API.Controllers
                 status = AppointmentStatusEnum.Canceled
             });
             await _onAppointmentConfirmHandler.HandleAsync();
-           
-            return Ok(res);
+
+            return Redirect("https://ev-care.netlify.app/Cancel");
         }
 
         [HttpGet("daily-count")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetDailyCounts() {
-            try {
+        public async Task<IActionResult> GetDailyCounts()
+        {
+            try
+            {
                 var dates = await _appointmentService.GetAppointmentWithCountDaily();
                 return Ok(new ResponseDto<CenterDailyCapacityModel>
                 {
@@ -423,7 +462,8 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = 400,
@@ -437,8 +477,10 @@ namespace API.Controllers
         [HttpGet("get-appointment-technician")]
         [Authorize(Roles = "Technician")]
         [ServiceFilter(typeof(SetTechnicianIdFilter))]
-        public async Task<IActionResult> GetAppointmentByTechnician([FromQuery] AppointmentTechnicianQueryDto model) {
-            try {
+        public async Task<IActionResult> GetAppointmentByTechnician([FromQuery] AppointmentTechnicianQueryDto model)
+        {
+            try
+            {
                 var technicianId = (int)HttpContext.Items["TechnicianId"];
                 var data = await _appointmentService.GetAppointmentByTechnicianId(technicianId, model);
                 return Ok(new ResponseDto<PageResultDto<AppointmentTechnicianViewModel>>
@@ -448,7 +490,8 @@ namespace API.Controllers
                     data = data
                 });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     message = ex.Message,
@@ -461,8 +504,10 @@ namespace API.Controllers
 
         [HttpGet("in-progress-understaffed")]
         [Authorize(Roles = "Staff")]
-        public async Task<IActionResult> GetUnderstaffedInProgressAsync([FromQuery] AppointmentQueryDto model) {
-            try {
+        public async Task<IActionResult> GetUnderstaffedInProgressAsync([FromQuery] AppointmentQueryDto model)
+        {
+            try
+            {
                 var data = await _appointmentService.GetUnderstaffedInProgressAsync(model);
                 return Ok(new ResponseDto<PageResultDto<AppointmentInProgressUnderstaffedViewModel>>
                 {
@@ -471,7 +516,8 @@ namespace API.Controllers
                     data = data
                 });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     message = ex.Message,
@@ -483,7 +529,8 @@ namespace API.Controllers
 
         [HttpGet("count-appointments-in-month/{year}/{month}")]
         [Authorize(Roles = "Admin, Staff")]
-        public async Task<IActionResult> CountAppointmentsInMonth(int year, int month) {
+        public async Task<IActionResult> CountAppointmentsInMonth(int year, int month)
+        {
             return Ok(new ResponseDto<int>
             {
                 statusCode = HttpStatus.OK,
@@ -493,7 +540,8 @@ namespace API.Controllers
         }
         [HttpGet("count-customers-in-month/{year}/{month}")]
         [Authorize(Roles = "Admin, Staff")]
-        public async Task<IActionResult> CountCustomersInMonth(int year, int month) {
+        public async Task<IActionResult> CountCustomersInMonth(int year, int month)
+        {
             var result = await _appointmentService.CountCustomersInMonths(year, month);
             return Ok(new ResponseDto<int>
             {
@@ -504,7 +552,8 @@ namespace API.Controllers
         }
         [HttpGet("count-appointments-with-status-in-month/{year}/{month}")]
         [Authorize(Roles = "Admin, Staff")]
-        public async Task<IActionResult> CountAppointmentsInMonthWithStatus(int year, int month, AppointmentStatusEnum status) {
+        public async Task<IActionResult> CountAppointmentsInMonthWithStatus(int year, int month, AppointmentStatusEnum status)
+        {
             return Ok(new ResponseDto<int>
             {
                 statusCode = HttpStatus.OK,
@@ -517,8 +566,10 @@ namespace API.Controllers
         [Authorize]
         [ServiceFilter(typeof(SetCustomerIdFilter))]
         [ServiceFilter(typeof(AppointmentAuthorizationFilter))]
-        public async Task<IActionResult> GetVehicleCategoryByAppointmentId(int appointmentId) {
-            try {
+        public async Task<IActionResult> GetVehicleCategoryByAppointmentId(int appointmentId)
+        {
+            try
+            {
                 var vehicle = await _appointmentService.GetVehicleByAppointmentId(appointmentId);
                 return Ok(new ResponseDto<AppointmentVehicleViewModel>
                 {
@@ -527,7 +578,8 @@ namespace API.Controllers
                     data = vehicle
                 });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
