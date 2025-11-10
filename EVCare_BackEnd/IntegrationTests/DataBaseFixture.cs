@@ -12,22 +12,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace IntegrationTests {
     public class DataBaseFixture {
-        private static object _lock = new object();
-        private bool _isDatabaseCreated = false;
-        public DataBaseFixture() {
-
-            lock (_lock) {
-                if (_isDatabaseCreated) {
-                    return;
-                }
-                using EVCareDbContext context = CreateContext();
-                SeedTestData(context);
-
-                _isDatabaseCreated = true;
-            }
-
-        }
-
         private void SeedTestData(EVCareDbContext context) {
 
             var accountCustomer = new Account { Id = 1, First_Name = "Phuc", Last_Name = "Sanh", Phone = "0901234567", Email = "phuc@example.com" };
@@ -118,15 +102,15 @@ namespace IntegrationTests {
 
         }
 
-        public  EVCareDbContext CreateContext() {
+        public EVCareDbContext CreateContext() {
             var options = new DbContextOptionsBuilder<EVCareDbContext>()
-                .UseInMemoryDatabase(databaseName: "EVCareTestDb") 
+                .UseInMemoryDatabase(Guid.NewGuid().ToString()) 
                 .Options;
 
-          
-
             var context = new EVCareDbContext(options);
+            SeedTestData(context); 
             return context;
         }
+
     }
 }
