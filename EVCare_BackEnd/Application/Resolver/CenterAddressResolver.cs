@@ -19,7 +19,7 @@ namespace Application.Resolver
         }
         public string Resolve(AppointmentViewDetailModel source, AppointmentInforToSentDto destination, string destMember, ResolutionContext context)
         {
-            var centerAddress = _dbContext.ServiceCenters.Select(c => c.Address).ToList();
+            var centerAddress = _dbContext.ServiceCenters.Select(c => c.AddressName).ToList();
             return centerAddress[0];
         }
     }

@@ -8,6 +8,7 @@ import * as S from "./Review.styled";
 import Banner from "./section/Banner";
 import ClickSpark from "../../../components/ClickEffect/ClickEffect";
 import { ArrowDownWideNarrow, ArrowUpNarrowWide } from "lucide-react";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 const SORT_ORDER = {
   NEWEST: "newest",
@@ -29,21 +30,45 @@ export default function ReviewServicePage() {
   const { isLoading } = useGetAllCategory();
   const observerRef = useRef<HTMLDivElement | null>(null);
 
-  const fetchAllReviews = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await getAllReview(1, 9999);
-      setAllReviews(res.data?.items ?? []);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchPage = useCallback(
+    async (page: number, reset = false) => {
+      try {
+        setLoading(true);
+        const res = await getAllReview(
+          page,
+          pageSize,
+          selectedRating,
+          selectedServices
+        );
+        const items = res.data?.items ?? [];
+
+        if (reset) {
+          setAllReviews(items);
+        } else {
+          setAllReviews((prev) => {
+            const ids = new Set(prev.map((p) => p.id));
+            const newOnes = items.filter((it) => !ids.has(it.id));
+            return [...prev, ...newOnes];
+          });
+        }
+
+        setHasMore(items.length === pageSize);
+      } catch (error) {
+        console.error("fetchPage error:", error);
+        setHasMore(false);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [pageSize, selectedRating, selectedServices]
+  );
 
   useEffect(() => {
-    fetchAllReviews();
-  }, [fetchAllReviews]);
+    setPageIndex(1);
+    setHasMore(true);
+    fetchPage(1, true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [selectedRating, selectedServices, sortOrder, fetchPage]);
 
   const filteredReviews = useMemo(() => {
     let result = allReviews;
@@ -66,30 +91,39 @@ export default function ReviewServicePage() {
   }, [allReviews, selectedServices, selectedRating, sortOrder]);
 
   useEffect(() => {
-    setPageIndex(1);
-    setHasMore(true);
-    setReviews(filteredReviews.slice(0, pageSize));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [filteredReviews, pageSize]);
+    const endIndex = pageIndex * pageSize;
+    setReviews(filteredReviews.slice(0, endIndex));
+  }, [filteredReviews, pageIndex, pageSize]);
 
+  // --- handleLoadMore
   const handleLoadMore = useCallback(() => {
-    const nextPage = pageIndex + 1;
-    const start = (nextPage - 1) * pageSize;
+    const nextPageIndex = pageIndex + 1;
+    const start = pageIndex * pageSize;
     const nextItems = filteredReviews.slice(start, start + pageSize);
 
-    if (nextItems.length === 0) {
-      setHasMore(false);
-    } else {
-      setReviews((prev) => [...prev, ...nextItems]);
-      setPageIndex(nextPage);
+    if (nextItems.length > 0) {
+      setPageIndex(nextPageIndex);
+    } else if (hasMore) {
+      setPageIndex(nextPageIndex);
     }
-  }, [pageIndex, filteredReviews, pageSize]);
+  }, [pageIndex, filteredReviews, pageSize, hasMore]);
 
   useEffect(() => {
-    if (loading || !hasMore) return;
+    if (pageIndex === 1) return;
+    const startIndexForNextPage = (pageIndex - 1) * pageSize;
+    if (filteredReviews.length <= startIndexForNextPage && hasMore) {
+      fetchPage(pageIndex, false);
+    }
+  }, [pageIndex, fetchPage, filteredReviews.length, pageSize, hasMore]);
+
+  // --- IntersectionObserver
+  useEffect(() => {
+    if (!hasMore || loading) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) handleLoadMore();
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          handleLoadMore();
+        }
       },
       { threshold: 1.0 }
     );
@@ -100,6 +134,7 @@ export default function ReviewServicePage() {
     };
   }, [loading, hasMore, handleLoadMore]);
 
+  // --- Handlers filter & sort
   const handleSelectService = (serviceId: number) => {
     setSelectedServices((prev) =>
       prev.includes(serviceId)
@@ -118,7 +153,7 @@ export default function ReviewServicePage() {
     );
   };
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <SpinnerComponent />;
 
   return (
     <ClickSpark
