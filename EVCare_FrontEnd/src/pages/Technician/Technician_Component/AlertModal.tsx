@@ -19,15 +19,15 @@ const popIn = keyframes`
   50% {
     transform: scale(1.1);
     opacity: 1;
-    box-shadow: 0 0 20px rgba(255,107,0,0.5);
+    box-shadow: 0 0 20px rgba(0, 255, 21, 0.5);
   }
   80% {
     transform: scale(0.95);
-    box-shadow: 0 0 15px rgba(255,107,0,0.4);
+    box-shadow: 0 0 15px rgba(0, 255, 21, 0.4);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 10px rgba(255,107,0,0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 21, 0.3);
   }
 `;
 
@@ -87,7 +87,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
             <ButtonAction
               text="Confirm"
               color="#fff"
-              backgroundColor="#FF6B00"
+              backgroundColor="#00AD4E"
               action={() => {
                 onConfirm();
                 onClose();
