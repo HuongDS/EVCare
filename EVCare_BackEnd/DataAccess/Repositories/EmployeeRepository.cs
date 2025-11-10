@@ -103,7 +103,7 @@ namespace DataAccess.Repositories
                 .ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Busy));
         }
 
-        public async Task<EmployeeViewModel> GetEmployeeInformation(int employeeId)
+        public async Task<EmployeeViewModel> GetEmployeeInformaTtion(int employeeId)
         {
             var employee = await _dbContext.Employees
                 .Include(x => x.Account)
@@ -136,12 +136,14 @@ namespace DataAccess.Repositories
             return employee;
         }
 
-        public async Task<EmployeeCustomerViewModel> GetEmployeeDetailsByIdAsync(int employeeId) {
+        public async Task<EmployeeCustomerViewModel> GetEmployeeDetailsByIdAsync(int employeeId)
+        {
             return await _dbContext.Employees
                 .AsNoTracking()
                 .Where(e => e.Id == employeeId)
                 .Include(e => e.Account)
-                .Select(e => new EmployeeCustomerViewModel {
+                .Select(e => new EmployeeCustomerViewModel
+                {
                     Id = e.Id,
                     Name = e.Account.First_Name + " " + e.Account.Last_Name,
                     Email = e.Account.Email,
