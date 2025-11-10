@@ -102,7 +102,7 @@ export const CustomerCard = styled(Card)<{ $banned: boolean }>`
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    border-color: ${({ $banned }) => ($banned ? "#f87171" : "#3b82f6")};
+    border-color: ${({ $banned }) => ($banned ? "#f87171" : "#00ad4e")};
   }
 
   .ant-card-body {
@@ -122,8 +122,8 @@ export const CustomerAvatar = styled(Avatar)`
   height: 64px;
   font-size: 1.5rem;
   font-weight: 600;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, #00ad4e 0%, #50eb25 100%);
+  box-shadow: 0 4px 12px rgba(125, 246, 59, 0.3);
   flex-shrink: 0;
 `;
 
@@ -205,7 +205,7 @@ export const VehiclesSection = styled.div`
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #64748b;
+    color: #6d8b64;
     font-size: 0.875rem;
     font-weight: 500;
     margin-bottom: 0.75rem;
@@ -216,9 +216,9 @@ export const VehicleTag = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #eff6ff;
-  border: 1px solid #dbeafe;
-  color: #1e40af;
+  background: #d9f5d3;
+  border: 1px solid #defedb;
+  color: #00ad4e;
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
   font-size: 0.85rem;
@@ -230,7 +230,7 @@ export const VehicleTag = styled.div`
   }
 
   .category {
-    color: #3b82f6;
+    color: #00ad4e;
     font-size: 0.75rem;
   }
 `;

@@ -23,20 +23,25 @@ import { ReviewWrapper } from "../../../../components/Review/Review.styled.tsx";
 import LazyReviewModal from "../../../../components/Review/LazyReviewModal.tsx";
 import type { CardData } from "../../../../models/Pics/CardData.ts";
 import { LazyReviewPicsSection } from "./LazyReviewPicsSection.tsx";
+import { useAppDispatch } from "../../../../states/store.ts";
+import { openModel3d } from "../../../../states/uiSlice.ts";
 
 interface props {
   data: AppointmentViewDetailModel;
   onViewAppointmentDetail: (appointmentId: number) => void;
   appointmentId: number;
   loadingModalDetail: number | null;
+  setModel3dData: (v: number) => void;
 }
 
 export default function AppointmentHistoryCard({
   data,
+  setModel3dData,
   onViewAppointmentDetail,
   appointmentId,
   loadingModalDetail,
 }: props) {
+  const dispatch = useAppDispatch();
   const [isDisplayReviewButton, setIsDisplayReviewButton] = useState(false);
   const [isOpenReviewForm, setIsOpenReviewForm] = useState(false);
   const [pics, setPics] = useState<CardData[]>([]);
@@ -104,6 +109,20 @@ export default function AppointmentHistoryCard({
                 backgroundColor="#00ad4e"
                 action={() => onViewAppointmentDetail(appointmentId)}
               />
+
+              {data.status === AppointmentStatusEnum.IN_PROGRESS ||
+                (data.status === AppointmentStatusEnum.DONE && (
+                  <ButtonAction
+                    text="View 3D Model"
+                    color="white"
+                    backgroundColor="#00ad4e"
+                    action={() => {
+                      setModel3dData(data.id);
+                      dispatch(openModel3d());
+                    }}
+                  />
+                ))}
+
               {isDisplayReviewButton && !data.reviewId && (
                 <div style={{ marginLeft: "10px" }}>
                   <ButtonAction text="Write Review" color="white" backgroundColor="#00ad4e" action={() => onOpen()} />

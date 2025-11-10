@@ -225,10 +225,10 @@ export default function Appointment_Part_Tracking({
       <ContentWrapper>
         <Header>
           <HeaderIcon>
-            <Package size={36} />
+            <Package size={36} color="#00ad4e" />
           </HeaderIcon>
           <HeaderText>
-            <h1>Order Tracking</h1>
+            <h1 style={{ color: "#00ad4e" }}>Order Tracking</h1>
             <OrderId>
               Order #{order?.data?.id} - Appointment ID: #{appointment?.id}
             </OrderId>
@@ -367,27 +367,20 @@ export default function Appointment_Part_Tracking({
             <span>Total Amount</span>
             <span>{calculateTotal().toLocaleString()}₫</span>
           </TotalRow>
-          <ActionButton>
-            {orderPending || statusPending ? (
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <TextWaitingEffect
-                  text="Waiting for processing"
-                  fontSize="20px"
-                />
-              </div>
-            ) : (
-              <>
-                <ConfirmButton onClick={() => setConfirmCancel(true)}>
-                  <SquareX size={20} />
-                  Cancel
-                </ConfirmButton>
-                <ConfirmButton onClick={handleConfirmOrder}>
-                  <CheckCircle size={20} />
-                  Confirm Order
-                </ConfirmButton>
-              </>
-            )}
-          </ActionButton>
+          {orderPending || statusPending ? (
+            <TextWaitingEffect text="Waiting for processing" fontSize="25px" />
+          ) : (
+            <ActionButton>
+              <ConfirmButton onClick={() => setConfirmCancel(true)}>
+                <SquareX size={20} />
+                Cancel
+              </ConfirmButton>
+              <ConfirmButton onClick={handleConfirmOrder}>
+                <CheckCircle size={20} />
+                Confirm Order
+              </ConfirmButton>
+            </ActionButton>
+          )}
         </Card>
 
         <Card>
