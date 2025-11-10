@@ -37,8 +37,7 @@ const ActionButton = styled.button<{
   transition: all 0.2s ease-in-out;
 
   &:hover:not(:disabled) {
-    background-color: ${({ $backgroundColorHover }) =>
-      $backgroundColorHover || "#153f00"};
+    background-color: ${({ $backgroundColorHover }) => $backgroundColorHover || "#153f00"};
     transform: translateY(-1px);
   }
 
@@ -60,7 +59,7 @@ export default function ButtonAction({
   color = "white",
   backgroundColor = "#007b55",
   borderColor = backgroundColor,
-  backgroundColorHover = "#153f00",
+  backgroundColorHover = "#f5f9f3",
   action,
   type = "button",
   disabled = false,
