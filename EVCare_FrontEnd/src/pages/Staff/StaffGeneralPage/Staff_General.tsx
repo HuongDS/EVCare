@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Statistic, Typography } from "antd";
-import {
-  Calendar,
-  Activity,
-  Mail,
-  Phone,
-  IdCard,
-  UserRoundPen,
-  TrendingUp,
-  Clock,
-} from "lucide-react";
+import { Calendar, Activity, Mail, Phone, IdCard, TrendingUp, Clock } from "lucide-react";
 import { useGetAccount } from "../../../services/authService";
 import { useGetAllAppointments } from "../../../services/appointmentServiceApi";
 import StatusTag from "../../../components/StatusTags/StatusTag";
@@ -46,9 +37,7 @@ const StaffDashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    const completedAppointment = appointments?.data?.items?.filter(
-      (app) => app.status === "Done"
-    ).length;
+    const completedAppointment = appointments?.data?.items?.filter((app) => app.status === "Done").length;
     const totalAppointments = appointments?.data?.items?.length;
     console.log(completedAppointment);
     console.log(totalAppointments);
@@ -75,10 +64,7 @@ const StaffDashboard: React.FC = () => {
                   src={`https://ui-avatars.com/api/?name=${staffInfo.data?.last_Name}&background=667eea&color=fff&bold=true`}
                   alt="Avatar"
                 />
-                <Title
-                  level={3}
-                  style={{ margin: "1rem 0 0.5rem", color: "#fffff" }}
-                >
+                <Title level={3} style={{ margin: "1rem 0 0.5rem", color: "#fffff" }}>
                   {staffInfo.data?.first_Name} {staffInfo.data?.last_Name}
                 </Title>
                 <RoleTag>{staffInfo.data?.role}</RoleTag>
@@ -88,16 +74,12 @@ const StaffDashboard: React.FC = () => {
                 <InfoRow>
                   <IdCard size={20} />
                   <span>Account ID:</span>
-                  <span style={{ marginLeft: "auto", color: "#6b7280" }}>
-                    {staffInfo.data?.id}
-                  </span>
+                  <span style={{ marginLeft: "auto", color: "#6b7280" }}>{staffInfo.data?.id}</span>
                 </InfoRow>
                 <InfoRow>
                   <Phone size={20} />
                   <span>Phone:</span>
-                  <span style={{ marginLeft: "auto", color: "#6b7280" }}>
-                    {staffInfo.data?.phone}
-                  </span>
+                  <span style={{ marginLeft: "auto", color: "#6b7280" }}>{staffInfo.data?.phone}</span>
                 </InfoRow>
                 <InfoRow>
                   <Mail size={20} />
@@ -117,38 +99,26 @@ const StaffDashboard: React.FC = () => {
           )}
 
           <StyledCard>
-            <Title
-              level={4}
-              style={{ marginBottom: "1.5rem", color: "#1f2937" }}
-            >
+            <Title level={4} style={{ marginBottom: "1.5rem", color: "#1f2937" }}>
               Today's Statistics
             </Title>
             <StatsGrid>
               <StatBox $type="primary">
                 <Calendar size={28} />
-                <Statistic
-                  title="Total Appointments"
-                  value={appointments?.data?.items?.length ?? 0}
-                />
+                <Statistic title="Total Appointments" value={appointments?.data?.items?.length ?? 0} />
               </StatBox>
               <StatBox $type="success">
                 <Activity size={28} />
                 <Statistic
                   title="Completed"
-                  value={
-                    appointments?.data?.items?.filter(
-                      (a) => a.status === "Done"
-                    ).length ?? 0
-                  }
+                  value={appointments?.data?.items?.filter((a) => a.status === "Done").length ?? 0}
                 />
               </StatBox>
               <StatBox $type="warning">
                 <TrendingUp size={28} />
                 <Statistic
                   title="Success Rate"
-                  value={Number((completedAppointment / total) * 100).toFixed(
-                    2
-                  )}
+                  value={Number((completedAppointment / total) * 100).toFixed(2)}
                   suffix="%"
                 />
               </StatBox>
@@ -156,11 +126,7 @@ const StaffDashboard: React.FC = () => {
                 <Clock size={28} />
                 <Statistic
                   title="Pending"
-                  value={
-                    appointments?.data?.items?.filter(
-                      (a) => a.status === "Pending"
-                    ).length ?? 0
-                  }
+                  value={appointments?.data?.items?.filter((a) => a.status === "Pending").length ?? 0}
                 />
               </StatBox>
             </StatsGrid>
@@ -184,22 +150,14 @@ const StaffDashboard: React.FC = () => {
             <tbody>
               {appointments?.data?.items?.map((appointment) => (
                 <tr key={appointment.id}>
-                  <td style={{ fontWeight: 600, color: "#667eea" }}>
-                    #{appointment.id}
-                  </td>
+                  <td style={{ fontWeight: 600, color: "#667eea" }}>#{appointment.id}</td>
                   <td>{formatDate(appointment.appointmentDate)}</td>
-                  <td style={{ fontWeight: 500 }}>
-                    {appointment.customerName}
-                  </td>
+                  <td style={{ fontWeight: 500 }}>{appointment.customerName}</td>
                   <td>
                     {appointment.services.slice(0, 2).map((service) => (
                       <ServiceTag key={service.id}>{service.name}</ServiceTag>
                     ))}
-                    {appointment.services.length > 2 && (
-                      <ServiceTag>
-                        +{appointment.services.length - 2}
-                      </ServiceTag>
-                    )}
+                    {appointment.services.length > 2 && <ServiceTag>+{appointment.services.length - 2}</ServiceTag>}
                   </td>
                   <td>
                     <StatusTag status={appointment.status} />
@@ -229,7 +187,6 @@ import {
   StatBox,
   StatsGrid,
   StyledAvatar,
-  StyledButton,
   StyledCard,
   StyledTable,
   TableContainer,
