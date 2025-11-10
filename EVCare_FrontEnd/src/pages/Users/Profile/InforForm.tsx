@@ -1,6 +1,10 @@
 // import { notification } from "antd";
 import { useEffect, useRef, useState } from "react";
-import { ERROR_MESSAGE, MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
+import {
+  ERROR_MESSAGE,
+  MSG_TITLE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
 import { useNotification } from "../../../context/useNotification";
 import { useAlert } from "../../../context/useAlert";
@@ -45,8 +49,17 @@ export default function PersonalInfoForm({ defaultValues, onSave }: Props) {
   };
 
   const onSaveClick = async () => {
-    if (firstName == null || lastName == null || firstName.trim().length == 0 || lastName.trim().length == 0) {
-      showAlert("error", MSG_TITLE.UPDATE_PROFILE, ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
+    if (
+      firstName == null ||
+      lastName == null ||
+      firstName.trim().length == 0 ||
+      lastName.trim().length == 0
+    ) {
+      showAlert(
+        "error",
+        MSG_TITLE.UPDATE_PROFILE,
+        ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED
+      );
       return;
     }
     if (!PHONE_NUMBER_REGEX.test(phone)) {
@@ -137,10 +150,15 @@ export default function PersonalInfoForm({ defaultValues, onSave }: Props) {
             </button>
             {openChangePasswordForm ? (
               <ChangePassordStyleWrapper>
-                <ChangePasswordModal open={openChangePasswordForm} onClose={() => setOpenChangePasswordForm(false)} />
+                <ChangePasswordModal
+                  open={openChangePasswordForm}
+                  onClose={() => setOpenChangePasswordForm(false)}
+                />
               </ChangePassordStyleWrapper>
             ) : (
-              <ChangePasswordButton onClick={() => setOpenChangePasswordForm(true)} />
+              <ChangePasswordButton
+                onClick={() => setOpenChangePasswordForm(true)}
+              />
             )}
             <button className="cancel-btn" onClick={onCancel}>
               Cancel
