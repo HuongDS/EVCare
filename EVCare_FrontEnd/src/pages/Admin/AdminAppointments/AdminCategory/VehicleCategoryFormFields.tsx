@@ -12,12 +12,12 @@ import {
 } from "./Admin_Category.styled";
 import { FaCheck, FaCheckCircle, FaTimes } from "react-icons/fa";
 import { AnimatePresence } from "framer-motion";
-import type { VehicleCategoryCreateDto } from "../../../models/VehicleModels/VehicleCategoryCreateDto";
+import type { VehicleCategoryCreateDto } from "../../../../models/VehicleModels/VehicleCategoryCreateDto";
 import { notification } from "antd";
-import { process3DFile } from "../../../services/vehicleServicesApi";
-import { getPartCategories } from "../../../services/partApi";
-import type { Category } from "../../../models/PartModel/PartModel";
-import { FormGrid } from "../AdminService&Parts/AdminPart/Admin_Part.styled";
+import { process3DFile } from "../../../../services/vehicleServicesApi";
+import { getPartCategories } from "../../../../services/partApi";
+import type { Category } from "../../../../models/PartModel/PartModel";
+import { FormGrid } from "../../AdminService&Parts/AdminPart/Admin_Part.styled";
 
 interface Props {
   formData: VehicleCategoryCreateDto;

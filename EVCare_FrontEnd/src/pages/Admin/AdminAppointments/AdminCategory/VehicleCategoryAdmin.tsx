@@ -13,17 +13,17 @@ import {
   ActionButton,
 } from "./Admin_Category.styled";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import { useNotification } from "../../../context/useNotification";
-import SpinnerComponent from "../../../components/SpinnerComponent";
-import DeleteConfirmationModal from "../AdminService&Parts/DeleteConfirmModal";
+import { useNotification } from "../../../../context/useNotification";
+import SpinnerComponent from "../../../../components/SpinnerComponent";
+import DeleteConfirmationModal from "../../AdminService&Parts/DeleteConfirmModal";
 import type {
   VehicleCategoryViewDto,
   VehicleCategoryWithScaleViewDto,
-} from "../../../models/VehicleModels/vehicleCategoryViewDto";
-import VehicleCategoryForm from "./VehicleCategoryForm"; // <-- UPDATED
-import VehicleCategoryEditModal from "./VehicleCategoryEditModal"; // <-- UPDATED
-import { deleteVehicleCategory, getVehicleCategories } from "../../../services/vehicleServicesApi";
-import { ERROR_MESSAGE } from "../../../constants/messages/Message";
+} from "../../../../models/VehicleModels/vehicleCategoryViewDto";
+import VehicleCategoryForm from "./VehicleCategoryForm";
+import VehicleCategoryEditModal from "./VehicleCategoryEditModal";
+import { deleteVehicleCategory, getVehicleCategories } from "../../../../services/vehicleServicesApi";
+import { ERROR_MESSAGE } from "../../../../constants/messages/Message";
 
 type SubTab = "view" | "add";
 
