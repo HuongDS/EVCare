@@ -212,7 +212,7 @@ export default function Admin_Part() {
         {
           id: response.data,
           name: payload.name,
-          stock: payload.stock,
+          quantity: payload.stock,
           description: payload.description ?? "",
           replacementPrice: payload.replacementPrice,
           price: payload.price,
@@ -284,7 +284,7 @@ export default function Admin_Part() {
 
   const handleUpdateSubmit = async (id: number, payload: PartDetailDto) => {
     try {
-      if (payload.price === 0 || payload.replacementPrice === 0 || payload.stock === 0) {
+      if (payload.price === 0 || payload.replacementPrice === 0 || payload.quantity === 0) {
         throw new Error("Price, Replacement Price or Quantity must be greater than 0 when you updating !");
       }
       await updatePart(id, payload);
@@ -299,7 +299,7 @@ export default function Admin_Part() {
             ? {
                 ...p,
                 ...payload,
-                quantity: payload.stock,
+                quantity: payload.quantity,
                 imageUrl: payload.imageUrl,
               }
             : p
@@ -475,7 +475,7 @@ export default function Admin_Part() {
                                 <Td>{getCategoryName(part.categoryId)}</Td>
                                 <Td>{part.price.toLocaleString("vi-VN")} VND</Td>
                                 <Td>{part.replacementPrice.toLocaleString("vi-VN")} VND</Td>
-                                <Td>{part.stock}</Td>
+                                <Td>{part.quantity}</Td>
                                 <Td>
                                   <ActionButton onClick={() => handleDelete(part)}>
                                     <FaTrash />

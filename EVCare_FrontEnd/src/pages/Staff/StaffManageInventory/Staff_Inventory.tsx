@@ -179,7 +179,7 @@ const Staff_Inventory = () => {
                       partCategories?.data?.items.find((c) => c.id === part.categoryId)?.name || "Uncategorized";
 
                     return (
-                      <tr key={part.id} className={part.stock < 10 ? "low-stock" : ""}>
+                      <tr key={part.id} className={part.quantity < 10 ? "low-stock" : ""}>
                         <td>
                           <img
                             src={part.imageUrl}
@@ -199,11 +199,11 @@ const Staff_Inventory = () => {
                         <td>{part.price.toLocaleString("vi-VN")}</td>
                         <td
                           style={{
-                            color: part.stock < 10 ? "#cf1322" : "#1a1a1a",
+                            color: part.quantity < 10 ? "#cf1322" : "#1a1a1a",
                             fontWeight: 500,
                           }}
                         >
-                          {part.stock}
+                          {part.quantity}
                         </td>
                         <td>
                           <div

@@ -17,6 +17,7 @@ import {
   CalendarContainer,
   ErrorMessage,
 } from "./Technician_Schedule.styled";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 type SimpleAppointment = {
   id: number;
@@ -184,7 +185,7 @@ const TechnicianSchedule: React.FC = () => {
     <ScheduleWrapper>
       <ScheduleTitle>Technician Schedule</ScheduleTitle>
 
-      {loading && <div>Loading...</div>}
+      {loading && <SpinnerComponent />}
       {firstError && (
         <ErrorMessage>
           {(firstError as Error)?.message || "Failed to load schedule data"}
