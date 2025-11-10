@@ -25,18 +25,17 @@ import type { CardData } from "../../../../models/Pics/CardData.ts";
 import { LazyReviewPicsSection } from "./LazyReviewPicsSection.tsx";
 import { useAppDispatch } from "../../../../states/store.ts";
 import { openModel3d } from "../../../../states/uiSlice.ts";
+import { useGetAppointmentById } from "../../../../services/appointmentServiceApi.ts";
 
 interface props {
   data: AppointmentViewDetailModel;
   onViewAppointmentDetail: (appointmentId: number) => void;
   appointmentId: number;
   loadingModalDetail: number | null;
-  setModel3dData: (v: number) => void;
 }
 
 export default function AppointmentHistoryCard({
   data,
-  setModel3dData,
   onViewAppointmentDetail,
   appointmentId,
   loadingModalDetail,
@@ -45,6 +44,7 @@ export default function AppointmentHistoryCard({
   const [isDisplayReviewButton, setIsDisplayReviewButton] = useState(false);
   const [isOpenReviewForm, setIsOpenReviewForm] = useState(false);
   const [pics, setPics] = useState<CardData[]>([]);
+  // const { data: appointmentDetail } = useGetAppointmentById(data.id);
 
   const onOpen = () => {
     setIsOpenReviewForm(true);
@@ -62,7 +62,8 @@ export default function AppointmentHistoryCard({
     if (data.status === AppointmentStatusEnum.DONE) {
       setIsDisplayReviewButton(true);
     }
-    if (data.appointmentImages.length > 1) setPics(data.appointmentImages.map((p, i) => ({ id: i, url: p })));
+    if (data.appointmentImages.length > 1)
+      setPics(data.appointmentImages.map((p, i) => ({ id: i, url: p })));
   }, [data.status, data.appointmentImages]);
 
   return (
@@ -75,7 +76,8 @@ export default function AppointmentHistoryCard({
       <GeneralStyled>
         <DateStyled>
           <h5>
-            Date: <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
+            Date:{" "}
+            <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
           </h5>
           <div>
             <StatusTag status={data.status} />
@@ -89,7 +91,10 @@ export default function AppointmentHistoryCard({
             {pics.length > 1 ? (
               <LazyReviewPicsSection data={pics} />
             ) : (
-              <img src={data.appointmentImages ? data.appointmentImages[0] : Car} alt="" />
+              <img
+                src={data.appointmentImages ? data.appointmentImages[0] : Car}
+                alt=""
+              />
             )}
           </ImageWrapper>
           <ServiceWrapper>
@@ -131,15 +136,19 @@ export default function AppointmentHistoryCard({
                   color="white"
                   backgroundColor="#00ad4e"
                   action={() => {
-                    setModel3dData(data.id);
-                    dispatch(openModel3d());
+                    dispatch(openModel3d(appointmentId));
                   }}
                 />
               )}
 
               {isDisplayReviewButton && !data.reviewId && (
                 <div style={{ marginLeft: "10px" }}>
-                  <ButtonAction text="Write Review" color="white" backgroundColor="#00ad4e" action={() => onOpen()} />
+                  <ButtonAction
+                    text="Write Review"
+                    color="white"
+                    backgroundColor="#00ad4e"
+                    action={() => onOpen()}
+                  />
                 </div>
               )}
             </>
@@ -147,7 +156,11 @@ export default function AppointmentHistoryCard({
           {isOpenReviewForm && (
             <ReviewWrapper>
               {/* <ReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} /> */}
-              <LazyReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} />
+              <LazyReviewModal
+                appointmentData={data}
+                onClose={onClose}
+                open={isOpenReviewForm}
+              />
             </ReviewWrapper>
           )}
         </ButtonStyle>
