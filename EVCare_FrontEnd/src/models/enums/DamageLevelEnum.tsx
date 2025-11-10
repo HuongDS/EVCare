@@ -6,6 +6,14 @@ export enum DamageLevelEnum {
   Critical = 100,
 }
 
+export enum DamageLevelStringEnum {
+  NotAssessed = "NotAssessed",
+  Minor = "Minor",
+  Moderate = "Moderate",
+  Severe = "Severe",
+  Critical = "Critical",
+}
+
 export const DamageLevelLabels: Record<DamageLevelEnum, string> = {
   [DamageLevelEnum.NotAssessed]: "Not Assessed",
   [DamageLevelEnum.Minor]: "Minor",
