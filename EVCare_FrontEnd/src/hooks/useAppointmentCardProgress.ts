@@ -3,12 +3,12 @@ import { useNotification } from "../context/useNotification";
 import type { TechnicianAppointmentsDto } from "../models/AppointmentsModel/Technician_Appointments_Model";
 import type { TechnicianWorkingSessionEnum } from "../models/enums";
 import { DamageLevelEnum } from "../models/enums/DamageLevelEnum";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchTechnicianAddedParts } from "../services/getTechnicianOrder";
 import { getAppointmentPartCondition } from "../services/appointmentPartCondition";
 import { updateTechnicianWorkingSession } from "../services/TechnicianWorkingSessionApi";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 type UseAppointmentCardProgressProps = {
   data: TechnicianAppointmentsDto;
@@ -25,6 +25,7 @@ export const useAppointmentCardProgress = ({
   onPartsUpdated,
 }: UseAppointmentCardProgressProps) => {
   const notification = useNotification();
+  const queryClient = useQueryClient();
 
   const [currentStatus, setCurrentStatus] =
     useState<TechnicianWorkingSessionEnum>(
@@ -32,7 +33,11 @@ export const useAppointmentCardProgress = ({
     );
 
   // --- Fetch added parts ---
-  const { data: parts = [], isLoading: isLoadingParts } = useQuery({
+  const {
+    data: parts = [],
+    isLoading: isLoadingParts,
+    refetch: refetchParts,
+  } = useQuery({
     queryKey: ["TechnicianAddedParts", data.orderId],
     queryFn: () => fetchTechnicianAddedParts(data.orderId),
     enabled: !!data.orderId,
@@ -40,34 +45,42 @@ export const useAppointmentCardProgress = ({
   });
 
   // --- Fetch damage levels ---
-  const { data: damageResponse } = useQuery({
+  const { data: damageResponse, refetch: refetchDamage } = useQuery({
     queryKey: ["AppointmentPartCondition", data.id],
     queryFn: () => getAppointmentPartCondition(data.id),
     enabled: !!data.id,
     staleTime: 1000 * 60 * 5,
   });
 
-  const damageLevels: Record<number, DamageLevelEnum> = {};
-  damageResponse?.data?.partDamageLevels?.forEach((d) => {
-    switch (d.damageLevel) {
-      case "Minor":
-        damageLevels[d.partId] = DamageLevelEnum.Minor;
-        break;
-      case "Moderate":
-        damageLevels[d.partId] = DamageLevelEnum.Moderate;
-        break;
-      case "Severe":
-        damageLevels[d.partId] = DamageLevelEnum.Severe;
-        break;
-      case "Critical":
-        damageLevels[d.partId] = DamageLevelEnum.Critical;
-        break;
-      default:
-        damageLevels[d.partId] = DamageLevelEnum.NotAssessed;
-    }
-  });
+  const damageLevels = useMemo(() => {
+    const levels: Record<number, DamageLevelEnum> = {};
 
-  // --- Handle status update ---
+    if (!damageResponse?.data?.partDamageLevels) {
+      return levels;
+    }
+
+    damageResponse.data.partDamageLevels.forEach((d) => {
+      switch (d.damageLevel) {
+        case "Minor":
+          levels[d.partId] = DamageLevelEnum.Minor;
+          break;
+        case "Moderate":
+          levels[d.partId] = DamageLevelEnum.Moderate;
+          break;
+        case "Severe":
+          levels[d.partId] = DamageLevelEnum.Severe;
+          break;
+        case "Critical":
+          levels[d.partId] = DamageLevelEnum.Critical;
+          break;
+        default:
+          levels[d.partId] = DamageLevelEnum.NotAssessed;
+      }
+    });
+
+    return levels;
+  }, [damageResponse]);
+
   const handleAction = async (nextStatus: TechnicianWorkingSessionEnum) => {
     const prevStatus = currentStatus;
     setCurrentStatus(nextStatus);
@@ -78,6 +91,17 @@ export const useAppointmentCardProgress = ({
         orderId: data.orderId,
         status: nextStatus,
       });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["TechnicianAddedParts", data.orderId],
+      });
+      await refetchParts();
+
+      await queryClient.invalidateQueries({
+        queryKey: ["AppointmentPartCondition", data.id],
+      });
+      await refetchDamage();
+
       onPartsUpdated?.(data.orderId);
     } catch (err) {
       console.error(err);
