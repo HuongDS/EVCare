@@ -44,7 +44,7 @@ export default function AddVehicleModal({ open, onClose, onAdd }: Props) {
     const payload: VehicleCreateDto = {
       categoryId,
       licensePlate,
-      img: preview || "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=400&h=300&fit=crop",
+      img: preview || "",
     };
 
     try {
