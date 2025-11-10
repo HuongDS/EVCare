@@ -13,6 +13,7 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
 import {
+  ButtonGroup,
   CategoriesWrapper,
   CategoryBadge,
   CategoryButton,
@@ -91,13 +92,15 @@ export default function PartsPanel({
     <Container>
       <ContentWrapper>
         <Header>
-          <BackButton action={() => dispatch(closeModel3d())} />
           <HeaderContent>
             <IconBox>
               <Box size={30} color="white" />
             </IconBox>
             <HeaderText>
-              <Title>Parts Damaged</Title>
+              <ButtonGroup>
+                <Title>Parts Damaged</Title>
+                <BackButton action={() => dispatch(closeModel3d())} />
+              </ButtonGroup>
               <Subtitle>{totalParts} parts available</Subtitle>
             </HeaderText>
           </HeaderContent>

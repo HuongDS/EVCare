@@ -1,53 +1,61 @@
 import styled from "styled-components";
 
+const COLORS = {
+  primary: "#00ad4e",
+  text: "#222",
+  textSecondary: "#555",
+  border: "#e5e5e5",
+  bgLight: "#f9f9f9",
+  bgWhite: "#ffffff",
+};
+
 export const CartContainer = styled.div`
-  font-family: "Outfit", sans-serif;
   display: grid;
-  grid-template-columns: 2fr 1fr; /* trái: cart list, phải: checkout */
+  grid-template-columns: 2fr 1fr;
   gap: 24px;
-  height: 70vh; /* giữ modal gọn hơn */
+  font-family: "Outfit", sans-serif;
+  color: ${COLORS.text};
+  height: 70vh;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
 `;
 
 export const CartList = styled.div`
-  border-right: 1px solid #eee;
-  padding-right: 16px;
-  display: flex;
-  flex-direction: column;
-
-  h2 {
-    margin-bottom: 16px;
-  }
-
-  /* Tạo vùng cuộn cho danh sách */
+  background: ${COLORS.bgWhite};
+  border: 1px solid ${COLORS.border};
+  border-radius: 12px;
+  padding: 16px 20px;
   overflow-y: auto;
-  max-height: calc(70vh - 60px); /* chừa phần header */
-  padding-right: 8px;
+  max-height: 65vh;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 
-  /* Ẩn scrollbar mặc định, tuỳ chọn */
   &::-webkit-scrollbar {
     width: 6px;
   }
   &::-webkit-scrollbar-thumb {
     background-color: #ccc;
-    border-radius: 4px;
+    border-radius: 3px;
   }
 `;
 
 export const CheckoutBox = styled.div`
-  background: #f8f8f8;
+  background: ${COLORS.bgLight};
   border-radius: 12px;
-  padding: 16px;
+  padding: 20px 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  box-shadow: 0 4px 14px rgba(0, 173, 78, 0.15);
   height: fit-content;
-  max-height: 70vh; /* đảm bảo không bị dài */
-  overflow-y: auto;
 `;
 
 export const CheckoutHeader = styled.h3`
-  margin-bottom: 12px;
   text-align: center;
+  font-weight: 700;
+  color: ${COLORS.primary};
+  margin-bottom: 16px;
 `;
 
 export const TotalSection = styled.div`
@@ -56,7 +64,10 @@ export const TotalSection = styled.div`
   gap: 8px;
 
   h4 {
-    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: ${COLORS.text};
   }
 `;
 
@@ -64,22 +75,23 @@ export const ProductLine = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 0.9rem;
-  color: #333;
+  color: ${COLORS.textSecondary};
 `;
 
 export const TotalLine = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid ${COLORS.border};
+  margin-top: 12px;
+  padding-top: 10px;
   font-weight: 600;
   font-size: 1rem;
-  margin-top: 12px;
-  border-top: 1px solid #ddd;
-  padding-top: 8px;
 `;
 
 export const TotalValue = styled.span`
   font-weight: 700;
-  color: #00ad4e;
+  color: ${COLORS.primary};
 `;
 
 export const CartItem = styled.div`
@@ -87,7 +99,7 @@ export const CartItem = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 14px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid ${COLORS.border};
 
   &:last-child {
     border-bottom: none;
@@ -104,47 +116,46 @@ export const ItemLeft = styled.div`
 export const ItemDetails = styled.span`
   font-weight: 600;
   font-size: 1rem;
-  color: #222;
+  color: ${COLORS.text};
 `;
 
 export const PriceTag = styled.span`
   font-size: 0.9rem;
-  color: #555;
+  color: ${COLORS.textSecondary};
 `;
 
 export const ItemRight = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 `;
 
 export const QuantityControl = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 `;
 
 export const QuantityNumber = styled.span`
-  min-width: 24px;
+  min-width: 28px;
   text-align: center;
   font-size: 1rem;
   font-weight: 500;
+  color: ${COLORS.text};
 `;
 
 export const EmptyCartMessage = styled.p`
   text-align: center;
+  color: ${COLORS.textSecondary};
   font-size: 1rem;
-  color: #777;
-  margin-top: 20px;
+  margin-top: 24px;
 `;
 
 export const Title = styled.h2`
-  position: sticky;
-  justify-self: center;
-  top: 0;
-  background: #fff;
-  z-index: 10;
-  padding: 12px 0;
-  margin: 0 0 12px 0;
-  border-bottom: 1px solid #eee;
+  font-family: "Outfit", sans-serif;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: ${COLORS.primary};
+  margin-bottom: 20px;
 `;

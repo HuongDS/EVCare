@@ -30,7 +30,8 @@ export default function MainteningPage() {
 
         <ExpectedBox>
           <Calendar size={16} />
-          We will back soon
+          The technician is repairing the customer’s vehicle, please wait for
+          the next step!
         </ExpectedBox>
       </ContentCard>
     </PageContainer>
