@@ -685,5 +685,11 @@ namespace DataAccess.Repositories
             }
             return await grouped.ToListAsync();
         }
+
+        public async Task<bool> CheckInValidVehicleID(int vehicleId) {
+            return await _dbContext.Appointments
+                .Where(a => a.VehicleId == vehicleId)
+                .AnyAsync(a => a.Status != AppointmentStatusEnum.Done && a.Status != AppointmentStatusEnum.Canceled);
+        }
     }
 }
