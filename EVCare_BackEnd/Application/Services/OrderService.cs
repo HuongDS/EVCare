@@ -50,6 +50,10 @@ namespace Application.Services
         }
         public async Task<ResponseDto<OrderResponseDto>> CreateOrderAsync(OrderCreateRequestDto data)
         {
+
+
+            
+
             var checkAppointment = await _appointmentRepository.GetByIdAsync(data.appointmentID);
             if (checkAppointment is null)
             {
