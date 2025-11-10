@@ -123,8 +123,6 @@ namespace IntegrationTests {
                 .UseInMemoryDatabase(databaseName: "EVCareTestDb") 
                 .Options;
 
-          
-
             var context = new EVCareDbContext(options);
             return context;
         }

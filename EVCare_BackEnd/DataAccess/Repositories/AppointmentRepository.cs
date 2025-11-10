@@ -423,7 +423,7 @@ namespace DataAccess.Repositories
             var orderIds = pagedResult.Items.Select(x => x.OrderId).ToList();
             var appointments = await _dbContext.Appointments
                 .AsNoTracking()
-                
+                .AsSplitQuery()
                 .Where(a => orderIds.Contains(a.OrderId.Value))
                  .Include(a => a.Vehicle)
                     .ThenInclude(v => v.Category)
