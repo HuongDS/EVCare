@@ -89,7 +89,8 @@ namespace DataAccess.Repositories
                     AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
                     Note = a.Note,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
-                    PhoneNumber = a.Customer.Account.Phone
+                    PhoneNumber = a.Customer.Account.Phone,
+                    ReviewId = a.ReviewId
                 }).ToListAsync();
 
         }
@@ -683,6 +684,12 @@ namespace DataAccess.Repositories
                 return await limited.ToListAsync();
             }
             return await grouped.ToListAsync();
+        }
+
+        public async Task<bool> CheckInValidVehicleID(int vehicleId) {
+            return await _dbContext.Appointments
+                .Where(a => a.VehicleId == vehicleId)
+                .AnyAsync(a => a.Status != AppointmentStatusEnum.Done && a.Status != AppointmentStatusEnum.Canceled);
         }
     }
 }

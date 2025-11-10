@@ -12,11 +12,11 @@ import {
 } from "../AdminService&Parts/AdminService/Admin_Service.styled";
 import { FaTimes, FaSave } from "react-icons/fa";
 import { useNotification } from "../../../context/useNotification";
-import VehicleCategoryFormFields from "./VehicleCategoryFormFields";
 import type { VehicleCategoryCreateDto } from "../../../models/VehicleModels/VehicleCategoryCreateDto";
 import type { VehicleCategoryWithScaleViewDto } from "../../../models/VehicleModels/vehicleCategoryViewDto";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import { getDetailVehicleCategory, updateVehicleCategory } from "../../../services/vehicleServicesApi";
+import VehicleCategoryFormFields from "./VehicleCategoryFormFields";
 
 interface Props {
   isOpen: boolean;

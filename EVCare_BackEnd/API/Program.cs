@@ -11,6 +11,7 @@ using Application.IService;
 using Application.Mapping;
 using Application.Mappings;
 using Application.Planner;
+using Application.Provider;
 using Application.Service;
 using Application.Services;
 using Application.Validators.Appointment;
@@ -29,6 +30,7 @@ using FluentValidation.AspNetCore;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -128,7 +130,7 @@ builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
 builder.Services.AddScoped<IBlockedDateService, BlockedDateService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IGoogleValidator,GoogleValidator>();
+builder.Services.AddScoped<IGoogleValidator, GoogleValidator>();
 builder.Services.AddScoped<IApplicationServices, ApplicationServices>();
 builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
 builder.Services.AddScoped<ILinkServices, LinkServices>();
@@ -160,10 +162,13 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IChatServices, ChatServices>();
 builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IStaffRoutingService, StaffRoutingService>();
+builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 
 //builder.Services.AddScoped<IAiInsightServices, MockAiInsightServices>();
 builder.Services.AddScoped<OnInvoiceCompleteHandler>();
 builder.Services.AddScoped<OnAppointmentConfirmHandler>();
+builder.Services.AddScoped<OnAssignTechnician>();
+builder.Services.AddScoped<OnStatusOrderChange>();
 
 
 // AutoMapper
@@ -389,6 +394,7 @@ app.UseAzureSignalR(routes =>
     routes.MapHub<AdminDashboardHub>("/hubs/adminDashboard");
     routes.MapHub<ChatHub>("/hubs/chat");
     routes.MapHub<StaffDashboardHub>("/hubs/staffDashboard");
+    routes.MapHub<TechnicianHub>("/hubs/technicianHub");
 });
 //app.UseEndpoints(endpoints =>
 //{

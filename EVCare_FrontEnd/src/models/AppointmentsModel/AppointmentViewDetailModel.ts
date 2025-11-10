@@ -16,6 +16,7 @@ export type AppointmentViewDetailModel = {
   orderId: number;
   appointmentImages: string[];
   services: ServiceDto[];
+  reviewId?: number;
 };
 
 type ServiceDto = {

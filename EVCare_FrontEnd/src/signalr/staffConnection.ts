@@ -21,6 +21,5 @@ export function getStaffDashboardConnection(baseUrl: string) {
 export async function stopStaffDashboardConnection() {
   if (connection && connection.state === signalR.HubConnectionState.Connected) {
     await connection.stop();
-    console.log("[Hub] Singleton connection stopped");
   }
 }

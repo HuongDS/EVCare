@@ -141,10 +141,11 @@ namespace Application.Tests {
                    a.Id = 1000;
                    return a;
                });
+            appointmentRepositoryMock.Setup(x=>x.CheckInValidVehicleID(It.IsAny<int>()))
+                .ReturnsAsync(false);
 
             var appointmentCreateModel = _fixture.Build<DataAccess.Dtos.Appointment.AppointmentCreateModel>()
                 .With(x => x.Appointment_Date, new DateTime(2025, 11, 3))
-
                 .Create();
 
             var appointmentService = new Mock<Services.AppointmentService>(
@@ -164,8 +165,41 @@ namespace Application.Tests {
             Assert.Equal(1000, result);
 
         }
+        [Theory, AutoData]
+        public async Task CreateAppointment_WihtInvalidVehicle_ThrowsException(AppointmentCreateModel model) {
+            var serviceCenterRepositoryMock = new Mock<IServiceCenterRepository>();
+            serviceCenterRepositoryMock.Setup(x => x.GetCenterInforAsync())
+                .ReturnsAsync(new DataAccess.Entities.ServiceCenter
+                {
+                    WorkEndDay = DayOfWeek.Friday,
+                    WorkStartDay = DayOfWeek.Monday
+                });
+            model.Appointment_Date = new DateTime(2025, 11, 10);
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+            appointmentRepositoryMock.Setup(a=>a.CheckInValidVehicleID(model.VehicleId))
+                .ReturnsAsync(true);
+            var appointmentService = new Mock<Services.AppointmentService>(
+                appointmentRepositoryMock.Object,
+              _fixture.Create<IMapper>(),
+              serviceCenterRepositoryMock.Object
+               )
+            {
+                CallBase = true
+            };
+            appointmentService.Setup(x => x.CheckCustomerCreate(model.CustomerId))
+                .ReturnsAsync(true);
+            appointmentService.Setup(x => x.CheckAppointmentsForApointmentDate(model.Appointment_Date))
+                .ReturnsAsync(true);
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                 await appointmentService.Object.CreateAppointment(model));
+            Assert.Equal("This vehicle has an active appointment. Please complete or cancel the existing appointment before creating a new one.", result.Message);
 
-        [Fact]
+
+
+        }
+
+
+       [Fact]
         public async Task CheckCustomerCreate_WithValidBookingLimit_ReturnsTrue() {
             var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
             appointmentRepositoryMock.Setup(x => x.CountAppointmentsPerDay(It.IsAny<int>()))
@@ -178,6 +212,9 @@ namespace Application.Tests {
             Assert.True(result);
 
         }
+
+       
+
         [Fact]
         public async Task CheckCustomerCreate_WithInValidBookingLimit_ReturnsTrue() {
             var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
@@ -216,6 +253,8 @@ namespace Application.Tests {
             var result = await appointmentService.CheckAppointmentsForApointmentDate(appointmentDate);
             Assert.False(result);
         }
+
+
 
         [Theory, AutoData]
         public async Task GetAppointmentById_WithExitsID_ReturnsAppointment(int appointmentId) {

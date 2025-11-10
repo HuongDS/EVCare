@@ -21,9 +21,10 @@ export const useGetTechnicianAppointments = (params?: {
     queryKey: ["TechnicianAppointments", params],
     queryFn: async (): Promise<PageModel<TechnicianAppointmentsDto>> => {
       try {
-        const response = await api.get<
-          ResponseDto<PageModel<TechnicianAppointmentsDto>>
-        >("/api/Appointment/get-appointment-technician", { params });
+        const response = await api.get<ResponseDto<PageModel<TechnicianAppointmentsDto>>>(
+          "/api/Appointment/get-appointment-technician",
+          { params }
+        );
 
         const data = response.data?.data;
 
@@ -46,9 +47,9 @@ export const useGetTechnicianAppointments = (params?: {
       }
     },
 
-    staleTime: 1000 * 60 * 5,
+    // staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
-    refetchOnWindowFocus: false,
+    // refetchOnWindowFocus: false,
     retry: 1,
   });
 };

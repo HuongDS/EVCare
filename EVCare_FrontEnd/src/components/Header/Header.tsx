@@ -15,6 +15,7 @@ import DropdownMenu from "./DropdownMenu";
 import { stopAdminDashboardConnection } from "../../signalr/adminConnection";
 import { stopStaffDashboardConnection } from "../../signalr/staffConnection";
 import { stopChatConnection } from "../../signalr/chatConnection";
+import { stopTechnicianConnection } from "../../signalr/technicianConnection";
 
 export default function Header() {
   // const [showAuth, setShowAuth] = useState(false);
@@ -66,6 +67,7 @@ export default function Header() {
     await stopAdminDashboardConnection();
     await stopStaffDashboardConnection();
     await stopChatConnection();
+    await stopTechnicianConnection();
     navigate("/");
   };
 
