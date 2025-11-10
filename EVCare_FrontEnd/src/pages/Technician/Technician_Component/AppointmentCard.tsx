@@ -30,6 +30,7 @@ import {
   ButtonWrapper,
   SubTitle,
 } from "./Style/AppointmentCard.styled";
+import SpinnerComponent from "../../../components/SpinnerComponent";
 
 type Props = {
   data: TechnicianAppointmentsDto;
@@ -195,7 +196,7 @@ const AppointmentCard: React.FC<Props> = ({
           </SectionTitle>
           <ListWrapper>
             {isLoadingParts ? (
-              <div className="empty">Loading parts...</div>
+              <SpinnerComponent />
             ) : parts.length > 0 ? (
               <ul>
                 {parts.map((p) => (
