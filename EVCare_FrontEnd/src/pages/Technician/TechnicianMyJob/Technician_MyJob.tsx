@@ -1,79 +1,79 @@
-import SortTable from "../Technician_Component/SortTable";
 import {
-  AppointmentWrapper,
-  TitleWrapper,
+  PageWrapper,
+  ContentWrapper,
+  Header,
   Title,
-  SortWrapper,
-  SortButton,
+  Instruction,
+  FilterBar,
+  AppointmentList,
 } from "./Technician_MyJob.styled";
-import { CardListSection } from "../Technician_Component/CardListSection";
+import SortTable from "../Technician_Component/SortTable";
 
 import { useTechnician_MyJob } from "../../../hooks/useTechnician_MyJob";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums";
-import { ArrowDownWideNarrow, ArrowUpNarrowWide } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
+import SpinnerComponent from "../../../components/SpinnerComponent";
+import TechnicianAppointmentCard from "../Technician_Component/TechnicianAppointmentCard";
+import { EmptyState } from "../Technician_Component/EmptyState";
+
+const pageVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  exit: { opacity: 0 },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
 
 export default function Technician_MyJob() {
-  const {
-    activeStatus,
-    sortName,
-    appointments,
-    isError,
-    fade,
-    isLoading,
-    isFetching,
-    sortById,
-    handleSortById,
-
-    setActiveStatus,
-    handleUpdateStatus,
-    handlePartsUpdated,
-  } = useTechnician_MyJob();
-
-  const combinedLoading = isLoading || isFetching;
-
+  const { activeStatus, appointments, isLoading, setActiveStatus } = useTechnician_MyJob();
+  const myJobStatuses: TechnicianWorkingSessionEnum[] = [
+    TechnicianWorkingSessionEnum.ADDING_PART,
+    TechnicianWorkingSessionEnum.CONFIRM,
+    TechnicianWorkingSessionEnum.INPROGRESS,
+  ];
   return (
-    <AppointmentWrapper>
-      <TitleWrapper>
-        <Title>Technician Jobs</Title>
-      </TitleWrapper>
+    <PageWrapper key="technician-myjob" variants={pageVariants} initial="hidden" animate="visible" exit="exit">
+      <ContentWrapper>
+        <Header>
+          <Title variants={itemVariants}>My Jobs</Title>
+          <Instruction variants={itemVariants}>
+            Manage and update the status of appointments assigned to you.
+          </Instruction>
+        </Header>
 
-      <SortTable
-        sortName={sortName}
-        active={activeStatus}
-        onChange={(val) => {
-          if (val !== activeStatus) {
-            setActiveStatus(val);
-          }
-        }}
-      />
+        <FilterBar variants={itemVariants}>
+          <SortTable
+            sortName={myJobStatuses}
+            active={activeStatus}
+            onChange={(val) => {
+              if (val !== activeStatus) {
+                setActiveStatus(val);
+              }
+            }}
+          />
+        </FilterBar>
 
-      {(activeStatus === TechnicianWorkingSessionEnum.COMPLETED ||
-        activeStatus === TechnicianWorkingSessionEnum.CANCELED) && (
-        <SortWrapper>
-          <SortButton onClick={handleSortById}>
-            {sortById === "none" && "Sort by ID"}
-            {sortById === "asc" && (
-              <>
-                <ArrowUpNarrowWide size={16} /> ID
-              </>
+        <AppointmentList layout transition={{ duration: 0.3 }}>
+          <AnimatePresence>
+            {isLoading ? (
+              <SpinnerComponent />
+            ) : appointments.length > 0 ? (
+              appointments.map(
+                (item) =>
+                  item.status !== TechnicianWorkingSessionEnum.COMPLETED &&
+                  item.status !== TechnicianWorkingSessionEnum.CANCELED && (
+                    <TechnicianAppointmentCard key={item.id} data={item} />
+                  )
+              )
+            ) : (
+              <EmptyState />
             )}
-            {sortById === "desc" && (
-              <>
-                <ArrowDownWideNarrow size={16} /> ID
-              </>
-            )}
-          </SortButton>
-        </SortWrapper>
-      )}
-
-      <CardListSection
-        isError={isError}
-        fade={fade}
-        appointments={appointments}
-        onStatusChange={handleUpdateStatus}
-        onPartsUpdated={handlePartsUpdated}
-        isLoading={combinedLoading}
-      />
-    </AppointmentWrapper>
+          </AnimatePresence>
+        </AppointmentList>
+      </ContentWrapper>
+    </PageWrapper>
   );
 }
