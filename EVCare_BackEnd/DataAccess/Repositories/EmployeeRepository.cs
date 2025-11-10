@@ -103,7 +103,7 @@ namespace DataAccess.Repositories
                 .ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Busy));
         }
 
-        public async Task<EmployeeViewModel> GetEmployeeInformaTtion(int employeeId)
+        public async Task<EmployeeViewModel> GetEmployeeInformation(int employeeId)
         {
             var employee = await _dbContext.Employees
                 .Include(x => x.Account)

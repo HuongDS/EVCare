@@ -162,11 +162,13 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IChatServices, ChatServices>();
 builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IStaffRoutingService, StaffRoutingService>();
-builder.Services.AddScoped<IUserIdProvider, NameUserIdProvider>();
+builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 
 //builder.Services.AddScoped<IAiInsightServices, MockAiInsightServices>();
 builder.Services.AddScoped<OnInvoiceCompleteHandler>();
 builder.Services.AddScoped<OnAppointmentConfirmHandler>();
+builder.Services.AddScoped<OnAssignTechnician>();
+builder.Services.AddScoped<OnStatusOrderChange>();
 
 
 // AutoMapper
