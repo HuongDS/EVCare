@@ -6,7 +6,6 @@ import {
   Mail,
   Phone,
   IdCard,
-  UserRoundPen,
   TrendingUp,
   Clock,
 } from "lucide-react";
@@ -229,7 +228,6 @@ import {
   StatBox,
   StatsGrid,
   StyledAvatar,
-  StyledButton,
   StyledCard,
   StyledTable,
   TableContainer,
