@@ -39,7 +39,7 @@ const UpdatePartModal = ({ isOpen, setIsOpen, part }: ModalProps) => {
         id: part.id,
         description: part.description,
         unitPrice: part.price,
-        stock: part.stock,
+        stock: part.quantity,
         image: part.imageUrl,
       });
       setPreviewImage(part.imageUrl);
