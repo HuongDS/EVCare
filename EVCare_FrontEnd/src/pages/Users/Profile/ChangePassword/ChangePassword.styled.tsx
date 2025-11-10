@@ -53,7 +53,7 @@ export const ChangePassordStyleWrapper = styled.div`
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
-    z-index: 1000;
+    z-index: 9999;
     animation: fadeIn 0.3s ease-out;
   }
 
