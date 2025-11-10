@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #778be4 0%, #d7ffdf 30%);
+  background-color: #d7ffdf;
   padding: 2rem;
 
   * {
@@ -19,11 +19,11 @@ export const ContentWrapper = styled.div`
 `;
 
 export const WelcomeSection = styled.div`
-  color: white;
+  color: #00ad4e;
   margin-bottom: 2rem;
 
   h1 {
-    color: white;
+    color: #00ad4e;
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 0.5rem;

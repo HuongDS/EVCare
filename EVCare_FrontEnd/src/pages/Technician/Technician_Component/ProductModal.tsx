@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Modal, Fade, Backdrop, IconButton } from "@mui/material";
+import { Modal, Fade, Backdrop } from "@mui/material";
 import { NumberField } from "@base-ui-components/react/number-field";
 import ImageSkeleton from "./ImageSkeleton";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
@@ -11,6 +11,9 @@ import {
   TopRow,
   PriceQuantity,
   QuantityControl,
+  StyledBox,
+  StyledIconButton,
+  QuantityInput,
 } from "./Style/ProductModal.styled";
 
 import ButtonAction from "../../../components/Button/ButtonAction";
@@ -21,19 +24,6 @@ interface ProductModalProps {
   part: OrderPartsResponseDto | null;
   onAddToCart?: (part: OrderPartsResponseDto, quantity: number) => void;
 }
-
-const boxStyle = {
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "90%",
-  maxWidth: 400,
-  bgcolor: "background.paper",
-  borderRadius: "12px",
-  boxShadow: 24,
-  p: 4,
-};
 
 export default function ProductModal({
   open,
@@ -79,7 +69,7 @@ export default function ProductModal({
       slotProps={{ backdrop: { timeout: 400 } }}
     >
       <Fade in={open} timeout={400}>
-        <Box sx={boxStyle}>
+        <StyledBox>
           <CardContainer>
             <ImageSkeleton
               src={
@@ -108,20 +98,15 @@ export default function ProductModal({
                   action={handleAdd}
                 />
               </TopRow>
+
               <QuantityControl>
-                <IconButton
+                <StyledIconButton
                   size="small"
                   onClick={handleDecrease}
                   disabled={quantity <= 1}
-                  sx={{
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    width: "32px",
-                    height: "32px",
-                  }}
                 >
                   –
-                </IconButton>
+                </StyledIconButton>
 
                 <NumberField.Root
                   min={1}
@@ -130,36 +115,20 @@ export default function ProductModal({
                   onValueChange={(value) => handleChange(value)}
                   className="number-field"
                 >
-                  <NumberField.Input
-                    className="quantity-input"
-                    style={{
-                      width: "60px",
-                      textAlign: "center",
-                      fontSize: "16px",
-                      border: "1px solid #ccc",
-                      borderRadius: "6px",
-                      padding: "4px 0",
-                    }}
-                  />
+                  <QuantityInput as={NumberField.Input} />
                 </NumberField.Root>
 
-                <IconButton
+                <StyledIconButton
                   size="small"
                   onClick={handleIncrease}
                   disabled={quantity >= (part?.quantity ?? 1)}
-                  sx={{
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    width: "32px",
-                    height: "32px",
-                  }}
                 >
                   +
-                </IconButton>
+                </StyledIconButton>
               </QuantityControl>
             </Info>
           </CardContainer>
-        </Box>
+        </StyledBox>
       </Fade>
     </Modal>
   );
