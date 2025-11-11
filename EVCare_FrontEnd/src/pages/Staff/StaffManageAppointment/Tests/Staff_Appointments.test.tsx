@@ -347,7 +347,7 @@ describe("Staff Appointments UI", () => {
   it("TC11: dispatches 'openModel3d' action when 'Show Model' is clicked", () => {
     // ARRANGE
     const { store } = renderWithProviders(<Staff_Appointments />);
-    const showModelButton = screen.getByText("Show Model");
+    const showModelButton = screen.getByRole("button", { name: "Show Model" });
     const mockAppointmentId = 1;
 
     // ACT
