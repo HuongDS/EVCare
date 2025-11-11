@@ -168,6 +168,7 @@ namespace DataAccess.Repositories
                             Id = ts.ServiceId,
                             Name = ts.Service.Name
                         }).ToList(),
+                        Email = tws.Technician.Employee.Account.Email,
                         WorkingSessionStatus = tws.Status
                     }).ToList() : new List<TechnicianViewModel>()
                 })
