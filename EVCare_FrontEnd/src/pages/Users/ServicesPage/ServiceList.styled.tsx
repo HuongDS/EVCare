@@ -201,7 +201,13 @@ const bounce = keyframes`
   50% { transform: translateY(-8px); }
 `;
 
-export const StickyBookButton = styled(motion.button)`
+const spin = keyframes`
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const StickyBookButton = styled(motion.button)<{ $isLoading?: boolean }>`
   position: fixed;
   bottom: 2rem;
   right: 2rem;
@@ -218,7 +224,10 @@ export const StickyBookButton = styled(motion.button)`
   box-shadow: 0 8px 25px rgba(0, 173, 78, 0.4);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.6rem;
+  min-height: 58px;
+  min-width: 180px;
 
   &::before {
     content: "";
@@ -238,6 +247,25 @@ export const StickyBookButton = styled(motion.button)`
 
   animation: ${bounce} 1.5s ease-in-out infinite;
   animation-delay: 1s;
+
+  .button-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: ${spin} 0.8s linear infinite;
+  }
+
+  ${({ $isLoading }) =>
+    $isLoading &&
+    `
+    cursor: not-allowed;
+    animation: none; 
+    &::before {
+      opacity: 0.5; 
+    }
+  `}
 `;
 
 export const ServiceListContainer = styled.div`

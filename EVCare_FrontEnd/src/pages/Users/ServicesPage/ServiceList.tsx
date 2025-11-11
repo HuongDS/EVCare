@@ -23,24 +23,19 @@ import {
   ServiceListContainer,
 } from "./ServiceList.styled";
 
-import BookingForm from "../../Customer/Booking/BookingForm"; // Đảm bảo đường dẫn đúng
+import BookingForm from "../../Customer/Booking/BookingForm";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../../states/store"; // Đảm bảo đường dẫn đúng
-import {
-  closeAppointmentForm,
-  openAppointmentForm,
-  openLogin,
-  setAction,
-} from "../../../states/uiSlice"; // Đảm bảo đường dẫn đúng
-import { ACTION } from "../../../constants/messages/Actions"; // Đảm bảo đường dẫn đúng
-import { getAllActiveService } from "../../../services/servicesApi"; // Đảm bảo đường dẫn đúng
-import ServiceCarousel from "./ServiceCarousel"; // Đảm bảo đường dẫn đúng
-import { Pagination } from "../../../components/Paginations/Pagination"; // Đảm bảo đường dẫn đúng
-import SearchBar from "../../../components/SearchBar/Search"; // Đảm bảo đường dẫn đúng
-import { LIST_SERVICES_MESSAGE } from "../../../constants/messages/Message"; // Đảm bảo đường dẫn đúng
-import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model"; // Đảm bảo đường dẫn đúng
-import SpinnerComponent from "../../../components/SpinnerComponent"; // Đảm bảo đường dẫn đúng
-import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled"; // Đảm bảo đường dẫn đúng
+import type { AppDispatch, RootState } from "../../../states/store";
+import { closeAppointmentForm, openAppointmentForm, openLogin, setAction } from "../../../states/uiSlice";
+import { ACTION } from "../../../constants/messages/Actions";
+import { getAllActiveService } from "../../../services/servicesApi";
+import ServiceCarousel from "./ServiceCarousel";
+import { Pagination } from "../../../components/Paginations/Pagination";
+import SearchBar from "../../../components/SearchBar/Search";
+import { LIST_SERVICES_MESSAGE } from "../../../constants/messages/Message";
+import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
+import SpinnerComponent from "../../../components/SpinnerComponent";
+import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
 import { FiArrowRight } from "react-icons/fi";
 
 type SortBy = "Name" | "Duration";
@@ -59,24 +54,16 @@ const ServiceList = () => {
   const [sortBy, setSortBy] = useState<SortBy>("Name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [showForm, setShowForm] = useState(false);
-  const [loadingForm, setLoadingForm] = useState(false); // (NEW) State loading riêng cho form
+  const [loadingForm, setLoadingForm] = useState(false);
   const [currenPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [isHaveData, setIsHaveData] = useState(true);
 
-  const { data, isLoading, isSuccess } = getAllActiveService(
-    searchValue,
-    9,
-    currenPage,
-    sortBy,
-    sortOrder
-  );
+  const { data, isLoading, isSuccess } = getAllActiveService(searchValue, 9, currenPage, sortBy, sortOrder);
 
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { createAppointmentFormOpen } = useSelector(
-    (state: RootState) => state.ui
-  );
+  const { createAppointmentFormOpen } = useSelector((state: RootState) => state.ui);
 
   const handleSortChange = useCallback(
     (newSortBy: SortBy): void => {
@@ -139,7 +126,7 @@ const ServiceList = () => {
         <HeaderSection>
           <ServiceLabel>OUR SERVICES</ServiceLabel>
           <MainTitle>Maintenance Your Vehicle</MainTitle>
-          {isLoading ? (
+          {loadingForm ? (
             <SpinnerComponent />
           ) : (
             <BookButton onClick={handleOpenBookingForm}>
@@ -152,18 +139,11 @@ const ServiceList = () => {
           <SortSection id="service-list-start">
             <ButtonGroup>
               <SortLabel>Sort by:</SortLabel>
-              <SortButton
-                active={sortBy === "Name"}
-                onClick={() => handleSortChange("Name")}
-              >
+              <SortButton active={sortBy === "Name"} onClick={() => handleSortChange("Name")}>
                 Name {sortBy === "Name" && (sortOrder === "asc" ? "↑" : "↓")}
               </SortButton>
-              <SortButton
-                active={sortBy === "Duration"}
-                onClick={() => handleSortChange("Duration")}
-              >
-                Duration{" "}
-                {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
+              <SortButton active={sortBy === "Duration"} onClick={() => handleSortChange("Duration")}>
+                Duration {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
               </SortButton>
             </ButtonGroup>
             <SearchBar
@@ -182,10 +162,7 @@ const ServiceList = () => {
 
             {!isLoading && !isHaveData && (
               <div style={{ gridColumn: "1 / -1" }}>
-                <NOT_FOUND_ITEMS
-                  icon="bi bi-sticky"
-                  message={LIST_SERVICES_MESSAGE.EMPTY + `${searchValue}`}
-                />
+                <NOT_FOUND_ITEMS icon="bi bi-sticky" message={LIST_SERVICES_MESSAGE.EMPTY + `${searchValue}`} />
               </div>
             )}
 
@@ -203,9 +180,7 @@ const ServiceList = () => {
                   >
                     <ServiceImageContainer>
                       <motion.img
-                        src={
-                          placeholderImages[index % placeholderImages.length]
-                        }
+                        src={placeholderImages[index % placeholderImages.length]}
                         alt={service.name}
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
@@ -221,9 +196,7 @@ const ServiceList = () => {
                         viewport={{ once: true }}
                       >
                         <ServiceTitle>{service.name}</ServiceTitle>
-                        <ServiceDescription>
-                          {service.description}
-                        </ServiceDescription>
+                        <ServiceDescription>{service.description}</ServiceDescription>
                         <ServiceDuration>
                           <strong>Duration:</strong> {service.duration} hours
                         </ServiceDuration>
@@ -245,14 +218,22 @@ const ServiceList = () => {
           )}
         </Container>
         <StickyBookButton
+          disabled={loadingForm}
+          $isLoading={loadingForm}
           onClick={handleOpenBookingForm}
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={!loadingForm ? { scale: 1.05 } : {}}
+          whileTap={!loadingForm ? { scale: 0.95 } : {}}
         >
-          Book Now <FiArrowRight />
+          {loadingForm ? (
+            <span className="button-spinner" />
+          ) : (
+            <>
+              Book Now <FiArrowRight />
+            </>
+          )}
         </StickyBookButton>
         <BookingForm
           loading={loadingForm}

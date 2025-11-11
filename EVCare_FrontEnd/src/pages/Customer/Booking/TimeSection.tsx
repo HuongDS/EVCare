@@ -7,12 +7,6 @@ import { getBlockedDate, getCenterInformation } from "../../../services/serviceC
 import type { BlockedDateViewModel } from "../../../models/BlockedDate/BlockedDateViewModel";
 import { useNotification } from "../../../context/useNotification";
 import dayjs from "dayjs";
-// import utc from "dayjs/plugin/utc";
-// import timezone from "dayjs/plugin/timezone";
-
-// dayjs.extend(utc);
-// dayjs.extend(timezone);
-// dayjs.tz.setDefault("Asia/Ho_Chi_Minh");
 
 interface Props {
   date: Dayjs | undefined;
@@ -64,6 +58,9 @@ function TimeComponent({ date, time, handleSelectDate, handleSelectTime, errors 
       const cutoff = now.add(1, "hour");
       return {
         disabledHours: () => {
+          if (!startTime || !endTime) {
+            return [];
+          }
           const hours = Array.from({ length: 24 }, (_, i) => i).filter(
             (h) => h > (endTime?.hour() ?? 0) || h < (startTime?.hour() ?? 0)
           );
@@ -83,7 +80,6 @@ function TimeComponent({ date, time, handleSelectDate, handleSelectTime, errors 
             }
           }
 
-          // const cutoffStartDate = startTime?.add(1, "hour");
           if (selectedHour === startTime?.hour()) {
             for (let m = 0; m < startTime?.minute(); m++) disabled.push(m);
             return disabled;
