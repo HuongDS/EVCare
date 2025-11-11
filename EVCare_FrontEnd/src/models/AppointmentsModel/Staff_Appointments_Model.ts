@@ -98,11 +98,13 @@ export type AppointmentDetailModel<T> = {
   vehicleId: number;
   vehicleName: string;
   vehiclePlateNumber: string;
+  isNeedMantainance: boolean;
   customerName: string;
   phoneNumber: string;
   customerEmail: string;
   employeeName: string;
   orderId: number;
+  orderStatus: string;
   imagesUrls: string[];
   services: ServiceViewFormModel[];
   technicians: T[];

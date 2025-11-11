@@ -41,6 +41,7 @@ const mockTechnician: TechnicianModel<TechnicianSkills> = {
   phone: "0917919191",
   expYears: 2,
   skills: mockSkills,
+  workingSessionStatus: "InProgress",
   status: "Available",
 };
 
@@ -60,6 +61,8 @@ const mockAppointment: AppointmentDetailModel<any> = {
   imagesUrls: [],
   services: [],
   technicians: [],
+  isNeedMantainance: true,
+  orderStatus: "",
 };
 
 vi.mock("../../../../services/appointmentServiceApi.ts", () => ({
