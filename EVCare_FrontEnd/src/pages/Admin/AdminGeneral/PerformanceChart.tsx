@@ -1,29 +1,41 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { getPerformance } from "../../../services/aiService";
 import { useDashboardHub } from "../../../hooks/useDashboardHub";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-// import type { PerfRes } from "../../../models/Dashboard/perfRes";
 import type { PerfRes } from "../../../models/Dashboard/perfRes";
 
 const PerformanceChart: React.FC = () => {
   const [perfData, setPerfData] = useState<PerfRes | null>(null);
+  const [dateRange, setDateRange] = useState<string>("7days");
 
-  const from = useMemo(() => new Date(Date.now() - 6 * 24 * 3600 * 1000).toLocaleString("sv-SE"), []);
-  const to = useMemo(() => new Date().toLocaleString("sv-SE"), []);
+  const fetchData = useCallback(async () => {
+    const toDate = new Date();
+    const fromDate = new Date(toDate);
+
+    if (dateRange === "30days") {
+      fromDate.setDate(fromDate.getDate() - 30);
+    } else if (dateRange === "90days") {
+      fromDate.setDate(fromDate.getDate() - 90);
+    } else {
+      fromDate.setDate(fromDate.getDate() - 7);
+    }
+
+    const toStr = toDate.toLocaleString("sv-SE"); // nearest to ISO8601
+    const fromStr = fromDate.toLocaleString("sv-SE");
+
+    try {
+      const response = await getPerformance(fromStr, toStr);
+      setPerfData(response);
+    } catch (error) {}
+  }, [dateRange]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      await getPerformance(from, to).then((r) => setPerfData(r));
-    };
     fetchData();
-  }, [from, to]);
+  }, [fetchData]);
 
-  useDashboardHub<PerfRes>((type, payload) => {
-    // on any realtime update, refetch
-    // getPerformance(from, to).then((r) => setPerfData(r));
+  useDashboardHub<PerfRes>((type) => {
     if (type === "InvoiceComplete") {
-      console.log("check chart: ", payload);
-      setPerfData(payload);
+      fetchData();
     }
   });
 
@@ -38,15 +50,18 @@ const PerformanceChart: React.FC = () => {
     <div className="chart-card">
       <div className="chart-header">
         <h2 className="chart-title">Performance</h2>
-        {/* <select className="date-filter">
-          <option>01-07 May</option>
-          <option>08-14 May</option>
-          <option>15-21 May</option>
-          <option>22-28 May</option>
-        </select> */}
+
+        <select
+          value={dateRange}
+          onChange={(e) => setDateRange(e.target.value)}
+          style={{ padding: "4px 8px", borderRadius: "4px" }}
+        >
+          <option value="7days">Last 7 Days</option>
+          <option value="30days">Last 30 Days</option>
+          <option value="90days">Last 90 Days</option>
+        </select>
       </div>
 
-      {/* <canvas ref={canvasRef} height={80}></canvas> */}
       <ResponsiveContainer width="100%" height={350}>
         <LineChart data={merger} margin={{ top: 10, right: 16, left: 10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />

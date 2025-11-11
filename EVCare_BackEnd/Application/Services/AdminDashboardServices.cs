@@ -76,7 +76,7 @@ namespace Application.Services
             .ToListAsync();
 
 
-            var labels = rangeDays.Select(d => d.ToString("dd")).ToList();
+            var labels = rangeDays.Select(d => d.ToString("dd/mm/yyyy")).ToList();
             var thisSeries = rangeDays.Select(d => (decimal)(revThis.FirstOrDefault(x => x.Date == d)?.Sum ?? 0)).ToList();
             var lastSeries = rangeDays.Select(d => (decimal)(revLast.FirstOrDefault(x => x.Date == d.AddMonths(-1))?.Sum ?? 0)).ToList();
 
