@@ -140,6 +140,7 @@ namespace DataAccess.Repositories
                     VehicleId = a.VehicleId,
                     VehicleName = a.Vehicle.Category.Name,
                     VehiclePlateNumber = a.Vehicle.LicensePlate,
+                    IsNeedMantainance = a.Vehicle.NextServiceDate == null?true: a.Vehicle.Last_Appointment <= a.Order.Invoice.Updated_At,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     CustomerEmail = a.Customer.Account.Email,
                     PhoneNumber = a.Customer.Account.Phone,
@@ -147,6 +148,8 @@ namespace DataAccess.Repositories
                         ? a.Employee.Account.First_Name + " " + a.Employee.Account.Last_Name
                         : null,
                     OrderId = a.OrderId,
+                    OrderStatus = a.Order.Status,
+
                     Services = a.AppointmentServices.Select(s => new ServiceViewFormModel
                     {
                         Id = s.ServiceId,
@@ -164,7 +167,9 @@ namespace DataAccess.Repositories
                         {
                             Id = ts.ServiceId,
                             Name = ts.Service.Name
-                        }).ToList()
+                        }).ToList(),
+                        Email = tws.Technician.Employee.Account.Email,
+                        WorkingSessionStatus = tws.Status
                     }).ToList() : new List<TechnicianViewModel>()
                 })
                 .FirstOrDefaultAsync();
@@ -377,7 +382,8 @@ namespace DataAccess.Repositories
                         {
                             Id = ts.ServiceId,
                             Name = ts.Service.Name
-                        }).ToList()
+                        }).ToList(),
+                        WorkingSessionStatus = tws.Status
                     }).ToList()
                 })
                 .ToListAsync();
@@ -559,7 +565,8 @@ namespace DataAccess.Repositories
                                                     Name = ts.Service.Name
                                                 })
                                                 .ToList(),
-                                    Status = t.Technician.Employee.Status
+                                    Status = t.Technician.Employee.Status,
+                                    WorkingSessionStatus = t.Status
                                 }).ToList()
 
                 })

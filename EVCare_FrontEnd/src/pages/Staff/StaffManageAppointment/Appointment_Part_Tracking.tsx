@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { InputNumber } from "antd";
 import { Package, CheckCircle, Edit3, X, Users, SquareX } from "lucide-react";
 import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
-import {
-  useGetOrderDetail,
-  useStaffUpdateOrder,
-  useUpdateOrderStatus,
-} from "../../../services/orderServiceApi";
+import { useGetOrderDetail, useStaffUpdateOrder, useUpdateOrderStatus } from "../../../services/orderServiceApi";
 import type { PartsDetailDto } from "../../../models/OrderModel/ViewOrderModel";
 import type {
   TechnicianModel,
@@ -14,23 +10,14 @@ import type {
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { formatCurrency } from "./../../../utils/formatCurrency";
 import { useAppDispatch } from "../../../states/store";
-import type {
-  OrderPartDto,
-  UpdateOrderRequest,
-} from "../../../models/OrderModel/UpdateOrderModel";
+import type { OrderPartDto, UpdateOrderRequest } from "../../../models/OrderModel/UpdateOrderModel";
 import { useQueryClient } from "@tanstack/react-query";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import ConfirmModal from "../../../components/StatusModal/ConfirmModal";
-import {
-  useChangeAppointmentStatus,
-  useGetAllAppointments,
-} from "../../../services/appointmentServiceApi";
+import { useChangeAppointmentStatus, useGetAllAppointments } from "../../../services/appointmentServiceApi";
 import { useNotification } from "../../../context/useNotification";
-import {
-  MSG_TITLE,
-  SUCCESS_MESSAGE,
-} from "../../../constants/messages/Message";
+import { MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
 import { closeModel3d, openModel3d } from "../../../states/uiSlice";
 import ShowButton from "../../../components/Button/ShowButton";
 import { useLocation } from "react-router";
@@ -70,9 +57,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
     sortField: "Appointment_Date",
   });
 
-  const appointment = appointments?.data?.items?.find(
-    (appointment) => appointment.id === data.id
-  );
+  const appointment = appointments?.data?.items?.find((appointment) => appointment.id === data.id);
 
   const workingTechnicians = appointment?.technicians || [];
 
@@ -95,9 +80,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
     if (newQuantity)
       if (newQuantity !== null) {
         const updatedParts = parts.map((part) =>
-          part.technicianId === technicianId && part.id === partId
-            ? { ...part, quantity: newQuantity }
-            : part
+          part.technicianId === technicianId && part.id === partId ? { ...part, quantity: newQuantity } : part
         );
         setParts(updatedParts);
         setEditingPartId(null);
@@ -116,21 +99,14 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
     } | null
   ) => {
     setParts((prevParts) =>
-      prevParts.filter(
-        (part) =>
-          !(
-            part.id === editingPartId?.partId &&
-            part.technicianId === edittingPart?.techId
-          )
-      )
+      prevParts.filter((part) => !(part.id === editingPartId?.partId && part.technicianId === edittingPart?.techId))
     );
   };
 
   const { mutateAsync: updateOrderStatus, isPending: statusPending } =
     useUpdateOrderStatus();
 
-  const { mutateAsync: updateOrder, isPending: orderPending } =
-    useStaffUpdateOrder();
+  const { mutateAsync: updateOrder, isPending: orderPending } = useStaffUpdateOrder();
   const queryClient = useQueryClient();
 
   const handleConfirmOrder = async () => {
@@ -159,10 +135,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
     }
   };
 
-  const subtotal = parts.reduce(
-    (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
-    0
-  );
+  const subtotal = parts.reduce((sum, part) => sum + (part.price + part.replacementPrice) * part.quantity, 0);
 
   const vatAmount = (subtotal * (order?.data?.vat ?? 0)) / 100;
 
@@ -224,11 +197,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
           <SectionTitle>
             Order Parts ({parts.length})
             <div style={{ display: "flex", gap: "5px" }}>
-              <ShowButton
-                onclick={() => dispatch(openModel3d())}
-                text="Model 3D"
-                height="40px"
-              />
+              <ShowButton onclick={() => dispatch(openModel3d(appointment?.id ?? 0))} text="Model 3D" height="40px" />
             </div>
           </SectionTitle>
 
@@ -248,9 +217,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
                     </PriceItem>
                     <PriceItem>
                       <Label>Replace:</Label>
-                      <TotalValue>
-                        {formatCurrency(part.replacementPrice)}₫
-                      </TotalValue>
+                      <TotalValue>{formatCurrency(part.replacementPrice)}₫</TotalValue>
                     </PriceItem>
                   </PriceRow>
                 </PartInfo>
@@ -258,21 +225,13 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
 
               <PartRight>
                 <QuantitySection>
-                  {editingPartId?.partId === part.id &&
-                  editingPartId.techId === part.technicianId ? (
+                  {editingPartId?.partId === part.id && editingPartId.techId === part.technicianId ? (
                     <QuantityEdit>
                       <InputNumber
                         min={1}
                         defaultValue={part.quantity}
                         onChange={(value) => setTempValue(value || 0)}
-                        onPressEnter={() =>
-                          handleQuantityChange(
-                            part.id,
-                            part.technicianId,
-                            tempValue,
-                            part.stock
-                          )
-                        }
+                        onPressEnter={() => handleQuantityChange(part.id, part.technicianId, tempValue, part.stock)}
                         autoFocus
                         style={{ fontFamily: "Outfit" }}
                       />
@@ -315,21 +274,14 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
                       </IconButton>
                     </QuantityDisplay>
                   )}
-                  {editingPartId?.partId === part.id &&
-                    editingPartId.techId === part.technicianId && (
-                      <StockWarning>{stockMessage}</StockWarning>
-                    )}
+                  {editingPartId?.partId === part.id && editingPartId.techId === part.technicianId && (
+                    <StockWarning>{stockMessage}</StockWarning>
+                  )}
                 </QuantitySection>
 
                 <PartTotal>
                   <TotalLabel>Total</TotalLabel>
-                  <TotalValue>
-                    {(
-                      (part.price + part.replacementPrice) *
-                      part.quantity
-                    ).toLocaleString()}
-                    ₫
-                  </TotalValue>
+                  <TotalValue>{((part.price + part.replacementPrice) * part.quantity).toLocaleString()}₫</TotalValue>
                 </PartTotal>
               </PartRight>
             </PartCard>
@@ -371,9 +323,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
         <Card>
           <TechnicianHeader>
             <Users size={22} />
-            <SectionTitle>
-              Working Technicians ({workingTechnicians.length})
-            </SectionTitle>
+            <SectionTitle>Working Technicians ({workingTechnicians.length})</SectionTitle>
           </TechnicianHeader>
 
           {workingTechnicians.length > 0 ? (
@@ -381,10 +331,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
               {workingTechnicians.map((tech) => (
                 <TechnicianItem key={tech.id}>
                   <TechAvatar
-                    src={
-                      tech.avatar ||
-                      `https://ui-avatars.com/api/?name=${tech.fullName}&background=667eea&color=fff`
-                    }
+                    src={tech.avatar || `https://ui-avatars.com/api/?name=${tech.fullName}&background=667eea&color=fff`}
                     alt={tech.fullName}
                   />
                   <TechDetails>
@@ -404,20 +351,8 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
           )}
         </Card>
       </ContentWrapper>
-      {isSuccessModalOpen && (
-        <SuccessModal
-          header="Order Confirm"
-          message={modalMessage}
-          action={handleCloseModal}
-        />
-      )}
-      {isErrorModalOpen && (
-        <FailedModal
-          header="Order Confirm"
-          message={modalMessage}
-          action={handleCloseModal}
-        />
-      )}
+      {isSuccessModalOpen && <SuccessModal header="Order Confirm" message={modalMessage} action={handleCloseModal} />}
+      {isErrorModalOpen && <FailedModal header="Order Confirm" message={modalMessage} action={handleCloseModal} />}
 
       {confirmCancel && (
         <ConfirmModal

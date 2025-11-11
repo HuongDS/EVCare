@@ -1,6 +1,6 @@
 export async function callGemini(data: string, prompt: string, retries: number, delay: number) {
-  const baseUrl = import.meta.env.GEMINI_URL;
-  const apiKey = import.meta.env.GEMINI_KEY;
+  const baseUrl = import.meta.env.VITE_GEMINI_URL;
+  const apiKey = import.meta.env.VITE_GEMINI_KEY;
 
   const url = `${baseUrl}?key=${apiKey}`;
 
