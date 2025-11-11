@@ -26,10 +26,9 @@ import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
 interface Props {
   data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
   closeModal: () => void;
-  onConfirmSuccess?: () => void;
 }
 
-export default function Appointment_Part_Tracking({ data, closeModal, onConfirmSuccess }: Props) {
+export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
   const dispatch = useAppDispatch();
   const [parts, setParts] = useState<PartsDetailDto[]>([]);
   const [editingPartId, setEditingPartId] = useState<{
@@ -46,7 +45,6 @@ export default function Appointment_Part_Tracking({ data, closeModal, onConfirmS
   const notification = useNotification();
 
   const location = useLocation();
-
   useEffect(() => {
     dispatch(closeModel3d());
   }, [location.pathname, dispatch]);
@@ -61,17 +59,14 @@ export default function Appointment_Part_Tracking({ data, closeModal, onConfirmS
 
   const appointment = appointments?.data?.items?.find((appointment) => appointment.id === data.id);
 
-  // Get working technicians from appointment data
   const workingTechnicians = appointment?.technicians || [];
 
-  //nếu lấy thành công thì set mảng parts vào trong state
   useEffect(() => {
     if (isSuccess && order?.data?.parts) {
       setParts(order.data.parts);
     }
   }, [isSuccess, order?.data?.parts]);
 
-  //hàm này thay đổi quantity được nhập từ staff
   const handleQuantityChange = async (
     partId: number | null,
     technicianId: number,
@@ -97,7 +92,6 @@ export default function Appointment_Part_Tracking({ data, closeModal, onConfirmS
       }
   };
 
-  //hàm này xóa 1 part trong order
   const handleDeletePart = (
     edittingPart: {
       partId: number;
@@ -109,8 +103,8 @@ export default function Appointment_Part_Tracking({ data, closeModal, onConfirmS
     );
   };
 
-  //Khi nhấn confirm thì gọi hàm này
-  const { mutateAsync: updateOrderStatus, isPending: statusPending } = useUpdateOrderStatus();
+  const { mutateAsync: updateOrderStatus, isPending: statusPending } =
+    useUpdateOrderStatus();
 
   const { mutateAsync: updateOrder, isPending: orderPending } = useStaffUpdateOrder();
   const queryClient = useQueryClient();
@@ -134,10 +128,7 @@ export default function Appointment_Part_Tracking({ data, closeModal, onConfirmS
       });
 
       setModalMessage("Order confirmed successfully");
-
       setIsSuccessModalOpen(true);
-
-      onConfirmSuccess?.();
     } catch (error) {
       setModalMessage(String(error));
       setIsErrorModalOpen(true);
@@ -150,13 +141,12 @@ export default function Appointment_Part_Tracking({ data, closeModal, onConfirmS
 
   const calculateTotal = () => subtotal + vatAmount;
 
-  //đóng success, fail modal
-  const handleCloseModal = () => {
+  const handleCloseModal = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
     setIsErrorModalOpen(false);
     setIsSuccessModalOpen(false);
   };
 
-  // hủy cuộc hẹn
   const { mutateAsync: appointmentStatus } = useChangeAppointmentStatus();
 
   const handleCancelOrder = async () => {
