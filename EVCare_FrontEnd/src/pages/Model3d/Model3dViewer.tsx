@@ -22,7 +22,7 @@ import {
 } from "./styles/Model3dViewer.styled";
 
 interface Model3dProps {
-  data?: number;
+  data?: number | null;
 }
 
 export default function Model3dViewer({ data }: Model3dProps) {

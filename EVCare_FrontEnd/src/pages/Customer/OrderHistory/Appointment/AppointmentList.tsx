@@ -12,13 +12,8 @@ import AppointmentHistoryCard from "./AppointmentHistoryCard";
 import { handleError } from "../../../../utils/errorHandler";
 import { useNotification } from "../../../../context/useNotification";
 import { EmptyState } from "../../../../components/EmptyState";
-import {
-  useAppDispatch,
-  useAppSelector,
-  type RootState,
-} from "../../../../states/store";
+import { useAppSelector, type RootState } from "../../../../states/store";
 import Model3dViewer from "../../../Model3d/Model3dViewer";
-import { closeModel3d } from "../../../../states/uiSlice";
 export default function OrderList() {
   const sortBy = useMemo(
     () => [
@@ -45,14 +40,7 @@ export default function OrderList() {
     null
   );
   const [data, setData] = useState<AppointmentViewDetailModel>(Object);
-  const [model3dData, setModel3dData] = useState<number | undefined>();
   const notification = useNotification();
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    return () => {
-      dispatch(closeModel3d());
-    };
-  }, [dispatch]);
   const onViewAppointmentDetail = useCallback(async (appointmentId: number) => {
     setLoadingModalDetail(appointmentId);
     setSelectedAppointment(appointmentId);
@@ -107,56 +95,53 @@ export default function OrderList() {
     fetchData();
   }, [setFilteredList, selectedCategory]);
 
-  const isOpen3dModel = useAppSelector(
-    (state: RootState) => state.ui.model3dOpen
+  const { model3dOpen: isOpen3dModel, model3dData } = useAppSelector(
+    (state: RootState) => state.ui
   );
 
-  return (
-    <>
-      {isOpen3dModel ? (
-        <Model3dViewer data={model3dData} />
-      ) : (
-        <>
-          <Title>Appointments History</Title>
+  if (isOpen3dModel) {
+    return <Model3dViewer data={model3dData} />;
+  } else {
+    return (
+      <>
+        <Title>Appointments History</Title>
 
-          {isLoading ? (
-            <div style={{ textAlign: "center" }}>
-              <SpinnerComponent />
-            </div>
-          ) : (
-            <>
-              <OrderHistorySort
-                sortName={sortBy}
-                onSelectCategory={handleFiltered}
-                selectedCategory={selectedCategory}
-              />
-
-              {filteredList.length === 0 ? (
-                <EmptyState />
-              ) : (
-                filteredList.map((a) => (
-                  <AppointmentHistoryCard
-                    key={a.id}
-                    appointmentId={a.id}
-                    onViewAppointmentDetail={onViewAppointmentDetail}
-                    data={a}
-                    loadingModalDetail={loadingModalDetail}
-                    setModel3dData={setModel3dData}
-                  />
-                ))
-              )}
-            </>
-          )}
-          {isOpenModal && selectedAppointment !== 0 && (
-            <AppointmentDetail
-              data={data}
-              appointmentId={selectedAppointment}
-              open={isOpenModal}
-              onClose={handleCloseModal}
+        {isLoading ? (
+          <div style={{ textAlign: "center" }}>
+            <SpinnerComponent />
+          </div>
+        ) : (
+          <>
+            <OrderHistorySort
+              sortName={sortBy}
+              onSelectCategory={handleFiltered}
+              selectedCategory={selectedCategory}
             />
-          )}
-        </>
-      )}
-    </>
-  );
+
+            {filteredList.length === 0 ? (
+              <EmptyState />
+            ) : (
+              filteredList.map((a) => (
+                <AppointmentHistoryCard
+                  key={a.id}
+                  appointmentId={a.id}
+                  onViewAppointmentDetail={onViewAppointmentDetail}
+                  data={a}
+                  loadingModalDetail={loadingModalDetail}
+                />
+              ))
+            )}
+          </>
+        )}
+        {isOpenModal && selectedAppointment !== 0 && (
+          <AppointmentDetail
+            data={data}
+            appointmentId={selectedAppointment}
+            open={isOpenModal}
+            onClose={handleCloseModal}
+          />
+        )}
+      </>
+    );
+  }
 }
