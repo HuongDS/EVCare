@@ -140,6 +140,7 @@ namespace DataAccess.Repositories
                     VehicleId = a.VehicleId,
                     VehicleName = a.Vehicle.Category.Name,
                     VehiclePlateNumber = a.Vehicle.LicensePlate,
+                    IsNeedMantainance = a.Vehicle.NextServiceDate == null?true: a.Vehicle.Last_Appointment <= DateTime.UtcNow,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     CustomerEmail = a.Customer.Account.Email,
                     PhoneNumber = a.Customer.Account.Phone,
@@ -148,6 +149,7 @@ namespace DataAccess.Repositories
                         : null,
                     OrderId = a.OrderId,
                     OrderStatus = a.Order.Status,
+
                     Services = a.AppointmentServices.Select(s => new ServiceViewFormModel
                     {
                         Id = s.ServiceId,
