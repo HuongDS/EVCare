@@ -441,4 +441,21 @@ describe("useBookingForm Hook", () => {
     expect(result.current.note).toBe("");
     expect(result.current.checkbox).toBe(false);
   });
+
+  it("TC18: validateStep(0) (Existing) - should set error if vehicleCategory is 0", async () => {
+    // ARRANGE
+    const { result } = renderHook(() => useBookingForm(defaultProps));
+    // ACT
+    act(() => {
+      result.current.setIsAddNew(false);
+      result.current.setVehicleCategory(0);
+    });
+    let isValid;
+    act(() => {
+      isValid = result.current.validateStep(0);
+    });
+    // ASSERT
+    expect(isValid).toBe(false);
+    expect(result.current.errors.vehicleSelect).toBe("This model is not accepted at our center!");
+  });
 });

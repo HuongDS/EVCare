@@ -209,7 +209,6 @@ describe("TS02: TimeSection - Disable Logic", () => {
     vi.useFakeTimers();
     vi.setSystemTime(NOW.toDate());
 
-    // tại sao ở đây được hiểu là mock
     (DatePicker as any).currentProps = {};
     (TimePicker as any).currentProps = {};
   });
@@ -239,7 +238,7 @@ describe("TS02: TimeSection - Disable Logic", () => {
     // ASSERT
     const disableDate = getDisableDateFn();
     expect(disableDate).toBeDefined();
-    expect(disableDate(NOW.subtract(1, "day").startOf("day"))).toBe(true); // gthich cai nay
+    expect(disableDate(NOW.subtract(1, "day").startOf("day"))).toBe(true);
     expect(disableDate(NOW.add(1, "day").startOf("day"))).toBe(false);
     expect(disableDate(null as any)).toBe(false);
   });
@@ -341,5 +340,20 @@ describe("TS02: TimeSection - Disable Logic", () => {
     expect(disabledMinutes(undefined)).toHaveLength(0);
 
     expect(disabledMinutes(10)).toHaveLength(0);
+  });
+
+  it("TC06: disabledHours - should NOT disable any hours if API returns null data", async () => {
+    // ARRANGE
+    mockedGetCenterInfo.mockResolvedValue({ statusCode: 200, data: undefined });
+    render(<TimeSection {...baseProps} />);
+    // ACT
+    await act(async () => {
+      vi.runAllTimers();
+    });
+    // ASSERT
+    const disableTime = getDisableTimeFn();
+    expect(disableTime).toBeDefined();
+    const disabledHours = disableTime(dayjs()).disabledHours();
+    expect(disabledHours).toHaveLength(0);
   });
 });

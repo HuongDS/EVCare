@@ -247,19 +247,19 @@ describe("BookingForm", () => {
     expect(mockHookReturn.handleSubmit).toHaveBeenCalledTimes(1);
   });
 
-  // it("TC11: (Step 3) should show Spinner (and hide button) if isLoading is true", () => {
-  //   // ARRANGE
-  //   mockedUseBookingForm.mockReturnValue({
-  //     ...mockHookReturn,
-  //     currentStep: 2,
-  //     isLoading: true,
-  //   });
-  //   // ACT
-  //   renderWithProviders(<BookingForm {...defaultProps} />, { preloadedState: defaultPreloadedState });
-  //   // ASSERT
-  //   expect(screen.getByTestId("spinner")).toBeInTheDocument();
-  //   expect(screen.queryByRole("button", { name: /SEND/i })).not.toBeInTheDocument();
-  // });
+  it("TC11: (Step 3) should show Spinner (and hide button) if isLoading is true", () => {
+    // ARRANGE
+    mockedUseBookingForm.mockReturnValue({
+      ...mockHookReturn,
+      currentStep: 2,
+      isLoading: true,
+    });
+    // ACT
+    renderWithProviders(<BookingForm {...defaultProps} />, { preloadedState: defaultPreloadedState });
+    // ASSERT
+    expect(screen.getByTestId("spinner")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /SEND/i })).not.toBeInTheDocument();
+  });
 
   it("TC12: (Step 1) should call setFiles when handleFileSubmit is triggered from UploadImage", async () => {
     // ARRANGE
@@ -343,5 +343,18 @@ describe("BookingForm", () => {
     });
     // ASSERT
     expect(container.firstChild).toBeNull();
+  });
+
+  it("TC18: (Step 3) should HIDE policy checkbox if policy modal is visible", () => {
+    // ARRANGE
+    mockedUseBookingForm.mockReturnValue({
+      ...mockHookReturn,
+      currentStep: 2,
+      visible: true,
+    });
+    // ACT
+    renderWithProviders(<BookingForm {...defaultProps} />, { preloadedState: defaultPreloadedState });
+    // ASSERT
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
   });
 });
