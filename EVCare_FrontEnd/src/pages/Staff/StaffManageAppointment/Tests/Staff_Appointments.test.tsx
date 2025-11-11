@@ -348,13 +348,12 @@ describe("Staff Appointments UI", () => {
     // ARRANGE
     const { store } = renderWithProviders(<Staff_Appointments />);
     const showModelButton = screen.getByRole("button", { name: "Show Model" });
-    const mockAppointmentId = 1;
 
     // ACT
     fireEvent.click(showModelButton);
 
     // ASSERT
-    expect(store.dispatch).toHaveBeenCalledWith(openModel3d(mockAppointmentId));
+    expect(store.dispatch).toHaveBeenCalledWith(openModel3d());
   });
 
   it("TC12: calls API with new pageIndex when pagination changes", () => {
