@@ -140,7 +140,7 @@ namespace DataAccess.Repositories
                     VehicleId = a.VehicleId,
                     VehicleName = a.Vehicle.Category.Name,
                     VehiclePlateNumber = a.Vehicle.LicensePlate,
-                    IsNeedMantainance = a.Vehicle.NextServiceDate == null?true: a.Vehicle.Last_Appointment <= DateTime.UtcNow,
+                    IsNeedMantainance = a.Vehicle.NextServiceDate == null?true: a.Vehicle.Last_Appointment <= a.Order.Invoice.Updated_At,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     CustomerEmail = a.Customer.Account.Email,
                     PhoneNumber = a.Customer.Account.Phone,
