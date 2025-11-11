@@ -67,3 +67,14 @@ export const getAppointmentStepFromStatus = (status: string) => {
       return 5;
   }
 };
+
+export const getSubPageFromOrderStatus = (status: string) => {
+  switch (status) {
+    case "WaitingConfirm":
+      return "part_tracking";
+    case "Processing":
+      return "maintenance";
+    case "Completed":
+      return "nextMaintenance";
+  }
+};

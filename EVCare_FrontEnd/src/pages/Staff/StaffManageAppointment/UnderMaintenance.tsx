@@ -8,9 +8,9 @@ import {
   ProgressLabel,
   ProgressText,
   ExpectedBox,
-} from "./styles/MainteningPage.styled";
+} from "./styles/UnderMaintenance";
 
-export default function MainteningPage() {
+export default function UnderMaintenance() {
   return (
     <PageContainer>
       <ContentCard>

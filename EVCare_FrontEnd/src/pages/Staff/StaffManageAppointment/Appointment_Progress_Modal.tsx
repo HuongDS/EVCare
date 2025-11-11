@@ -8,15 +8,14 @@ import Appointment_CheckIn from "./Appointment_CheckIn";
 import styled from "styled-components";
 import Appointment_Assign from "./Appointment_Assign";
 import Appointment_Part_Tracking from "./Appointment_Part_Tracking";
-import PaymentPage from "./Appointment_Payment";
 import { InvoicePage } from "./Appointment_Invoice";
-import NextMaintenance from "./NextMaintenance";
-import { useEffect, useState } from "react";
-import MainteningPage from "./MainteningPage";
 import WaitingAddingPart from "./WaitingAddingPart";
 import { useGetAppointmentById } from "../../../services/appointmentServiceApi";
 import { useNotification } from "../../../context/useNotification";
 import ColorSpinner from "../StaffComponents/ColorSpinner";
+import NextMaintenance from "./NextMaintenance";
+import Appointment_Payment from "./Appointment_Payment";
+import UnderMaintenance from "./UnderMaintenance";
 
 interface props {
   show: boolean;
@@ -36,18 +35,6 @@ export default function Appoinment_Progress_Modal({
     isLoading,
     error,
   } = useGetAppointmentById(appointmentId ?? 0);
-
-  const [subPage, setSubPage] = useState<
-    | "payment"
-    | "nextMaintenance"
-    | "maintenance"
-    | "nextMaintenanceSkipped"
-    | null
-  >(null);
-
-  useEffect(() => {
-    setSubPage(null);
-  }, [appointmentDetail?.data?.status]);
 
   const stepNames = stepsAppointment;
   const currentStep = getAppointmentStepFromStatus(
@@ -85,6 +72,8 @@ export default function Appoinment_Progress_Modal({
     return null;
   }
 
+  const isNeedMaintenance = appointmentDetail.data.isNeedMantainance;
+
   const data = appointmentDetail.data;
   const renderContent = () => {
     switch (currentStep) {
@@ -95,34 +84,16 @@ export default function Appoinment_Progress_Modal({
       case 2:
         return <WaitingAddingPart data={data} />;
       case 3:
-        if (subPage === "maintenance") {
-          return <MainteningPage />;
+        if (appointmentDetail.data?.orderStatus === "Processing") {
+          return <UnderMaintenance />;
         }
-        return (
-          <Appointment_Part_Tracking
-            data={data}
-            closeModal={close}
-            onConfirmSuccess={() => setSubPage("maintenance")}
-          />
-        );
+        return <Appointment_Part_Tracking data={data} closeModal={close} />;
       case 4:
-        if (subPage === "nextMaintenance") {
-          return (
-            <NextMaintenance
-              data={data}
-              onSkip={() => setSubPage("nextMaintenanceSkipped")}
-            />
-          );
-        } else if (subPage === "nextMaintenanceSkipped") {
-          return <InvoicePage data={data} />;
-        }
-        return (
-          <PaymentPage
-            data={data}
-            onPaymentSuccess={() => setSubPage("nextMaintenance")}
-          />
-        );
+        return <Appointment_Payment data={data} />;
       case 5:
+        if (isNeedMaintenance) {
+          return <NextMaintenance data={data} onSkip={() => 1} />;
+        }
         return <InvoicePage data={data} />;
     }
   };

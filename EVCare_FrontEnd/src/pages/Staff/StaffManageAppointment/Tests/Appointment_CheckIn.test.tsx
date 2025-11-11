@@ -116,6 +116,8 @@ describe("Appointment_CheckIn", () => {
     imagesUrls: ["img1.jpg", "img2.jpg"],
     orderId: 1,
     technicians: [],
+    isNeedMantainance: true,
+    orderStatus: "",
   };
 
   const mockChangeStatus = useChangeAppointmentStatus as Mock;
