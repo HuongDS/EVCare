@@ -164,7 +164,8 @@ namespace DataAccess.Repositories
                         {
                             Id = ts.ServiceId,
                             Name = ts.Service.Name
-                        }).ToList()
+                        }).ToList(),
+                        WorkingSessionStatus = tws.Status
                     }).ToList() : new List<TechnicianViewModel>()
                 })
                 .FirstOrDefaultAsync();
@@ -377,7 +378,8 @@ namespace DataAccess.Repositories
                         {
                             Id = ts.ServiceId,
                             Name = ts.Service.Name
-                        }).ToList()
+                        }).ToList(),
+                        WorkingSessionStatus = tws.Status
                     }).ToList()
                 })
                 .ToListAsync();
@@ -559,7 +561,8 @@ namespace DataAccess.Repositories
                                                     Name = ts.Service.Name
                                                 })
                                                 .ToList(),
-                                    Status = t.Technician.Employee.Status
+                                    Status = t.Technician.Employee.Status,
+                                    WorkingSessionStatus = t.Status
                                 }).ToList()
 
                 })
