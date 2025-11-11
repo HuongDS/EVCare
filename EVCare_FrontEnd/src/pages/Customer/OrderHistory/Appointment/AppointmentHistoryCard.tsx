@@ -25,13 +25,13 @@ import type { CardData } from "../../../../models/Pics/CardData.ts";
 import { LazyReviewPicsSection } from "./LazyReviewPicsSection.tsx";
 import { useAppDispatch } from "../../../../states/store.ts";
 import { openModel3d } from "../../../../states/uiSlice.ts";
-import { useGetAppointmentById } from "../../../../services/appointmentServiceApi.ts";
 
 interface props {
   data: AppointmentViewDetailModel;
   onViewAppointmentDetail: (appointmentId: number) => void;
   appointmentId: number;
   loadingModalDetail: number | null;
+  setModel3dData: (v: number) => void;
 }
 
 export default function AppointmentHistoryCard({
@@ -39,6 +39,7 @@ export default function AppointmentHistoryCard({
   onViewAppointmentDetail,
   appointmentId,
   loadingModalDetail,
+  setModel3dData,
 }: props) {
   const dispatch = useAppDispatch();
   const [isDisplayReviewButton, setIsDisplayReviewButton] = useState(false);
@@ -136,7 +137,8 @@ export default function AppointmentHistoryCard({
                   color="white"
                   backgroundColor="#00ad4e"
                   action={() => {
-                    dispatch(openModel3d(appointmentId));
+                    setModel3dData(appointmentId);
+                    dispatch(openModel3d());
                   }}
                 />
               )}

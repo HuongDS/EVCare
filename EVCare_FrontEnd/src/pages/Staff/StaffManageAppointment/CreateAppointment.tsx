@@ -310,7 +310,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
                         customer.vehicles.filter((veh) => veh.cateId !== 0)
                           .length
                       }
-                      vehicles
+                      {""} vehicles
                     </VehicleCount>
                   </CustomerCard>
                 ))}
