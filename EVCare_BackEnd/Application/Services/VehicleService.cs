@@ -97,8 +97,8 @@ namespace Application.Services
                 throw new Exception(Message.VEHICLE_NOT_FOUND);
             }
              _mapper.Map(model, vehicle);
-            vehicle.Last_Appointment = DateTime.Now;
-            vehicle.NextServiceDate = DateTime.Now.AddMonths(model.ReminderIntervalMonths);
+            vehicle.Last_Appointment = DateTime.UtcNow.AddHours(7);
+            vehicle.NextServiceDate = DateTime.UtcNow.AddMonths(model.ReminderIntervalMonths);
 
             var createdVehicle = await _vehicleRepository.UpdateAsync(vehicle);
             return createdVehicle.Id;
