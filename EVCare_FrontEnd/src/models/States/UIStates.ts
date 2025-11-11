@@ -4,4 +4,5 @@ export type UIState = {
   actionAfterLogin: string | null;
   messagePopUpOpen: boolean;
   model3dOpen: boolean;
+  model3dData: number | null;
 };

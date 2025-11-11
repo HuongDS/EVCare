@@ -31,12 +31,10 @@ interface props {
   onViewAppointmentDetail: (appointmentId: number) => void;
   appointmentId: number;
   loadingModalDetail: number | null;
-  setModel3dData: (v: number) => void;
 }
 
 export default function AppointmentHistoryCard({
   data,
-  setModel3dData,
   onViewAppointmentDetail,
   appointmentId,
   loadingModalDetail,
@@ -45,6 +43,7 @@ export default function AppointmentHistoryCard({
   const [isDisplayReviewButton, setIsDisplayReviewButton] = useState(false);
   const [isOpenReviewForm, setIsOpenReviewForm] = useState(false);
   const [pics, setPics] = useState<CardData[]>([]);
+  // const { data: appointmentDetail } = useGetAppointmentById(data.id);
 
   const onOpen = () => {
     setIsOpenReviewForm(true);
@@ -131,8 +130,7 @@ export default function AppointmentHistoryCard({
                   color="white"
                   backgroundColor="#00ad4e"
                   action={() => {
-                    setModel3dData(data.id);
-                    dispatch(openModel3d());
+                    dispatch(openModel3d(appointmentId));
                   }}
                 />
               )}
