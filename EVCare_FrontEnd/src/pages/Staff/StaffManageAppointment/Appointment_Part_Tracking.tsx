@@ -103,8 +103,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
     );
   };
 
-  const { mutateAsync: updateOrderStatus, isPending: statusPending } =
-    useUpdateOrderStatus();
+  const { mutateAsync: updateOrderStatus, isPending: statusPending } = useUpdateOrderStatus();
 
   const { mutateAsync: updateOrder, isPending: orderPending } = useStaffUpdateOrder();
   const queryClient = useQueryClient();
@@ -197,7 +196,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
           <SectionTitle>
             Order Parts ({parts.length})
             <div style={{ display: "flex", gap: "5px" }}>
-              <ShowButton onclick={() => dispatch(openModel3d(appointment?.id ?? 0))} text="Model 3D" height="40px" />
+              <ShowButton onclick={() => dispatch(openModel3d())} text="Model 3D" height="40px" />
             </div>
           </SectionTitle>
 
