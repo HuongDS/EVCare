@@ -102,4 +102,14 @@ describe("ServiceComponent", () => {
     // ASSERT
     expect(checkboxes[0]).not.toBeChecked();
   });
+
+  it("TC06: should be checked when all services in a category are selected", () => {
+    // ARRANGE
+    render(<ServiceSection {...mockProps} selectedServices={[999, 888]} />);
+    // ACT
+    const checkboxes = screen.getAllByRole("checkbox");
+    // ASSERT
+    expect(checkboxes[0]).toBeChecked();
+    expect(checkboxes[1]).not.toBeChecked();
+  });
 });

@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ForgotPassword from "../sections/ForgotPassword";
 import userEvent from "@testing-library/user-event";
 
@@ -19,6 +19,10 @@ beforeEach(() => {
 });
 
 describe("Forgot Password", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it("TC01: Test render when isLoading is false", () => {
     // ARRANGE
     render(
@@ -32,7 +36,7 @@ describe("Forgot Password", () => {
     );
     // ACT
     // ASSERT
-    expect(screen.queryByText(/Email/i)).toBeInTheDocument();
+    expect(screen.queryByText(/^Email Address$/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /send/i })).toBeInTheDocument();
   });
 

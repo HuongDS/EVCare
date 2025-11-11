@@ -4,9 +4,7 @@ import { RoleEnum } from "../../../../models/enums";
 import { render, screen } from "@testing-library/react";
 import NameAndPhoneNumberSection from "../NameAndPhoneNumberSection";
 
-// Test Suit 01
 describe("NameAndPhoneNumberSection", () => {
-  // TC01: Happy case - Render component with valid account information
   it("TC01: Happy case - Render component with valid account information - should render name and phone number correctly", () => {
     // ARRANGE
     const mockAccountInfor: AccountViewModel = {
@@ -30,7 +28,6 @@ describe("NameAndPhoneNumberSection", () => {
     expect(phoneInput).toBeDisabled();
   });
 
-  // TC02: When phone is null
   it("TC02: When phone is null - should render 'default' when phone number is null", () => {
     // ARRANGE
     const mockAccountInfor: AccountViewModel = {
@@ -48,7 +45,6 @@ describe("NameAndPhoneNumberSection", () => {
     expect(phoneInput).toBeDisabled();
   });
 
-  //   TC03: When accountInfor is undefined
   it("TC03: When accountInfor is undefined - should handle undefined accountInfor gracefully", () => {
     // ARRANGE
     // ACT
