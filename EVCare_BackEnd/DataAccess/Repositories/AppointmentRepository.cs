@@ -147,6 +147,7 @@ namespace DataAccess.Repositories
                         ? a.Employee.Account.First_Name + " " + a.Employee.Account.Last_Name
                         : null,
                     OrderId = a.OrderId,
+                    OrderStatus = a.Order.Status,
                     Services = a.AppointmentServices.Select(s => new ServiceViewFormModel
                     {
                         Id = s.ServiceId,

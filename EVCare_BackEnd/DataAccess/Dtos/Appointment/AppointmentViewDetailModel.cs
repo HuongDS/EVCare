@@ -23,6 +23,7 @@ namespace DataAccess.Dtos.Appointment
         public string? CustomerEmail { get; set; }
         public string? EmployeeName { get; set; }
         public int? OrderId { get; set; }
+        public OrderStatusEnum? OrderStatus { get; set; }
         public List<string> ImagesUrls { get; set; } = new();
         public List<ServiceViewFormModel> Services { get; set; } = new();
         public IEnumerable<TechnicianViewModel> Technicians { get; set; }
