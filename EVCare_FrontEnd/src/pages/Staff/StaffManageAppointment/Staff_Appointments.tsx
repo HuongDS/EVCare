@@ -180,11 +180,6 @@ export default function Staff_Appoinments() {
             />
           )}
 
-          {/* <ShowButton
-              onclick={() => dispatch(openModel3d())}
-              text="Show Model"
-            /> */}
-
           {!isLoading && (
             <Pagination
               pageIndex={currenPage}
@@ -196,6 +191,7 @@ export default function Staff_Appoinments() {
           )}
         </ListAppointmentStyled>
       </AppoitmentWrapper>
+
       {showProgressModal && selectedAppointmentId && (
         <Appoinment_Progress_Modal
           show={showProgressModal}
@@ -223,3 +219,4 @@ import {
   PageTransition,
   AppoitmentWrapper,
 } from "./styles/Staff_Appointments.styled";
+import SpinnerComponent from "../../../components/SpinnerComponent";

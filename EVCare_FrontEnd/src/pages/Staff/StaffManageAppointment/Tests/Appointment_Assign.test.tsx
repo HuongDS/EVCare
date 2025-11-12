@@ -43,6 +43,8 @@ const mockTechnician: TechnicianModel<TechnicianSkills> = {
   skills: mockSkills,
   status: "Available",
   workingSessionStatus: "",
+  completedOrders: 0,
+  kpiPerDays: 5,
 };
 
 const mockAppointment: AppointmentDetailModel<any> = {
