@@ -366,7 +366,7 @@ export const TechnicianCard = ({
         <Avatar
           src={
             technician.avatar ||
-            `https://ui-avatars.com/api/?name=${technician.fullName}&background=random`
+            `https://ui-avatars.com/api/?name=${technician.fullName}&background=00ad4e`
           }
           alt={technician.fullName}
         />

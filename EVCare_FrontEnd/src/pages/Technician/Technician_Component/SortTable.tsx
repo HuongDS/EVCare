@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Nav, DropdownButton, Menu } from "./Style/SortTable.styled";
 
-interface SortTableProps<T> {
-  sortName: T[];
-  active: T;
-  onChange: (val: T) => void;
+interface SortTableProps {
+  sortName: string[];
+  active: string;
+  onChange: (val: string) => void;
 }
 
-const SortTable = <T,>({ sortName, active, onChange }: SortTableProps<T>) => {
+const SortTable = ({ sortName, active, onChange }: SortTableProps) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -19,9 +19,9 @@ const SortTable = <T,>({ sortName, active, onChange }: SortTableProps<T>) => {
         {sortName.map((name) => (
           <span
             key={String(name)}
-            className={active === name ? "active" : ""}
+            className={active === name.replace(/\s+/g, "") ? "active" : ""}
             onClick={() => {
-              onChange(name);
+              onChange(name.replace(/\s+/g, ""));
               setOpen(false);
             }}
           >

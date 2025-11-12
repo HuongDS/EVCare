@@ -21,37 +21,17 @@ export const useGetTechnicianAppointments = (params?: {
 }) => {
   return useQuery({
     queryKey: ["TechnicianAppointments", params],
-    queryFn: async (): Promise<PageModel<TechnicianAppointmentsDto>> => {
+    queryFn: async () => {
       try {
-        const response = await api.get<ResponseDto<PageModel<TechnicianAppointmentsDto>>>(
-          "/api/Appointment/get-appointment-technician",
-          { params }
-        );
+        const response = await api.get<
+          ResponseDto<PageModel<TechnicianAppointmentsDto>>
+        >("/api/Appointment/get-appointment-technician", { params });
 
-        const data = response.data?.data;
-
-        return {
-          items: data?.items ?? [],
-          pageSize: data?.pageSize ?? params?.PageSize ?? 10,
-          pageIndex: data?.pageIndex ?? params?.PageIndex ?? 1,
-          totalItems: data?.totalItems ?? 0,
-          totalPages: data?.totalPages ?? 1,
-        };
+        return response.data;
       } catch (error) {
         handleError(error);
-        return {
-          items: [],
-          pageSize: params?.PageSize ?? 10,
-          pageIndex: params?.PageIndex ?? 1,
-          totalItems: 0,
-          totalPages: 1,
-        };
       }
     },
-
-    // staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
-    // refetchOnWindowFocus: false,
-    retry: 1,
+    refetchOnWindowFocus: false,
   });
 };

@@ -1,20 +1,16 @@
 // src/hooks/useTechnicianOrder.ts
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useNotification } from "../context/useNotification";
-import { useQueryClient } from "@tanstack/react-query"; // <-- THÊM IMPORT NÀY
+import { useQueryClient } from "@tanstack/react-query";
 
-import { updateOrderParts } from "../services/updateOrderPartApi";
-import { getAllParts } from "../services/partApi";
-import { useGetTechnicianAppointments } from "../services/appointmentTechnicianApi";
-import { updateAppointmentPartCondition } from "../services/appointmentPartCondition";
+import { useUpdateOrderParts } from "../services/updateOrderPartApi";
+import { useGetAllParts } from "../services/partApi";
+import { useUpdatePartCondition } from "../services/appointmentPartCondition";
 import { getTechnicianAddedParts } from "../services/getTechnicianOrder";
 
 import type { OrderPartsResponseDto } from "../models/OrderPartModel/Order_Parts_Model";
 import type { DamageLevelEnum } from "../models/enums/DamageLevelEnum";
-import type { TechnicianAppointmentsDto } from "../models/AppointmentsModel/Technician_Appointments_Model";
-import type { TechnicianWorkingSessionEnum } from "../models/enums";
-
 import { LENGTH } from "../constants/Code/Constants";
 
 interface UseTechnicianOrderProps {
@@ -31,68 +27,32 @@ export const useTechnicianOrder = ({
   const navigate = useNavigate();
   const location = useLocation();
   const notification = useNotification();
-  const queryClient = useQueryClient(); // <-- KHỞI TẠO queryClient
+  const queryClient = useQueryClient();
 
   const stateOrderId = (location.state as { orderId?: number })?.orderId;
   const [currentOrderId] = useState<number | null>(
     propOrderId ?? stateOrderId ?? null
   );
 
-  const [appointmentId, setAppointmentId] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
   const [selectedPart, setSelectedPart] =
     useState<OrderPartsResponseDto | null>(null);
-
+  const [page, setPage] = useState(1);
   const [cartOpen, setCartOpen] = useState(false);
   const [cart, setCart] = useState<
     { part: OrderPartsResponseDto; quantity: number }[]
   >([]);
-
-  const [allParts, setAllParts] = useState<OrderPartsResponseDto[]>([]);
-  const [displayParts, setDisplayParts] = useState<OrderPartsResponseDto[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSending, setIsSending] = useState(false);
   const pageSize = LENGTH.VIEW_PARTCARD_MAX;
 
-  const {
-    data: technicianPartsRes,
-    isLoading: isPartsLoading,
-    refetch: refetchTechnicianParts,
-  } = getTechnicianAddedParts(currentOrderId ?? undefined);
+  const { data: technicianPartsRes, isLoading: isPartsLoading } =
+    getTechnicianAddedParts(currentOrderId ?? undefined);
 
-  const { data: appointmentRes } = useGetTechnicianAppointments({
-    Status: "AddingPart" as TechnicianWorkingSessionEnum,
-    PageSize: 1000,
-    PageIndex: 1,
-  });
+  const { mutateAsync: updateOrderPart, isPending: orderUpdating } =
+    useUpdateOrderParts();
+  const { mutateAsync: updatePartCondition } = useUpdatePartCondition();
+  const { data: allParts } = useGetAllParts({});
 
-  // --- Fetch all parts ---
-  useEffect(() => {
-    const fetchAllParts = async () => {
-      if (!currentOrderId) return;
-      setIsLoading(true);
-      try {
-        const partsRes = await getAllParts({ pageIndex: 1, pageSize: 1000 });
-        setAllParts(partsRes.items ?? []);
-
-        const appointment = appointmentRes?.items?.find(
-          (a: TechnicianAppointmentsDto) => a.orderId === currentOrderId
-        );
-        if (appointment) setAppointmentId(appointment.id);
-      } catch (err) {
-        console.error("Failed to fetch parts or appointment", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAllParts();
-  }, [currentOrderId, appointmentRes]);
-
-  // --- Load parts added by technician ---
   useEffect(() => {
     if (technicianPartsRes) {
       const mappedCart =
@@ -109,24 +69,20 @@ export const useTechnicianOrder = ({
     }
   }, [technicianPartsRes]);
 
-  // --- Pagination & search ---
-  const updateDisplayParts = useCallback(() => {
+  const filteredParts = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    const filtered = allParts.filter(
+    return allParts?.data?.items.filter(
       (p) =>
         (query === "" || p.name.toLowerCase().includes(query)) &&
         (selectedCategory ? p.categoryId === Number(selectedCategory) : true)
     );
-    setTotalPages(Math.ceil(filtered.length / pageSize));
+  }, [allParts, searchQuery, selectedCategory]);
+
+  const displayParts = useMemo(() => {
     const start = (page - 1) * pageSize;
-    setDisplayParts(filtered.slice(start, start + pageSize));
-  }, [allParts, searchQuery, page, pageSize, selectedCategory]);
+    return filteredParts?.slice(start, start + pageSize);
+  }, [filteredParts, page, pageSize]);
 
-  useEffect(() => {
-    updateDisplayParts();
-  }, [updateDisplayParts]);
-
-  // --- Cart logic ---
   const handleAddToCart = (part: OrderPartsResponseDto, quantity: number) => {
     setCart((prev) => {
       const exist = prev.find((item) => item.part.id === part.id);
@@ -146,47 +102,44 @@ export const useTechnicianOrder = ({
     setCart((prev) => prev.filter((item) => item.part.id !== partId));
   };
 
-  // --- API update logic ---
+  const handleCartQuantityChange = (partId: number, quantity: number) => {
+    setCart((prev) =>
+      prev.map((item) =>
+        item.part.id === partId ? { ...item, quantity } : item
+      )
+    );
+  };
+
   const handleSendCart = async (
     damageLevels: Record<number, DamageLevelEnum>
   ) => {
-    if (!currentOrderId || !appointmentId || isSending) return;
-    setIsSending(true);
+    if (!currentOrderId || orderUpdating) return;
     try {
-      await Promise.all([
-        updateOrderParts({
-          orderId: currentOrderId,
-          parts: cart.map((c) => ({ id: c.part.id, quantity: c.quantity })),
-        }),
-        updateAppointmentPartCondition({
-          appointmentId,
-          partDamageLevels: Object.entries(damageLevels).map(([id, level]) => ({
-            partId: Number(id),
-            levelEnum: level,
-          })),
-        }),
-      ]);
+      await updateOrderPart({
+        orderId: currentOrderId,
+        parts: cart.map((c) => ({ id: c.part.id, quantity: c.quantity })),
+      });
+
+      await updatePartCondition({
+        appointmentId: currentOrderId,
+        partDamageLevels: Object.entries(damageLevels).map(([id, level]) => ({
+          partId: Number(id),
+          levelEnum: level,
+        })),
+      });
+
       notification.success({
         message: "Update Successful",
         description: "Parts and damage levels updated successfully!",
         showProgress: true,
       });
 
-      // VÔ HIỆU HÓA CACHE ĐỂ BUỘC useAppointmentCardProgress REFECTH DỮ LIỆU MỚI
-
-      // Invalidate Parts
       await queryClient.invalidateQueries({
         queryKey: ["TechnicianAddedParts", currentOrderId],
       });
 
-      // Invalidate Damage Levels
-      await queryClient.invalidateQueries({
-        queryKey: ["AppointmentPartCondition", appointmentId],
-      });
-
       onPartsUpdated?.(currentOrderId);
       setCartOpen(false);
-      refetchTechnicianParts();
       navigate("/technician/my-jobs", { state: { tab: "ADDING_PART" } });
     } catch (err) {
       console.error(err);
@@ -195,42 +148,45 @@ export const useTechnicianOrder = ({
         description: "Failed to update parts or damage levels.",
         showProgress: true,
       });
-    } finally {
-      setIsSending(false);
     }
   };
 
   const handleBack = () => navigate(-1);
-  const handleProductCardClick = (part: OrderPartsResponseDto) => {
+  const handleOpenProductModal = (part: OrderPartsResponseDto) => {
     if (part.isDeleted || part.quantity <= 0) return;
     setSelectedPart(part);
     setOpen(true);
+  };
+  const handleCloseProductModal = () => setOpen(false);
+  const handleOpenCart = () => setCartOpen(true);
+  const handleCloseCart = () => setCartOpen(false);
+  const handlePageChange = (newPage: number) => setPage(newPage);
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setPage(1);
   };
 
   return {
     cart,
     displayParts,
     page,
-    totalPages,
     searchQuery,
-    isLoading: isLoading || isPartsLoading,
-    isSending,
+    isLoading: isPartsLoading,
+    isSending: orderUpdating,
     pageSize,
     open,
     selectedPart,
     cartOpen,
-
-    setIsSending,
-    setCart,
-    setOpen,
-    setCartOpen,
-    setPage,
-    setSearchQuery,
-    setSelectedPart,
     handleAddToCart,
     handleRemoveFromCart,
+    handleCartQuantityChange,
     handleSendCart,
     handleBack,
-    handleProductCardClick,
+    handleOpenProductModal,
+    handleCloseProductModal,
+    handleOpenCart,
+    handleCloseCart,
+    handlePageChange,
+    handleSearchChange,
   };
 };
