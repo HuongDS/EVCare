@@ -343,24 +343,7 @@ describe("Staff Appointments UI", () => {
     );
   });
 
-<<<<<<< HEAD
   it("TC11: calls API with new pageIndex when pagination changes", () => {
-=======
-  it("TC11: dispatches 'openModel3d' action when 'Show Model' is clicked", () => {
-    // ARRANGE
-    const { store } = renderWithProviders(<Staff_Appointments />);
-    const showModelButton = screen.getByText("Show Model");
-    const mockAppointmentId = 1;
-
-    // ACT
-    fireEvent.click(showModelButton);
-
-    // ASSERT
-    expect(store.dispatch).toHaveBeenCalledWith(openModel3d(mockAppointmentId));
-  });
-
-  it("TC12: calls API with new pageIndex when pagination changes", () => {
->>>>>>> 3dec45b7feb65001e83f0e61fd26440901447359
     // ARRANGE
     renderWithProviders(<Staff_Appointments />);
 
