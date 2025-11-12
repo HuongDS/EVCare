@@ -6,6 +6,7 @@ using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Appointment;
+using DataAccess.Dtos.AppointmentService;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Part;
@@ -697,6 +698,17 @@ namespace DataAccess.Repositories
             return await _dbContext.Appointments
                 .Where(a => a.VehicleId == vehicleId)
                 .AnyAsync(a => a.Status != AppointmentStatusEnum.Done && a.Status != AppointmentStatusEnum.Canceled);
+        }
+
+        public async Task<IEnumerable<AppointmentServiceViewModel>> GetAppointmentServices(int appointmentId) {
+            return await _dbContext.AppointmentServices
+                .AsNoTracking()
+                .Where(x=>x.AppointmentId == appointmentId)
+                .Include(x=>x.Service)
+                .Select(x=> new AppointmentServiceViewModel {
+                    ServiceId = x.ServiceId,
+                    ServiceName = x.Service.Name,
+                }).ToListAsync();
         }
     }
 }

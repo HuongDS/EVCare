@@ -15,12 +15,16 @@ namespace Application.Service
     {
         private readonly IServiceRepository _serviceRepository;
         private readonly IServiceCategoryRepository _serviceCategoryRepository;
+        private readonly IPartRepository _partRepository;
         private readonly IMapper _mapper;
-        public ServiceService(IServiceRepository serviceRepository, IMapper mapper,IServiceCategoryRepository serviceCategoryRepository)
+        private readonly IServicePartRepository _servicePartRepository;
+        public ServiceService(IServiceRepository serviceRepository, IMapper mapper,IServiceCategoryRepository serviceCategoryRepository, IPartRepository partRepository, IServicePartRepository servicePartRepository)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
             _serviceCategoryRepository = serviceCategoryRepository;
+            _partRepository = partRepository;
+            _servicePartRepository = servicePartRepository;
 
         }
 
@@ -38,9 +42,22 @@ namespace Application.Service
                 throw new Exception("Service Category is inactive");
             }
 
+            foreach(var partId in model.PartsIds)
+            {
+                var part = await _partRepository.GetByIdAsync(partId);
+                if(part == null)
+                {
+                    throw new Exception($"Part with id {partId} not found");
+                }
+                if(part.Deleted_At != DateTime.MinValue)
+                {
+                    throw new Exception($"Part with id {partId} is inactive");
+                }
+            }
+        
             var data = _mapper.Map<DataAccess.Entities.Service>(model);
-
             var entity = await _serviceRepository.AddAsync(data);
+            await _servicePartRepository.AddRangeAsync(entity.Id, model.PartsIds);
             return entity.Id;
         }
 
@@ -97,6 +114,18 @@ namespace Application.Service
             {
                 throw new Exception("Source not found");
             }
+            foreach (var partId in model.PartsIds) {
+                var part = await _partRepository.GetByIdAsync(partId);
+                if (part == null) {
+                    throw new Exception($"Part with id {partId} not found");
+                }
+                if (part.Deleted_At != DateTime.MinValue) {
+                    throw new Exception($"Part with id {partId} is inactive");
+                }
+            }
+            await _servicePartRepository.DeleteByServiceIdAsync(model.Id);
+            await _servicePartRepository.AddRangeAsync(model.Id, model.PartsIds);
+
             _mapper.Map(model, entity);
             return await _serviceRepository.UpdateAsync(entity);
         }

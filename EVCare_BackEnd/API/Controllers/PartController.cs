@@ -62,6 +62,28 @@ namespace API.Controllers
             }
         }
 
+        [HttpGet("service-parts")]
+        [Authorize(Roles = "Technician, Staff,Admin")]
+        public async Task<IActionResult> GetPartsForService([FromQuery] PartForServiceQueryDto model) {
+            try {
+                var data = await _partService.GetPartsForService(model);
+                return Ok(new ResponseDto<PageResultDto<PartViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.PART_GET_SUCCESSFULLY,
+                    data = data
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    data = null,
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                });
+            }
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ServiceFilter(typeof(SetAccountIdFilter))]

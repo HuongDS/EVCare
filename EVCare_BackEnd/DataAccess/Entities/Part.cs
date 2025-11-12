@@ -23,6 +23,7 @@ namespace DataAccess.Entities
         public DateTime Updated_At { get; set; }
         public ICollection<OrderPart> OrderParts { get; set; }
         public ICollection<PartHistory> PartHistories { get; set; }
+        public ICollection<ServicePart> ServiceParts { get; set; }
         public ICollection<AppointmentPartCondition> AppointmentPartConditions { get; set; }
     }
 }
