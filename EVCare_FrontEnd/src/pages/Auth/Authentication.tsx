@@ -8,11 +8,6 @@ import ForgotPassword from "./sections/ForgotPassword";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import OTPForm from "./sections/OTPForm";
 
-// interface AuthProps {
-//   show: boolean;
-//   handleClose: () => void;
-// }
-
 export default function Authentication() {
   const {
     isSignUp,
@@ -40,7 +35,6 @@ export default function Authentication() {
     setPhone,
     setIsForgot,
     setIsOTP,
-    // setIsReset,
     setOtp,
 
     handleLogin,

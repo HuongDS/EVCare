@@ -11,16 +11,25 @@ vi.mock("../Authentication.styled", () => ({
 }));
 
 vi.mock("../sections/SignUpForm", () => ({
-  default: () => {
-    return <div data-testid="sign-up-form" />;
-  },
+  default: ({ handleSignUp, disable }: any) => (
+    <div data-testid="sign-up-form">
+      <button onClick={handleSignUp} disabled={disable}>
+        Sign Up
+      </button>
+    </div>
+  ),
 }));
 
 vi.mock("../sections/SignInForm", () => ({
-  default: ({ handleIsForgot }: any) => {
+  default: ({ handleIsForgot, handleLogin, disable }: any) => {
     return (
       <div data-testid="sign-in-form">
-        <button onClick={handleIsForgot}>Forgot Password</button>
+        <button onClick={handleIsForgot} disabled={disable}>
+          Forgot Password
+        </button>
+        <button onClick={handleLogin} disabled={disable}>
+          Login
+        </button>
       </div>
     );
   },
@@ -29,6 +38,25 @@ vi.mock("../sections/SignInForm", () => ({
 vi.mock("../google/GoogleButton", () => ({
   default: () => {
     return <div data-testid="google-button" />;
+  },
+}));
+
+vi.mock("../sections/SignUpForm", () => ({
+  default: ({ handleSignUp }: any) => (
+    <div data-testid="sign-up-form">
+      <button onClick={handleSignUp}>Sign Up</button>
+    </div>
+  ),
+}));
+
+vi.mock("../sections/SignInForm", () => ({
+  default: ({ handleIsForgot, handleLogin }: any) => {
+    return (
+      <div data-testid="sign-in-form">
+        <button onClick={handleIsForgot}>Forgot Password</button>
+        <button onClick={handleLogin}>Login</button>
+      </div>
+    );
   },
 }));
 
@@ -90,5 +118,25 @@ describe("AuthFormProps", () => {
     // ASSERT
     expect(mockProps.setIsForgot).toHaveBeenCalledTimes(1);
     expect(mockProps.setIsForgot).toHaveBeenCalledWith(true);
+  });
+
+  it("TC05: should call handleSignUp when sign-up button is clicked", async () => {
+    // ARRANGE
+    const user = userEvent.setup();
+    render(<AuthForm {...mockProps} isSignUp={true} />);
+    // ACT
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+    // ASSERT
+    expect(mockProps.handleSignUp).toHaveBeenCalledOnce();
+  });
+
+  it("TC06: should call handleLogin when login button is clicked", async () => {
+    // ARRANGE
+    const user = userEvent.setup();
+    render(<AuthForm {...mockProps} isSignUp={false} />);
+    // ACT
+    await user.click(screen.getByRole("button", { name: /login/i }));
+    // ASSERT
+    expect(mockProps.handleLogin).toHaveBeenCalledOnce();
   });
 });

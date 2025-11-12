@@ -65,4 +65,26 @@ describe("AddNewVehicleFields", () => {
     expect(screen.queryByText("Model is required")).not.toBeInTheDocument();
     expect(screen.queryByText("License plate is required")).not.toBeInTheDocument();
   });
+
+  it("TC05: should call handleSelectVehicleCategory when user selects a model", async () => {
+    // ARRANGE
+    render(<AddNewVehicleFields {...mockProps} />);
+    const user = userEvent.setup();
+    const select = screen.getByLabelText(/Vehicle Model/i);
+    // ACT
+    await user.selectOptions(select, "999");
+    // ASSERT
+    expect(mockProps.handleSelectVehicleCategory).toHaveBeenCalledOnce();
+  });
+
+  it("TC06: should only display the licensePlate error", async () => {
+    // ARRANGE
+    const partialError = {
+      licensePlate: "License plate is required",
+    };
+    render(<AddNewVehicleFields {...mockProps} errors={partialError} />);
+    // ACT
+    // ASSERT
+    expect(screen.getByText("License plate is required")).toBeInTheDocument();
+  });
 });
