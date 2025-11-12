@@ -1,7 +1,10 @@
+import axios from "axios";
 import { api } from "../api/api";
 import type { ReviewCreateDto } from "../models/Review/ReviewCreateDto";
-import type { ReviewResponseDto, ResponseDto, PageModel } from "../models/Review/ReviewResponseDto";
+import type { ReviewResponseDto, ResponseDto } from "../models/Review/ReviewResponseDto";
 import { handleError } from "../utils/errorHandler";
+import { ERROR_MESSAGE } from "../constants/messages/Message";
+import type { PageResultDto } from "../models/PageResult/PageResultDto";
 
 export async function review(data: ReviewCreateDto) {
   try {
@@ -12,37 +15,23 @@ export async function review(data: ReviewCreateDto) {
   }
 }
 
-
-export async function getAllReview(
-  pageIndex = 1,
-  pageSize = 10,
-  rating?: number | null,
-  serviceIds?: number[]
-): Promise<ResponseDto<PageModel<ReviewResponseDto>>> {
+export async function getAllReview(params: {
+  minRating: number;
+  maxRating: number;
+  serviceIds?: number[];
+  pageSize: number;
+  pageIndex: number;
+  sortField: string;
+  sortOrder: string;
+}) {
   try {
-    const params: Record<string, unknown> = {
-      pageIndex,
-      pageSize,
-    };
-
-    if (rating !== null && rating !== undefined) params.rating = rating;
-    if (serviceIds && serviceIds.length > 0)
-      params.serviceIds = serviceIds.join(",");
-
-    const response = await api.get("/api/Review", { params });
+    const response = await api.get<ResponseDto<PageResultDto<ReviewResponseDto>>>("/api/Review", { params: params });
     return response.data;
   } catch (error) {
-    handleError(error);
-    return {
-      statusCode: 500,
-      message: "Failed to get reviews",
-      data: {
-        items: [],
-        pageSize: 0,
-        pageIndex: 0,
-        totalItems: 0,
-        totalPages: 0,
-      },
-    };
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.message || error.response?.data.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }

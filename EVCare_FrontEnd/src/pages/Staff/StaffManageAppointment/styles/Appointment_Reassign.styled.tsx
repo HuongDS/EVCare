@@ -376,7 +376,6 @@ export const SkillTag = styled.span<{ $isMore?: boolean }>`
 export const ActionButton = styled.button<{ $disabled?: boolean }>`
   width: 100%;
   padding: 10px;
-  margin-top: auto;
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -384,6 +383,7 @@ export const ActionButton = styled.button<{ $disabled?: boolean }>`
   cursor: ${(props) => (props.$disabled ? "not-allowed" : "pointer")};
   transition: all 0.3s ease;
   font-family: "Outfit", sans-serif;
+  margin-top: auto;
 
   ${(props) =>
     props.$disabled
@@ -392,12 +392,12 @@ export const ActionButton = styled.button<{ $disabled?: boolean }>`
     color: #9e9e9e;
   `
       : `
-    background: #00ad4e;
+    background: #2196f3;
     color: white;
     box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
 
     &:hover {
-      background: #2ede12;
+      background: #1976d2;
       box-shadow: 0 3px 8px rgba(33, 150, 243, 0.4);
     }
   `}

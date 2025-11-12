@@ -152,5 +152,12 @@ namespace DataAccess.Repositories
                 })
                 .FirstOrDefaultAsync();
         }
+
+        public async Task MarkAvaliableTechnician(List<int> technicianId) {
+           
+            await _dbContext.Employees
+                .Where(x => technicianId.Contains(x.TechnicianId.Value) && x.Status != EmployeeStatusEnum.OnLeave)
+                .ExecuteUpdateAsync(x => x.SetProperty(x => x.Status, x => EmployeeStatusEnum.Available));
+        }
     }
 }

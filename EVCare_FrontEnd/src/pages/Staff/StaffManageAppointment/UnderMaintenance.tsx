@@ -8,7 +8,7 @@ import {
   ProgressLabel,
   ProgressText,
   ExpectedBox,
-} from "./styles/UnderMaintenance";
+} from "./styles/UnderMaintenance.styled";
 
 export default function UnderMaintenance() {
   return (
@@ -30,8 +30,7 @@ export default function UnderMaintenance() {
 
         <ExpectedBox>
           <Calendar size={16} />
-          The technician is repairing the customer’s vehicle, please wait for
-          the next step!
+          The technician is repairing the customer’s vehicle, please wait for the next step!
         </ExpectedBox>
       </ContentCard>
     </PageContainer>

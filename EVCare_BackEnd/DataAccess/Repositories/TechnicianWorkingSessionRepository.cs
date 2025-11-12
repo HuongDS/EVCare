@@ -45,6 +45,15 @@ namespace DataAccess.Repositories
             return !anyComplete;
         }
 
+        public async Task UpdateStatusTechnicinInOrder(List<int> technicianId, int orderId) {
+            await _dbContext.TechnicianWorkingSessions
+                .Where(x => technicianId.Contains(x.TechnicianId) && x.OrderId == orderId)
+                .ExecuteUpdateAsync(s=>s.SetProperty(x=>x.Status, Enums.TechnicianWorkingSessionEnum.Completed)
+                 .SetProperty(x=>x.EndTime, DateTime.Now)
+                );
+
+        }
+
         public async Task<TechnicianWorkingSessionViewModel> GetTechnicianWorkingSession(int orderId, int technicianId)
         {
             return await _dbContext.TechnicianWorkingSessions.AsNoTracking()
@@ -95,6 +104,8 @@ namespace DataAccess.Repositories
                 var employee = await _dbContext.Employees.FirstOrDefaultAsync(x=>x.Technician.Id == technician);
                 if(employee.Status==Enums.EmployeeStatusEnum.Busy) employee.Status = Enums.EmployeeStatusEnum.Available;
                 data.EndTime = DateTime.Now;
+                var technicianEntity = await _dbContext.Technicians.FirstOrDefaultAsync(x => x.Id == technician);
+                technicianEntity.CompletedOrders += 1;
             }
             await _dbContext.SaveChangesAsync();
 

@@ -31,7 +31,6 @@ interface props {
   onViewAppointmentDetail: (appointmentId: number) => void;
   appointmentId: number;
   loadingModalDetail: number | null;
-  setModel3dData: (v: number) => void;
 }
 
 export default function AppointmentHistoryCard({
@@ -39,7 +38,6 @@ export default function AppointmentHistoryCard({
   onViewAppointmentDetail,
   appointmentId,
   loadingModalDetail,
-  setModel3dData,
 }: props) {
   const dispatch = useAppDispatch();
   const [isDisplayReviewButton, setIsDisplayReviewButton] = useState(false);
@@ -63,8 +61,7 @@ export default function AppointmentHistoryCard({
     if (data.status === AppointmentStatusEnum.DONE) {
       setIsDisplayReviewButton(true);
     }
-    if (data.appointmentImages.length > 1)
-      setPics(data.appointmentImages.map((p, i) => ({ id: i, url: p })));
+    if (data.appointmentImages.length > 1) setPics(data.appointmentImages.map((p, i) => ({ id: i, url: p })));
   }, [data.status, data.appointmentImages]);
 
   return (
@@ -77,8 +74,7 @@ export default function AppointmentHistoryCard({
       <GeneralStyled>
         <DateStyled>
           <h5>
-            Date:{" "}
-            <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
+            Date: <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
           </h5>
           <div>
             <StatusTag status={data.status} />
@@ -92,10 +88,7 @@ export default function AppointmentHistoryCard({
             {pics.length > 1 ? (
               <LazyReviewPicsSection data={pics} />
             ) : (
-              <img
-                src={data.appointmentImages ? data.appointmentImages[0] : Car}
-                alt=""
-              />
+              <img src={data.appointmentImages ? data.appointmentImages[0] : Car} alt="" />
             )}
           </ImageWrapper>
           <ServiceWrapper>
@@ -110,24 +103,11 @@ export default function AppointmentHistoryCard({
           ) : (
             <>
               <ButtonAction
-                text="View Detail"
+                text="View Details"
                 color="white"
                 backgroundColor="#00ad4e"
                 action={() => onViewAppointmentDetail(appointmentId)}
               />
-
-              {/* {data.status === AppointmentStatusEnum.INPROGRESS ||
-                (data.status === AppointmentStatusEnum.DONE && (
-                  <ButtonAction
-                    text="View 3D Model"
-                    color="white"
-                    backgroundColor="#00ad4e"
-                    action={() => {
-                      setModel3dData(data.id);
-                      dispatch(openModel3d());
-                    }}
-                  />
-                ))} */}
 
               {(data.status === AppointmentStatusEnum.IN_PROGRESS ||
                 data.status === AppointmentStatusEnum.READY_FOR_PICKUP ||
@@ -137,32 +117,21 @@ export default function AppointmentHistoryCard({
                   color="white"
                   backgroundColor="#00ad4e"
                   action={() => {
-                    setModel3dData(appointmentId);
-                    dispatch(openModel3d());
+                    dispatch(openModel3d(appointmentId));
                   }}
                 />
               )}
 
               {isDisplayReviewButton && !data.reviewId && (
                 <div style={{ marginLeft: "10px" }}>
-                  <ButtonAction
-                    text="Write Review"
-                    color="white"
-                    backgroundColor="#00ad4e"
-                    action={() => onOpen()}
-                  />
+                  <ButtonAction text="Write Review" color="white" backgroundColor="#00ad4e" action={() => onOpen()} />
                 </div>
               )}
             </>
           )}
           {isOpenReviewForm && (
             <ReviewWrapper>
-              {/* <ReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} /> */}
-              <LazyReviewModal
-                appointmentData={data}
-                onClose={onClose}
-                open={isOpenReviewForm}
-              />
+              <LazyReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} />
             </ReviewWrapper>
           )}
         </ButtonStyle>

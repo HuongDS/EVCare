@@ -1,51 +1,62 @@
 import React, { useState, useEffect } from "react";
 import { formatDate } from "../../../utils/formatDate";
-import { updateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
+import { useUpdateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
 import { getAppointmentPartCondition } from "../../../services/appointmentPartCondition";
 import { fetchTechnicianAddedParts } from "../../../services/getTechnicianOrder";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
-import { DamageLevelEnum, DamageLevelLabels, DamageLevelStringEnum } from "../../../models/enums/DamageLevelEnum";
+import {
+  DamageLevelEnum,
+  DamageLevelLabels,
+  DamageLevelStringEnum,
+} from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import { useNotification } from "../../../context/useNotification";
 import { useQuery } from "@tanstack/react-query";
-
-import {
-  CardWrapper,
-  CardHeader,
-  StatusBadge,
-  CardBody,
-  InfoItem,
-  ImageCarousel,
-  ImageItem,
-  ListSection,
-  SectionBox,
-  SectionTitle,
-  SubTitle,
-  ListWrapper,
-  DamageLevelBadgeStyled,
-  ButtonWrapper,
-  PartsTable,
-  ServicePillContainer,
-  ServicePill,
-} from "./Style/TechnicianAppointmentCard.styled";
-
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import { FaUser, FaCar, FaCalendarAlt, FaPhone, FaWrench, FaTools } from "react-icons/fa";
+import {
+  User,
+  Car,
+  Calendar,
+  Phone,
+  Wrench,
+  Package,
+  ChevronDown,
+  ChevronUp,
+  Image as ImageIcon,
+} from "lucide-react";
 
 type Props = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
+  onStatusChange?: (
+    orderId: number,
+    newStatus: TechnicianWorkingSessionEnum
+  ) => void;
   onPartsUpdated?: (orderId: number) => void;
 };
 
-const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPartsUpdated }) => {
+const TechnicianAppointmentCard: React.FC<Props> = ({
+  data,
+  onStatusChange,
+  onPartsUpdated,
+}) => {
   const notification = useNotification();
-  const [currentStatus, setCurrentStatus] = useState<TechnicianWorkingSessionEnum>(
-    data.status as TechnicianWorkingSessionEnum
-  );
-  const [damageLevels, setDamageLevels] = useState<Record<number, DamageLevelEnum>>({});
+  const [currentStatus, setCurrentStatus] =
+    useState<TechnicianWorkingSessionEnum>(
+      data.status as TechnicianWorkingSessionEnum
+    );
+  const [damageLevels, setDamageLevels] = useState<
+    Record<number, DamageLevelEnum>
+  >({});
+  const [expandedSections, setExpandedSections] = useState({
+    images: false,
+    services: false,
+    parts: false,
+  });
+
+  const { mutateAsync: updateWorkingSession } =
+    useUpdateTechnicianWorkingSession();
 
   const {
     data: parts = [],
@@ -94,7 +105,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
     onStatusChange?.(data.orderId, nextStatus);
 
     try {
-      await updateTechnicianWorkingSession({
+      await updateWorkingSession({
         orderId: data.orderId,
         status: nextStatus,
       });
@@ -115,108 +126,211 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
     setCurrentStatus(data.status as TechnicianWorkingSessionEnum);
   }, [data.status]);
 
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
+
   return (
-    <CardWrapper $status={currentStatus}>
+    <CardContainer>
       <CardHeader>
-        <div className="id-badge">Appointment #{data.id}</div>
-        <h3>{data.customerName}</h3>
-        <StatusBadge $status={currentStatus}>{currentStatus.replace("_", " ")}</StatusBadge>
+        <HeaderLeft>
+          <AppointmentId>#{data.id}</AppointmentId>
+          <StatusBadge $status={currentStatus}>
+            {currentStatus.replace("_", " ")}
+          </StatusBadge>
+        </HeaderLeft>
       </CardHeader>
 
       <CardBody>
-        <InfoItem>
-          <FaUser />
-          <span>{data.customerName}</span>
-        </InfoItem>
-        <InfoItem>
-          <FaCar />
-          <span>
-            {data.vehicleModel} ({data.licensePlate})
-          </span>
-        </InfoItem>
-        <InfoItem>
-          <FaPhone />
-          <span>{data.phoneNumber ?? "N/A"}</span>
-        </InfoItem>
-        <InfoItem>
-          <FaCalendarAlt />
-          <span>{formatDate(data.appointmentDate)}</span>
-        </InfoItem>
+        <InfoGrid>
+          <InfoItem>
+            <InfoIcon>
+              <User size={16} />
+            </InfoIcon>
+            <InfoText>
+              <InfoLabel>Customer</InfoLabel>
+              <InfoValue>{data.customerName}</InfoValue>
+            </InfoText>
+          </InfoItem>
+
+          <InfoItem>
+            <InfoIcon>
+              <Car size={16} />
+            </InfoIcon>
+            <InfoText>
+              <InfoLabel>Vehicle</InfoLabel>
+              <InfoValue>{data.vehicleModel}</InfoValue>
+            </InfoText>
+          </InfoItem>
+
+          <InfoItem>
+            <InfoIcon>
+              <Phone size={16} />
+            </InfoIcon>
+            <InfoText>
+              <InfoLabel>Phone</InfoLabel>
+              <InfoValue>{data.phoneNumber ?? "N/A"}</InfoValue>
+            </InfoText>
+          </InfoItem>
+
+          <InfoItem>
+            <InfoIcon>
+              <Calendar size={16} />
+            </InfoIcon>
+            <InfoText>
+              <InfoLabel>Date</InfoLabel>
+              <InfoValue>{formatDate(data.appointmentDate)}</InfoValue>
+            </InfoText>
+          </InfoItem>
+        </InfoGrid>
+
+        {/* Images Section */}
+        {data.appointmentImages?.length > 0 && (
+          <CollapsibleSection>
+            <SectionHeader onClick={() => toggleSection("images")}>
+              <SectionTitle>
+                <ImageIcon size={18} />
+                Images ({data.appointmentImages.length})
+              </SectionTitle>
+              {expandedSections.images ? (
+                <ChevronUp size={20} />
+              ) : (
+                <ChevronDown size={20} />
+              )}
+            </SectionHeader>
+            {expandedSections.images && (
+              <ImageGrid>
+                {data.appointmentImages.map((img, idx) => (
+                  <ImageThumb key={idx} src={img} alt={`img-${idx}`} />
+                ))}
+              </ImageGrid>
+            )}
+          </CollapsibleSection>
+        )}
+
+        {/* Services Section */}
+        <CollapsibleSection>
+          <SectionHeader onClick={() => toggleSection("services")}>
+            <SectionTitle>
+              <Wrench size={18} />
+              Services ({data.services?.length || 0})
+            </SectionTitle>
+            {expandedSections.services ? (
+              <ChevronUp size={20} />
+            ) : (
+              <ChevronDown size={20} />
+            )}
+          </SectionHeader>
+          {expandedSections.services && (
+            <ServiceList>
+              {data.services?.length ? (
+                data.services.map((s, idx) => (
+                  <ServiceTag key={idx}>{s}</ServiceTag>
+                ))
+              ) : (
+                <EmptyText>No services</EmptyText>
+              )}
+            </ServiceList>
+          )}
+        </CollapsibleSection>
+
+        {/* Parts Section */}
+        <CollapsibleSection>
+          <SectionHeader onClick={() => toggleSection("parts")}>
+            <SectionTitle>
+              <Package size={18} />
+              Parts Added ({parts.length})
+            </SectionTitle>
+            {expandedSections.parts ? (
+              <ChevronUp size={20} />
+            ) : (
+              <ChevronDown size={20} />
+            )}
+          </SectionHeader>
+          {expandedSections.parts && (
+            <PartsContainer>
+              {isLoadingParts ? (
+                <SpinnerComponent />
+              ) : parts.length > 0 ? (
+                <PartsTable>
+                  <thead>
+                    <tr>
+                      <th>Part</th>
+                      <th>Qty</th>
+                      <th>Price</th>
+                      <th>Damage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {parts.map((p) => (
+                      <tr key={p.partID}>
+                        <td>{p.partName}</td>
+                        <td>{p.quantity}</td>
+                        <td>{p.price.toLocaleString()}₫</td>
+                        <td>
+                          <DamageBadge
+                            $level={
+                              damageLevels[p.partID] ??
+                              DamageLevelEnum.NotAssessed
+                            }
+                          >
+                            {
+                              DamageLevelLabels[
+                                damageLevels[p.partID] ??
+                                  DamageLevelEnum.NotAssessed
+                              ]
+                            }
+                          </DamageBadge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </PartsTable>
+              ) : (
+                <EmptyText>No parts added</EmptyText>
+              )}
+            </PartsContainer>
+          )}
+        </CollapsibleSection>
       </CardBody>
 
-      {data.appointmentImages?.length > 0 && (
-        <ImageCarousel>
-          {data.appointmentImages.map((img, idx) => (
-            <ImageItem key={idx}>
-              <img src={img} alt={`appointment-${idx}`} />
-            </ImageItem>
-          ))}
-        </ImageCarousel>
-      )}
-
-      <ListSection>
-        <SectionBox>
-          <SectionTitle>
-            <FaWrench /> Services
-          </SectionTitle>
-          <ListWrapper>
-            {data.services?.length ? (
-              <ServicePillContainer>
-                {data.services.map((s, idx) => (
-                  <ServicePill key={idx}>{s}</ServicePill>
-                ))}
-              </ServicePillContainer>
-            ) : (
-              <div className="empty">No services requested</div>
-            )}
-          </ListWrapper>
-        </SectionBox>
-
-        <SectionBox>
-          <SectionTitle>
-            <FaTools /> Parts
-            <SubTitle>Only the parts you have added</SubTitle>
-          </SectionTitle>
-          <ListWrapper>
-            {isLoadingParts ? (
-              <SpinnerComponent />
-            ) : parts.length > 0 ? (
-              <PartsTable>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Damage Level</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {parts.map((p) => (
-                    <tr key={p.partID}>
-                      <td>{p.partName}</td>
-                      <td>{p.quantity}</td>
-                      <td>{p.price.toLocaleString()}₫</td>
-                      <td>
-                        <DamageLevelBadgeStyled $level={damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed}>
-                          {DamageLevelLabels[damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed]}
-                        </DamageLevelBadgeStyled>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </PartsTable>
-            ) : (
-              <div className="empty">No parts added</div>
-            )}
-          </ListWrapper>
-        </SectionBox>
-      </ListSection>
-
-      <ButtonWrapper>
-        <ReviewButton status={currentStatus} onAction={handleAction} appointment={data} orderId={data.orderId} />
-      </ButtonWrapper>
-    </CardWrapper>
+      <CardFooter>
+        <ReviewButton
+          status={currentStatus}
+          onAction={handleAction}
+          appointment={data}
+          orderId={data.orderId}
+        />
+      </CardFooter>
+    </CardContainer>
   );
 };
 
 export default TechnicianAppointmentCard;
+
+import {
+  AppointmentId,
+  CardBody,
+  CardContainer,
+  CardFooter,
+  CardHeader,
+  CollapsibleSection,
+  DamageBadge,
+  EmptyText,
+  HeaderLeft,
+  ImageGrid,
+  ImageThumb,
+  InfoGrid,
+  InfoIcon,
+  InfoItem,
+  InfoLabel,
+  InfoText,
+  InfoValue,
+  PartsContainer,
+  PartsTable,
+  SectionHeader,
+  SectionTitle,
+  ServiceList,
+  ServiceTag,
+  StatusBadge,
+} from "./Style/TechnicianAppointmentCard.styled";

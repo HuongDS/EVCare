@@ -22,6 +22,17 @@ export async function updateOrderParts(payload: UpdateOrderPartDto) {
 export const useUpdateOrderParts = () => {
   return useMutation({
     mutationKey: ["UpdateOrderParts"],
-    mutationFn: (payload: UpdateOrderPartDto) => updateOrderParts(payload),
+    mutationFn: async (payload: UpdateOrderPartDto) => {
+      try {
+        const response = await api.put<ResponseDto<number>>(
+          "/api/Order/parts",
+          payload
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        throw error;
+      }
+    },
   });
 };
