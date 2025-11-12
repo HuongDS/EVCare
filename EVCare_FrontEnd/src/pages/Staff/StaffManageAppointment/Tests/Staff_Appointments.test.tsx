@@ -347,13 +347,14 @@ describe("Staff Appointments UI", () => {
   it("TC11: dispatches 'openModel3d' action when 'Show Model' is clicked", () => {
     // ARRANGE
     const { store } = renderWithProviders(<Staff_Appointments />);
-    const showModelButton = screen.getByRole("button", { name: "Show Model" });
+    const showModelButton = screen.getByText("Show Model");
+    const mockAppointmentId = 1;
 
     // ACT
     fireEvent.click(showModelButton);
 
     // ASSERT
-    expect(store.dispatch).toHaveBeenCalledWith(openModel3d());
+    expect(store.dispatch).toHaveBeenCalledWith(openModel3d(mockAppointmentId));
   });
 
   it("TC12: calls API with new pageIndex when pagination changes", () => {
