@@ -4,13 +4,6 @@ import { getInsights, getSummary } from "../../../services/aiService";
 import type { SummaryRes } from "../../../models/Dashboard/dashBoardSummaryDto";
 import { useDashboardHub } from "../../../hooks/useDashboardHub";
 
-// const stats = [
-//   { icon: <Users />, label: "Customers", value: "", color: "#adaa00" },
-//   { icon: <ClipboardClock />, label: "Appointments", value: "", color: "#2196f3" },
-//   { icon: <TicketX />, label: "Canceled Appointments", value: "", color: "#ff1500" },
-//   { icon: <HandCoins />, label: "Total Revenue", value: "", color: "#00ad4e" },
-// ];
-
 const StatsGrid: React.FC = () => {
   const [data, setData] = useState<SummaryRes | null>(null);
   const [insight, setInsight] = useState("");
@@ -32,8 +25,6 @@ const StatsGrid: React.FC = () => {
   }, []);
 
   useDashboardHub<SummaryRes>((type, payload) => {
-    // when realtime event comes, refresh quick summary
-    // refresh();
     if (type === "AppointmentConfirm") {
       setData(payload);
     }

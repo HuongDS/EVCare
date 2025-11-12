@@ -3,10 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { createTestStore } from "../../../../states/testStore";
 import Staff_Appointments from "../Staff_Appointments";
-import {
-  useGetAllAppointments,
-  useGetAppointmentHaveTech,
-} from "../../../../services/appointmentServiceApi";
+import { useGetAllAppointments, useGetAppointmentHaveTech } from "../../../../services/appointmentServiceApi";
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { StaffAppointmentsDto } from "../../../../models/AppointmentsModel/Staff_Appointments_Model";
 
@@ -26,12 +23,7 @@ vi.mock("../../StaffComponents/SortTable.tsx", () => ({
   ),
 }));
 vi.mock("../../StaffComponents/AppointmentCard.tsx", () => ({
-  default: ({
-    data,
-    onOpenProgress,
-    hasTechnicianOnleave,
-    onOpenReassign,
-  }: any) => (
+  default: ({ data, onOpenProgress, hasTechnicianOnleave, onOpenReassign }: any) => (
     <div data-testid="appointment-card">
       <span>{data.customerName}</span>
       <button data-testid={`progress-${data.id}`} onClick={onOpenProgress}>
@@ -40,9 +32,7 @@ vi.mock("../../StaffComponents/AppointmentCard.tsx", () => ({
       <button data-testid={`reassign-${data.id}`} onClick={onOpenReassign}>
         Open Reassign
       </button>
-      {hasTechnicianOnleave && (
-        <span data-testid={`onleave-${data.id}`}>Technician On Leave</span>
-      )}
+      {hasTechnicianOnleave && <span data-testid={`onleave-${data.id}`}>Technician On Leave</span>}
     </div>
   ),
 }));
@@ -80,9 +70,7 @@ vi.mock("../../../../components/SearchBar/Search.tsx", () => ({
   ),
 }));
 vi.mock("../../../../components/Button/ShowButton.tsx", () => ({
-  default: ({ text, onclick }: any) => (
-    <button onClick={onclick}>{text}</button>
-  ),
+  default: ({ text, onclick }: any) => <button onClick={onclick}>{text}</button>,
 }));
 vi.mock("../../../../components/Skeletons/Skeleton.tsx", () => ({
   default: () => <div data-testid="skeleton" />,
@@ -154,9 +142,7 @@ describe("Staff Appointments UI", () => {
 
     //ASSERT
     expect(screen.getByText("Appointments")).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText("Search appointments...")
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search appointments...")).toBeInTheDocument();
     expect(screen.getByText("+ CREATE AN APPOINTMENT")).toBeInTheDocument();
     expect(screen.getByTestId("sort-table")).toBeInTheDocument();
   });
@@ -318,9 +304,7 @@ describe("Staff Appointments UI", () => {
 
     renderWithProviders(<Staff_Appointments />);
 
-    expect(mockUseGetAllAppointments).toHaveBeenCalledWith(
-      expect.not.objectContaining({ keyWord: expect.anything() })
-    );
+    expect(mockUseGetAllAppointments).toHaveBeenCalledWith(expect.not.objectContaining({ keyWord: expect.anything() }));
 
     const searchInput = screen.getByPlaceholderText("Search appointments...");
 
@@ -359,7 +343,24 @@ describe("Staff Appointments UI", () => {
     );
   });
 
+<<<<<<< HEAD
   it("TC11: calls API with new pageIndex when pagination changes", () => {
+=======
+  it("TC11: dispatches 'openModel3d' action when 'Show Model' is clicked", () => {
+    // ARRANGE
+    const { store } = renderWithProviders(<Staff_Appointments />);
+    const showModelButton = screen.getByText("Show Model");
+    const mockAppointmentId = 1;
+
+    // ACT
+    fireEvent.click(showModelButton);
+
+    // ASSERT
+    expect(store.dispatch).toHaveBeenCalledWith(openModel3d(mockAppointmentId));
+  });
+
+  it("TC12: calls API with new pageIndex when pagination changes", () => {
+>>>>>>> 3dec45b7feb65001e83f0e61fd26440901447359
     // ARRANGE
     renderWithProviders(<Staff_Appointments />);
 
@@ -397,9 +398,7 @@ describe("Staff Appointments UI", () => {
     fireEvent.click(backButton);
 
     // ASSERT
-    expect(
-      screen.queryByTestId("create-appointment-view")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("create-appointment-view")).not.toBeInTheDocument();
     expect(screen.getByText("Appointments")).toBeInTheDocument(); // View cũ hiện lại
   });
 

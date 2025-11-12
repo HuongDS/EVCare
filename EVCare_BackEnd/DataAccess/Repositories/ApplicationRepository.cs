@@ -41,7 +41,7 @@ namespace DataAccess.Repositories
                 query = query.Where(a => a.EmployeeName.Contains(model.Keyword));
             }
 
-            query.ApplySorting(model.SortField, model.SortOrder);
+            query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
 
         }
@@ -68,7 +68,7 @@ namespace DataAccess.Repositories
             {
                 query = query.Where(a => a.Status == model.Status);
             }
-            query.ApplySorting(model.SortField, model.SortOrder);
+           query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
 
         }
