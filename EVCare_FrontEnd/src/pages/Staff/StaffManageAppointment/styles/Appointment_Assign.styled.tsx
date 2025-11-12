@@ -295,25 +295,45 @@ export const StatusBadge = styled.span<{ $status: string }>`
   }}
 `;
 
-export const InfoSection = styled.div`
-  margin-bottom: 12px;
-`;
-
 export const InfoItem = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #666;
+  color: #555;
   font-size: 13px;
-  margin-bottom: 6px;
 
   svg {
-    color: #999;
+    color: #888;
     flex-shrink: 0;
   }
+`;
 
-  &:last-child {
-    margin-bottom: 0;
+export const TechInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 10px;
+  }
+`;
+
+export const ContactInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const WorkInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
   }
 `;
 

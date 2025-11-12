@@ -16,7 +16,11 @@ export const PageContainer = styled.div`
   margin-top: 3%;
   height: 100%;
   max-height: 85vh;
-  background: linear-gradient(135deg, #93c6a2 0%, #e8eaf6 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 116, 56, 0.5) 0%,
+    rgba(0, 176, 70, 0.5) 100%
+  );
   border-radius: 20px;
   padding: 24px;
   overflow-y: auto;
@@ -324,10 +328,6 @@ export const StatusBadge = styled.span<{ $status: string }>`
   }}
 `;
 
-export const InfoSection = styled.div`
-  margin-bottom: 12px;
-`;
-
 export const InfoItem = styled.div`
   display: flex;
   align-items: center;
@@ -343,6 +343,35 @@ export const InfoItem = styled.div`
 
   &:last-child {
     margin-bottom: 0;
+  }
+`;
+
+export const TechInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 10px;
+  }
+`;
+
+export const ContactInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const WorkInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
   }
 `;
 
@@ -366,16 +395,18 @@ export const SkillTags = styled.div`
 
 export const SkillTag = styled.span<{ $isMore?: boolean }>`
   padding: 4px 10px;
-  background: ${(props) => (props.$isMore ? "#f5f5f5" : "#e8eaf6")};
-  color: ${(props) => (props.$isMore ? "#666" : "#3f51b5")};
+  background: ${(props) => (props.$isMore ? "#9dc59e" : "#e9f6e8")};
+  color: ${(props) => (props.$isMore ? "#787878" : "#00ad4e")};
   font-size: 11px;
   font-weight: 500;
   border-radius: 12px;
+  border: 1px #ccc solid;
 `;
 
 export const ActionButton = styled.button<{ $disabled?: boolean }>`
   width: 100%;
   padding: 10px;
+  margin-top: auto;
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -383,7 +414,6 @@ export const ActionButton = styled.button<{ $disabled?: boolean }>`
   cursor: ${(props) => (props.$disabled ? "not-allowed" : "pointer")};
   transition: all 0.3s ease;
   font-family: "Outfit", sans-serif;
-  margin-top: auto;
 
   ${(props) =>
     props.$disabled
@@ -392,12 +422,12 @@ export const ActionButton = styled.button<{ $disabled?: boolean }>`
     color: #9e9e9e;
   `
       : `
-    background: #2196f3;
+    background: #00ad4e;
     color: white;
     box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
 
     &:hover {
-      background: #1976d2;
+      background: #2ede12;
       box-shadow: 0 3px 8px rgba(33, 150, 243, 0.4);
     }
   `}
@@ -466,4 +496,10 @@ export const SubmitButton = styled.button`
     padding: 10px 20px;
     font-size: 13px;
   }
+`;
+
+export const SpinnerWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: center;
 `;
