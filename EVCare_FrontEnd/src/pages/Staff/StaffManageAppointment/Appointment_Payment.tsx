@@ -227,7 +227,7 @@ export default function Appointment_Payment({
                 {isPending ? (
                   <ColorSpinner width="6em" height="6em" />
                 ) : (
-                  <iframe src={qrcode} />
+                  <iframe title="PayOS QR Code" src={qrcode} />
                 )}
                 <QRInfo>
                   <p>Scan QR code to complete payment</p>

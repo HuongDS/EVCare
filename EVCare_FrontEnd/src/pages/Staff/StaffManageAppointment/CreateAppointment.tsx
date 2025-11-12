@@ -215,6 +215,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
           const hours = Array.from({ length: 24 }, (_, i) => i).filter(
             (h) => h > (endTime?.hour() ?? 0) || h < (startTime?.hour() ?? 0)
           );
+
           return hours;
         },
         disabledMinutes: (selectedHour?: number) => {
