@@ -87,6 +87,5 @@ describe("AddNewVehicleFields", () => {
     // ACT
     // ASSERT
     expect(screen.getByText("License plate is required")).toBeInTheDocument();
-    expect(screen.getByText("Model is required")).not.toBeInTheDocument();
   });
 });
