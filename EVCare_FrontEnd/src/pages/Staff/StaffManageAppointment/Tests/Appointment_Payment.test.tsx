@@ -63,10 +63,7 @@ queryClient.invalidateQueries = mockInvalidateQueries;
 const renderWithProvider = () => {
   return render(
     <QueryClientProvider client={queryClient}>
-      <Appointment_Payment
-        onPaymentSuccess={() => 1}
-        data={mockAppointmentData as any}
-      />
+      <Appointment_Payment data={mockAppointmentData as any} />
     </QueryClientProvider>
   );
 };
