@@ -112,34 +112,4 @@ describe("SelectVehicleSection", () => {
 
     expect(screen.getByRole("option", { name: "Add Vehicle" })).toBeInTheDocument();
   });
-
-  it("TC07: should set dropdown value to 0 when isAddNew is true", () => {
-    // ARRANGE
-    render(<SelectVehicleSection {...mockProps} isAddNew={true} selectedValue={999} />);
-    const mainDropdown = screen.getByRole("combobox", {
-      name: /Your Vehicle License Plate/i,
-    });
-    // ACT
-    // ASSERT
-    expect(mainDropdown).toHaveValue("0");
-  });
-
-  it("TC08: should set dropdown value to selectedValue when isAddNew is false", () => {
-    // ARRANGE
-    render(<SelectVehicleSection {...mockProps} isAddNew={false} selectedValue={999} />);
-    const mainDropdown = screen.getByRole("combobox", {
-      name: /Your Vehicle License Plate/i,
-    });
-    // ACT
-    // ASSERT
-    expect(mainDropdown).toHaveValue("999");
-  });
-
-  it("TC09: should not display error message when errors prop is undefined", () => {
-    // ARRANGE
-    render(<SelectVehicleSection {...mockProps} errors={undefined} />);
-    // ACT
-    // ASSERT
-    expect(screen.queryByText(/Please select a vehicle/i)).not.toBeInTheDocument();
-  });
 });

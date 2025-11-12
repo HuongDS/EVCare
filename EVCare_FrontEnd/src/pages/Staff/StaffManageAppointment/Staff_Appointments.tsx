@@ -23,8 +23,6 @@ import Model3dViewer from "../../Model3d/Model3dViewer";
 import ShowButton from "../../../components/Button/ShowButton";
 import CreateAppointment from "./CreateAppointment";
 import SkeletonCount from "../../../components/Skeletons/Skeleton";
-import DayOff from "./DayOff";
-import { useGetApplication } from "../../../services/getApplicationApi";
 
 export default function Staff_Appoinments() {
   const queryClient = useQueryClient();
@@ -223,3 +221,5 @@ import {
   PageTransition,
   AppoitmentWrapper,
 } from "./styles/Staff_Appointments.styled";
+import DayOff from "./DayOff";
+import { useGetApplication } from "../../../services/getApplicationApi";

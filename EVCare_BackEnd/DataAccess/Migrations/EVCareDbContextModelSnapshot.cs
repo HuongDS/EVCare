@@ -1233,6 +1233,21 @@ namespace DataAccess.Migrations
                     b.ToTable("ServiceCenters");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.ServicePart", b =>
+                {
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ServiceId", "PartId");
+
+                    b.HasIndex("PartId");
+
+                    b.ToTable("ServiceParts");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
                 {
                     b.Property<int>("Id")
@@ -1240,6 +1255,9 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompletedOrders")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created_At")
                         .HasColumnType("datetime2");
@@ -1249,6 +1267,9 @@ namespace DataAccess.Migrations
 
                     b.Property<double>("ExpYear")
                         .HasColumnType("float");
+
+                    b.Property<int>("KPIPerDays")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1660,6 +1681,25 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("ServiceCategory");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.ServicePart", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Part", "Part")
+                        .WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccess.Entities.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Part");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Technician", b =>
