@@ -1,4 +1,4 @@
-import { Tooltip } from "antd";
+import { notification } from "antd";
 import type {
   TechnicianModel,
   TechnicianSkills,
@@ -46,10 +46,6 @@ import {
   TechnicianId,
   TechnicianInfo,
 } from "./styles/Appointment_Reassign.styled";
-import { PiWarning } from "react-icons/pi";
-import { ServiceGrid, ServiceTag } from "./styles/Appointment_Assign.styled";
-import { useFinishTechnicianSession } from "../../../services/TechnicianWorkingSessionApi";
-import { useNotification } from "../../../context/useNotification";
 
 interface props {
   show: boolean;
@@ -57,17 +53,17 @@ interface props {
   appointmentId: number;
 }
 
-interface AssignedTechnician {
-  technicianID: number;
-  technician: TechnicianModel<TechnicianSkills>;
-  startedTime: string;
-}
-
 export default function Appointment_Reassign({
   show,
   close,
   appointmentId,
 }: props) {
+  interface AssignedTechnician {
+    technicianID: number;
+    technician: TechnicianModel<TechnicianSkills>;
+    startedTime: string;
+  }
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTechnicians, setSelectedTechnicians] = useState<
     AssignedTechnician[]
@@ -75,7 +71,6 @@ export default function Appointment_Reassign({
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const notification = useNotification();
 
   const {
     data: appointmentDetail,
@@ -84,10 +79,10 @@ export default function Appointment_Reassign({
     refetch,
   } = useGetAppointmentById(appointmentId);
   const { mutateAsync: reAssign } = useAssignTechnician();
+  //lấy tất cả technicians trừ các technicians đã gán
   const { data: technicians, isFetching } = useGetTechniciansToday({
     Status: "Available",
   });
-  const { mutateAsync: finishSession } = useFinishTechnicianSession();
 
   if (isLoading) {
     return (
@@ -96,6 +91,9 @@ export default function Appointment_Reassign({
           <div
             style={{
               position: "absolute",
+              // display: "flex",
+              // justifyContent: "center",
+              // alignItems: "center",
               top: "50%",
               left: "50%",
             }}
@@ -134,6 +132,7 @@ export default function Appointment_Reassign({
 
   const appointment = appointmentDetail.data;
 
+  // Lấy danh sách ID của technician đã được gán (cả trước đó và mới chọn)
   const assignedTechnicianIDs = [
     ...selectedTechnicians.map((st) => st.technicianID),
   ];
@@ -191,53 +190,11 @@ export default function Appointment_Reassign({
     }
   };
 
+  //đóng success, fail modal
   const handleCloseModal = () => {
     setIsErrorModalOpen(false);
     setIsSuccessModalOpen(false);
     close();
-  };
-
-  const handleFinishSession = async (techniciansLeave: number[]) => {
-    try {
-      await finishSession({
-        technicianId: techniciansLeave,
-        orderId: appointment.orderId,
-      });
-      notification.success({
-        message: "Finish Session",
-        description: "Technician is finished session successfully",
-        showProgress: true,
-      });
-    } catch (error) {
-      notification.error({
-        message: "Finish Session Failed",
-        description: "Failed to finish session of this technician",
-        showProgress: true,
-      });
-    }
-  };
-
-  const handleSubmit = async () => {
-    await handleReAssign();
-
-    const techniciansLeave = appointment.technicians
-      .filter((tech) => tech.status === "OnLeave")
-      .map((tech) => tech.id);
-    if (techniciansLeave) {
-      await handleFinishSession(techniciansLeave);
-    }
-  };
-
-  const getTechnicianCountForService = (serviceId: number) => {
-    return (
-      selectedTechnicians.filter((tech) =>
-        tech.technician.skills.some((skill) => skill.id === serviceId)
-      ).length +
-      appointment.technicians
-        .filter((tech) => tech.workingSessionStatus !== "Completed")
-        .filter((tech) => tech.skills.some((skill) => skill.id === serviceId))
-        .length
-    );
   };
 
   return (
@@ -255,123 +212,61 @@ export default function Appointment_Reassign({
             {appointment.technicians.length > 0 && (
               <Card>
                 <SectionHeader>
-                  <h2>
-                    Currently Assigned (
-                    {
-                      appointment.technicians.filter(
-                        (tech) => tech.workingSessionStatus !== "Completed"
-                      ).length
-                    }
-                    )
-                  </h2>
+                  <h2>Currently Assigned ({appointment.technicians.length})</h2>
                 </SectionHeader>
 
                 <TechnicianGrid>
-                  {appointment.technicians
-                    .filter((tech) => tech.workingSessionStatus !== "Completed")
-                    .map((assignment) => (
-                      <TechnicianCard
-                        key={assignment.id}
-                        technician={assignment}
-                        assignmentInfo={{
-                          technicianID: assignment.id,
-                        }}
-                        isPreviouslyAssigned
-                      />
-                    ))}
+                  {appointment.technicians.map((assignment) => (
+                    <TechnicianCard
+                      key={assignment.id}
+                      technician={assignment}
+                      assignmentInfo={{
+                        technicianID: assignment.id,
+                      }}
+                      isPreviouslyAssigned
+                    />
+                  ))}
                 </TechnicianGrid>
               </Card>
             )}
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "2fr 1fr",
-                gap: "5px",
-              }}
-            >
-              <Card>
-                <SectionHeader>
-                  <h2>New Assignments ({selectedTechnicians.length})</h2>
-                  {selectedTechnicians.length > 0 && (
-                    <ButtonGroup>
-                      <ClearButton onClick={() => setSelectedTechnicians([])}>
-                        Clear All
-                      </ClearButton>
-                      <SubmitButton onClick={handleSubmit}>
-                        <CheckCircle size={20} />
-                        Confirm Re-Assignment
-                      </SubmitButton>
-                    </ButtonGroup>
-                  )}
-                </SectionHeader>
+            <Card>
+              <SectionHeader>
+                <h2>New Assignments ({selectedTechnicians.length})</h2>
+                {selectedTechnicians.length > 0 && (
+                  <ButtonGroup>
+                    <ClearButton onClick={() => setSelectedTechnicians([])}>
+                      Clear All
+                    </ClearButton>
+                    <SubmitButton onClick={handleReAssign}>
+                      <CheckCircle size={20} />
+                      Confirm Re-Assignment
+                    </SubmitButton>
+                  </ButtonGroup>
+                )}
+              </SectionHeader>
 
-                {selectedTechnicians.length === 0 ? (
-                  <EmptyState>
-                    <User size={48} />
-                    <p>No new technicians selected</p>
-                    <p>Search below to add technicians</p>
-                  </EmptyState>
-                ) : (
-                  <TechnicianGrid>
-                    {selectedTechnicians.map((assignment) => (
-                      <TechnicianCard
-                        key={assignment.technicianID}
-                        technician={assignment.technician}
-                        onRemove={() =>
-                          handleRemoveTechnician(assignment.technicianID)
-                        }
-                        isSelected
-                      />
-                    ))}
-                  </TechnicianGrid>
-                )}
-              </Card>
-              <Card>
-                <SectionHeader>
-                  <h2>Services ({appointment.services.length})</h2>
-                </SectionHeader>
-                {appointment.services.length === 0 ? (
-                  <EmptyState>
-                    <User size={48} />
-                    <p>No services</p>
-                  </EmptyState>
-                ) : (
-                  <ServiceGrid>
-                    {appointment.services.map((service) => {
-                      const techCount = getTechnicianCountForService(
-                        service.id
-                      );
-                      const isHighlighted = techCount > 0;
-                      return (
-                        <ServiceTag key={service.id} $highlight={isHighlighted}>
-                          {service.name}
-                          {!isHighlighted && (
-                            <Tooltip
-                              title="No technicians have been assigned to this service yet"
-                              color="#00ad4e"
-                            >
-                              <PiWarning color="orange" size={20} />
-                            </Tooltip>
-                          )}
-                          {techCount > 0 && (
-                            <span
-                              style={{
-                                marginLeft: "6px",
-                                color: "#00ad4e",
-                                fontWeight: 600,
-                              }}
-                            >
-                              ({techCount} tech{techCount > 1 ? "s" : ""})
-                            </span>
-                          )}
-                        </ServiceTag>
-                      );
-                    })}
-                  </ServiceGrid>
-                )}
-              </Card>
-            </div>
+              {selectedTechnicians.length === 0 ? (
+                <EmptyState>
+                  <User size={48} />
+                  <p>No new technicians selected</p>
+                  <p>Search below to add technicians</p>
+                </EmptyState>
+              ) : (
+                <TechnicianGrid>
+                  {selectedTechnicians.map((assignment) => (
+                    <TechnicianCard
+                      key={assignment.technicianID}
+                      technician={assignment.technician}
+                      onRemove={() =>
+                        handleRemoveTechnician(assignment.technicianID)
+                      }
+                      isSelected
+                    />
+                  ))}
+                </TechnicianGrid>
+              )}
+            </Card>
 
             <Card>
               <SectionHeader>
@@ -393,7 +288,7 @@ export default function Appointment_Reassign({
               <SearchResultsContainer>
                 <TechnicianGrid>
                   {isFetching ? (
-                    <ColorSpinner width="2em" height="2em" />
+                    <ColorSpinner />
                   ) : (
                     filteredTechnicians.map((technician) => (
                       <TechnicianCard
@@ -405,10 +300,10 @@ export default function Appointment_Reassign({
                   )}
                 </TechnicianGrid>
 
-                {filteredTechnicians.length === 0 && (
+                {filteredTechnicians.length === 0 && searchQuery && (
                   <EmptyState>
                     <User size={48} />
-                    <p>No technicians found</p>
+                    <p>No available technicians found</p>
                   </EmptyState>
                 )}
               </SearchResultsContainer>
@@ -452,11 +347,6 @@ export const TechnicianCard = ({
   isPreviouslyAssigned = false,
   assignmentInfo,
 }: TechnicianCardProps) => {
-  const [showAllSkills, setShowAllSkills] = useState(false);
-  const displayedSkills = showAllSkills
-    ? technician.skills
-    : technician.skills.slice(0, 3);
-
   return (
     <TechnicianCardWrapper
       $isSelected={isSelected}
@@ -498,35 +388,15 @@ export const TechnicianCard = ({
           </InfoItem>
         )}
       </InfoSection>
-      <InfoSection>
-        {technician.email && (
-          <InfoItem>
-            <Phone size={14} /> {technician.email ?? "default"}
-          </InfoItem>
-        )}
-      </InfoSection>
 
       <SkillsSection>
         <p>SKILLS</p>
         <SkillTags>
-          {displayedSkills.map((skill) => (
+          {technician.skills.slice(0, 3).map((skill) => (
             <SkillTag key={skill.id}>{skill.name}</SkillTag>
           ))}
           {technician.skills.length > 3 && (
-            <button
-              onClick={() => setShowAllSkills(!showAllSkills)}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#00ad4e",
-                cursor: "pointer",
-                fontWeight: 600,
-                fontSize: "13px",
-                marginLeft: "4px",
-              }}
-            >
-              {showAllSkills ? "Show less" : "Show more"}
-            </button>
+            <SkillTag $isMore>+{technician.skills.length - 3} more</SkillTag>
           )}
         </SkillTags>
       </SkillsSection>
