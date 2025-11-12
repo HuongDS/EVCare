@@ -3,7 +3,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../SideBar/SideBar";
 import HeaderStaff from "../Header/HeaderStaff";
 import { RoleEnum } from "../../models/enums/RoleEnum";
-import { useState } from "react";
 
 const { Content, Sider } = Layout;
 
@@ -18,8 +17,6 @@ const EmployeeLayout: React.FC<{
 
   const location = useLocation();
   const isOrderPage = location.pathname.includes("/technician/order");
-
-  const [collapsed] = useState(false);
 
   return (
     <Layout
@@ -42,7 +39,7 @@ const EmployeeLayout: React.FC<{
             zIndex: 1000,
           }}
         >
-          {menuOverride ?? <Sidebar role={role} collapsed={collapsed} />}
+          {menuOverride ?? <Sidebar role={role} />}
         </Sider>
 
         <Layout style={{ padding: "0" }}>

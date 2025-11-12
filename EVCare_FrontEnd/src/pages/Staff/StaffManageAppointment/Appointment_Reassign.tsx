@@ -9,43 +9,13 @@ import {
   useGetTechniciansToday,
 } from "../../../services/appointmentServiceApi";
 import { useState } from "react";
-import { CheckCircle, CircleX, Phone, Search, User } from "lucide-react";
+import { CheckCircle, CircleX, Mail, Phone, Search, User } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import { handleError } from "../../../utils/errorHandler";
 import ErrorPage from "../StaffComponents/Error";
 import ColorSpinner from "../StaffComponents/ColorSpinner";
-import {
-  ActionButton,
-  Avatar,
-  ButtonGroup,
-  Card,
-  ClearButton,
-  ContentWrapper,
-  EmptyState,
-  Header,
-  InfoItem,
-  InfoSection,
-  ModalStyled,
-  PageContainer,
-  PreviousBadge,
-  RemoveButton,
-  SearchInput,
-  SearchResultsContainer,
-  SearchWrapper,
-  SectionHeader,
-  SkillsSection,
-  SkillTag,
-  SkillTags,
-  StatusBadge,
-  SubmitButton,
-  TechnicianCardWrapper,
-  TechnicianGrid,
-  TechnicianHeader,
-  TechnicianId,
-  TechnicianInfo,
-} from "./styles/Appointment_Reassign.styled";
 import { PiWarning } from "react-icons/pi";
 import { ServiceGrid, ServiceTag } from "./styles/Appointment_Assign.styled";
 import { useFinishTechnicianSession } from "../../../services/TechnicianWorkingSessionApi";
@@ -96,11 +66,11 @@ export default function Appointment_Reassign({
           <div
             style={{
               position: "absolute",
-              top: "50%",
+              top: "40%",
               left: "50%",
             }}
           >
-            <ColorSpinner />
+            <ColorSpinner width="5em" height="5em" />
           </div>
         </ContentWrapper>
       </ModalStyled>
@@ -393,7 +363,9 @@ export default function Appointment_Reassign({
               <SearchResultsContainer>
                 <TechnicianGrid>
                   {isFetching ? (
-                    <ColorSpinner width="2em" height="2em" />
+                    <SpinnerWrapper>
+                      <ColorSpinner width="3em" height="3em" />
+                    </SpinnerWrapper>
                   ) : (
                     filteredTechnicians.map((technician) => (
                       <TechnicianCard
@@ -476,7 +448,7 @@ export const TechnicianCard = ({
         <Avatar
           src={
             technician.avatar ||
-            `https://ui-avatars.com/api/?name=${technician.fullName}&background=random`
+            `https://ui-avatars.com/api/?name=${technician.fullName}&background=00ad4e`
           }
           alt={technician.fullName}
         />
@@ -491,20 +463,36 @@ export const TechnicianCard = ({
         </TechnicianInfo>
       </TechnicianHeader>
 
-      <InfoSection>
-        {technician.phone && (
+      <TechInfo>
+        <ContactInfo>
+          {technician.phone && (
+            <InfoItem>
+              <Phone size={14} /> {technician.phone}
+            </InfoItem>
+          )}
+          {technician.email && (
+            <InfoItem>
+              <Mail size={14} /> {technician.email}
+            </InfoItem>
+          )}
+        </ContactInfo>
+
+        <WorkInfo>
           <InfoItem>
-            <Phone size={14} /> {technician.phone ?? "default"}
+            KPI:{" "}
+            <StatusBadge $status={technician.status}>
+              {technician.kpiPerDays}
+            </StatusBadge>
           </InfoItem>
-        )}
-      </InfoSection>
-      <InfoSection>
-        {technician.email && (
+
           <InfoItem>
-            <Phone size={14} /> {technician.email ?? "default"}
+            Completed Orders:{" "}
+            <StatusBadge $status={technician.status}>
+              {technician.completedOrders}
+            </StatusBadge>
           </InfoItem>
-        )}
-      </InfoSection>
+        </WorkInfo>
+      </TechInfo>
 
       <SkillsSection>
         <p>SKILLS</p>
@@ -543,3 +531,37 @@ export const TechnicianCard = ({
     </TechnicianCardWrapper>
   );
 };
+
+import {
+  ActionButton,
+  Avatar,
+  ButtonGroup,
+  Card,
+  ClearButton,
+  ContentWrapper,
+  ContactInfo,
+  EmptyState,
+  Header,
+  InfoItem,
+  ModalStyled,
+  PageContainer,
+  PreviousBadge,
+  RemoveButton,
+  SearchInput,
+  SearchResultsContainer,
+  SearchWrapper,
+  SectionHeader,
+  SkillsSection,
+  SpinnerWrapper,
+  SkillTag,
+  SkillTags,
+  StatusBadge,
+  SubmitButton,
+  TechnicianCardWrapper,
+  TechnicianGrid,
+  TechnicianHeader,
+  TechnicianId,
+  TechnicianInfo,
+  TechInfo,
+  WorkInfo,
+} from "./styles/Appointment_Reassign.styled";
