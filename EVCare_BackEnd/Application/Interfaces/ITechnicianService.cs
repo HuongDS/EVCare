@@ -17,5 +17,6 @@ namespace Application.Interfaces
 
         //Task<IEnumerable<>>
         Task<PageResultDto<TechnicianViewModel>> GetTechnicianToday(TechnicianQueryDto model);
+        Task UpdateTechnicianProfile(int technicianId, TechnicianUpdateModel model);
     }
 }

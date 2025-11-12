@@ -85,7 +85,9 @@ namespace DataAccess.Repositories
                         Id = x.ServiceId,
                         Name = x.Service.Name,
                     }),
-                    Status = x.Employee.Status
+                    Status = x.Employee.Status,
+                    KPIPerDays = x.KPIPerDays,
+                    CompletedOrders = x.CompletedOrders,
 
                 })
                 .Where(x => x.Status == model.Status);
@@ -126,6 +128,10 @@ namespace DataAccess.Repositories
               
             }
             return query.CountAsync();
+        }
+
+        public async Task UpdateCompletedOrderAsync() {
+            await _dbContext.Technicians.ExecuteUpdateAsync(s=>s.SetProperty(x=>x.CompletedOrders,0) );
         }
     }
 }

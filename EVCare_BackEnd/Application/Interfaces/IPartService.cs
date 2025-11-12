@@ -25,5 +25,6 @@ namespace Application.Interfaces
         byte[] GeneratePartImportErrorFile(List<PartImportErrorModel> errors);
         Task<decimal> GetTotalPriceOfParts();
         Task<IEnumerable<PartViewModel>> GetLowStockParts();
+        Task<PageResultDto<PartViewModel>> GetPartsForService(PartForServiceQueryDto model);
     }
 }
