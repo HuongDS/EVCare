@@ -103,7 +103,7 @@ export default function AppointmentHistoryCard({
           ) : (
             <>
               <ButtonAction
-                text="View Detail"
+                text="View Details"
                 color="white"
                 backgroundColor="#00ad4e"
                 action={() => onViewAppointmentDetail(appointmentId)}
