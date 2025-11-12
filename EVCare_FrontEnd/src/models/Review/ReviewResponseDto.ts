@@ -1,3 +1,5 @@
+import type { ServiceCategoryViewModel } from "../ServicesModel/ServiceCategoryViewModel";
+
 export type ResponseDto<T> = {
   statusCode: number;
   message?: string;
@@ -10,7 +12,7 @@ export type ReviewResponseDto = {
   content: string;
   createdAt: string;
   customerName: string;
-  services: { id: number; name: string }[];
+  services: ServiceCategoryViewModel[];
 };
 
 export type PageModel<T> = {
