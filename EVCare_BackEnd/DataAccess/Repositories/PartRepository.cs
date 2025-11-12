@@ -142,6 +142,10 @@ namespace DataAccess.Repositories
                     ReplacementPrice = x.Part.ReplacementPrice,
                     ServiceId = x.ServiceId
                 });
+            if(model.KeyWord!=null)
+            {
+                query = query.Where(x => x.Name.ToLower().Contains(model.KeyWord.ToLower()));
+            }
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
         }
