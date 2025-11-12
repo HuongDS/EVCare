@@ -55,7 +55,6 @@ export default function Appointment_Assign({ data }: props) {
       return (nameMatch || skillMatch) && notSelected;
     }) || [];
 
-  //Add technician vào list
   const handleAddTechnician = async (
     technician: TechnicianModel<TechnicianSkills>
   ) => {
@@ -88,7 +87,7 @@ export default function Appointment_Assign({ data }: props) {
       await assignTech({
         orderId: data.orderId,
         technicianIds: techniciansList,
-        status: "AddingPart",
+        status: "Pending",
       });
 
       await appointmentStatus({
