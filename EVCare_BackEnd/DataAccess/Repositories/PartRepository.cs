@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,6 +55,7 @@ namespace DataAccess.Repositories
                      ReplacementPrice = x.ReplacementPrice
                 });
             if (model.CategoryIds!=null) query = query.Where(x=>model.CategoryIds.Contains(x.CategoryId));
+           
 
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
@@ -120,6 +122,32 @@ namespace DataAccess.Repositories
                     ReplacementPrice = x.ReplacementPrice
                 })
                 .ToListAsync();
+        }
+
+        public Task<PageResultDto<PartViewModel>> GetPartsForService(PartForServiceQueryDto model) {
+
+            var query = _dbContext.ServiceParts.AsNoTracking()
+                .Where(model.ServiceIds!=null ? x=> model.ServiceIds.Contains(x.ServiceId) : x=>true)
+                .Include(x=>x.Part)
+                .Select(x => new PartViewModel
+                {
+                    Id = x.Part.Id,
+                    Name = x.Part.Name,
+                    CategoryId = x.Part.CategoryId,
+                    IsDeleted = (x.Part.Deleted_At != DateTime.MinValue),
+                    Price = x.Part.Price,
+                    Quantity = x.Part.Stock,
+                    ImageUrl = x.Part.Image,
+                    Description = x.Part.Description,
+                    ReplacementPrice = x.Part.ReplacementPrice,
+                    ServiceId = x.ServiceId
+                });
+            if(model.KeyWord!=null)
+            {
+                query = query.Where(x => x.Name.ToLower().Contains(model.KeyWord.ToLower()));
+            }
+            query = query.ApplySorting(model.SortField, model.SortOrder);
+            return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
         }
     }
 }

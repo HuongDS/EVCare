@@ -10,6 +10,7 @@ namespace DataAccess.Dtos.Pagination
     {
         public string? PartName { get; set; } = string.Empty;
         public List<int>? CategoryIds { get; set; }
+      
 
     }
 }

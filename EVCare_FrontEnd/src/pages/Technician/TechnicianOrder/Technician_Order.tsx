@@ -1,6 +1,3 @@
-import { Pagination, PaginationItem } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { ArrowLeft, ShoppingCart, Search, Package } from "lucide-react";
 
 import ProductCard from "../Technician_Component/ProductCard";
@@ -23,13 +20,13 @@ import {
   HeaderIcon,
   HeaderText,
   PageContainer,
-  PaginationWrapper,
   SearchIcon,
   SearchInput,
   SearchWrapper,
   Subtitle,
   Title,
 } from "./Technician_Order.styled";
+// import { Pagination } from "../../../components/Paginations/Pagination";
 
 interface TechnicianOrderProps {
   orderId?: number;
@@ -42,17 +39,10 @@ export default function TechnicianOrder({
   onPartsUpdated,
   selectedCategory,
 }: TechnicianOrderProps) {
-  const hook = useTechnicianOrder({
-    propOrderId,
-    onPartsUpdated,
-    selectedCategory,
-  });
-
   const {
     cart,
     displayParts,
     page,
-    totalPages,
     searchQuery,
     isLoading,
     isSending,
@@ -60,21 +50,29 @@ export default function TechnicianOrder({
     open,
     selectedPart,
     cartOpen,
-    setCart,
-    setOpen,
-    setCartOpen,
-    setPage,
-    setSearchQuery,
     handleBack,
     handleAddToCart,
     handleRemoveFromCart,
     handleSendCart,
-  } = hook;
+    handleOpenProductModal,
+    handleCloseProductModal,
+    handleOpenCart,
+    handleCloseCart,
+    handlePageChange,
+    handleSearchChange,
+    handleCartQuantityChange,
+  } = useTechnicianOrder({
+    propOrderId,
+    onPartsUpdated,
+    selectedCategory,
+  });
 
+  const hasCartItems = cart.length > 0;
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <PageContainer>
+      {/* Header */}
       <Header>
         <BackButton onClick={handleBack}>
           <ArrowLeft size={20} />
@@ -91,7 +89,7 @@ export default function TechnicianOrder({
           </HeaderText>
         </HeaderContent>
 
-        <div style={{ display: "flex", alignContent: "center", gap: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <SearchWrapper>
             <SearchIcon>
               <Search size={20} />
@@ -99,39 +97,31 @@ export default function TechnicianOrder({
             <SearchInput
               type="text"
               value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setPage(1);
-              }}
+              onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Search for parts by name..."
             />
           </SearchWrapper>
-          <CartButton
-            onClick={() => setCartOpen(true)}
-            $hasItems={cart.length > 0}
-          >
+
+          <CartButton onClick={handleOpenCart} $hasItems={hasCartItems}>
             <ShoppingCart size={20} />
-            <CartBadge $show={cart.length > 0}>{cartItemCount}</CartBadge>
+            <CartBadge $show={hasCartItems}>{cartItemCount}</CartBadge>
           </CartButton>
         </div>
       </Header>
 
+      {/* Content */}
       <ContentWrapper>
         <CardGrid>
           {isLoading ? (
             Array.from({ length: pageSize }).map((_, idx) => (
               <ProductCard key={idx} isSkeleton />
             ))
-          ) : displayParts.length > 0 ? (
+          ) : displayParts && displayParts?.length > 0 ? (
             displayParts.map((part: OrderPartsResponseDto) => (
               <ProductCard
                 key={part.id}
                 part={part}
-                onClick={() => {
-                  if (part.isDeleted || part.quantity <= 0) return;
-                  hook.setSelectedPart(part);
-                  hook.setOpen(true);
-                }}
+                onClick={() => handleOpenProductModal(part)}
               />
             ))
           ) : (
@@ -143,54 +133,25 @@ export default function TechnicianOrder({
           )}
         </CardGrid>
 
-        {totalPages > 1 && (
-          <PaginationWrapper>
-            <Pagination
-              count={totalPages}
-              page={page}
-              onChange={(_, value) => setPage(value)}
-              renderItem={(item) => (
-                <PaginationItem
-                  slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
-                  {...item}
-                />
-              )}
-              sx={{
-                "& .MuiPaginationItem-root": {
-                  fontFamily: "Outfit, sans-serif",
-                  fontWeight: 600,
-                  "&.Mui-selected": {
-                    backgroundColor: "#00ad4e",
-                    color: "white",
-                    "&:hover": {
-                      backgroundColor: "#00c853",
-                    },
-                  },
-                },
-              }}
-            />
-          </PaginationWrapper>
-        )}
+        {/* ✅ Fix Pagination logic */}
+        {/* {displayParts && displayParts.length > 1 && (
+          <Pagination onPageChange={handlePageChange} pageIndex={page} />
+        )} */}
       </ContentWrapper>
 
+      {/* Modals */}
       <ProductModal
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={handleCloseProductModal}
         part={selectedPart}
         onAddToCart={handleAddToCart}
       />
 
       <CartModal
         open={cartOpen}
-        onClose={() => setCartOpen(false)}
+        onClose={handleCloseCart}
         cart={cart}
-        onQuantityChange={(id, qty) =>
-          setCart((prev) =>
-            prev.map((item) =>
-              item.part.id === id ? { ...item, quantity: qty } : item
-            )
-          )
-        }
+        onQuantityChange={handleCartQuantityChange}
         onRemove={handleRemoveFromCart}
         onSend={handleSendCart}
         loading={isSending}
