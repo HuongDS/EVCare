@@ -2,12 +2,6 @@ import React from "react";
 import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
 import { formatDate } from "../../../utils/formatDate";
 
-// const orders = [
-//     {id: "#00775", date: "2023-12-08", customer: "Jenny Wilson", status: "Completed", total: "$1,552.00"},
-//     {id: "#00779", date: "2023-12-04", customer: "Cody Fisher", status: "Pending", total: "$1,742.00"},
-//     {id: "#00756", date: "2023-12-14", customer: "Alex Jandar", status: "Pending", total: "$2,742.00"},
-// ];
-
 interface Props {
   listInvoices: InvoiceViewModel[];
 }
@@ -16,10 +10,7 @@ const OrdersTable: React.FC<Props> = ({ listInvoices }: Props) => {
   return (
     <div className="orders-card">
       <div className="orders-header">
-        <h2 className="orders-title">Recent Orders</h2>
-        <a href="#" className="view-details">
-          View Details
-        </a>
+        <h2 className="orders-title">Recent Invoices</h2>
       </div>
 
       <table className="orders-table">

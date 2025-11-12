@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Application.Dtos;
 using DataAccess.Dtos.Applications;
 using DataAccess.Dtos.Appointment;
+using DataAccess.Dtos.AppointmentService;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
@@ -37,5 +38,6 @@ namespace Application.Interfaces
         Task<int> CountAppointmentsInMonthsWithStatus(int year, int month, AppointmentStatusEnum status);
         Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId);
         Task<int> CreateAppointmentForStaff(AppointmentCreateModel model, int employeeId);
+        Task<IEnumerable<AppointmentServiceViewModel>> GetAppointmentServices(int appointmentId);
     }
 }

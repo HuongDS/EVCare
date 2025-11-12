@@ -6,6 +6,7 @@ import {
   User,
   FileText,
   CheckCircle,
+  ArrowRight,
 } from "lucide-react";
 import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import type {
@@ -29,7 +30,10 @@ interface NextMaintenanceProps {
   onSkip?: () => void;
 }
 
-export default function NextMaintenance({ data }: NextMaintenanceProps) {
+export default function NextMaintenance({
+  data,
+  onSkip,
+}: NextMaintenanceProps) {
   const [reminderMonths, setReminderMonths] = useState<number | string>(3);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -55,11 +59,10 @@ export default function NextMaintenance({ data }: NextMaintenanceProps) {
     }
   };
 
-  const handleCloseModal = async () => {
+  const handleChangeStep = async () => {
     await queryClient.invalidateQueries({
       queryKey: ["AppointmentDetail"],
     });
-    setIsSuccess(false);
   };
 
   const formatDate = (date: string | Date) => {
@@ -244,6 +247,10 @@ export default function NextMaintenance({ data }: NextMaintenanceProps) {
               <TextWaitingEffect text="Waiting for processing" />
             ) : (
               <ActionButtons>
+                <SkipButton type="button" onClick={onSkip}>
+                  Skip This Step
+                  <ArrowRight size={20} />
+                </SkipButton>
                 <ConfirmButton type="submit">
                   <CheckCircle size={20} />
                   Confirm & Schedule
@@ -257,7 +264,7 @@ export default function NextMaintenance({ data }: NextMaintenanceProps) {
         <SuccessModal
           header={MSG_TITLE.SCHEDULE}
           message={message}
-          action={handleCloseModal}
+          action={handleChangeStep}
         />
       )}
       {isError && (
@@ -309,5 +316,6 @@ import {
   PreviewLabel,
   PreviewDate,
   ActionButtons,
+  SkipButton,
   ConfirmButton,
 } from "./styles/NextMaintenance.styled";

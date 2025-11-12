@@ -36,5 +36,17 @@ namespace Application.Services
         public async Task<int> GetTechnicianStatus(EmployeeStatusEnum? status) {
              return await _technicianRepository.GetTechnicianStatus(status);
         }
+
+        public async Task UpdateTechnicianProfile(int technicianId, TechnicianUpdateModel model) {
+           var technician = await  _technicianRepository.GetByIdAsync(technicianId);
+            if (technician == null) {
+                throw new Exception("Technician not found.");
+             }
+            technician.ExpYear = model.ExpYears;
+            technician.KPIPerDays = model.KPIPerDays;
+            await _technicianRepository.UpdateAsync(technician);
+            
+
+        }
     }
 }

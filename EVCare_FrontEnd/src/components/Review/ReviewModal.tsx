@@ -16,11 +16,7 @@ interface ReviewModalProps {
   appointmentData: AppointmentViewDetailModel;
 }
 
-const ReviewModal: React.FC<ReviewModalProps> = ({
-  open,
-  onClose,
-  appointmentData,
-}) => {
+const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, appointmentData }) => {
   const [submitted, setSubmitted] = useState(false);
   const { showAlert } = useAlert();
   const [isLoading, setIsLoading] = useState(false);
@@ -49,11 +45,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             <SpinnerComponent />
           </ModalOverlay>
         ) : (
-          <ReviewForm
-            appointmentData={appointmentData}
-            onSubmit={handleSubmit}
-            onCancel={onClose}
-          />
+          <ReviewForm appointmentData={appointmentData} onSubmit={handleSubmit} onCancel={onClose} />
         )
       ) : (
         <SuccessMessage onClose={onClose} />

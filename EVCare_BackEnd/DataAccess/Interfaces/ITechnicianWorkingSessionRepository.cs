@@ -19,5 +19,6 @@ namespace DataAccess.Interfaces
         Task<bool> CheckOrderConfirm(int orderId);
         Task MakeCancel(int id);
         Task MakeAvaliable(int id);
+        Task UpdateStatusTechnicinInOrder(List<int> technicianId, int orderId);
     }
 }

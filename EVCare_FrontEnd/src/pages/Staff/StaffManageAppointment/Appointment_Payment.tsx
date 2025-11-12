@@ -27,9 +27,13 @@ import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
 
 interface PaymentPageProps {
   data: AppointmentDetailModel<TechnicianModel<TechnicianSkills>>;
+  onPaymentSuccess: () => void;
 }
 
-export default function Appointment_Payment({ data }: PaymentPageProps) {
+export default function Appointment_Payment({
+  data,
+  onPaymentSuccess,
+}: PaymentPageProps) {
   const [paymentMethod, setPaymentMethod] = useState<
     "VnPay" | "PayOs" | "Cash"
   >();
@@ -89,11 +93,6 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
       });
     }
   }, [orderDetail?.data?.id, orderDetail?.data?.price, paymentMethod]);
-
-  const handleCloseModal = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
-    setIsSuccess(false);
-  };
 
   const subtotal =
     orderDetail?.data?.parts.reduce(
@@ -282,7 +281,7 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
         <SuccessModal
           header="Appointment Payment"
           message="Appointment is paid successfully"
-          action={handleCloseModal}
+          action={onPaymentSuccess}
         />
       )}
     </PageContainer>
