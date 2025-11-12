@@ -7,9 +7,6 @@ import type {
 } from "../models/AppointmentsModel/Technician_Appointments_Model";
 import { handleError } from "../utils/errorHandler";
 
-/**
- * [TECHNICIAN] - Get all appointments for technician (with caching)
- */
 export const useGetTechnicianAppointments = (params?: {
   Status?: string;
   BeginTime?: string;
