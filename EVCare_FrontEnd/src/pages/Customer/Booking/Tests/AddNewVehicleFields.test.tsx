@@ -2,7 +2,6 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { VehicleCategoryViewDto } from "../../../../models/VehicleModels/vehicleCategoryViewDto";
 import AddNewVehicleFields from "../AddNewVehicleFields";
-import userEvent from "@testing-library/user-event";
 
 const mockListCategories: VehicleCategoryViewDto[] = [
   { id: 999, name: "Sedan" },
