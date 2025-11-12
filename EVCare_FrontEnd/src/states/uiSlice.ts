@@ -7,6 +7,7 @@ const initialState: UIState = {
   actionAfterLogin: null,
   messagePopUpOpen: false,
   model3dOpen: false,
+  model3dData: null,
 };
 
 const uiSlice = createSlice({
@@ -37,11 +38,13 @@ const uiSlice = createSlice({
     closeMassagePopUp: (state) => {
       state.messagePopUpOpen = false;
     },
-    openModel3d: (state) => {
+    openModel3d: (state, action: PayloadAction<number>) => {
       state.model3dOpen = true;
+      state.model3dData = action.payload;
     },
     closeModel3d: (state) => {
       state.model3dOpen = false;
+      state.model3dData = null;
     },
   },
 });

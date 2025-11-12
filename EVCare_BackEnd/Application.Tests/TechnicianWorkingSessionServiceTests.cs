@@ -17,19 +17,19 @@ namespace Application.Tests {
         public TechnicianWorkingSessionServiceTests() {
             _fixture = new Fixture()
                  .Customize(new AutoMoqCustomization { ConfigureMembers = false });
-            
+
         }
-        [Theory,AutoData]
+        [Theory, AutoData]
         public async Task AddTechnicianToOrder_WithHaveOneTechnicianBusy_ThrowsExceptiion(AssignTechniciansModel model) {
             var employeeRepositoryMock = _fixture.Freeze<Mock<IEmployeeRepository>>();
-            employeeRepositoryMock.Setup(t=>t.GetEmployeeByTechnicianId(It.IsAny<int>()))
+            employeeRepositoryMock.Setup(t => t.GetEmployeeByTechnicianId(It.IsAny<int>()))
                 .ReturnsAsync((int technicianId) => new DataAccess.Entities.Employee
                 {
                     Id = technicianId,
                     Status = DataAccess.Enums.EmployeeStatusEnum.Busy
                 });
             var technicianWorkingSessionService = _fixture.Create<Application.Services.TechnicianWorkingSessionService>();
-            var result = await Assert.ThrowsAsync<Exception>(async () => 
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
                 await technicianWorkingSessionService.AddTechnicianToOrder(model)
             );
             Assert.Equal($"Technician with id {model.TechnicianIds.First()} is currently busy.", result.Message);
@@ -63,7 +63,7 @@ namespace Application.Tests {
                     Id = technicianId,
                     Status = DataAccess.Enums.EmployeeStatusEnum.Available
                 });
-            employeeRepositoryMock.Setup(t=>t.MarkBusyForTechnician(It.IsAny<IEnumerable<int>>()))
+            employeeRepositoryMock.Setup(t => t.MarkBusyForTechnician(It.IsAny<IEnumerable<int>>()))
                 .Returns(Task.CompletedTask);
             var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
             appointmentRepositoryMock.Setup(t => t.GetAppointmentByOrderIdAsync(It.IsAny<int>()))
@@ -71,61 +71,29 @@ namespace Application.Tests {
                 {
                     Id = 1,
                     OrderId = model.OrderId,
-                    
+
                 });
-            appointmentRepositoryMock.Setup(t=>t.UpdateAsync(It.IsAny<Appointment>()))
+            appointmentRepositoryMock.Setup(t => t.UpdateAsync(It.IsAny<Appointment>()))
                 .ReturnsAsync((Appointment appointment) => appointment);
             var technicianWorkingSessionRepositoryMock = _fixture.Freeze<Mock<ITechnicianWorkingSessionRepository>>();
             technicianWorkingSessionRepositoryMock.Setup(t => t.AddRange(It.IsAny<IEnumerable<TechnicianWorkingSession>>()))
                 .Returns(Task.CompletedTask);
             var technicianWorkingSessionService = _fixture.Create<Application.Services.TechnicianWorkingSessionService>();
             await technicianWorkingSessionService.AddTechnicianToOrder(model);
-            appointmentRepositoryMock.Verify(t=>t.UpdateAsync(It.Is<Appointment>(a=>a.Status == DataAccess.Enums.AppointmentStatusEnum.AddingPart)), Times.Once);
+            appointmentRepositoryMock.Verify(t => t.UpdateAsync(It.Is<Appointment>(a => a.Status == DataAccess.Enums.AppointmentStatusEnum.AddingPart)), Times.Once);
             technicianWorkingSessionRepositoryMock.Verify(t => t.AddRange(It.IsAny<IEnumerable<TechnicianWorkingSession>>()), Times.Once);
 
 
         }
 
-        [Theory,AutoData]
+        [Theory, AutoData]
         public async Task UpdateWorkingSession_WithModelStatusIsConfirm_ShouldAppointmentIsInprogres(int technician, TechnicianWorkingSessionUpdateModel model) {
 
             model.Status = DataAccess.Enums.TechnicianWorkingSessionEnum.Confirm;
             var technicianWorkingSessionRepositoryMock = _fixture.Freeze<Mock<ITechnicianWorkingSessionRepository>>();
             technicianWorkingSessionRepositoryMock.Setup(t => t.UpdateStatusWorkingSession(It.IsAny<int>(), It.IsAny<TechnicianWorkingSessionUpdateModel>()))
                 .Returns(Task.CompletedTask);
-            technicianWorkingSessionRepositoryMock.Setup(t=>t.CheckOrderConfirm(model.OrderId))
-                .ReturnsAsync(true);
-            var orderRepositoryMock = _fixture.Freeze<Mock<IOrderRepository>>();
-            orderRepositoryMock.Setup(t => t.UpdateAsync(It.IsAny<DataAccess.Entities.Order>()))
-                .ReturnsAsync((DataAccess.Entities.Order order) => order);
-            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
-            appointmentRepositoryMock.Setup(t => t.GetAppointmentByOrderIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new DataAccess.Entities.Appointment
-                {
-                    Id = 1,
-                    OrderId = model.OrderId,
-                    Status = DataAccess.Enums.AppointmentStatusEnum.AddingPart
-                });
-            appointmentRepositoryMock.Setup(t=>t.UpdateAsync(It.IsAny<DataAccess.Entities.Appointment>()))
-                .ReturnsAsync((DataAccess.Entities.Appointment appointment) => appointment);
-            var technicianWorkingSessionService = _fixture.Create<Application.Services.TechnicianWorkingSessionService>();
-            await technicianWorkingSessionService.UpdateWorkingSession(technician, model);
-            technicianWorkingSessionRepositoryMock.Verify(t => t.UpdateStatusWorkingSession(technician, model), Times.Once);
-            orderRepositoryMock.Verify(orderRepositoryMock => orderRepositoryMock.UpdateAsync(It.IsAny<DataAccess.Entities.Order>()), Times.Once);
-            appointmentRepositoryMock.Verify(t => t.GetAppointmentByOrderIdAsync(model.OrderId), Times.Once);
-            appointmentRepositoryMock.Verify(t=>t.UpdateAsync(It.Is<DataAccess.Entities.Appointment>(a=>a.Status == DataAccess.Enums.AppointmentStatusEnum.InProgress)), Times.Once);
-           
-
-        }
-
-        [Theory, AutoData]
-        public async Task UpdateWorkingSession_WithModelStatusIsCompleted_ShouldAppointmentIsInprogres(int technician, TechnicianWorkingSessionUpdateModel model) {
-
-            model.Status = DataAccess.Enums.TechnicianWorkingSessionEnum.Completed;
-            var technicianWorkingSessionRepositoryMock = _fixture.Freeze<Mock<ITechnicianWorkingSessionRepository>>();
-            technicianWorkingSessionRepositoryMock.Setup(t => t.UpdateStatusWorkingSession(It.IsAny<int>(), It.IsAny<TechnicianWorkingSessionUpdateModel>()))
-                .Returns(Task.CompletedTask);
-           technicianWorkingSessionRepositoryMock.Setup(t=>t.CheckOrderDone(model.OrderId))
+            technicianWorkingSessionRepositoryMock.Setup(t => t.CheckOrderConfirm(model.OrderId))
                 .ReturnsAsync(true);
             var orderRepositoryMock = _fixture.Freeze<Mock<IOrderRepository>>();
             orderRepositoryMock.Setup(t => t.UpdateAsync(It.IsAny<DataAccess.Entities.Order>()))
@@ -140,19 +108,51 @@ namespace Application.Tests {
                 });
             appointmentRepositoryMock.Setup(t => t.UpdateAsync(It.IsAny<DataAccess.Entities.Appointment>()))
                 .ReturnsAsync((DataAccess.Entities.Appointment appointment) => appointment);
-            appointmentRepositoryMock.Setup(t=>t.CheckAllReadyForPickup(It.IsAny<int>()))
+            var technicianWorkingSessionService = _fixture.Create<Application.Services.TechnicianWorkingSessionService>();
+            await technicianWorkingSessionService.UpdateWorkingSession(technician, model);
+            technicianWorkingSessionRepositoryMock.Verify(t => t.UpdateStatusWorkingSession(technician, model), Times.Once);
+            orderRepositoryMock.Verify(orderRepositoryMock => orderRepositoryMock.UpdateAsync(It.IsAny<DataAccess.Entities.Order>()), Times.Once);
+            appointmentRepositoryMock.Verify(t => t.GetAppointmentByOrderIdAsync(model.OrderId), Times.Once);
+            appointmentRepositoryMock.Verify(t => t.UpdateAsync(It.Is<DataAccess.Entities.Appointment>(a => a.Status == DataAccess.Enums.AppointmentStatusEnum.InProgress)), Times.Once);
+
+
+        }
+
+        [Theory, AutoData]
+        public async Task UpdateWorkingSession_WithModelStatusIsCompleted_ShouldAppointmentIsInprogres(int technician, TechnicianWorkingSessionUpdateModel model) {
+
+            model.Status = DataAccess.Enums.TechnicianWorkingSessionEnum.Completed;
+            var technicianWorkingSessionRepositoryMock = _fixture.Freeze<Mock<ITechnicianWorkingSessionRepository>>();
+            technicianWorkingSessionRepositoryMock.Setup(t => t.UpdateStatusWorkingSession(It.IsAny<int>(), It.IsAny<TechnicianWorkingSessionUpdateModel>()))
+                .Returns(Task.CompletedTask);
+            technicianWorkingSessionRepositoryMock.Setup(t => t.CheckOrderDone(model.OrderId))
+                 .ReturnsAsync(true);
+            var orderRepositoryMock = _fixture.Freeze<Mock<IOrderRepository>>();
+            orderRepositoryMock.Setup(t => t.UpdateAsync(It.IsAny<DataAccess.Entities.Order>()))
+                .ReturnsAsync((DataAccess.Entities.Order order) => order);
+            var appointmentRepositoryMock = _fixture.Freeze<Mock<IAppointmentRepository>>();
+            appointmentRepositoryMock.Setup(t => t.GetAppointmentByOrderIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new DataAccess.Entities.Appointment
+                {
+                    Id = 1,
+                    OrderId = model.OrderId,
+                    Status = DataAccess.Enums.AppointmentStatusEnum.AddingPart
+                });
+            appointmentRepositoryMock.Setup(t => t.UpdateAsync(It.IsAny<DataAccess.Entities.Appointment>()))
+                .ReturnsAsync((DataAccess.Entities.Appointment appointment) => appointment);
+            appointmentRepositoryMock.Setup(t => t.CheckAllReadyForPickup(It.IsAny<int>()))
                 .ReturnsAsync(true);
-            appointmentRepositoryMock.Setup(t=>t.GetAppointmentReadyForPickUpByVehicleId(It.IsAny<int>()))
-                .ReturnsAsync(new List<int>{1,2});
-            appointmentRepositoryMock.Setup(t=>t.GetPaymentPendingPickupEmailModel(It.IsAny<int>()))
+            appointmentRepositoryMock.Setup(t => t.GetAppointmentReadyForPickUpByVehicleId(It.IsAny<int>()))
+                .ReturnsAsync(new List<int> { 1, 2 });
+            appointmentRepositoryMock.Setup(t => t.GetPaymentPendingPickupEmailModel(It.IsAny<int>()))
                 .ReturnsAsync(new DataAccess.Dtos.Payment.PaymentPendingPickupEmailModel
                 {
                     Email = "",
-                    ServiceCenterName="EVCare"
+                    ServiceCenterName = "EVCare"
 
                 });
             var notificationServiceMock = _fixture.Freeze<Mock<Application.Interfaces.INotificationServices>>();
-            notificationServiceMock.Setup(t=>t.SendPaymentPendingPickupEmailAsync(It.IsAny<DataAccess.Dtos.Payment.PaymentPendingPickupEmailModel>()))
+            notificationServiceMock.Setup(t => t.SendPaymentPendingPickupEmailAsync(It.IsAny<DataAccess.Dtos.Payment.PaymentPendingPickupEmailModel>()))
                 .Returns(Task.CompletedTask);
             var technicianWorkingSessionService = _fixture.Create<Application.Services.TechnicianWorkingSessionService>();
             await technicianWorkingSessionService.UpdateWorkingSession(technician, model);
@@ -160,8 +160,97 @@ namespace Application.Tests {
             orderRepositoryMock.Verify(orderRepositoryMock => orderRepositoryMock.UpdateAsync(It.IsAny<DataAccess.Entities.Order>()), Times.Once);
             appointmentRepositoryMock.Verify(t => t.GetAppointmentByOrderIdAsync(model.OrderId), Times.Once);
             appointmentRepositoryMock.Verify(t => t.UpdateAsync(It.Is<DataAccess.Entities.Appointment>(a => a.Status == DataAccess.Enums.AppointmentStatusEnum.ReadyForPickup)), Times.Once);
-            notificationServiceMock.Verify(t=>t.SendPaymentPendingPickupEmailAsync(It.IsAny<DataAccess.Dtos.Payment.PaymentPendingPickupEmailModel>()), Times.Exactly(2));
+            notificationServiceMock.Verify(t => t.SendPaymentPendingPickupEmailAsync(It.IsAny<DataAccess.Dtos.Payment.PaymentPendingPickupEmailModel>()), Times.Exactly(2));
         }
 
-     }
+        [Theory, AutoData]
+        public async Task UpdateStatusTechnicinInOrder_WithValidInput_UpdatesSuccessfully(List<int> technicianId, int orderId) {
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+            appointmentRepositoryMock.Setup(t => t.GetAppointmentByOrderIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new DataAccess.Entities.Appointment
+                {
+                    Id = 1,
+                    OrderId = orderId,
+                    Status = DataAccess.Enums.AppointmentStatusEnum.InProgress
+                });
+            appointmentRepositoryMock.Setup(t => t.UpdateAsync(It.IsAny<DataAccess.Entities.Appointment>()))
+                .ReturnsAsync((DataAccess.Entities.Appointment appointment) => appointment);
+            appointmentRepositoryMock.Setup(t => t.GetAppointmentByOrderIdAsync(orderId))
+                .ReturnsAsync(new Appointment
+                {
+                    Id = 1,
+                    OrderId = orderId,
+                    Status = DataAccess.Enums.AppointmentStatusEnum.InProgress
+                });
+            appointmentRepositoryMock.Setup(t => t.CheckAllReadyForPickup(It.IsAny<int>()))
+                .ReturnsAsync(true);
+            appointmentRepositoryMock.Setup(t => t.GetAppointmentReadyForPickUpByVehicleId(It.IsAny<int>()))
+                .ReturnsAsync(new List<int> { 1, 2 });
+            appointmentRepositoryMock.Setup(t => t.GetPaymentPendingPickupEmailModel(It.IsAny<int>()))
+                .ReturnsAsync(new DataAccess.Dtos.Payment.PaymentPendingPickupEmailModel
+                {
+                    Email = "",
+                    ServiceCenterName = "EVCare"
+                });
+            _fixture.Inject(appointmentRepositoryMock.Object);
+            var notificationServiceMock = new Mock<Application.Interfaces.INotificationServices>();
+            notificationServiceMock.Setup(t => t.SendPaymentPendingPickupEmailAsync(It.IsAny<DataAccess.Dtos.Payment.PaymentPendingPickupEmailModel>()))
+                .Returns(Task.CompletedTask);
+
+
+            var technicianWorkingSessionRepositoryMock = new Mock<ITechnicianWorkingSessionRepository>();
+            technicianWorkingSessionRepositoryMock.Setup(t => t.UpdateStatusTechnicinInOrder(It.IsAny<List<int>>(), It.IsAny<int>()))
+                .Returns(Task.CompletedTask);
+            technicianWorkingSessionRepositoryMock.Setup(t => t.CheckOrderDone(orderId)).ReturnsAsync(true);
+            _fixture.Inject(technicianWorkingSessionRepositoryMock.Object);
+            var employeeRepositoryMock = new Mock<IEmployeeRepository>();
+            employeeRepositoryMock.Setup(t => t.MarkAvaliableTechnician(It.IsAny<List<int>>()))
+                .Returns(Task.CompletedTask);
+            _fixture.Inject(employeeRepositoryMock.Object);
+            var orderRepositoryMock = new Mock<IOrderRepository>();
+            orderRepositoryMock.Setup(t => t.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new DataAccess.Entities.Order
+                {
+                    Id = orderId,
+                    Status = DataAccess.Enums.OrderStatusEnum.Processing
+                });
+            orderRepositoryMock.Setup(t => t.UpdateAsync(It.IsAny<DataAccess.Entities.Order>()))
+                .ReturnsAsync((DataAccess.Entities.Order order) => order);
+            _fixture.Inject(orderRepositoryMock.Object);
+
+            var technicianWorkingSessionService = _fixture.Create<Application.Services.TechnicianWorkingSessionService>();
+            await technicianWorkingSessionService.UpdateStatusTechnicinInOrder(technicianId, orderId);
+            technicianWorkingSessionRepositoryMock.Verify(t => t.UpdateStatusTechnicinInOrder(technicianId, orderId), Times.Once);
+        }
+        [Theory, AutoData]
+        public async Task UpdateStatusTechnicinInOrder_WithAppointmentStatusDone_ThrowsException(List<int> technicianId, int orderId) {
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+            appointmentRepositoryMock.Setup(t => t.GetAppointmentByOrderIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new DataAccess.Entities.Appointment
+                {
+                    Id = 1,
+                    OrderId = orderId,
+                    Status = DataAccess.Enums.AppointmentStatusEnum.Done
+                });
+            _fixture.Inject(appointmentRepositoryMock.Object);
+            var technicianWorkingSessionService = _fixture.Create<Application.Services.TechnicianWorkingSessionService>();
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                await technicianWorkingSessionService.UpdateStatusTechnicinInOrder(technicianId, orderId)
+            );
+            Assert.Equal("Cannot update technician from order that is done or ready for pickup or canceled.", result.Message);
+        }
+        [Theory, AutoData]
+        public async Task UpdateStatusTechnicinInOrder_WithAppointmentIsNotFound_ThrowsException(List<int> technicianId, int orderId) {
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+            appointmentRepositoryMock.Setup(t => t.GetAppointmentByOrderIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            _fixture.Inject(appointmentRepositoryMock.Object);
+            var technicianWorkingSessionService = _fixture.Create<Application.Services.TechnicianWorkingSessionService>();
+            var result = await Assert.ThrowsAsync<Exception>(async () =>
+                await technicianWorkingSessionService.UpdateStatusTechnicinInOrder(technicianId, orderId)
+            );
+            Assert.Equal("Appointment not found for the given order.", result.Message);
+
+        }
+    }
 }
