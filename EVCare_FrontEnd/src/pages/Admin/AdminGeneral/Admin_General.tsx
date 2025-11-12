@@ -17,13 +17,6 @@ export default function Admin_General() {
 
   const { showAlert } = useAlert();
 
-  function getCurrentMonthYear() {
-    const now = new Date();
-    const month = now.toLocaleString("default", { month: "long" });
-    const year = now.getFullYear();
-    return `${month} ${year}`;
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -57,9 +50,7 @@ export default function Admin_General() {
     <AdminGeneralStyled>
       <div className="stats-header">
         <h2>Monthly Overview</h2>
-        <p>Statistics for {getCurrentMonthYear()}</p>
       </div>
-      {/* <StatsGrid></StatsGrid> */}
       <LazyPerformanceChart></LazyPerformanceChart>
       <InvoicesTable listInvoices={listInvoices}></InvoicesTable>
     </AdminGeneralStyled>

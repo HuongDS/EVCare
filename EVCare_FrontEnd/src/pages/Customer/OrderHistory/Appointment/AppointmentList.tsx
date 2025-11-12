@@ -40,7 +40,6 @@ export default function OrderList() {
     null
   );
   const [data, setData] = useState<AppointmentViewDetailModel>(Object);
-  const [model3dData, setModel3dData] = useState<number>();
   const notification = useNotification();
   const onViewAppointmentDetail = useCallback(async (appointmentId: number) => {
     setLoadingModalDetail(appointmentId);
@@ -96,8 +95,8 @@ export default function OrderList() {
     fetchData();
   }, [setFilteredList, selectedCategory]);
 
-  const isOpen3dModel = useAppSelector(
-    (state: RootState) => state.ui.model3dOpen
+  const { model3dOpen: isOpen3dModel, model3dData } = useAppSelector(
+    (state: RootState) => state.ui
   );
 
   if (isOpen3dModel) {
@@ -129,7 +128,6 @@ export default function OrderList() {
                   onViewAppointmentDetail={onViewAppointmentDetail}
                   data={a}
                   loadingModalDetail={loadingModalDetail}
-                  setModel3dData={setModel3dData}
                 />
               ))
             )}

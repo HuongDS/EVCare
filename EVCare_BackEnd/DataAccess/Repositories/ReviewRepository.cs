@@ -22,6 +22,8 @@ namespace DataAccess.Repositories
         public async Task<PageResultDto<ReviewViewDetailModel>> GetAllReviews(ReviewQueryDto query)
         {
             var reviewsQuery = _dbContext.Reviews.AsNoTracking()
+                .Include(x=>x.Appointment).ThenInclude(x=>x.Customer).ThenInclude(x=>x.Account)
+                .Include(x=>x.Appointment).ThenInclude(x=>x.AppointmentServices).ThenInclude(x=>x.Service)
                 .Select(x=>new ReviewViewDetailModel
                 {
                     Id = x.Id,
@@ -43,7 +45,7 @@ namespace DataAccess.Repositories
                 reviewsQuery = reviewsQuery
                     .Where(r => r.Services.Any(s => query.ServiceIds.Contains(s.Id)));
             }
-            reviewsQuery.ApplySorting(query.SortField, query.SortOrder);
+           reviewsQuery =  reviewsQuery.ApplySorting(query.SortField, query.SortOrder);
 
             return await PaginationHelper.PaginationAsync(reviewsQuery, query.PageSize.Value ,query.PageIndex.Value);
 

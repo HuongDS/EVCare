@@ -349,6 +349,10 @@ namespace Application.Services
             return ms.ToArray();
         }
 
+        public async Task<PageResultDto<PartViewModel>> GetPartsForService(PartForServiceQueryDto model) {
+            return await _partRepository.GetPartsForService(model);
+        }
+
         public async Task<decimal> GetTotalPriceOfParts() {
             return await _partRepository.GetTotalPriceOfParts();
         }
