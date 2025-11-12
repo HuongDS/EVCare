@@ -56,12 +56,11 @@ export const FilterBar = styled(motion.div)`
   border-radius: 16px;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
 
-    &:focus {
-      outline: none;
-      border-color: #00ad4e;
-      background: rgba(255, 255, 255, 1);
-      box-shadow: 0 0 0 3px rgba(0, 173, 78, 0.2);
-    }
+  &:focus {
+    outline: none;
+    border-color: #00ad4e;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 0 3px rgba(0, 173, 78, 0.2);
   }
 `;
 
@@ -117,8 +116,12 @@ export const TabButton = styled.button<{ $isActive: boolean }>`
   border-radius: 8px;
   cursor: pointer;
   color: ${({ $isActive }) => ($isActive ? "#fff" : "#374151")};
-  background: ${({ $isActive }) => ($isActive ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)" : "transparent")};
-  box-shadow: ${({ $isActive }) => ($isActive ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none")};
+  background: ${({ $isActive }) =>
+    $isActive
+      ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)"
+      : "transparent"};
+  box-shadow: ${({ $isActive }) =>
+    $isActive ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none"};
   transition: all 0.3s ease;
 
   &:hover:not(:disabled):not(:active) {

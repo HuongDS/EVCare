@@ -87,7 +87,7 @@ export default function Appointment_Assign({ data }: props) {
       await assignTech({
         orderId: data.orderId,
         technicianIds: techniciansList,
-        status: "Pending",
+        status: "AddingPart",
       });
 
       await appointmentStatus({
