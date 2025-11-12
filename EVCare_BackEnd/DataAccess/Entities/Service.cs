@@ -18,6 +18,7 @@ namespace DataAccess.Entities
         public DateTime? Deleted_At { get; set; }
         public int ServiceCategoryId { get; set;}
         public ServiceCategory ServiceCategory { get; set;}
+        public ICollection<ServicePart> ServiceParts { get; set; }
         public ICollection<TechnicianSkill> TechnicianSkills { get; set; }
     }
 
