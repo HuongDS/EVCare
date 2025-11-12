@@ -12,6 +12,7 @@ using DataAccess.Repositories;
 
 namespace Application.Services
 {
+    //alo
     public class TechnicianWorkingSessionService : ITechnicianWorkingSessionService {
         private readonly ITechnicianWorkingSessionRepository _technicianWorkingSessionRepository;
         private readonly IAppointmentRepository _appointmentRepository;
@@ -20,6 +21,7 @@ namespace Application.Services
         private readonly IEmployeeRepository _employeeRepository;
         private readonly OnAssignTechnician _onAssignTechnician;
         private readonly IAccountRepository _accountRepository;
+        private readonly ITechnicianRepository _technicianRepository;
 
         public TechnicianWorkingSessionService(ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
             , IOrderRepository orderRepository
@@ -27,7 +29,8 @@ namespace Application.Services
             , INotificationServices notificationServices
             , IEmployeeRepository employeeRepository
             , OnAssignTechnician onAssignTechnician
-            , IAccountRepository accountRepository
+            , IAccountRepository accountRepository,
+            ITechnicianRepository technicianRepository
             ) {
             _orderRepository = orderRepository;
             _appointmentRepository = appointmentRepository;
@@ -36,18 +39,23 @@ namespace Application.Services
             _employeeRepository = employeeRepository;
             _onAssignTechnician = onAssignTechnician;
             _accountRepository = accountRepository;
+            _technicianRepository = technicianRepository;
         }
 
         public async Task AddTechnicianToOrder(AssignTechniciansModel model) {
 
             foreach (var technicianId in model.TechnicianIds) {
                 var employee = await _employeeRepository.GetEmployeeByTechnicianId(technicianId);
+                if(employee == null) {
+                    throw new Exception($"Employee for technician with id {technicianId} not found.");
+                }
                 if (employee.Status == DataAccess.Enums.EmployeeStatusEnum.Busy) {
                     throw new Exception($"Technician with id {technicianId} is currently busy.");
                 }
                 if (employee.Status == DataAccess.Enums.EmployeeStatusEnum.OnLeave) {
                     throw new Exception($"Technician with id {technicianId} is currently on leave.");
                 }
+                
             }
 
 

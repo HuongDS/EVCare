@@ -85,7 +85,7 @@ builder.Services.AddScoped<IGenericRepository<Employee>, GenericRepository<Emplo
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IGenericRepository<Technician>, GenericRepository<Technician>>();
 builder.Services.AddScoped<ITechnicianRepository, TechnicianRepository>();
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+//builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository>();
@@ -111,6 +111,7 @@ builder.Services.AddScoped<ITechnicianSkillRepository, TechnicianSkillRepository
 builder.Services.AddScoped<IPartHistoryRepository, PartHistoryRepository>();
 builder.Services.AddScoped<IAppointmentPartConditionRepository, AppointmentPartConditonRepository>();
 builder.Services.AddScoped<IVehiclePartCompatibilityRepository, VehiclePartCompatibilityRepository>();
+builder.Services.AddScoped<IServicePartRepository, ServicePartRepository>();
 
 
 

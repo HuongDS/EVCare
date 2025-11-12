@@ -22,5 +22,6 @@ namespace DataAccess.Interfaces
         Task<Part> GetByNameAsync(string name);
         Task<decimal> GetTotalPriceOfParts();
         Task<IEnumerable<PartViewModel>> GetLowStockParts();
+        Task<PageResultDto<PartViewModel>> GetPartsForService(PartForServiceQueryDto model);
     }
 }

@@ -16,6 +16,8 @@ namespace DataAccess.Dtos.Technician
         public string? Phone {  get; set; }
         public double ExpYears { get; set; }        
         public EmployeeStatusEnum Status { get; set; }
+        public int KPIPerDays { get; set; }
+        public int CompletedOrders { get; set; }
         public TechnicianWorkingSessionEnum WorkingSessionStatus { get; set; }
         public IEnumerable<ServiceViewFormModel> Skills { get; set; }
     }
