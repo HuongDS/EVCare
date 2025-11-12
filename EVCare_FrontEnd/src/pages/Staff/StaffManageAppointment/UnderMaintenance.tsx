@@ -17,7 +17,9 @@ export default function UnderMaintenance() {
         <AnimatedIcon>
           <Wrench size={60} color="white" />
         </AnimatedIcon>
+
         <Title>Under Maintenance</Title>
+
         <ProgressSection>
           <ProgressLabel>
             <AlertCircle size={16} />
