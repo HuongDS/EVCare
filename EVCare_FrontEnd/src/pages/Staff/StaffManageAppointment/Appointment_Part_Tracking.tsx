@@ -277,6 +277,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
                         style={{ fontFamily: "Outfit" }}
                       />
                       <IconButton
+                        data-testid="delete-part-button"
                         onClick={() => {
                           setEditingPartId(null);
                           setStockMessage("");
@@ -290,6 +291,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
                       <QuantityLabel>Qty</QuantityLabel>
                       <QuantityValue>{part.quantity}</QuantityValue>
                       <IconButton
+                        data-testid="edit-part-button"
                         onClick={() => {
                           setEditingPartId({
                             partId: part.id,
@@ -301,6 +303,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
                         <Edit3 size={16} />
                       </IconButton>
                       <IconButton
+                        data-testid="delete-part-button"
                         onClick={() => {
                           setEditingPartId({
                             partId: part.id,
