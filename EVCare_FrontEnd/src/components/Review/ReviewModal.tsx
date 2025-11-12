@@ -9,6 +9,7 @@ import { MSG_TITLE } from "../../constants/messages/Message.ts";
 import { review } from "../../services/reviewService.ts";
 import SpinnerComponent from "../SpinnerComponent.tsx";
 import { ModalOverlay } from "./Review.styled.tsx";
+import { useNavigate } from "react-router";
 
 interface ReviewModalProps {
   open: boolean;
@@ -16,14 +17,11 @@ interface ReviewModalProps {
   appointmentData: AppointmentViewDetailModel;
 }
 
-const ReviewModal: React.FC<ReviewModalProps> = ({
-  open,
-  onClose,
-  appointmentData,
-}) => {
+const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, appointmentData }) => {
   const [submitted, setSubmitted] = useState(false);
   const { showAlert } = useAlert();
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (data: ReviewCreateDto) => {
     setIsLoading(true);
@@ -31,6 +29,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
       await review(data);
       setSubmitted(true);
       setTimeout(onClose, 2500);
+      navigate("/review");
     } catch (error) {
       handleError(error);
       showAlert("error", MSG_TITLE.REVIEW, (error as Error).message);
@@ -49,11 +48,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             <SpinnerComponent />
           </ModalOverlay>
         ) : (
-          <ReviewForm
-            appointmentData={appointmentData}
-            onSubmit={handleSubmit}
-            onCancel={onClose}
-          />
+          <ReviewForm appointmentData={appointmentData} onSubmit={handleSubmit} onCancel={onClose} />
         )
       ) : (
         <SuccessMessage onClose={onClose} />

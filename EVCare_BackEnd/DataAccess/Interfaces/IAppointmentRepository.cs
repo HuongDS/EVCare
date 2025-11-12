@@ -11,6 +11,7 @@ using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Payment;
 using DataAccess.Dtos.Service;
 using DataAccess.Dtos.Part;
+using DataAccess.Dtos.AppointmentService;
 
 namespace DataAccess.Interfaces
 {
@@ -45,5 +46,6 @@ namespace DataAccess.Interfaces
         Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId);
         Task<IEnumerable<ServiceSummaryViewModel>> GetTopServicesAsync(ServiceSummaryQueryDto model);
         Task<bool> CheckInValidVehicleID(int vehicleId);
+        Task<IEnumerable<AppointmentServiceViewModel>> GetAppointmentServices(int appointmentId);
     }
 }

@@ -3,6 +3,7 @@ using Application.Infrastructures;
 using Application.Interfaces;
 using AutoMapper;
 using DataAccess.Dtos.Appointment;
+using DataAccess.Dtos.AppointmentService;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
@@ -310,6 +311,14 @@ namespace Application.Services
             entity.CustomerId = model.CustomerId;
 
             return (await _appointmentRepository.AddAsync(entity)).Id;
+        }
+
+        public async Task<IEnumerable<AppointmentServiceViewModel>> GetAppointmentServices(int appointmentId) {
+            var appointment = await _appointmentRepository.GetByIdAsync(appointmentId);
+            if (appointment == null) {
+                throw new Exception("Appointment not found");
+            }
+            return await _appointmentRepository.GetAppointmentServices(appointmentId);
         }
     }
 }

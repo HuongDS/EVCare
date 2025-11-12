@@ -12,6 +12,8 @@ namespace DataAccess.Entities
         public int Id { get; set; }
         public int EmployeeId { get; set; }
         public double ExpYear { get; set; }
+        public int KPIPerDays { get; set; }
+        public int CompletedOrders { get; set; }
         public Employee Employee { get; set; }
    
         public ICollection<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }

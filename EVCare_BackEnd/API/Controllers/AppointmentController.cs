@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using Application.DomainEvents;
+using DataAccess.Dtos.AppointmentService;
 
 
 namespace API.Controllers
@@ -441,6 +442,30 @@ namespace API.Controllers
                     data = null
                 });
 
+            }
+        }
+        [HttpGet("appointment-services")]
+        [Authorize(Roles = "Staff, Technician, Admin")]
+        public async Task<IActionResult> GetAppointmentServices([FromQuery] int appointmentId)
+        {
+            try
+            {
+                var services = await _appointmentService.GetAppointmentServices(appointmentId);
+                return Ok(new ResponseDto<IEnumerable<AppointmentServiceViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = services
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
             }
         }
 

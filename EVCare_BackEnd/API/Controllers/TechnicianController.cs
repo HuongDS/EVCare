@@ -111,5 +111,27 @@ namespace API.Controllers
                 });
             }
         }
+
+        [HttpPut()]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateTechnicianProfile([FromQuery] int technicianId,[FromBody] TechnicianUpdateModel model) {
+            try {
+                
+                await _technicianService.UpdateTechnicianProfile(technicianId, model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.UPDATE_SUCCESSFULLY,
+                    data = technicianId
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                });
+            }
+        }
     }
 }

@@ -12,10 +12,12 @@ namespace Application.Services
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IApplicationRepository _applicationRepository;
-        public AttendanceService(IEmployeeRepository employeeRepository,IApplicationRepository applicationRepository)
+        private readonly ITechnicianRepository _technicianRepository;
+        public AttendanceService(IEmployeeRepository employeeRepository,IApplicationRepository applicationRepository,ITechnicianRepository technicianRepository)
         {
             _applicationRepository = applicationRepository;
             _employeeRepository = employeeRepository;
+            _technicianRepository = technicianRepository;
         }
 
         public async Task MarkAttendanceAsync()
@@ -30,6 +32,8 @@ namespace Application.Services
                 await _employeeRepository.UpdateAsync(employee);
             }
             await _employeeRepository.MarkBusyForTechnician();
+            await _technicianRepository.UpdateCompletedOrderAsync();
+            
         }
     }
 }
