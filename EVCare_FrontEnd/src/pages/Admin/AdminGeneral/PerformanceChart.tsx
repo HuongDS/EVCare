@@ -49,7 +49,7 @@ const PerformanceChart: React.FC = () => {
   return (
     <div className="chart-card">
       <div className="chart-header">
-        <h2 className="chart-title">Performance</h2>
+        <h2 className="chart-title">Revenue</h2>
 
         <select
           value={dateRange}
@@ -68,8 +68,8 @@ const PerformanceChart: React.FC = () => {
           <XAxis dataKey="label" />
           <YAxis tickFormatter={(v) => `${v}₫`} />
           <Tooltip formatter={(v) => `${v}₫`} />
-          <Line type="monotone" dataKey="thisMonth" stroke="#64b5f6" dot={false} strokeWidth={2} />
-          <Line type="monotone" dataKey="lastMonth" stroke="#ffa726" dot={false} strokeWidth={2} />
+          <Line type="monotone" dataKey="thisMonth" stroke="#00ad4e" dot={false} strokeWidth={2} />
+          <Line type="monotone" dataKey="lastMonth" stroke="#2d26ffff" dot={false} strokeWidth={2} />
         </LineChart>
       </ResponsiveContainer>
     </div>
