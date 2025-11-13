@@ -53,7 +53,7 @@ namespace Application.Services {
                        .Replace("{{Note}}", data.Note ?? "")
                        .Replace("{{ConfirmUrl}}", data.ConfirmUrl)
                        .Replace("{{CancelUrl}}", data.CancelUrl)
-                       .Replace("{{ServiceCenterName}}", data.CenterName);
+                       .Replace("{{SericeCenterName}}", data.CenterName);
             return _emailSender.SendAsync(data.email, "Appointment Confirmation", html,$"Dear {data.CustomerName}, your appointment is scheduled on {data.AppointmentDate}.");
         }
 

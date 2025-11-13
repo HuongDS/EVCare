@@ -138,7 +138,7 @@ namespace Application.Services
                 <tr>
                     <td style=""padding:10px; border:1px solid #ddd;"">{op.partID}</td>
                     <td style=""padding:10px; border:1px solid #ddd;"">{op.partName}</td>
-                    <td style=""padding:10px; border:1px solid #ddd; text-align:center;"">{op.quantity}</td>
+                    <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{op.quantity}</td>
                     <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{op.price:N0}</td>
                     <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{op.replacePrice:N0}</td>
                     <td style=""padding:10px; border:1px solid #ddd; text-align:right;"">{(op.quantity * (op.replacePrice + op.price)):N0}</td>
