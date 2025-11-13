@@ -1,4 +1,11 @@
-import { ArrowLeft, ShoppingCart, Search, Package } from "lucide-react";
+import {
+  ArrowLeft,
+  ShoppingCart,
+  Search,
+  Package,
+  LayoutGrid,
+} from "lucide-react";
+import { useState, useEffect } from "react";
 import ProductCard from "../Technician_Component/ProductCard";
 import ProductModal from "../Technician_Component/ProductModal";
 import CartModal from "../Technician_Component/CartModal";
@@ -24,24 +31,60 @@ import {
   SearchWrapper,
   Subtitle,
   Title,
+  Overlay,
+  ServiceToggleButton,
+  SidebarHeader,
+  SidebarWrapper,
+  ServiceList,
+  ServiceItem,
+  LoadingSpinner,
 } from "./Technician_Order.styled";
+
 import { Pagination } from "../../../components/Paginations/Pagination";
 
+interface Service {
+  serviceId: number;
+  serviceName: string;
+}
+
+const mockServices: Service[] = [
+  { serviceId: 12, serviceName: "Battery Module Replacement" },
+  { serviceId: 14, serviceName: "Brake Regeneration Calibration" },
+  { serviceId: 16, serviceName: "Gearbox / Gear Shift Check" },
+  { serviceId: 17, serviceName: "Body Panel Repair / Replacement" },
+  { serviceId: 18, serviceName: "Charging Port Inspection" },
+];
+
+const fetchServices = (): Promise<Service[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockServices);
+    }, 300);
+  });
+};
+
 interface TechnicianOrderProps {
-  orderId?: number;
+  propOrderId?: number;
   onPartsUpdated?: (orderId: number) => void;
   selectedCategory?: string;
+  setIsOrder: (v: boolean) => void;
 }
 
 export default function TechnicianOrder({
-  orderId: propOrderId,
+  propOrderId,
   onPartsUpdated,
   selectedCategory,
+  setIsOrder,
 }: TechnicianOrderProps) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [services, setServices] = useState<Service[]>([]);
+  const [loadingServices, setLoadingServices] = useState(true);
+  const [currentCategory, setCurrentCategory] = useState(selectedCategory);
+
   const {
     cart,
     displayParts,
-    // page,
+    page,
     searchQuery,
     isLoading,
     isSending,
@@ -51,7 +94,6 @@ export default function TechnicianOrder({
     cartOpen,
     totalItems,
     totalPages,
-    handleBack,
     handleAddToCart,
     handleRemoveFromCart,
     handleSendCart,
@@ -59,24 +101,70 @@ export default function TechnicianOrder({
     handleCloseProductModal,
     handleOpenCart,
     handleCloseCart,
-    // handlePageChange,
+    handlePageChange,
     handleSearchChange,
     handleCartQuantityChange,
   } = useTechnicianOrder({
     propOrderId,
     onPartsUpdated,
-    selectedCategory,
+    selectedCategory: currentCategory,
   });
+
+  useEffect(() => {
+    setLoadingServices(true);
+    fetchServices()
+      .then((data) => {
+        setServices(data);
+        setLoadingServices(false);
+      })
+      .catch((err) => {
+        console.error("Lỗi fetch services:", err);
+        setLoadingServices(false);
+      });
+  }, []);
+
+  const handleServiceSelect = (service: Service) => {
+    setCurrentCategory(service.serviceName);
+    setIsSidebarOpen(false);
+  };
 
   const hasCartItems = cart.length > 0;
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <PageContainer>
+      <Overlay
+        $isOpen={isSidebarOpen}
+        onClick={() => setIsSidebarOpen(false)}
+      />
+      <SidebarWrapper $isOpen={isSidebarOpen}>
+        <SidebarHeader>
+          <h2>All Services</h2>
+          <button onClick={() => setIsSidebarOpen(false)} aria-label="Close">
+            &times;
+          </button>
+        </SidebarHeader>
+        <ServiceList>
+          {loadingServices ? (
+            <LoadingSpinner>Loading...</LoadingSpinner>
+          ) : (
+            services.map((service) => (
+              <ServiceItem
+                key={service.serviceId}
+                $isActive={service.serviceName === currentCategory}
+                onClick={() => handleServiceSelect(service)}
+              >
+                {service.serviceName}
+              </ServiceItem>
+            ))
+          )}
+        </ServiceList>
+      </SidebarWrapper>
+
       <Header>
-        <BackButton onClick={handleBack}>
+        <BackButton onClick={() => setIsOrder(false)}>
           <ArrowLeft size={20} />
-          Back
+          Close
         </BackButton>
 
         <HeaderContent>
@@ -106,16 +194,29 @@ export default function TechnicianOrder({
             <ShoppingCart size={20} />
             <CartBadge $show={hasCartItems}>{cartItemCount}</CartBadge>
           </CartButton>
+
+          <ServiceToggleButton
+            onClick={() => setIsSidebarOpen(true)}
+            aria-label="Chọn dịch vụ"
+          >
+            <LayoutGrid size={20} />
+          </ServiceToggleButton>
         </div>
       </Header>
 
       <ContentWrapper>
         <CardGrid>
           {isLoading ? (
-            Array.from({ length: pageSize }).map((_, idx) => <ProductCard key={idx} isSkeleton />)
+            Array.from({ length: pageSize }).map((_, idx) => (
+              <ProductCard key={idx} isSkeleton />
+            ))
           ) : displayParts && displayParts?.length > 0 ? (
             displayParts.map((part: OrderPartsResponseDto) => (
-              <ProductCard key={part.id} part={part} onClick={() => handleOpenProductModal(part)} />
+              <ProductCard
+                key={part.id}
+                part={part}
+                onClick={() => handleOpenProductModal(part)}
+              />
             ))
           ) : (
             <EmptyState>
@@ -139,7 +240,12 @@ export default function TechnicianOrder({
         )}
       </ContentWrapper>
 
-      <ProductModal open={open} onClose={handleCloseProductModal} part={selectedPart} onAddToCart={handleAddToCart} />
+      <ProductModal
+        open={open}
+        onClose={handleCloseProductModal}
+        part={selectedPart}
+        onAddToCart={handleAddToCart}
+      />
 
       <CartModal
         open={cartOpen}

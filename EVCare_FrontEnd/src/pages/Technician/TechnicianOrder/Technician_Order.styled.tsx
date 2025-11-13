@@ -101,17 +101,13 @@ export const CartButton = styled.button<{ $hasItems: boolean }>`
   justify-content: center;
   width: 56px;
   height: 56px;
-  background: ${(props) =>
-    props.$hasItems
-      ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)"
-      : "#f5f5f5"};
+  background: ${(props) => (props.$hasItems ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)" : "#f5f5f5")};
   color: ${(props) => (props.$hasItems ? "white" : "#999")};
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: ${(props) =>
-    props.$hasItems ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none"};
+  box-shadow: ${(props) => (props.$hasItems ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none")};
 
   &:hover {
     transform: translateY(-2px);
@@ -230,4 +226,116 @@ export const PaginationWrapper = styled.div`
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+`;
+
+const EVCareGreen = "#00ad4e";
+
+export const ServiceToggleButton = styled.button`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: #f5f5f5;
+  color: #999;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: #e0e0e0;
+    color: ${EVCareGreen};
+    box-shadow: 0 4px 12px rgba(0, 173, 78, 0.2);
+  }
+
+  @media (max-width: 968px) {
+    width: 100%;
+    justify-content: center;
+  }
+`;
+
+export const Overlay = styled.div<{ $isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: ${(props) => (props.$isOpen ? "1" : "0")};
+  visibility: ${(props) => (props.$isOpen ? "visible" : "hidden")};
+  transition: all 0.3s ease-in-out;
+  z-index: 1000;
+`;
+
+export const SidebarWrapper = styled.aside<{ $isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+  transform: translateX(${(props) => (props.$isOpen ? "0" : "100%")});
+  transition: transform 0.3s ease-in-out;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  font-family: "Outfit", sans-serif;
+`;
+
+export const SidebarHeader = styled.div`
+  padding: 16px 24px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+    color: ${EVCareGreen};
+    font-size: 1.25rem;
+  }
+
+  button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    &:hover {
+      color: #333;
+    }
+  }
+`;
+
+export const ServiceList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex-grow: 1;
+`;
+
+export const ServiceItem = styled.li<{ $isActive: boolean }>`
+  padding: 16px 24px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: ${(props) => (props.$isActive ? "600" : "400")};
+  color: ${(props) => (props.$isActive ? EVCareGreen : "#333")};
+  background: ${(props) => (props.$isActive ? "#e8f5e9" : "transparent")};
+  border-right: 4px solid ${(props) => (props.$isActive ? EVCareGreen : "transparent")};
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f1f8e9;
+  }
+`;
+
+export const LoadingSpinner = styled.div`
+  font-size: 1rem;
+  text-align: center;
+  padding: 40px;
 `;
