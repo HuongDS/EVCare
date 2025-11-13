@@ -118,7 +118,8 @@ builder.Services.AddScoped<IServicePartRepository, ServicePartRepository>();
 // Services
 builder.Services.AddScoped<IAuthServices, AuthServices>();
 builder.Services.AddScoped<ITokenServices, TokenServices>();
-builder.Services.AddScoped<INotificationServices, NotificationServices>();
+//builder.Services.AddScoped<INotificationServices, NotificationServices>();
+builder.Services.AddScoped<INotificationServices,EmailService>();
 builder.Services.AddScoped<IOtpServices, OtpServices>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<IFileService, FileService>();
@@ -148,7 +149,7 @@ builder.Services.AddScoped<IRedisService, RedisService>();
 builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
 builder.Services.AddScoped<IAppointmentPartConditionService, AppointmentPartConditionService>();
 builder.Services.AddScoped<IAiChatServices, AiChatServices>();
-
+builder.Services.AddScoped<IEmailSender,EmailSender>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITechnicianSkillService, TechnicianSkillService>();
 //builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
