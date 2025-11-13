@@ -14,6 +14,7 @@ import type {
   PartInServiceDetail,
   PartInServiceViewModel,
 } from "../models/PartModel/PartModel";
+import QueryString from "qs";
 
 export const useGetTechnicianAppointments = (params?: {
   Status?: string;
@@ -41,16 +42,16 @@ export const useGetTechnicianAppointments = (params?: {
   });
 };
 
-export const useGetServicesInAppointment = (appointmentId: number) => {
+export const useGetServicesInAppointment = (params: {
+  appointmentId: number;
+}) => {
   return useQuery({
-    queryKey: ["ServicesInAppointment", appointmentId],
+    queryKey: ["ServicesInAppointment", params],
     queryFn: async () => {
       try {
         const response = await api.get<ResponseDto<ServiceViewModel[]>>(
           "/api/Appointment/appointment-services",
-          {
-            params: appointmentId,
-          }
+          { params }
         );
         return response.data;
       } catch (error) {
@@ -75,7 +76,11 @@ export const useGetPartsInServices = (params: GetPartsInServicesParams) => {
       try {
         const response = await api.get<
           ResponseDto<PartInServiceViewModel<PartInServiceDetail>>
-        >("/api/Part/service-parts", { params });
+        >("/api/Part/service-parts", {
+          params,
+          paramsSerializer: (p) =>
+            QueryString.stringify(p, { arrayFormat: "repeat" }),
+        });
         return response.data;
       } catch (error) {
         handleError(error);
