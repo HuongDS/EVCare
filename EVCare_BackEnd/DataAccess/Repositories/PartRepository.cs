@@ -126,6 +126,8 @@ namespace DataAccess.Repositories
 
         public Task<PageResultDto<PartViewModel>> GetPartsForService(PartForServiceQueryDto model) {
 
+
+
             var query = _dbContext.ServiceParts.AsNoTracking()
                 .Where(model.ServiceIds!=null ? x=> model.ServiceIds.Contains(x.ServiceId) : x=>true)
                 .Include(x=>x.Part)
@@ -141,13 +143,53 @@ namespace DataAccess.Repositories
                     Description = x.Part.Description,
                     ReplacementPrice = x.Part.ReplacementPrice,
                     ServiceId = x.ServiceId
-                });
+                })
+                .DistinctBy(X=>X.Id);
             if(model.KeyWord!=null)
             {
                 query = query.Where(x => x.Name.ToLower().Contains(model.KeyWord.ToLower()));
             }
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+        }
+
+        public async Task<PageResultDto<PartViewModel>> GetPartsForAppointmentId(PartForServiceQueryDto model) {
+            var serviceIds = await _dbContext.AppointmentServices
+         .Where(x => x.AppointmentId == model.AppointmentId)
+         .Select(x => x.ServiceId)
+         .ToListAsync();
+            var query = _dbContext.ServiceParts.AsNoTracking()
+                        .Where(x => serviceIds.Contains(x.ServiceId))
+                        .Select(x => x.Part)         
+                        .Distinct()                   
+                        .Select(p => new PartViewModel
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            CategoryId = p.CategoryId,
+                            IsDeleted = p.Deleted_At != DateTime.MinValue,
+                            Price = p.Price,
+                            Quantity = p.Stock,
+                            ImageUrl = p.Image,
+                            Description = p.Description,
+                            ReplacementPrice = p.ReplacementPrice,
+
+           
+                            ServiceId = 0
+                        });
+
+            
+            query = query.ApplyDynamicSorting(model.SortField, model.SortOrder);
+
+
+
+
+
+            return await PaginationHelper.PaginationAsync(
+                       query,
+                       model.PageSize.Value,
+                       model.PageIndex.Value
+                   );
         }
     }
 }
