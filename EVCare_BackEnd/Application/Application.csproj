@@ -31,5 +31,10 @@
 	<ItemGroup>
 		<ProjectReference Include="..\DataAccess\DataAccess.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+		<Content Include="EmailTemplates\**\*.*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
 </Project>
