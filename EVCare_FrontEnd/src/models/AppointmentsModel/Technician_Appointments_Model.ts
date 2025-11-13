@@ -78,6 +78,7 @@ export type ServiceViewModel = {
 
 export type GetPartsInServicesParams = {
   serviceIds?: number[];
+  appointmentId?: number;
   keyWord?: string;
   pageSize?: number;
   pageIndex?: number;
