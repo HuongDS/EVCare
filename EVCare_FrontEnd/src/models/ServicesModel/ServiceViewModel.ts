@@ -5,6 +5,13 @@ export type Service = {
   duration: number;
   isDeleted: boolean;
   serviceCategoryId: number;
+  parts: PartInService[];
+};
+
+export type PartInService = {
+  id: number;
+  name: string;
+  image: string;
 };
 
 export type GetServiceParams = {

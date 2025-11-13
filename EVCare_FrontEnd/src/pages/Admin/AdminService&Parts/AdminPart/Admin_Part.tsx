@@ -84,11 +84,7 @@ export default function Admin_Part() {
       try {
         const categoriesData = await getPartCategories();
         setCategories(categoriesData.data?.items ?? []);
-        // if (categoriesData.data?.items?.length > 0) {
-        //   setNewPart((prev) => ({ ...prev, categoryId: categoriesArray[0].id }));
-        // }
       } catch (error) {
-        console.error("Failed to fetch categories", error);
         notification.error({
           message: "Fetch Data",
           description: ERROR_MESSAGE.FETCH_DATA_FAILED,
