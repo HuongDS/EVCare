@@ -3,67 +3,78 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Service invoice</title>
+    <title>Service Invoice</title>
 </head>
 
-<body style="font-family: Arial, sans-serif; color:#333; padding:20px;">
+<body style="font-family: Arial, sans-serif; color: #333; background:#fafafa; padding: 0; margin: 0;">
 
+    <div style="max-width: 700px; margin: auto; background: #ffffff; padding: 30px; border-radius: 8px;">
 
-    <h1 style="font-size:26px; margin-bottom:24px;">Service invoice</h1>
+        <!-- Header -->
+        <h1 style="font-size: 26px; margin-bottom: 24px; color:#222;">
+            Service invoice
+        </h1>
 
-  
-    <p><strong>Center:</strong> {{centerName}}</p>
-    <p><strong>Location:</strong> {{centerAddress}}</p>
+        <!-- Center Info -->
+        <p style="margin: 4px 0;"><strong>Center:</strong> {{centerName}}</p>
+        <p style="margin: 4px 0 20px;"><strong>Location:</strong> {{centerAddress}}</p>
 
-    <hr style="border:0; border-top:1px solid #ccc; margin:20px 0;" />
+        <hr style="border:0; border-top: 1px solid #e0e0e0; margin: 24px 0;" />
 
-    <p><strong>Customer Name:</strong> {{customerName}}</p>
-    <p><strong>Email:</strong> {{email}}</p>
-    <p><strong>Appointment Date:</strong> {{appointmentDate}}</p>
-    <p><strong>Service:</strong> {{serviceList}}</p>
-    <p><strong>Note:</strong> {{note}}</p>
+        <!-- Customer Info -->
+        <p style="margin: 4px 0;"><strong>Customer Name:</strong> {{customerName}}</p>
+        <p style="margin: 4px 0;"><strong>Email:</strong> {{email}}</p>
+        <p style="margin: 4px 0;"><strong>Appointment Date:</strong> {{appointmentDate}}</p>
+        <p style="margin: 4px 0;"><strong>Service:</strong> {{serviceList}}</p>
+        <p style="margin: 4px 0 20px;"><strong>Note:</strong> {{note}}</p>
 
-    <hr style="border:0; border-top:1px solid #ccc; margin:20px 0;" />
+        <hr style="border:0; border-top: 1px solid #e0e0e0; margin: 24px 0;" />
 
-   
-    <table style="width:100%; border-collapse: collapse; margin-top:20px; border:1px solid #ddd;">
-        <thead>
-            <tr style="background:#f8f8f8;">
-                <th style="padding:10px; border:1px solid #ddd; text-align:left;">
-                    Product code
-                </th>
-                <th style="padding:10px; border:1px solid #ddd; text-align:left;">
-                    Product Name
-                </th>
-                <th style="padding:10px; border:1px solid #ddd; text-align:left;">Quantity</th>
-                <th style="padding:10px; border:1px solid #ddd; text-align:left;">Unit Price</th>
-                <th style="padding:10px; border:1px solid #ddd; text-align:left;">Replacement Price</th>
-                <th style="padding:10px; border:1px solid #ddd; text-align:left;">Total Price</th>
-            </tr>
-        </thead>
+        <!-- Product Table -->
+        <table style="width:100%; border-collapse: collapse; margin-top:10px; font-size:14px;">
+            <thead>
+                <tr style="background:#f2f5f2; color:#222;">
+                    <th style="padding: 12px; border: 1px solid #ddd; text-align:left;">Product code</th>
+                    <th style="padding: 12px; border: 1px solid #ddd; text-align:left;">Product Name</th>
+                    <th style="padding: 12px; border: 1px solid #ddd; text-align:center;">Quantity</th>
+                    <th style="padding: 12px; border: 1px solid #ddd; text-align:right;">Unit Price</th>
+                    <th style="padding: 12px; border: 1px solid #ddd; text-align:right;">Replacement Price</th>
+                    <th style="padding: 12px; border: 1px solid #ddd; text-align:right;">Total Price</th>
+                </tr>
+            </thead>
 
-        <tbody>
-            {{productRows}}
-        </tbody>
+            <tbody>
+                {{productRows}}
+            </tbody>
 
-        <tfoot>
-            <tr style="background:#fafafa;">
-                <td style="padding:10px; border:1px solid #ddd;"><strong>Tổng tiền</strong></td>
-                <td colspan="3" style="padding:10px; border:1px solid #ddd;">
-                    <strong>{{totalAmount}}</strong>
-                </td>
-            </tr>
-        </tfoot>
-    </table>
+            <tfoot>
+                <tr style="background:#fafafa;">
+                    <td colspan="5" style="padding: 12px; border:1px solid #ddd; text-align:right;">
+                        <strong>Total Amount:</strong>
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align:right;">
+                        <strong>{{totalAmount}}</strong>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
 
+        <div style="margin-top: 32px; text-align:left;">
+            <a href="{{linkToPay}}"
+               style="
+                   background:#28a745;
+                   color:white;
+                   padding:14px 32px;
+                   text-decoration:none;
+                   border-radius:6px;
+                   font-size:16px;
+                   font-weight:bold;
+                   display:inline-block;
+               ">
+                Payment
+            </a>
+        </div>
 
-    <div style="margin-top:30px;">
-        <a href="{{linkToPay}}"
-           style="display:inline-block; background:#28a745; color:white;
-                  padding:12px 28px; text-decoration:none; font-size:15px;
-                  border-radius:6px; font-weight:bold;">
-            Payment
-        </a>
     </div>
 
 </body>
