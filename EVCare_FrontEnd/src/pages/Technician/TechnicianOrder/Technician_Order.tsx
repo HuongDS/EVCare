@@ -1,16 +1,9 @@
-import {
-  ArrowLeft,
-  ShoppingCart,
-  Search,
-  Package,
-  LayoutGrid,
-} from "lucide-react";
-import { useState, useEffect } from "react";
+import { ArrowLeft, ShoppingCart, Search, Package, LayoutGrid } from "lucide-react";
+import { useState } from "react";
 import ProductCard from "../Technician_Component/ProductCard";
 import ProductModal from "../Technician_Component/ProductModal";
 import CartModal from "../Technician_Component/CartModal";
 import { useTechnicianOrder } from "../../../hooks/useTechnicianOrder";
-import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 import {
   BackButton,
   CardGrid,
@@ -41,59 +34,40 @@ import {
 } from "./Technician_Order.styled";
 
 import { Pagination } from "../../../components/Paginations/Pagination";
-
-interface Service {
-  serviceId: number;
-  serviceName: string;
-}
-
-const mockServices: Service[] = [
-  { serviceId: 12, serviceName: "Battery Module Replacement" },
-  { serviceId: 14, serviceName: "Brake Regeneration Calibration" },
-  { serviceId: 16, serviceName: "Gearbox / Gear Shift Check" },
-  { serviceId: 17, serviceName: "Body Panel Repair / Replacement" },
-  { serviceId: 18, serviceName: "Charging Port Inspection" },
-];
-
-const fetchServices = (): Promise<Service[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockServices);
-    }, 300);
-  });
-};
+import type { ServiceViewModel } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import type { PartInServiceDetail } from "../../../models/PartModel/PartModel";
 
 interface TechnicianOrderProps {
   propOrderId?: number;
   onPartsUpdated?: (orderId: number) => void;
-  selectedCategory?: string;
   setIsOrder: (v: boolean) => void;
+  appointmentId: number;
 }
 
 export default function TechnicianOrder({
   propOrderId,
   onPartsUpdated,
-  selectedCategory,
   setIsOrder,
+  appointmentId,
 }: TechnicianOrderProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [services, setServices] = useState<Service[]>([]);
-  const [loadingServices, setLoadingServices] = useState(true);
-  const [currentCategory, setCurrentCategory] = useState(selectedCategory);
+  const [currentCategory, setCurrentCategory] = useState(0);
 
   const {
     cart,
-    displayParts,
-    page,
+    pageIndex,
     searchQuery,
-    isLoading,
     isSending,
     pageSize,
     open,
     selectedPart,
     cartOpen,
-    totalItems,
+    serviceLists,
+    loadingServices,
+    partsInService,
+    loadingPartInService,
     totalPages,
+    totalItems,
     handleAddToCart,
     handleRemoveFromCart,
     handleSendCart,
@@ -108,23 +82,11 @@ export default function TechnicianOrder({
     propOrderId,
     onPartsUpdated,
     selectedCategory: currentCategory,
+    appointmentId,
   });
 
-  useEffect(() => {
-    setLoadingServices(true);
-    fetchServices()
-      .then((data) => {
-        setServices(data);
-        setLoadingServices(false);
-      })
-      .catch((err) => {
-        console.error("Lỗi fetch services:", err);
-        setLoadingServices(false);
-      });
-  }, []);
-
-  const handleServiceSelect = (service: Service) => {
-    setCurrentCategory(service.serviceName);
+  const handleServiceSelect = (service: ServiceViewModel) => {
+    setCurrentCategory(service.serviceId);
     setIsSidebarOpen(false);
   };
 
@@ -133,10 +95,7 @@ export default function TechnicianOrder({
 
   return (
     <PageContainer>
-      <Overlay
-        $isOpen={isSidebarOpen}
-        onClick={() => setIsSidebarOpen(false)}
-      />
+      <Overlay $isOpen={isSidebarOpen} onClick={() => setIsSidebarOpen(false)} />
       <SidebarWrapper $isOpen={isSidebarOpen}>
         <SidebarHeader>
           <h2>All Services</h2>
@@ -148,10 +107,10 @@ export default function TechnicianOrder({
           {loadingServices ? (
             <LoadingSpinner>Loading...</LoadingSpinner>
           ) : (
-            services.map((service) => (
+            serviceLists?.data?.map((service) => (
               <ServiceItem
                 key={service.serviceId}
-                $isActive={service.serviceName === currentCategory}
+                $isActive={service.serviceId === currentCategory}
                 onClick={() => handleServiceSelect(service)}
               >
                 {service.serviceName}
@@ -195,10 +154,7 @@ export default function TechnicianOrder({
             <CartBadge $show={hasCartItems}>{cartItemCount}</CartBadge>
           </CartButton>
 
-          <ServiceToggleButton
-            onClick={() => setIsSidebarOpen(true)}
-            aria-label="Chọn dịch vụ"
-          >
+          <ServiceToggleButton onClick={() => setIsSidebarOpen(true)} aria-label="Choose Services">
             <LayoutGrid size={20} />
           </ServiceToggleButton>
         </div>
@@ -206,17 +162,11 @@ export default function TechnicianOrder({
 
       <ContentWrapper>
         <CardGrid>
-          {isLoading ? (
-            Array.from({ length: pageSize }).map((_, idx) => (
-              <ProductCard key={idx} isSkeleton />
-            ))
-          ) : displayParts && displayParts?.length > 0 ? (
-            displayParts.map((part: OrderPartsResponseDto) => (
-              <ProductCard
-                key={part.id}
-                part={part}
-                onClick={() => handleOpenProductModal(part)}
-              />
+          {loadingPartInService ? (
+            Array.from({ length: pageSize }).map((_, idx) => <ProductCard key={idx} isSkeleton />)
+          ) : partsInService?.data?.items && partsInService?.data?.items?.length > 0 ? (
+            partsInService?.data.items.map((part: PartInServiceDetail) => (
+              <ProductCard key={part.id} part={part} onClick={() => handleOpenProductModal(part)} />
             ))
           ) : (
             <EmptyState>
@@ -227,10 +177,10 @@ export default function TechnicianOrder({
           )}
         </CardGrid>
 
-        {displayParts && displayParts.length > 0 && (
-          <PaginationWrapper style={{ marginTop: "2rem" }}>
+        {!loadingPartInService && (partsInService?.data?.totalItems ?? 0) > pageSize && (
+          <PaginationWrapper>
             <Pagination
-              pageIndex={page}
+              pageIndex={pageIndex}
               totalPage={totalPages ?? 0}
               totalItems={totalItems ?? 0}
               pageSize={pageSize}
@@ -240,12 +190,7 @@ export default function TechnicianOrder({
         )}
       </ContentWrapper>
 
-      <ProductModal
-        open={open}
-        onClose={handleCloseProductModal}
-        part={selectedPart}
-        onAddToCart={handleAddToCart}
-      />
+      <ProductModal open={open} onClose={handleCloseProductModal} part={selectedPart} onAddToCart={handleAddToCart} />
 
       <CartModal
         open={cartOpen}

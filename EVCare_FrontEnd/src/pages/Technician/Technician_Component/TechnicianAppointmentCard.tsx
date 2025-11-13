@@ -9,37 +9,16 @@ import { DamageLevelEnum } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import { useNotification } from "../../../context/useNotification";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import {
-  User,
-  Car,
-  Calendar,
-  Phone,
-  Wrench,
-  Package,
-  ChevronDown,
-  ChevronUp,
-  Image as ImageIcon,
-} from "lucide-react";
+import { User, Car, Calendar, Phone, Wrench, Package, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
 
 type Props = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
+  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
   onPartsUpdated?: (orderId: number) => void;
   setIsOrder: (v: boolean) => void;
 };
 
-<<<<<<< HEAD
-const TechnicianAppointmentCard: React.FC<Props> = ({
-  data,
-  onStatusChange,
-  onPartsUpdated,
-}) => {
-=======
 const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPartsUpdated, setIsOrder }) => {
->>>>>>> 4920cb0e51ef832a89e2572ae7489a7fc6be7cb6
   const notification = useNotification();
   const [currentStatus, setCurrentStatus] = useState<TechnicianWorkingSessionEnum>(data.status);
   const [expandedSections, setExpandedSections] = useState({
@@ -47,15 +26,8 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
     services: false,
   });
 
-<<<<<<< HEAD
-  const { mutateAsync: updateWorkingSession } =
-    useUpdateTechnicianWorkingSession();
-=======
-  // call api o day de lay service
-
   const { mutateAsync: updateWorkingSession } = useUpdateTechnicianWorkingSession();
   const { data: appointment, isLoading } = useGetAppointmentPartCondition(data.id);
->>>>>>> 4920cb0e51ef832a89e2572ae7489a7fc6be7cb6
 
   // assume dung
   const handleChangeStatusWorkingSession = async (nextStatus: TechnicianWorkingSessionEnum) => {
@@ -92,9 +64,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
       <CardHeader>
         <HeaderLeft>
           <AppointmentId>#{data.id}</AppointmentId>
-          <StatusBadge $status={currentStatus}>
-            {currentStatus.replace("_", " ")}
-          </StatusBadge>
+          <StatusBadge $status={currentStatus}>{currentStatus.replace("_", " ")}</StatusBadge>
         </HeaderLeft>
         <HeaderRight>
           <ReviewButton onChangeStatus={handleChangeStatusWorkingSession} appointment={data} setIsOrder={setIsOrder} />

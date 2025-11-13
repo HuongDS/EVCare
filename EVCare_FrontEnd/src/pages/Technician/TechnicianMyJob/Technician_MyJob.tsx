@@ -30,27 +30,14 @@ const itemVariants = {
 };
 
 export default function Technician_MyJob() {
-  const {
-    data,
-    activeStatus,
-    appointments,
-    isLoading,
-    setActiveStatus,
-    setPageIndex,
-  } = useTechnician_MyJob();
+  const { data, activeStatus, appointments, isLoading, setActiveStatus, setPageIndex } = useTechnician_MyJob();
   const myJobStatuses = ["Adding Part", "Confirm", "In Progress", "Completed"];
   const [isOrder, setIsOrder] = useState(false);
 
   return isOrder ? (
-    <TechnicianOrder setIsOrder={setIsOrder} />
+    <TechnicianOrder appointmentId={data?.data?.items?.at(0)?.id ?? 0} setIsOrder={setIsOrder} />
   ) : (
-    <PageWrapper
-      key="technician-myjob"
-      variants={pageVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-    >
+    <PageWrapper key="technician-myjob" variants={pageVariants} initial="hidden" animate="visible" exit="exit">
       <ContentWrapper>
         <Header>
           <Title variants={itemVariants}>My Jobs</Title>
@@ -77,11 +64,7 @@ export default function Technician_MyJob() {
               <SpinnerComponent />
             ) : appointments.length > 0 ? (
               appointments.map((item: any) => (
-                <TechnicianAppointmentCard
-                  setIsOrder={setIsOrder}
-                  key={item.id}
-                  data={item}
-                />
+                <TechnicianAppointmentCard setIsOrder={setIsOrder} key={item.id} data={item} />
               ))
             ) : (
               <EmptyState />
