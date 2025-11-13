@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateOrderParts } from "../services/updateOrderPartApi";
 import { useGetAllParts } from "../services/partApi";
 import { useUpdatePartCondition } from "../services/appointmentPartCondition";
-// import { getTechnicianAddedParts } from "../services/getTechnicianOrder";
+import { useGetPartOrderByTech } from "../services/getTechnicianOrder";
 
 import type { OrderPartsResponseDto } from "../models/OrderPartModel/Order_Parts_Model";
 import type { DamageLevelEnum } from "../models/enums/DamageLevelEnum";
@@ -36,7 +36,7 @@ export const useTechnicianOrder = ({ propOrderId, onPartsUpdated, selectedCatego
   const [searchQuery, setSearchQuery] = useState("");
   const pageSize = LENGTH.VIEW_PARTCARD_MAX;
 
-  const { data: technicianPartsRes, isLoading: isPartsLoading } = getTechnicianAddedParts(currentOrderId ?? undefined);
+  const { data: technicianPartsRes, isLoading: isPartsLoading } = useGetPartOrderByTech(currentOrderId ?? undefined);
 
   const { mutateAsync: updateOrderPart, isPending: orderUpdating } = useUpdateOrderParts();
   const { mutateAsync: updatePartCondition } = useUpdatePartCondition();
@@ -45,7 +45,7 @@ export const useTechnicianOrder = ({ propOrderId, onPartsUpdated, selectedCatego
   useEffect(() => {
     if (technicianPartsRes) {
       const mappedCart =
-        technicianPartsRes.map((p: any) => ({
+        technicianPartsRes.data?.map((p: any) => ({
           part: {
             id: p.partID,
             name: p.partName,
