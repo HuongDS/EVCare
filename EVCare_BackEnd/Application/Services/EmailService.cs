@@ -70,7 +70,7 @@ namespace Application.Services {
         }
 
         public Task SendInvoiceToCustomer(InvoiceMailDto dto) {
-           string html = LoadTemplate("invoice_template.html");
+           string html = LoadTemplate("invoice_vnpay_template.html");
             html = html.Replace("{{customerName}}", dto.appointmentInfo.CustomerName)
                        .Replace("{{centerAddress}}", dto.appointmentInfo.CenterAddress)
                        .Replace("{{centerName}}", dto.appointmentInfo.CenterName)
