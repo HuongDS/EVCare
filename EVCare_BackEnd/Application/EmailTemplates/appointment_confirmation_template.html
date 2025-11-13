@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EVCare - Xác nhận lịch hẹn</title>
+</head>
+
+<body style="margin:0; padding:0; background:#f5f7fa; font-family:Arial, sans-serif;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+        <tr>
+            <td align="center">
+
+                
+                <table width="650" cellpadding="0" cellspacing="0"
+                       style="background:white; border-radius:14px; padding:40px;
+                              box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+
+                  
+                    <tr>
+                        <td align="center" style="padding-bottom:25px;">
+                            <img src="https://res.cloudinary.com/ddojmkykj/image/upload/v1762996254/Logo/logo_dmxluq.png"
+                                 alt="EVCare" style="width:200px;" />
+                        </td>
+                    </tr>
+
+                 
+                    <tr>
+                        <td style="font-size:22px; font-weight:bold; color:#222; padding-bottom:20px;">
+                            Confirm your appointment
+                        </td>
+                    </tr>
+
+                  
+                    <tr>
+                        <td style="font-size:15px; color:#444; line-height:1.7; padding-bottom:20px;">
+                            Hi <b>{{CustomerName}}</b>,<br><br>
+
+                            You have made an appointment at <b>{{SericeCenterName}}</b>.
+                            Please check the information and click <b>Confirm</b> to confirm.
+                        </td>
+                    </tr>
+
+                 
+                    <tr>
+                        <td>
+
+                            <table cellpadding="6" cellspacing="0" style="font-size:15px; color:#333; line-height:1.6;">
+
+                                <tr>
+                                    <td style="width:90px; font-weight:bold;">Time</td>
+                                    <td>{{AppointmentDate}}</td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold;">Location</td>
+                                    <td>{{Location}}</td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold;">Service</td>
+                                    <td>{{Services}}</td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold;">Note</td>
+                                    <td>{{Note}}</td>
+                                </tr>
+
+                            </table>
+
+                        </td>
+                    </tr>
+
+                   
+                    <tr>
+                        <td align="left" style="padding-top:30px;">
+
+                            <a href="{{ConfirmUrl}}"
+                               style="background:#1A73E8; color:white; padding:12px 28px;
+                                      border-radius:8px; text-decoration:none; font-weight:bold;">
+                                Confirm
+                            </a>
+
+                            <a href="{{CancelUrl}}"
+                               style="background:#e6e6e6; color:#333; padding:12px 28px;
+                                      border-radius:8px; text-decoration:none; margin-left:10px;">
+                                Cancel
+                            </a>
+
+                        </td>
+                    </tr>
+
+                </table>
+              
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
