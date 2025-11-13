@@ -15,6 +15,8 @@ import SpinnerComponent from "../../../components/SpinnerComponent";
 import TechnicianAppointmentCard from "../Technician_Component/TechnicianAppointmentCard";
 import { EmptyState } from "../Technician_Component/EmptyState";
 import { Pagination } from "../../../components/Paginations/Pagination";
+import { useState } from "react";
+import TechnicianOrder from "../TechnicianOrder/Technician_Order";
 
 const pageVariants = {
   hidden: { opacity: 0 },
@@ -37,7 +39,11 @@ export default function Technician_MyJob() {
     setPageIndex,
   } = useTechnician_MyJob();
   const myJobStatuses = ["Adding Part", "Confirm", "In Progress", "Completed"];
-  return (
+  const [isOrder, setIsOrder] = useState(false);
+
+  return isOrder ? (
+    <TechnicianOrder setIsOrder={setIsOrder} />
+  ) : (
     <PageWrapper
       key="technician-myjob"
       variants={pageVariants}
@@ -71,7 +77,11 @@ export default function Technician_MyJob() {
               <SpinnerComponent />
             ) : appointments.length > 0 ? (
               appointments.map((item: any) => (
-                <TechnicianAppointmentCard key={item.id} data={item} />
+                <TechnicianAppointmentCard
+                  setIsOrder={setIsOrder}
+                  key={item.id}
+                  data={item}
+                />
               ))
             ) : (
               <EmptyState />
