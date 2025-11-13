@@ -1,3 +1,5 @@
+import type { TechnicianWorkingSessionEnum } from "../enums";
+
 export type ResponseDto<T> = {
   statusCode: number;
   message?: string;
@@ -28,7 +30,7 @@ export type TechnicianAppointmentsDto = {
     price: number;
     imageUrl: string;
   }[];
-  status: string;
+  status: TechnicianWorkingSessionEnum;
   appointmentImages: string[];
   orderId: number;
 };
