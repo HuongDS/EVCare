@@ -42,7 +42,7 @@ export default function TechnicianOrder({
   const {
     cart,
     displayParts,
-    page,
+    // page,
     searchQuery,
     isLoading,
     isSending,
@@ -58,7 +58,7 @@ export default function TechnicianOrder({
     handleCloseProductModal,
     handleOpenCart,
     handleCloseCart,
-    handlePageChange,
+    // handlePageChange,
     handleSearchChange,
     handleCartQuantityChange,
   } = useTechnicianOrder({
