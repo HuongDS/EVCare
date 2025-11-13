@@ -71,8 +71,7 @@ builder.Services.AddDbContext<EVCareDbContext>(options =>
             errorNumbersToAdd: null);
     }));
 
-// DbContext
-//builder.Services.AddScoped<IEVCareDbContext, EVCareDbContext>();
+
 builder.Services.AddHttpClient();
 // Repositories
 builder.Services.AddScoped<IGenericRepository<Account>, GenericRepository<Account>>();
@@ -85,7 +84,6 @@ builder.Services.AddScoped<IGenericRepository<Employee>, GenericRepository<Emplo
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IGenericRepository<Technician>, GenericRepository<Technician>>();
 builder.Services.AddScoped<ITechnicianRepository, TechnicianRepository>();
-//builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository>();
@@ -152,10 +150,6 @@ builder.Services.AddScoped<IAiChatServices, AiChatServices>();
 builder.Services.AddScoped<IEmailSender,EmailSender>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITechnicianSkillService, TechnicianSkillService>();
-//builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
-//{
-//    c.BaseAddress = new Uri(builder.Configuration["AiService:BaseUrl"]!);
-//});
 builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>
 {
     c.BaseAddress = new Uri("https://generativelanguage.googleapis.com/v1beta/");
@@ -166,7 +160,6 @@ builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IStaffRoutingService, StaffRoutingService>();
 builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 
-//builder.Services.AddScoped<IAiInsightServices, MockAiInsightServices>();
 builder.Services.AddScoped<OnInvoiceCompleteHandler>();
 builder.Services.AddScoped<OnAppointmentConfirmHandler>();
 builder.Services.AddScoped<OnAssignTechnician>();
@@ -213,17 +206,7 @@ builder.Services.Configure<FormOptions>(o =>
     o.MultipartBodyLengthLimit = 1_073_741_824; // 1GB
 });
 
-// Add Cors
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll", builder =>
-//    {
-//        builder.WithOrigins("https://localhost:7228", "http://localhost:5173")
-//                .AllowAnyMethod()
-//               .AllowAnyHeader()
-//               .AllowCredentials();
-//    });
-//});
+
 
 builder.Services.AddCors(options =>
 {
