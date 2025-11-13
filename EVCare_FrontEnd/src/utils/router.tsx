@@ -5,18 +5,30 @@ import ProtectedRoute from "../components/Authorazitons/ProtectedRoute";
 import PublicRoute from "../components/Authorazitons/PublicRoute";
 import { RoleEnum } from "../models/enums";
 const Layout = lazy(() => import("../components/Layouts/CustomerLayout"));
-const AdminLayout = lazy(() => import("../pages/Admin/AdminComponents/AdminLayout"));
+const AdminLayout = lazy(
+  () => import("../pages/Admin/AdminComponents/AdminLayout")
+);
 const StaffLayout = lazy(() => import("../components/Layouts/StaffLayout"));
-const TechnicianDefaultLayout = lazy(() => import("../pages/Technician/Technician_Component/TechnicianLayout"));
+const TechnicianDefaultLayout = lazy(
+  () => import("../pages/Technician/Technician_Component/TechnicianLayout")
+);
 const HomePage = lazy(() => import("../pages/Users/HomePage/HomePage"));
-const ServiceList = lazy(() => import("../pages/Users/ServicesPage/ServiceList"));
+const ServiceList = lazy(
+  () => import("../pages/Users/ServicesPage/ServiceList")
+);
 const AboutUs = lazy(() => import("../pages/Users/AboutUs/AboutUs"));
 const ContactUs = lazy(() => import("../pages/Users/Contact/ContactUs"));
-const OrderList = lazy(() => import("../pages/Customer/OrderHistory/Appointment/AppointmentList"));
-const Rating = lazy(() => import("../pages/Customer/OrderHistory/Rating/Rating"));
+const OrderList = lazy(
+  () => import("../pages/Customer/OrderHistory/Appointment/AppointmentList")
+);
+const Rating = lazy(
+  () => import("../pages/Customer/OrderHistory/Rating/Rating")
+);
 const Test = lazy(() => import("../components/Test"));
 const PageNotFound = lazy(() => import("../components/Layouts/PageNotFound"));
-const UserProfilePage = lazy(() => import("../pages/Users/Profile/UserProfilePage"));
+const UserProfilePage = lazy(
+  () => import("../pages/Users/Profile/UserProfilePage")
+);
 const Review = lazy(() => import("../pages/Users/Review/Review"));
 const PolicyPage = lazy(() => import("../pages/Users/PolicyPage/Policy"));
 const ChatPage = lazy(() =>
@@ -24,27 +36,60 @@ const ChatPage = lazy(() =>
     default: module.ChatPage,
   }))
 );
-const Admin_General = lazy(() => import("../pages/Admin/AdminGeneral/Admin_General"));
-const Admin_Customer_Vehicle = lazy(() => import("../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle"));
-const Admin_Manage_Employee = lazy(() => import("../pages/Admin/AdminManageEmployee/Admin_ManageEmployee"));
-const AddEmployee = lazy(() => import("../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee"));
-const Admin_Part = lazy(() => import("../pages/Admin/AdminService&Parts/AdminPart/Admin_Part"));
-const Admin_Service = lazy(() => import("../pages/Admin/AdminService&Parts/AdminService/Admin_Service"));
-const Staff_Inventory = lazy(() => import("../pages/Staff/StaffManageInventory/Staff_Inventory"));
-const Staff_General = lazy(() => import("../pages/Staff/StaffGeneralPage/Staff_General"));
-const Manage_Technicians = lazy(() => import("../pages/Staff/StaffManageTechnicians/Manage_Technicians"));
-const Manage_Customer = lazy(() => import("../pages/Staff/StaffManageCustomer/Manage_Customer"));
-const Staff_Appoinments = lazy(() => import("../pages/Staff/StaffManageAppointment/Staff_Appointments"));
-const AdminServiceCenter = lazy(() => import("../pages/Admin/AdminServiceCenter/AdminServiceCenter"));
-const Admin_Category = lazy(() => import("../pages/Admin/AdminCategory/Admin_Category"));
+const Admin_General = lazy(
+  () => import("../pages/Admin/AdminGeneral/Admin_General")
+);
+const Admin_Customer_Vehicle = lazy(
+  () => import("../pages/Admin/AdminCustomer&Vehicle/Admin_Customer_Vehicle")
+);
+const Admin_Manage_Employee = lazy(
+  () => import("../pages/Admin/AdminManageEmployee/Admin_ManageEmployee")
+);
+const AddEmployee = lazy(
+  () =>
+    import("../pages/Admin/AdminManageEmployee/AdminAddEmployee/AddEmployee")
+);
+const Admin_Part = lazy(
+  () => import("../pages/Admin/AdminService&Parts/AdminPart/Admin_Part")
+);
+const Admin_Service = lazy(
+  () => import("../pages/Admin/AdminService&Parts/AdminService/Admin_Service")
+);
+const Staff_Inventory = lazy(
+  () => import("../pages/Staff/StaffManageInventory/Staff_Inventory")
+);
+const Staff_General = lazy(
+  () => import("../pages/Staff/StaffGeneralPage/Staff_General")
+);
+const Manage_Technicians = lazy(
+  () => import("../pages/Staff/StaffManageTechnicians/Manage_Technicians")
+);
+const Manage_Customer = lazy(
+  () => import("../pages/Staff/StaffManageCustomer/Manage_Customer")
+);
+const Staff_Appoinments = lazy(
+  () => import("../pages/Staff/StaffManageAppointment/Staff_Appointments")
+);
+const AdminServiceCenter = lazy(
+  () => import("../pages/Admin/AdminServiceCenter/AdminServiceCenter")
+);
+const Admin_Category = lazy(
+  () => import("../pages/Admin/AdminCategory/Admin_Category")
+);
 const StaffChatPage = lazy(() =>
   import("../pages/Customer/Chat/StaffChatPage").then((module) => ({
     default: module.StaffChatPage,
   }))
 );
-const Admin_Applications = lazy(() => import("../pages/Admin/AdminAplication/Admin_Applications"));
-const AdminStatisticPage = lazy(() => import("../pages/Admin/AdminStatistic/AdminStatisticPage"));
-const BlockDateManagement = lazy(() => import("../pages/Admin/AdminBlockDates/BlockDateManagement"));
+const Admin_Applications = lazy(
+  () => import("../pages/Admin/AdminAplication/Admin_Applications")
+);
+const AdminStatisticPage = lazy(
+  () => import("../pages/Admin/AdminStatistic/AdminStatisticPage")
+);
+const BlockDateManagement = lazy(
+  () => import("../pages/Admin/AdminBlockDates/BlockDateManagement")
+);
 
 const CancelPage = lazy(() => import("../pages/Users/CancelPage/CancelPage"));
 const ThankYouPage = lazy(() => import("../pages/Users/ThankYou/ThankYou"));
@@ -56,8 +101,11 @@ import {
   LazyMyJob,
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import { AppointmentList } from "../pages/Technician/TechnicianMyJob/Technician_MyJob.styled";
+import CompleteVNPay from "../pages/Users/CompleteVNPay/CompleteVNPay";
 
-const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return <Suspense fallback={<SpinnerComponent />}>{children}</Suspense>;
 };
 
@@ -172,7 +220,14 @@ const router = createBrowserRouter([
       {
         path: "account-information",
         element: (
-          <ProtectedRoute allowedRoles={[RoleEnum.CUSTOMER, RoleEnum.ADMIN, RoleEnum.TECHNICIAN, RoleEnum.STAFF]}>
+          <ProtectedRoute
+            allowedRoles={[
+              RoleEnum.CUSTOMER,
+              RoleEnum.ADMIN,
+              RoleEnum.TECHNICIAN,
+              RoleEnum.STAFF,
+            ]}
+          >
             <SuspenseWrapper>
               <UserProfilePage />
             </SuspenseWrapper>
@@ -389,6 +444,14 @@ const router = createBrowserRouter([
     element: (
       <SuspenseWrapper>
         <CancelPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: "/CompleteVNPay",
+    element: (
+      <SuspenseWrapper>
+        <CompleteVNPay />
       </SuspenseWrapper>
     ),
   },
