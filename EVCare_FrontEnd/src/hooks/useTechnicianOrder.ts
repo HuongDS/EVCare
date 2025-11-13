@@ -19,37 +19,26 @@ interface UseTechnicianOrderProps {
   selectedCategory?: string;
 }
 
-export const useTechnicianOrder = ({
-  propOrderId,
-  onPartsUpdated,
-  selectedCategory,
-}: UseTechnicianOrderProps) => {
+export const useTechnicianOrder = ({ propOrderId, onPartsUpdated, selectedCategory }: UseTechnicianOrderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const notification = useNotification();
   const queryClient = useQueryClient();
 
   const stateOrderId = (location.state as { orderId?: number })?.orderId;
-  const [currentOrderId] = useState<number | null>(
-    propOrderId ?? stateOrderId ?? null
-  );
+  const [currentOrderId] = useState<number | null>(propOrderId ?? stateOrderId ?? null);
 
   const [open, setOpen] = useState(false);
-  const [selectedPart, setSelectedPart] =
-    useState<OrderPartsResponseDto | null>(null);
+  const [selectedPart, setSelectedPart] = useState<OrderPartsResponseDto | null>(null);
   const [page, setPage] = useState(1);
   const [cartOpen, setCartOpen] = useState(false);
-  const [cart, setCart] = useState<
-    { part: OrderPartsResponseDto; quantity: number }[]
-  >([]);
+  const [cart, setCart] = useState<{ part: OrderPartsResponseDto; quantity: number }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const pageSize = LENGTH.VIEW_PARTCARD_MAX;
 
-  const { data: technicianPartsRes, isLoading: isPartsLoading } =
-    getTechnicianAddedParts(currentOrderId ?? undefined);
+  const { data: technicianPartsRes, isLoading: isPartsLoading } = getTechnicianAddedParts(currentOrderId ?? undefined);
 
-  const { mutateAsync: updateOrderPart, isPending: orderUpdating } =
-    useUpdateOrderParts();
+  const { mutateAsync: updateOrderPart, isPending: orderUpdating } = useUpdateOrderParts();
   const { mutateAsync: updatePartCondition } = useUpdatePartCondition();
   const { data: allParts } = useGetAllParts({});
 
@@ -87,11 +76,7 @@ export const useTechnicianOrder = ({
     setCart((prev) => {
       const exist = prev.find((item) => item.part.id === part.id);
       if (exist) {
-        return prev.map((item) =>
-          item.part.id === part.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
+        return prev.map((item) => (item.part.id === part.id ? { ...item, quantity: item.quantity + quantity } : item));
       }
       return [...prev, { part, quantity }];
     });
@@ -103,16 +88,10 @@ export const useTechnicianOrder = ({
   };
 
   const handleCartQuantityChange = (partId: number, quantity: number) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.part.id === partId ? { ...item, quantity } : item
-      )
-    );
+    setCart((prev) => prev.map((item) => (item.part.id === partId ? { ...item, quantity } : item)));
   };
 
-  const handleSendCart = async (
-    damageLevels: Record<number, DamageLevelEnum>
-  ) => {
+  const handleSendCart = async (damageLevels: Record<number, DamageLevelEnum>) => {
     if (!currentOrderId || orderUpdating) return;
     try {
       await updateOrderPart({
@@ -177,6 +156,8 @@ export const useTechnicianOrder = ({
     open,
     selectedPart,
     cartOpen,
+    totalPages: allParts?.data?.totalPages,
+    totalItems: allParts?.data?.totalItems,
     handleAddToCart,
     handleRemoveFromCart,
     handleCartQuantityChange,

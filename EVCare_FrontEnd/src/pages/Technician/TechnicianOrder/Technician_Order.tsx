@@ -1,9 +1,7 @@
 import { ArrowLeft, ShoppingCart, Search, Package } from "lucide-react";
-
 import ProductCard from "../Technician_Component/ProductCard";
 import ProductModal from "../Technician_Component/ProductModal";
 import CartModal from "../Technician_Component/CartModal";
-
 import { useTechnicianOrder } from "../../../hooks/useTechnicianOrder";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 import {
@@ -20,13 +18,14 @@ import {
   HeaderIcon,
   HeaderText,
   PageContainer,
+  PaginationWrapper,
   SearchIcon,
   SearchInput,
   SearchWrapper,
   Subtitle,
   Title,
 } from "./Technician_Order.styled";
-// import { Pagination } from "../../../components/Paginations/Pagination";
+import { Pagination } from "../../../components/Paginations/Pagination";
 
 interface TechnicianOrderProps {
   orderId?: number;
@@ -50,6 +49,8 @@ export default function TechnicianOrder({
     open,
     selectedPart,
     cartOpen,
+    totalItems,
+    totalPages,
     handleBack,
     handleAddToCart,
     handleRemoveFromCart,
@@ -109,20 +110,13 @@ export default function TechnicianOrder({
         </div>
       </Header>
 
-      {/* Content */}
       <ContentWrapper>
         <CardGrid>
           {isLoading ? (
-            Array.from({ length: pageSize }).map((_, idx) => (
-              <ProductCard key={idx} isSkeleton />
-            ))
+            Array.from({ length: pageSize }).map((_, idx) => <ProductCard key={idx} isSkeleton />)
           ) : displayParts && displayParts?.length > 0 ? (
             displayParts.map((part: OrderPartsResponseDto) => (
-              <ProductCard
-                key={part.id}
-                part={part}
-                onClick={() => handleOpenProductModal(part)}
-              />
+              <ProductCard key={part.id} part={part} onClick={() => handleOpenProductModal(part)} />
             ))
           ) : (
             <EmptyState>
@@ -133,19 +127,20 @@ export default function TechnicianOrder({
           )}
         </CardGrid>
 
-        {/* ✅ Fix Pagination logic */}
-        {/* {displayParts && displayParts.length > 1 && (
-          <Pagination onPageChange={handlePageChange} pageIndex={page} />
-        )} */}
+        {displayParts && displayParts.length > 0 && (
+          <PaginationWrapper style={{ marginTop: "2rem" }}>
+            <Pagination
+              pageIndex={page}
+              totalPage={totalPages ?? 0}
+              totalItems={totalItems ?? 0}
+              pageSize={pageSize}
+              onPageChange={handlePageChange}
+            />
+          </PaginationWrapper>
+        )}
       </ContentWrapper>
 
-      {/* Modals */}
-      <ProductModal
-        open={open}
-        onClose={handleCloseProductModal}
-        part={selectedPart}
-        onAddToCart={handleAddToCart}
-      />
+      <ProductModal open={open} onClose={handleCloseProductModal} part={selectedPart} onAddToCart={handleAddToCart} />
 
       <CartModal
         open={cartOpen}

@@ -6,16 +6,13 @@ import { DamageLevelEnum } from "../models/enums/DamageLevelEnum";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchTechnicianAddedParts } from "../services/getTechnicianOrder";
 import { getAppointmentPartCondition } from "../services/appointmentPartCondition";
-import { updateTechnicianWorkingSession } from "../services/TechnicianWorkingSessionApi";
+import { useUpdateTechnicianWorkingSession } from "../services/TechnicianWorkingSessionApi";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import { useState, useMemo } from "react";
 
 type UseAppointmentCardProgressProps = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
+  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
   onPartsUpdated?: (orderId: number) => void;
 };
 
@@ -26,11 +23,11 @@ export const useAppointmentCardProgress = ({
 }: UseAppointmentCardProgressProps) => {
   const notification = useNotification();
   const queryClient = useQueryClient();
+  const { mutateAsync: updateWorkingSession } = useUpdateTechnicianWorkingSession();
 
-  const [currentStatus, setCurrentStatus] =
-    useState<TechnicianWorkingSessionEnum>(
-      data.status as TechnicianWorkingSessionEnum
-    );
+  const [currentStatus, setCurrentStatus] = useState<TechnicianWorkingSessionEnum>(
+    data.status as TechnicianWorkingSessionEnum
+  );
 
   // --- Fetch added parts ---
   const {
@@ -87,7 +84,7 @@ export const useAppointmentCardProgress = ({
     onStatusChange?.(data.orderId, nextStatus);
 
     try {
-      await updateTechnicianWorkingSession({
+      await updateWorkingSession({
         orderId: data.orderId,
         status: nextStatus,
       });
