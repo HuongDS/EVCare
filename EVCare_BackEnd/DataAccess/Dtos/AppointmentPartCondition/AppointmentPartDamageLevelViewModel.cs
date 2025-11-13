@@ -12,5 +12,7 @@ namespace DataAccess.Dtos.AppointmentPartCondition {
         public string PartName { get; set; }
         public string PartUrl { get; set; }
         public DamageLevelEnum DamageLevel { get; set; }
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
     }
 }
