@@ -68,3 +68,17 @@ export type AssignTechnicianParams = {
   technicianIds: number[];
   status: string;
 };
+
+export type ServiceViewModel = {
+  serviceId: number;
+  serviceName: string;
+};
+
+export type GetPartsInServicesParams = {
+  serviceIds?: number[];
+  keyWord?: string;
+  pageSize?: number;
+  pageIndex?: number;
+  sortField?: string[];
+  sortOrder?: string[];
+};
