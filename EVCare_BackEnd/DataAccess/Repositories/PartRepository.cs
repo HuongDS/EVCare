@@ -129,22 +129,23 @@ namespace DataAccess.Repositories
 
 
             var query = _dbContext.ServiceParts.AsNoTracking()
-                .Where(model.ServiceIds!=null ? x=> model.ServiceIds.Contains(x.ServiceId) : x=>true)
-                .Include(x=>x.Part)
-                .Select(x => new PartViewModel
+                .Where(model.ServiceIds != null ? x => model.ServiceIds.Contains(x.ServiceId) : x => true)
+                .Include(x => x.Part)
+                 .Select(x => x.Part)
+                 .Distinct()
+                .Select(p => new PartViewModel
                 {
-                    Id = x.Part.Id,
-                    Name = x.Part.Name,
-                    CategoryId = x.Part.CategoryId,
-                    IsDeleted = (x.Part.Deleted_At != DateTime.MinValue),
-                    Price = x.Part.Price,
-                    Quantity = x.Part.Stock,
-                    ImageUrl = x.Part.Image,
-                    Description = x.Part.Description,
-                    ReplacementPrice = x.Part.ReplacementPrice,
-                    ServiceId = x.ServiceId
-                })
-                .DistinctBy(X=>X.Id);
+                    Id = p.Id,
+                    Name = p.Name,
+                    CategoryId = p.CategoryId,
+                    IsDeleted = p.Deleted_At != DateTime.MinValue,
+                    Price = p.Price,
+                    Quantity = p.Stock,
+                    ImageUrl = p.Image,
+                    Description = p.Description,
+                    ReplacementPrice = p.ReplacementPrice,
+                });
+                
             if(model.KeyWord!=null)
             {
                 query = query.Where(x => x.Name.ToLower().Contains(model.KeyWord.ToLower()));
@@ -159,7 +160,7 @@ namespace DataAccess.Repositories
          .Select(x => x.ServiceId)
          .ToListAsync();
             var query = _dbContext.ServiceParts.AsNoTracking()
-                        .Where(x => serviceIds.Contains(x.ServiceId))
+                       
                         .Select(x => x.Part)         
                         .Distinct()                   
                         .Select(p => new PartViewModel
@@ -173,18 +174,14 @@ namespace DataAccess.Repositories
                             ImageUrl = p.Image,
                             Description = p.Description,
                             ReplacementPrice = p.ReplacementPrice,
-
-           
-                            ServiceId = 0
+                          
                         });
 
-            
+            if(model.KeyWord!=null)
+            {
+                query = query.Where(x => x.Name.ToLower().Contains(model.KeyWord.ToLower()));
+            }
             query = query.ApplyDynamicSorting(model.SortField, model.SortOrder);
-
-
-
-
-
             return await PaginationHelper.PaginationAsync(
                        query,
                        model.PageSize.Value,
