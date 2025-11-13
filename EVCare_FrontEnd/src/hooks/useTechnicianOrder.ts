@@ -1,25 +1,29 @@
 // src/hooks/useTechnicianOrder.ts
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useNotification } from "../context/useNotification";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useUpdateOrderParts } from "../services/updateOrderPartApi";
-import { useGetAllParts } from "../services/partApi";
 import { useUpdatePartCondition } from "../services/appointmentPartCondition";
-import { useGetPartOrderByTech } from "../services/getTechnicianOrder";
 
 import type { OrderPartsResponseDto } from "../models/OrderPartModel/Order_Parts_Model";
 import type { DamageLevelEnum } from "../models/enums/DamageLevelEnum";
-import { LENGTH } from "../constants/Code/Constants";
+import { useGetPartsInServices, useGetServicesInAppointment } from "../services/appointmentTechnicianApi";
 
 interface UseTechnicianOrderProps {
   propOrderId?: number;
   onPartsUpdated?: (orderId: number) => void;
-  selectedCategory?: string;
+  selectedCategory: number;
+  appointmentId: number;
 }
 
-export const useTechnicianOrder = ({ propOrderId, onPartsUpdated, selectedCategory }: UseTechnicianOrderProps) => {
+export const useTechnicianOrder = ({
+  propOrderId,
+  onPartsUpdated,
+  selectedCategory,
+  appointmentId,
+}: UseTechnicianOrderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const notification = useNotification();
@@ -30,47 +34,14 @@ export const useTechnicianOrder = ({ propOrderId, onPartsUpdated, selectedCatego
 
   const [open, setOpen] = useState(false);
   const [selectedPart, setSelectedPart] = useState<OrderPartsResponseDto | null>(null);
-  const [page, setPage] = useState(1);
   const [cartOpen, setCartOpen] = useState(false);
   const [cart, setCart] = useState<{ part: OrderPartsResponseDto; quantity: number }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const pageSize = LENGTH.VIEW_PARTCARD_MAX;
-
-  const { data: technicianPartsRes, isLoading: isPartsLoading } = useGetPartOrderByTech(currentOrderId ?? undefined);
+  const pageSize = 8;
+  const [pageIndex, setPageIndex] = useState(1);
 
   const { mutateAsync: updateOrderPart, isPending: orderUpdating } = useUpdateOrderParts();
   const { mutateAsync: updatePartCondition } = useUpdatePartCondition();
-  const { data: allParts } = useGetAllParts({});
-
-  useEffect(() => {
-    if (technicianPartsRes) {
-      const mappedCart =
-        technicianPartsRes.data?.map((p: any) => ({
-          part: {
-            id: p.partID,
-            name: p.partName,
-            price: p.price,
-            quantity: p.quantity,
-          } as OrderPartsResponseDto,
-          quantity: p.quantity,
-        })) ?? [];
-      setCart(mappedCart);
-    }
-  }, [technicianPartsRes]);
-
-  const filteredParts = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    return allParts?.data?.items.filter(
-      (p) =>
-        (query === "" || p.name.toLowerCase().includes(query)) &&
-        (selectedCategory ? p.categoryId === Number(selectedCategory) : true)
-    );
-  }, [allParts, searchQuery, selectedCategory]);
-
-  const displayParts = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return filteredParts?.slice(start, start + pageSize);
-  }, [filteredParts, page, pageSize]);
 
   const handleAddToCart = (part: OrderPartsResponseDto, quantity: number) => {
     setCart((prev) => {
@@ -139,25 +110,36 @@ export const useTechnicianOrder = ({ propOrderId, onPartsUpdated, selectedCatego
   const handleCloseProductModal = () => setOpen(false);
   const handleOpenCart = () => setCartOpen(true);
   const handleCloseCart = () => setCartOpen(false);
-  const handlePageChange = (newPage: number) => setPage(newPage);
+  const handlePageChange = (newPage: number) => setPageIndex(newPage);
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
-    setPage(1);
+    setPageIndex(1);
   };
+
+  const { data: serviceLists, isLoading: loadingServices } = useGetServicesInAppointment({ appointmentId });
+
+  const { data: partsInService, isLoading: loadingPartInService } = useGetPartsInServices({
+    ...((selectedCategory !== 0 && { serviceIds: [selectedCategory] }) || {}),
+    ...((selectedCategory === 0 && { appointmentId: appointmentId }) || {}),
+    pageIndex: pageIndex,
+    pageSize: pageSize,
+  });
 
   return {
     cart,
-    displayParts,
-    page,
-    searchQuery,
-    isLoading: isPartsLoading,
-    isSending: orderUpdating,
+    pageIndex,
     pageSize,
+    searchQuery,
+    isSending: orderUpdating,
     open,
     selectedPart,
     cartOpen,
-    totalPages: allParts?.data?.totalPages,
-    totalItems: allParts?.data?.totalItems,
+    totalPages: partsInService?.data?.totalPages,
+    totalItems: partsInService?.data?.totalItems,
+    serviceLists,
+    loadingServices,
+    partsInService,
+    loadingPartInService,
     handleAddToCart,
     handleRemoveFromCart,
     handleCartQuantityChange,
