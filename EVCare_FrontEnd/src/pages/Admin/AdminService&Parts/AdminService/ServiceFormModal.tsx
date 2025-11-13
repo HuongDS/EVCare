@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ModalBackdrop,
   ModalContainer,
@@ -15,19 +15,23 @@ import {
   LoadingSpinner,
   StyledTextArea,
   GeneratingOverlay,
+  PartSelectionWrapper,
+  PartPillContainer,
+  PartPill,
+  PartPillRemoveButton,
 } from "./Admin_Service.styled";
 import { FaTimes, FaSave, FaMagic } from "react-icons/fa";
 import { useNotification } from "../../../../context/useNotification";
-import type { Service } from "../../../../models/ServicesModel/ServiceViewModel";
+import type { PartInService, Service } from "../../../../models/ServicesModel/ServiceViewModel";
 import type { ServiceCreateDto } from "../../../../models/ServicesModel/ServiceCreateDto";
 import type { ServiceCategoryAdminDto } from "../../../../models/ServicesModel/ServiceCategoryAdminDto";
 import { StyledSelect } from "../AdminPart/Admin_Part.styled";
-import {
-  createService,
-  updateService,
-} from "../../../../services/serviceServicesApi";
+import { createService, updateService } from "../../../../services/serviceServicesApi";
 import { callGemini } from "../../../../services/geminiServices";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { getAllParts02 } from "../../../../services/partApi";
+import type { PartDetailDto } from "../../../../models/PartModel/PartModel";
+import type { ServiceUpdateDto } from "../../../../models/ServicesModel/ServiceUpdateDto";
 
 interface Props {
   isOpen: boolean;
@@ -48,22 +52,14 @@ const generateServiceDetails = async (serviceName: string) => {
     if (result && result.description && typeof result.duration === "number") {
       return result;
     } else {
-      console.error(
-        "Failed to generate service details or received invalid data."
-      );
+      console.error("Failed to generate service details or received invalid data.");
     }
   } catch (error) {
     console.log(error);
   }
 };
 
-const ServiceFormModal: React.FC<Props> = ({
-  isOpen,
-  onClose,
-  onSuccess,
-  serviceToEdit,
-  serviceCategories,
-}) => {
+const ServiceFormModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, serviceToEdit, serviceCategories }) => {
   const isUpdateMode = !!serviceToEdit;
   const notification = useNotification();
   const [formData, setFormData] = useState({
@@ -74,39 +70,58 @@ const ServiceFormModal: React.FC<Props> = ({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [allParts, setAllParts] = useState<PartDetailDto[]>([]);
+  const [selectedParts, setSelectedParts] = useState<PartInService[]>([]);
+  const [partToAddId, setPartToAddId] = useState<number>(0);
+  const [PageSize, setPageSize] = useState(0);
 
-  useEffect(() => {
-    if (isUpdateMode && serviceToEdit) {
-      setFormData({
-        name: serviceToEdit.name,
-        description: serviceToEdit.description,
-        duration: serviceToEdit.duration,
-        serviceCategoryId: serviceToEdit.serviceCategoryId,
-      });
-    } else {
-      setFormData({
-        name: "",
-        description: "",
-        duration: 0,
-        serviceCategoryId: 0,
+  const fetchAllParts = useCallback(async () => {
+    try {
+      let response = await getAllParts02();
+      setPageSize(response.totalItems);
+      response = await getAllParts02({ PageSize: PageSize !== 0 ? PageSize : response.totalItems });
+      setAllParts(response.items);
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: (error as Error).message,
+        showProgress: true,
       });
     }
-  }, [isOpen, isUpdateMode, serviceToEdit]);
+  }, [notification]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
+  useEffect(() => {
+    if (isOpen) {
+      if (isUpdateMode && serviceToEdit) {
+        setFormData({
+          name: serviceToEdit.name,
+          description: serviceToEdit.description,
+          duration: serviceToEdit.duration,
+          serviceCategoryId: serviceToEdit.serviceCategoryId,
+        });
+        setSelectedParts(serviceToEdit.parts || []);
+        fetchAllParts();
+      } else {
+        setFormData({
+          name: "",
+          description: "",
+          duration: 0,
+          serviceCategoryId: 0,
+        });
+        setSelectedParts([]);
+        setAllParts([]);
+        setPartToAddId(0);
+        fetchAllParts();
+      }
+    }
+  }, [isOpen, isUpdateMode, serviceToEdit, fetchAllParts]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === "duration"
-          ? parseFloat(value) || 0
-          : name === "serviceCategoryId"
-          ? parseInt(value) || 0
-          : value,
+        name === "duration" ? parseFloat(value) || 0 : name === "serviceCategoryId" ? parseInt(value) || 0 : value,
     }));
   };
 
@@ -166,14 +181,14 @@ const ServiceFormModal: React.FC<Props> = ({
 
       let response = null;
       if (isUpdateMode && serviceToEdit) {
-        const payload: Service = {
+        const payload: ServiceUpdateDto = {
           id: serviceToEdit.id,
           ...formData,
-          isDeleted: false,
+          partsIds: selectedParts.map((p) => p.id),
         };
         response = await updateService(payload);
       } else {
-        const payload: ServiceCreateDto = { ...formData };
+        const payload: ServiceCreateDto = { ...formData, partsIds: selectedParts.map((p) => p.id) };
         response = await createService(payload);
       }
       onSuccess();
@@ -193,13 +208,36 @@ const ServiceFormModal: React.FC<Props> = ({
     setIsSubmitting(false);
   };
 
+  const handleAddPart = () => {
+    if (partToAddId === 0) return;
+
+    const isAlreadyAdded = selectedParts.some((p) => p.id === partToAddId);
+    if (isAlreadyAdded) {
+      notification.warning({ message: "Part has been added" });
+      setPartToAddId(0);
+      return;
+    }
+
+    const partDetails = allParts.find((p) => p.id === partToAddId);
+    if (!partDetails) return;
+
+    const partToAdd: PartInService = {
+      id: partDetails.id,
+      name: partDetails.name,
+      image: partDetails.imageUrl,
+    };
+    setSelectedParts((prev) => [...prev, partToAdd]);
+    setPartToAddId(0);
+  };
+
+  const handleRemovePart = (partId: number) => {
+    setSelectedParts((prev) => prev.filter((p) => p.id !== partId));
+  };
+
+  const availableParts = allParts.filter((part) => !selectedParts.some((selected) => selected.id === part.id));
+
   return (
-    <ModalBackdrop
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
+    <ModalBackdrop initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
       <ModalContainer
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -209,9 +247,7 @@ const ServiceFormModal: React.FC<Props> = ({
       >
         <form onSubmit={handleSubmit} style={{ display: "contents" }}>
           <ModalHeader>
-            <ModalTitle>
-              {isUpdateMode ? "Edit Service" : "Add New Service"}
-            </ModalTitle>
+            <ModalTitle>{isUpdateMode ? "Edit Service" : "Add New Service"}</ModalTitle>
             <ModalCloseButton type="button" onClick={onClose}>
               <FaTimes />
             </ModalCloseButton>
@@ -244,9 +280,7 @@ const ServiceFormModal: React.FC<Props> = ({
               <StyledSelect
                 id="service-category"
                 name="serviceCategoryId"
-                value={
-                  serviceToEdit?.serviceCategoryId ?? formData.serviceCategoryId
-                }
+                value={serviceToEdit?.serviceCategoryId ?? formData.serviceCategoryId}
                 onChange={handleInputChange}
                 required
                 disabled={isSubmitting || isGenerating}
@@ -255,7 +289,7 @@ const ServiceFormModal: React.FC<Props> = ({
                   Select Service Category
                 </option>
                 {serviceCategories.map((category) => (
-                  <option key={category.id} value={category.id}>
+                  <option key={category.id} value={category.id} disabled={!category.isActive}>
                     {category.name}
                   </option>
                 ))}
@@ -265,18 +299,12 @@ const ServiceFormModal: React.FC<Props> = ({
             <InputGroup>
               <AnimatePresence>
                 {isGenerating && (
-                  <GeneratingOverlay
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
+                  <GeneratingOverlay initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     <LoadingSpinner />
                   </GeneratingOverlay>
                 )}
               </AnimatePresence>
-              <StyledLabel htmlFor="service-description">
-                Description
-              </StyledLabel>
+              <StyledLabel htmlFor="service-description">Description</StyledLabel>
               <StyledTextArea
                 id="service-description"
                 name="description"
@@ -290,18 +318,12 @@ const ServiceFormModal: React.FC<Props> = ({
             <InputGroup>
               <AnimatePresence>
                 {isGenerating && (
-                  <GeneratingOverlay
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
+                  <GeneratingOverlay initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     <LoadingSpinner />
                   </GeneratingOverlay>
                 )}
               </AnimatePresence>
-              <StyledLabel htmlFor="service-duration">
-                Estimated Duration (Hours)
-              </StyledLabel>
+              <StyledLabel htmlFor="service-duration">Estimated Duration (Hours)</StyledLabel>
               <StyledInput
                 id="service-duration"
                 name="duration"
@@ -314,21 +336,83 @@ const ServiceFormModal: React.FC<Props> = ({
                 disabled={isSubmitting || isGenerating}
               />
             </InputGroup>
+
+            <InputGroup>
+              <StyledLabel htmlFor="service-parts">Associated Parts</StyledLabel>
+              <PartSelectionWrapper>
+                <InputGroup className="part-select-group">
+                  <StyledSelect
+                    id="service-parts"
+                    value={partToAddId}
+                    onChange={(e) => setPartToAddId(Number(e.target.value))}
+                    disabled={isSubmitting}
+                  >
+                    <option value="0" disabled>
+                      Select a part to add...
+                    </option>
+                    {selectedParts.length === 0 && allParts.length > 0 && (
+                      <option value="0" disabled>
+                        All parts already added
+                      </option>
+                    )}
+                    {availableParts.map((part) => (
+                      <option key={part.id} value={part.id} disabled={part.isDeleted}>
+                        {part.name} - (Quantity: {part.quantity})
+                      </option>
+                    ))}
+                  </StyledSelect>
+                </InputGroup>
+
+                <ModalButton
+                  type="button"
+                  $isConfirm={true}
+                  className="part-add-button"
+                  onClick={handleAddPart}
+                  disabled={isSubmitting || partToAddId === 0}
+                >
+                  Add
+                </ModalButton>
+              </PartSelectionWrapper>
+
+              <PartPillContainer>
+                {selectedParts.length > 0 ? (
+                  <AnimatePresence>
+                    {selectedParts.map(
+                      (part) =>
+                        selectedParts.includes(part) && (
+                          <motion.div
+                            key={part.id}
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.5 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <PartPill>
+                              <img src={part.image} alt={part.name} />
+                              <span>{part.name}</span>
+                              <PartPillRemoveButton
+                                type="button"
+                                onClick={() => handleRemovePart(part.id)}
+                                disabled={isSubmitting}
+                              >
+                                <FaTimes />
+                              </PartPillRemoveButton>
+                            </PartPill>
+                          </motion.div>
+                        )
+                    )}
+                  </AnimatePresence>
+                ) : (
+                  <p className="empty-parts-text">No parts associated. Add parts from the dropdown above.</p>
+                )}
+              </PartPillContainer>
+            </InputGroup>
           </ModalBody>
           <ModalFooter>
-            <ModalButton
-              type="button"
-              $isConfirm={false}
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
+            <ModalButton type="button" $isConfirm={false} onClick={onClose} disabled={isSubmitting}>
               Cancel
             </ModalButton>
-            <ModalButton
-              type="submit"
-              $isConfirm={true}
-              disabled={isSubmitting || isGenerating}
-            >
+            <ModalButton type="submit" $isConfirm={true} disabled={isSubmitting || isGenerating}>
               {isSubmitting ? <LoadingSpinner /> : <FaSave />}
               {isUpdateMode ? "Save Changes" : "Add Service"}
             </ModalButton>
