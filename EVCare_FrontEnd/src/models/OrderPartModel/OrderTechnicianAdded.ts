@@ -4,7 +4,7 @@ export type ResponseDto<T> = {
   data?: T;
 };
 
-export type TechnicianAddedPart = {
+export type PartAddByTech = {
   partID: number;
   partName: string;
   orderId: number;
