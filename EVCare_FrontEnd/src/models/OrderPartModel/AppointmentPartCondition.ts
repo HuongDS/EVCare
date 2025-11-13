@@ -6,7 +6,9 @@ export interface AppointmentPartCondition {
     partId: number;
     partName: string;
     partUrl: string;
-    damageLevel: string;
+    damageLevel: DamageLevelEnum;
+    quantity: number;
+    price: number;
   }[];
 }
 
