@@ -73,7 +73,6 @@ export default function TechnicianOrder({
 
   return (
     <PageContainer>
-      {/* Header */}
       <Header>
         <BackButton onClick={handleBack}>
           <ArrowLeft size={20} />

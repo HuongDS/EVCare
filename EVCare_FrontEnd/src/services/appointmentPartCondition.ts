@@ -7,30 +7,33 @@ import type {
   UpdatePartDamageDto,
 } from "../models/OrderPartModel/AppointmentPartCondition";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
-import { requestQueue } from "./requestQueue";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { handleError } from "../utils/errorHandler";
 
-export async function createAppointmentPartCondition(
-  data: AppointmentPartCondition
-) {
-  try {
-    const response = await api.post<ResponseDto<AppointmentPartCondition>>(
-      "/api/AppointmentPartCondition",
-      data
-    );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const errMsg = error.response?.data.message || error.message;
-      throw new Error(errMsg);
-    }
-    throw new Error(ERROR_MESSAGE.FETCH_DATA_FAILED);
-  }
-}
+export const useSetPartCondition = () => {
+  return useMutation({
+    mutationKey: ["SetCondition"],
+    mutationFn: async (data: AppointmentPartCondition) => {
+      try {
+        const response = await api.post<ResponseDto<AppointmentPartCondition>>(
+          "/api/AppointmentPartCondition",
+          data
+        );
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const errMsg = error.response?.data.message || error.message;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.FETCH_DATA_FAILED);
+      }
+    },
+  });
+};
 
 export const useUpdatePartCondition = () => {
   return useMutation({
-    mutationKey: ["updatePartCondition"],
+    mutationKey: ["UpdatePa"],
     mutationFn: async (payload: UpdatePartDamageDto) => {
       try {
         const response = await api.put<ResponseDto<UpdatePartDamageDto>>(
@@ -49,18 +52,27 @@ export const useUpdatePartCondition = () => {
   });
 };
 
-export async function getAppointmentPartCondition(appointmentId: number) {
-  return requestQueue.enqueue(async () => {
-    try {
-      const response = await api.get<ResponseDto<AppointmentPartCondition>>(
-        "/api/AppointmentPartCondition/",
-        { params: { appointmentId } }
-      );
-      return response.data;
-    } catch (err: any) {
-      throw new Error(
-        err.response?.data?.message || ERROR_MESSAGE.FETCH_DATA_FAILED
-      );
-    }
+export const useGetAppointmentPartCondition = (appointmentId: number) => {
+  return useQuery({
+    queryKey: ["AppointmentHasCondition", appointmentId],
+    queryFn: async () => {
+      try {
+        const response = await api.get<ResponseDto<AppointmentPartCondition>>(
+          "/api/AppointmentPartCondition/",
+          { params: { appointmentId } }
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
   });
-}
+};

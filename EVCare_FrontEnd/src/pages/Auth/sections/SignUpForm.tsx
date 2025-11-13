@@ -48,6 +48,8 @@ export default function SignUpForm({
 }: SignUpProps) {
   const error = () => {
     if (
+      firstName.trim().length === 0 ||
+      lastName.trim().length === 0 ||
       !isValidEmail(email) ||
       !isValidSignUpPassword(password) ||
       !isValidConfirmPassword(confirm, password) ||
@@ -59,6 +61,7 @@ export default function SignUpForm({
   };
 
   const disabled = error();
+
   return (
     <>
       <NameGroup>
@@ -89,9 +92,10 @@ export default function SignUpForm({
           errorMessage={ERROR_MESSAGE.INVALID_EMAIL}
         />
         <TextFieldWithIcon
+          id="pass"
           required={true}
           icon={<FiKey />}
-          type="password"
+          type="text"
           label="Password"
           text={password}
           setText={setPassword}
