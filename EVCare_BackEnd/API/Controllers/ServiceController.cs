@@ -27,7 +27,7 @@ namespace API.Controllers
             {
                 var data = await _service.GetServicesWithPaginationAsync(model);
 
-                return Ok(new ResponseDto<PageResultDto<ServiceViewModel>>
+                return Ok(new ResponseDto<PageResultDto<ServiceViewDetailModel>>
                 {
                     statusCode = HttpStatus.OK,
                     message = Message.GET_SERVICE_SUCCESSFULLY,

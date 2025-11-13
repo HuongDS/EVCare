@@ -14,7 +14,7 @@ namespace DataAccess.Interfaces
     {
     
         Task<PageResultDto<ServiceViewModel>> GetActiveServiceAndKeywordWithPagination(ServiceQueryDto model);
-        Task<PageResultDto<ServiceViewModel>> GetServiceAndKeywordWithPagination(ServiceQueryDto model);
+        Task<PageResultDto<ServiceViewDetailModel>> GetServiceAndKeywordWithPagination(ServiceQueryDto model);
         Task <IEnumerable<Service>> GetAllActiveServices(string keyword);
         Task DeleteByServiceCategoryIdAsync(int id);
     }
