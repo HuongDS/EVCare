@@ -17,12 +17,20 @@ export const CardContainer = styled.div`
 `;
 
 export const CardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
   padding: 16px 20px;
   background: linear-gradient(135deg, #f8fdf9 0%, #e8f5e9 100%);
   border-bottom: 2px solid #e8f5e9;
 `;
 
 export const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const HeaderRight = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
@@ -131,6 +139,16 @@ export const CollapsibleSection = styled.div`
   &:hover {
     border-color: #00ad4e;
   }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+export const PartSection = styled.div`
+  border-right: 2px solid #e8f5e9;
+  border-left: 2px solid #e8f5e9;
+  transition: all 0.3s ease;
 
   &:last-child {
     margin-bottom: 0;
@@ -281,8 +299,7 @@ export const EmptyText = styled.div`
   font-style: italic;
 `;
 
-export const CardFooter = styled.div`
-  padding: 16px 20px;
-  background: #f8fdf9;
-  border-top: 2px solid #e8f5e9;
+export const ContentWrapper = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
 `;

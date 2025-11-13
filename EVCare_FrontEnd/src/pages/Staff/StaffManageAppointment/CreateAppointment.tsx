@@ -215,7 +215,6 @@ export default function CreateAppointmentPage({ onBack }: Props) {
           const hours = Array.from({ length: 24 }, (_, i) => i).filter(
             (h) => h > (endTime?.hour() ?? 0) || h < (startTime?.hour() ?? 0)
           );
-
           return hours;
         },
         disabledMinutes: (selectedHour?: number) => {
@@ -311,7 +310,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
                         customer.vehicles.filter((veh) => veh.cateId !== 0)
                           .length
                       }
-                      vehicles
+                      {""} vehicles
                     </VehicleCount>
                   </CustomerCard>
                 ))}

@@ -14,6 +14,7 @@ import { AnimatePresence } from "framer-motion";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import TechnicianAppointmentCard from "../Technician_Component/TechnicianAppointmentCard";
 import { EmptyState } from "../Technician_Component/EmptyState";
+import { Pagination } from "../../../components/Paginations/Pagination";
 
 const pageVariants = {
   hidden: { opacity: 0 },
@@ -27,8 +28,15 @@ const itemVariants = {
 };
 
 export default function Technician_MyJob() {
-  const { activeStatus, appointments, isLoading, setActiveStatus } = useTechnician_MyJob();
-  const myJobStatuses = ["Adding Part", "Confirm", "In Progress"];
+  const {
+    data,
+    activeStatus,
+    appointments,
+    isLoading,
+    setActiveStatus,
+    setPageIndex,
+  } = useTechnician_MyJob();
+  const myJobStatuses = ["Adding Part", "Confirm", "In Progress", "Completed"];
   return (
     <PageWrapper key="technician-myjob" variants={pageVariants} initial="hidden" animate="visible" exit="exit">
       <ContentWrapper>
@@ -62,6 +70,14 @@ export default function Technician_MyJob() {
             )}
           </AnimatePresence>
         </AppointmentList>
+
+        <Pagination
+          pageSize={data?.data?.pageSize || 10}
+          pageIndex={data?.data?.pageIndex || 1}
+          totalItems={data?.data?.totalItems || 0}
+          totalPage={data?.data?.totalPages || 0}
+          onPageChange={setPageIndex}
+        />
       </ContentWrapper>
     </PageWrapper>
   );

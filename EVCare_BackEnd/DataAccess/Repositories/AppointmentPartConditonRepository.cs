@@ -26,13 +26,19 @@ namespace DataAccess.Repositories {
         public async Task<AppointmentPartConditionViewModel> GetAppointmentPartConditionsAsync(int appointmentId, int technicianId) {
             var parts = await _dbcontext.AppointmentPartConditions.
                 Where(a => a.AppointmentId == appointmentId && a.TechicianId == technicianId)
+                .Include(a=>a.Appointment).ThenInclude(a=>a.Order).ThenInclude(a=>a.OrderParts)
                 .Include(a => a.Part)
                 .Select(a => new AppointmentPartDamageLevelViewModel {
                     PartId = a.PartId,
                     DamageLevel = a.Level,
                     PartName = a.Part.Name,
-                    PartUrl = a.Part.Image
-
+                    PartUrl = a.Part.Image,
+                    Quantity = a.Appointment.Order.OrderParts
+                                    .Where(op => op.PartId == a.PartId && op.TechnicianId == technicianId)
+                                    .FirstOrDefault().Quantity,
+                    Price = a.Appointment.Order.OrderParts
+                                    .Where(op => op.PartId == a.PartId && op.TechnicianId == technicianId)
+                                    .FirstOrDefault().Price
                 }).ToListAsync();
                     return new AppointmentPartConditionViewModel
                     {

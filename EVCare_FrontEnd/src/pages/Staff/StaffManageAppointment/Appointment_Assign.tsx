@@ -55,7 +55,6 @@ export default function Appointment_Assign({ data }: props) {
       return (nameMatch || skillMatch) && notSelected;
     }) || [];
 
-  //Add technician vào list
   const handleAddTechnician = async (
     technician: TechnicianModel<TechnicianSkills>
   ) => {
@@ -88,7 +87,7 @@ export default function Appointment_Assign({ data }: props) {
       await assignTech({
         orderId: data.orderId,
         technicianIds: techniciansList,
-        status: "AddingPart",
+        status: "Pending",
       });
 
       await appointmentStatus({
@@ -310,6 +309,7 @@ const TechnicianCard = ({
             {technician.status}
           </StatusBadge>
         </TechnicianInfo>
+
         {isSelected && onRemove && (
           <RemoveButton onClick={onRemove} data-testid="remove-button">
             <CircleX />
@@ -317,20 +317,36 @@ const TechnicianCard = ({
         )}
       </TechnicianHeader>
 
-      <InfoSection>
-        {technician.phone && (
+      <TechInfo>
+        <ContactInfo>
+          {technician.phone && (
+            <InfoItem>
+              <Phone size={14} /> {technician.phone}
+            </InfoItem>
+          )}
+          {technician.email && (
+            <InfoItem>
+              <Mail size={14} /> {technician.email}
+            </InfoItem>
+          )}
+        </ContactInfo>
+
+        <WorkInfo>
           <InfoItem>
-            <Phone size={14} /> {technician.phone}
+            KPI:{" "}
+            <StatusBadge $status={technician.status}>
+              {technician.kpiPerDays}
+            </StatusBadge>
           </InfoItem>
-        )}
-      </InfoSection>
-      <InfoSection>
-        {technician.email && (
+
           <InfoItem>
-            <Mail size={14} /> {technician.email}
+            Completed Orders:{" "}
+            <StatusBadge $status={technician.status}>
+              {technician.completedOrders}
+            </StatusBadge>
           </InfoItem>
-        )}
-      </InfoSection>
+        </WorkInfo>
+      </TechInfo>
 
       <SkillsSection>
         <p>SKILLS</p>
@@ -377,10 +393,10 @@ import {
   Card,
   ClearButton,
   ContentWrapper,
+  ContactInfo,
   EmptyState,
   Header,
   InfoItem,
-  InfoSection,
   PageContainer,
   RemoveButton,
   SearchInput,
@@ -398,6 +414,8 @@ import {
   TechnicianGrid,
   TechnicianHeader,
   TechnicianInfo,
+  TechInfo,
+  WorkInfo,
 } from "./styles/Appointment_Assign.styled";
 import { PiWarning } from "react-icons/pi";
 import { Tooltip } from "antd";

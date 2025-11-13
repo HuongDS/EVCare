@@ -41,6 +41,9 @@ export type TechnicianModel<T> = {
   phone: string;
   expYears: number;
   status: string;
+  workingSessionStatus: string;
+  kpiPerDays: number;
+  completedOrders: number;
   skills: T[];
   avatar?: string;
 };

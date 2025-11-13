@@ -49,6 +49,7 @@ export default function SignInForm({
           errorMessage={ERROR_MESSAGE.INVALID_EMAIL}
         />
         <TextFieldWithIcon
+          id="pass"
           required={true}
           icon={<FiKey />}
           type="password"

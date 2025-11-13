@@ -23,6 +23,8 @@ import Model3dViewer from "../../Model3d/Model3dViewer";
 import ShowButton from "../../../components/Button/ShowButton";
 import CreateAppointment from "./CreateAppointment";
 import SkeletonCount from "../../../components/Skeletons/Skeleton";
+import DayOff from "./DayOff";
+import { useGetApplication } from "../../../services/getApplicationApi";
 
 export default function Staff_Appoinments() {
   const queryClient = useQueryClient();
@@ -178,11 +180,6 @@ export default function Staff_Appoinments() {
             />
           )}
 
-          {/* <ShowButton
-              onclick={() => dispatch(openModel3d())}
-              text="Show Model"
-            /> */}
-
           {!isLoading && (
             <Pagination
               pageIndex={currenPage}
@@ -194,6 +191,7 @@ export default function Staff_Appoinments() {
           )}
         </ListAppointmentStyled>
       </AppoitmentWrapper>
+
       {showProgressModal && selectedAppointmentId && (
         <Appoinment_Progress_Modal
           show={showProgressModal}
@@ -221,5 +219,4 @@ import {
   PageTransition,
   AppoitmentWrapper,
 } from "./styles/Staff_Appointments.styled";
-import DayOff from "./DayOff";
-import { useGetApplication } from "../../../services/getApplicationApi";
+import SpinnerComponent from "../../../components/SpinnerComponent";

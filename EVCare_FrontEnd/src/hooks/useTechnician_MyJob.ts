@@ -8,7 +8,7 @@ import { useNotification } from "../context/useNotification";
 export const useTechnician_MyJob = () => {
   const notification = useNotification();
   const [sortById, setSortById] = useState<"asc" | "desc">("asc");
-  const [pageSize, setPageSize] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [pageIndex, setPageIndex] = useState<number>(1);
   const queryClient = useQueryClient();
 
@@ -20,7 +20,7 @@ export const useTechnician_MyJob = () => {
 
   const { data, isLoading, isFetching } = useGetTechnicianAppointments({
     Status: String(activeStatus),
-    PageSize: pageSize,
+    PageSize: 10,
     PageIndex: pageIndex,
   });
 
@@ -30,6 +30,7 @@ export const useTechnician_MyJob = () => {
     try {
       await updateWorkingSession({ orderId: orderId, status: status });
       queryClient.invalidateQueries({ queryKey: ["TechnicianAppointments"] });
+      setActiveStatus(status);
       notification.success({
         message: "Update Working Session",
         description: "Success",
@@ -77,5 +78,6 @@ export const useTechnician_MyJob = () => {
     setPageSize,
     setPageIndex,
     handleUpdateStatus,
+    setPageIndex,
   };
 };

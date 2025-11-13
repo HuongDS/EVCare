@@ -42,6 +42,9 @@ const mockTechnician: TechnicianModel<TechnicianSkills> = {
   expYears: 2,
   skills: mockSkills,
   status: "Available",
+  workingSessionStatus: "",
+  completedOrders: 0,
+  kpiPerDays: 5,
 };
 
 const mockAppointment: AppointmentDetailModel<any> = {
@@ -60,6 +63,8 @@ const mockAppointment: AppointmentDetailModel<any> = {
   imagesUrls: [],
   services: [],
   technicians: [],
+  isNeedMantainance: true,
+  orderStatus: "",
 };
 
 vi.mock("../../../../services/appointmentServiceApi.ts", () => ({
