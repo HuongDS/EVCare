@@ -37,3 +37,11 @@ export type PartDetail = {
   isDeleted: boolean;
   imageUrl: string;
 };
+
+export type PartInServiceDetail = PartDetail & {
+  serviceId: number;
+};
+
+export type PartInServiceViewModel<T> = {
+  items: T[];
+};

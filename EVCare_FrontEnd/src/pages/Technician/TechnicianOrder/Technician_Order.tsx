@@ -1,4 +1,10 @@
-import { ArrowLeft, ShoppingCart, Search, Package, LayoutGrid } from "lucide-react";
+import {
+  ArrowLeft,
+  ShoppingCart,
+  Search,
+  Package,
+  LayoutGrid,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import ProductCard from "../Technician_Component/ProductCard";
 import ProductModal from "../Technician_Component/ProductModal";
@@ -127,7 +133,10 @@ export default function TechnicianOrder({
 
   return (
     <PageContainer>
-      <Overlay $isOpen={isSidebarOpen} onClick={() => setIsSidebarOpen(false)} />
+      <Overlay
+        $isOpen={isSidebarOpen}
+        onClick={() => setIsSidebarOpen(false)}
+      />
       <SidebarWrapper $isOpen={isSidebarOpen}>
         <SidebarHeader>
           <h2>All Services</h2>
@@ -186,7 +195,10 @@ export default function TechnicianOrder({
             <CartBadge $show={hasCartItems}>{cartItemCount}</CartBadge>
           </CartButton>
 
-          <ServiceToggleButton onClick={() => setIsSidebarOpen(true)} aria-label="Chọn dịch vụ">
+          <ServiceToggleButton
+            onClick={() => setIsSidebarOpen(true)}
+            aria-label="Chọn dịch vụ"
+          >
             <LayoutGrid size={20} />
           </ServiceToggleButton>
         </div>
@@ -195,10 +207,16 @@ export default function TechnicianOrder({
       <ContentWrapper>
         <CardGrid>
           {isLoading ? (
-            Array.from({ length: pageSize }).map((_, idx) => <ProductCard key={idx} isSkeleton />)
+            Array.from({ length: pageSize }).map((_, idx) => (
+              <ProductCard key={idx} isSkeleton />
+            ))
           ) : displayParts && displayParts?.length > 0 ? (
             displayParts.map((part: OrderPartsResponseDto) => (
-              <ProductCard key={part.id} part={part} onClick={() => handleOpenProductModal(part)} />
+              <ProductCard
+                key={part.id}
+                part={part}
+                onClick={() => handleOpenProductModal(part)}
+              />
             ))
           ) : (
             <EmptyState>
@@ -222,7 +240,12 @@ export default function TechnicianOrder({
         )}
       </ContentWrapper>
 
-      <ProductModal open={open} onClose={handleCloseProductModal} part={selectedPart} onAddToCart={handleAddToCart} />
+      <ProductModal
+        open={open}
+        onClose={handleCloseProductModal}
+        part={selectedPart}
+        onAddToCart={handleAddToCart}
+      />
 
       <CartModal
         open={cartOpen}
