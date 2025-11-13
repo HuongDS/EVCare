@@ -82,7 +82,7 @@ namespace Application.Service
 
         }
 
-        public async Task<PageResultDto<ServiceViewModel>> GetServicesWithPaginationAsync(ServiceQueryDto model)
+        public async Task<PageResultDto<ServiceViewDetailModel>> GetServicesWithPaginationAsync(ServiceQueryDto model)
         {
             return await _serviceRepository.GetServiceAndKeywordWithPagination(model);
             

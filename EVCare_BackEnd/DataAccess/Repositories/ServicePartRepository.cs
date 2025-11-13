@@ -23,6 +23,11 @@ namespace DataAccess.Repositories {
            await  _dbContext.SaveChangesAsync();
         }
 
+        public async Task DeleteByPartIdAsync(int id) {
+            await _dbContext.ServiceParts.Where(sp => sp.PartId == id)
+                .ExecuteDeleteAsync();
+        }
+
         public async Task DeleteByServiceIdAsync(int serviceId) {
            await _dbContext.ServiceParts.Where(sp => sp.ServiceId == serviceId)
                 .ExecuteDeleteAsync();

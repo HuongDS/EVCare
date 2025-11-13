@@ -39,6 +39,8 @@ namespace DataAccess.Repositories
                     IsBanned = x.Account.Deleted_At != DateTime.MinValue,
                     TechnicianId = x.TechnicianId,
                     ExpYear = x.Technician.ExpYear,
+                    KPIGetDays = x.Technician.KPIPerDays,
+                    CompletedOrderToday = x.Technician.CompletedOrders,
                     Skills = x.Technician != null ? x.Technician.TechnicianSkills
                         .Select(ts => new ServiceViewFormModel
                         {
@@ -125,6 +127,8 @@ namespace DataAccess.Repositories
                     IsBanned = x.Account.Deleted_At != DateTime.MinValue,
                     TechnicianId = x.TechnicianId,
                     ExpYear = x.Technician.ExpYear,
+                    KPIGetDays = x.Technician.KPIPerDays,
+                    CompletedOrderToday = x.Technician.CompletedOrders,
                     Skills = x.Technician != null ? x.Technician.TechnicianSkills
                         .Select(ts => new ServiceViewFormModel
                         {

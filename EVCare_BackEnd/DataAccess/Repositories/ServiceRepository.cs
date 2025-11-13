@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Part;
 using DataAccess.Dtos.Service;
 using DataAccess.Entities;
 using DataAccess.Helpers;
@@ -56,17 +57,26 @@ namespace DataAccess.Repositories
                 ToListAsync();
         }
 
-        public async Task<PageResultDto<ServiceViewModel>> GetServiceAndKeywordWithPagination(ServiceQueryDto model)
+        public async Task<PageResultDto<ServiceViewDetailModel>> GetServiceAndKeywordWithPagination(ServiceQueryDto model)
         {
             var query = _dbSet.AsNoTracking()
-                .Where(s => s.Name.Contains(model.Keyword)).Select(x => new ServiceViewModel
+                .Where(s => s.Name.Contains(model.Keyword))
+                .Include(s=>s.ServiceParts).ThenInclude(sp=>sp.Part)
+                .Select(x => new ServiceViewDetailModel
                 {
                     Description = x.Description,
                     Duration = x.Duration,
                     Id = x.Id,
                     IsDeleted = x.Deleted_At!= null,
                     Name = x.Name,
-                    ServiceCategoryId = x.ServiceCategoryId
+                    ServiceCategoryId = x.ServiceCategoryId,
+                    Parts = x.ServiceParts
+                   .Select(sp => new PartAdminViewModel
+                    {
+                        Id = sp.PartId,
+                        Name = sp.Part!.Name,
+                        Image = sp.Part.Image,
+                    }).ToList()
                 });
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
