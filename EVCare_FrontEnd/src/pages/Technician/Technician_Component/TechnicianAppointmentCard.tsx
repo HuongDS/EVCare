@@ -9,34 +9,25 @@ import { DamageLevelEnum } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import { useNotification } from "../../../context/useNotification";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import {
-  User,
-  Car,
-  Calendar,
-  Phone,
-  Wrench,
-  Package,
-  ChevronDown,
-  ChevronUp,
-  Image as ImageIcon,
-} from "lucide-react";
+import { User, Car, Calendar, Phone, Wrench, Package, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
 
 type Props = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
+  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
   onPartsUpdated?: (orderId: number) => void;
   setIsOrder: (v: boolean) => void;
 };
 
+<<<<<<< HEAD
 const TechnicianAppointmentCard: React.FC<Props> = ({
   data,
   onStatusChange,
   onPartsUpdated,
   setIsOrder,
 }) => {
+=======
+const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPartsUpdated, setIsOrder }) => {
+>>>>>>> 387a476497501a25463c1891d129e3a64f7d736c
   const notification = useNotification();
   const [currentStatus, setCurrentStatus] =
     useState<TechnicianWorkingSessionEnum>(data.status);
@@ -45,6 +36,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
     services: false,
   });
 
+<<<<<<< HEAD
   // call api o day de lay service
 
   const { mutateAsync: updateWorkingSession } =
@@ -52,6 +44,10 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
   const { data: appointment, isLoading } = useGetAppointmentPartCondition(
     data.id
   );
+=======
+  const { mutateAsync: updateWorkingSession } = useUpdateTechnicianWorkingSession();
+  const { data: appointment, isLoading } = useGetAppointmentPartCondition(data.id);
+>>>>>>> 387a476497501a25463c1891d129e3a64f7d736c
 
   // assume dung
   const handleChangeStatusWorkingSession = async (
@@ -90,9 +86,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
       <CardHeader>
         <HeaderLeft>
           <AppointmentId>#{data.id}</AppointmentId>
-          <StatusBadge $status={currentStatus}>
-            {currentStatus.replace("_", " ")}
-          </StatusBadge>
+          <StatusBadge $status={currentStatus}>{currentStatus.replace("_", " ")}</StatusBadge>
         </HeaderLeft>
         <HeaderRight>
           <ReviewButton
