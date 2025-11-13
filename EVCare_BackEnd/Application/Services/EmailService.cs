@@ -70,7 +70,18 @@ namespace Application.Services {
         }
 
         public Task SendInvoiceToCustomer(InvoiceMailDto dto) {
-            throw new NotImplementedException();
+           string html = LoadTemplate("invoice_template.html");
+            html = html.Replace("{{customerName}}", dto.appointmentInfo.CustomerName)
+                       .Replace("{{centerAddress}}", dto.appointmentInfo.CenterAddress)
+                       .Replace("{{centerName}}", dto.appointmentInfo.CenterName)
+                       .Replace("{{email}}", dto.appointmentInfo.email)
+                       .Replace("{{appointmentDate}}", dto.appointmentInfo.AppointmentDate.ToString("dd/MM/yyyy"))
+                       .Replace("{{serviceList}}", string.Join("<br>", dto.appointmentInfo.ServiceList))
+                       .Replace("{{note}}", dto.appointmentInfo.Note ?? string.Empty)
+                       .Replace("{{totalAmount}}", dto.totalAmount + " VND")
+                       .Replace("{{productRows}}", dto.orderParts.ToString())
+                       .Replace("{{linkToPay}}", dto.linkToPay);
+            return _emailSender.SendAsync(dto.appointmentInfo.email, "Your Invoice from " + dto.appointmentInfo.CenterName, html,$"Dear {dto.appointmentInfo.CustomerName}, your invoice amount is {dto.totalAmount} VND.");
         }
 
         public async Task<string> SendOTP(string email, int expires) {
