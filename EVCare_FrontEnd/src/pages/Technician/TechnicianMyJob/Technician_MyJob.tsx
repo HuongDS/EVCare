@@ -38,7 +38,13 @@ export default function Technician_MyJob() {
   } = useTechnician_MyJob();
   const myJobStatuses = ["Adding Part", "Confirm", "In Progress", "Completed"];
   return (
-    <PageWrapper key="technician-myjob" variants={pageVariants} initial="hidden" animate="visible" exit="exit">
+    <PageWrapper
+      key="technician-myjob"
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+    >
       <ContentWrapper>
         <Header>
           <Title variants={itemVariants}>My Jobs</Title>
@@ -64,7 +70,9 @@ export default function Technician_MyJob() {
             {isLoading ? (
               <SpinnerComponent />
             ) : appointments.length > 0 ? (
-              appointments.map((item: any) => <TechnicianAppointmentCard key={item.id} data={item} />)
+              appointments.map((item: any) => (
+                <TechnicianAppointmentCard key={item.id} data={item} />
+              ))
             ) : (
               <EmptyState />
             )}
