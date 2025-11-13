@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import FilterBar from "../AdminManageEmployee/FilterBar";
 import EmployeeCard from "../AdminManageEmployee/EmployeeCard";
 import BanModal from "../AdminManageEmployee/BanModal";
@@ -18,6 +18,7 @@ import { useAlert } from "../../../context/useAlert";
 import { MSG_TITLE } from "../../../constants/messages/Message";
 import { Pagination } from "../../../components/Paginations/Pagination";
 import SpinnerComponent from "../../../components/SpinnerComponent";
+import EditTechnicianModal from "./EditTechnicianModal";
 
 const Admin_Manage_Employee: React.FC = () => {
   const [employees, setEmployees] = useState<EmployeeViewModel[]>([]);
@@ -32,6 +33,8 @@ const Admin_Manage_Employee: React.FC = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [employeeToEdit, setEmployeeToEdit] = useState<EmployeeViewModel | null>(null);
 
   const handleBan = (id: number) => {
     const emp = employees.find((e) => e.accountId === id);
@@ -53,22 +56,36 @@ const Admin_Manage_Employee: React.FC = () => {
     }
   };
 
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
-    const fetchData = async () => {
-      try {
-        const response = await getAllEmployee(search, roleFilter, statusFilter, 6, pageIndex);
-        setPageIndex(response.data?.pageIndex ?? 1);
-        setTotalPages(response.data?.totalPages ?? 1);
-        setTotalItems(response.data?.totalItems ?? 0);
-        setEmployees(response.data?.items ?? []);
-      } catch (error) {
-        showAlert("error", MSG_TITLE.FETCH_DATA, (error as Error).message);
-      }
-    };
-    fetchData();
-    setIsLoading(false);
+    try {
+      const response = await getAllEmployee(search, roleFilter, statusFilter, 6, pageIndex);
+      // setPageIndex(response.data?.pageIndex ?? 1);
+      setTotalPages(response.data?.totalPages ?? 1);
+      setTotalItems(response.data?.totalItems ?? 0);
+      setEmployees(response.data?.items ?? []);
+    } catch (error) {
+      showAlert("error", MSG_TITLE.FETCH_DATA, (error as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
   }, [search, roleFilter, statusFilter, pageIndex]);
+
+  const handleOpenEditModal = (emp: EmployeeViewModel) => {
+    setEmployeeToEdit(emp);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEmployeeToEdit(null);
+    setIsEditModalOpen(false);
+    fetchData();
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   return isLoading ? (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", width: "100%" }}>
       <SpinnerComponent />
@@ -92,7 +109,9 @@ const Admin_Manage_Employee: React.FC = () => {
 
         <EmployeesGrid>
           {employees.length > 0 ? (
-            employees.map((e) => <EmployeeCard key={e.accountId} emp={e} onBan={handleBan} />)
+            employees.map((e) => (
+              <EmployeeCard onEdit={handleOpenEditModal} key={e.accountId} emp={e} onBan={handleBan} />
+            ))
           ) : (
             <EmptyState>No employees found matching your filters</EmptyState>
           )}
@@ -105,6 +124,8 @@ const Admin_Manage_Employee: React.FC = () => {
         onClose={() => setBanModal({ open: false })}
         onConfirm={confirmBan}
       />
+
+      <EditTechnicianModal isOpen={isEditModalOpen} onClose={handleCloseEditModal} employee={employeeToEdit} />
 
       <Pagination
         pageIndex={pageIndex}

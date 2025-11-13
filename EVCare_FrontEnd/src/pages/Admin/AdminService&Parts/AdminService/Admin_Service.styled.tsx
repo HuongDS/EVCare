@@ -91,7 +91,6 @@ export const TableWrapper = styled(motion.div)`
 export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
 `;
 
 export const Th = styled.th`
@@ -106,23 +105,23 @@ export const Th = styled.th`
   white-space: nowrap;
 
   &:nth-child(1) {
-    width: 15%;
-  }
-  &:nth-child(2) {
     width: 30%;
   }
+  &:nth-child(2) {
+    width: 35%;
+  }
   &:nth-child(3) {
-    width: 15%;
+    width: 10%;
   }
   &:nth-child(4) {
-    width: 15%;
+    width: 5%;
   }
   &:nth-child(5) {
     width: 20%;
   }
 `;
 
-export const Tr = styled.tr<{ $isDeleted?: boolean }>`
+export const Tr = styled.tr<{ $isDeleted?: boolean; $isExpanded?: boolean }>`
   border-bottom: 1px solid rgba(0, 173, 78, 0.1);
   transition: background-color 0.2s ease, opacity 0.3s ease;
   opacity: ${({ $isDeleted }) => ($isDeleted ? 0.5 : 1)};
@@ -131,8 +130,17 @@ export const Tr = styled.tr<{ $isDeleted?: boolean }>`
   &:last-child {
     border-bottom: none;
   }
-  &:hover {
+
+  &:not(.expanded-row):hover {
     background-color: rgba(0, 173, 78, 0.05);
+  }
+
+  &.expanded-row {
+    background-color: rgba(0, 173, 78, 0.03);
+
+    + tr:not(.expanded-row) {
+      border-top: 1px solid rgba(0, 173, 78, 0.2);
+    }
   }
 `;
 
@@ -141,14 +149,48 @@ export const Td = styled.td`
   vertical-align: middle;
   font-size: 0.95rem;
   color: #1f2937;
-  white-space: normal;
   word-break: break-word;
 
-  &:last-child {
+  tr:not(.expanded-row) &:last-child {
     display: flex;
     gap: 8px;
     align-items: center;
     white-space: nowrap;
+  }
+`;
+
+export const ExpandedContentCell = styled(Td)`
+  padding: 20px 40px;
+  background: rgba(240, 253, 244, 0.5);
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #065f46;
+    margin: 0 0 12px 0;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-style: italic;
+  }
+`;
+
+export const ExpandButton = styled.button`
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  color: #00ad4e;
+
+  &:hover {
+    background-color: rgba(0, 173, 78, 0.1);
   }
 `;
 
@@ -398,7 +440,7 @@ export const StyledSelect = styled.select`
   background-position: right 0.5rem center;
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
-  padding-right: 2.5rem; // Thêm không gian cho mũi tên
+  padding-right: 2.5rem;
 `;
 
 export const GenerateButton = styled.button`
@@ -462,4 +504,186 @@ export const GeneratingOverlay = styled(motion.div)`
   z-index: 10;
   color: #00ad4e;
   font-size: 1.5rem;
+`;
+
+export const ServiceGallery = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+`;
+
+export const ServiceCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  padding: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+export const ServiceIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-bottom: 8px;
+  background: #ecfdf5;
+  color: #00ad4e;
+  font-size: 1.5rem;
+  border: 1px solid #a7f3d0;
+`;
+
+export const ServiceName = styled.span`
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.4;
+  height: 2.8em;
+  overflow: hidden;
+`;
+
+export const PartGallery = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+`;
+
+export const PartCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+  width: 150px;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+export const PartImageWrapper = styled.div`
+  width: 100%;
+  height: 90px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+export const PartName = styled.span`
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.4;
+  height: 2.8em;
+  overflow: hidden;
+`;
+
+export const PartSelectionWrapper = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+
+  .part-select-group {
+    flex: 1;
+  }
+
+  .part-add-button {
+    flex-shrink: 0;
+    height: 48px;
+    padding: 0 16px;
+    font-size: 0.9rem;
+  }
+`;
+
+export const PartPillContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 12px;
+  min-height: 50px;
+  max-height: 120px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+  }
+
+  .empty-parts-text {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    font-style: italic;
+  }
+`;
+
+export const PartPill = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px 4px 4px;
+  border-radius: 20px;
+  background: #ecfdf5;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  animation: ${fadeIn} 0.3s ease;
+
+  img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+`;
+
+export const PartPillRemoveButton = styled.button`
+  background: #e5e7eb;
+  color: #4b5563;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  font-size: 0.7rem;
+
+  &:hover {
+    background: #dc2626;
+    color: white;
+  }
 `;

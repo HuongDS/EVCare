@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback, Fragment } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   PageWrapper,
   ContentWrapper,
@@ -16,11 +16,17 @@ import {
   ActionButton,
   UpdateButton,
   EmptyState,
+  ExpandButton,
+  ExpandedContentCell,
+  PartGallery,
+  PartCard,
+  PartImageWrapper,
+  PartName,
 } from "./Admin_Service.styled";
 import { Pagination } from "../../../../components/Paginations/Pagination";
 import SpinnerComponent from "../../../../components/SpinnerComponent";
 import { useNotification } from "../../../../context/useNotification";
-import { FaPlus, FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaPlus, FaPencilAlt, FaTrash, FaChevronUp, FaChevronDown } from "react-icons/fa";
 import ServiceFormModal from "./ServiceFormModal";
 import DeleteConfirmationModal from "../DeleteConfirmModal";
 import SearchBar from "../../AdminCustomer&Vehicle/SearchBar";
@@ -47,9 +53,8 @@ export default function Admin_Service() {
     isOpen: boolean;
     service?: Service;
   }>({ isOpen: false });
-  const [serviceCategories, setServiceCategories] = useState<
-    ServiceCategoryAdminDto[]
-  >([]);
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryAdminDto[]>([]);
+  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -147,11 +152,7 @@ export default function Admin_Service() {
         description: "Service marked as deleted.",
         showProgress: true,
       });
-      setServices((prev) =>
-        prev.map((s) =>
-          s.id === serviceToDelete.id ? { ...s, isDeleted: true } : s
-        )
-      );
+      setServices((prev) => prev.map((s) => (s.id === serviceToDelete.id ? { ...s, isDeleted: true } : s)));
     } catch (error) {
       console.error("Failed to delete service", error);
       notification.error({
@@ -162,44 +163,16 @@ export default function Admin_Service() {
     }
   };
 
-  // const handleCreateService = async (data: ServiceCreateDto) => {
-  //   try {
-  //     const response = await createService(data);
-  //     notification.success({
-  //       message: "Add Service",
-  //       description: response.message,
-  //     });
-  //   } catch (error) {
-  //     notification.error({
-  //       message: "Add Service",
-  //       description: (error as Error).message,
-  //     });
-  //   }
-  // };
-
-  // const handleUpdateService = async (data: Service) => {
-  //   try {
-  //     const response = await updateService(data);
-  //     notification.success({
-  //       message: "Update Service",
-  //       description: response.message,
-  //     });
-  //   } catch (error) {
-  //     notification.error({
-  //       message: "Update Service",
-  //       description: (error as Error).message,
-  //     });
-  //   }
-  // };
+  const handleToggleExpand = (serviceId: number) => {
+    setExpandedRowId((prevId) => (prevId === serviceId ? null : serviceId));
+  };
 
   return (
     <PageWrapper>
       <ContentWrapper>
         <Header>
           <Title>Service Management</Title>
-          <Instruction>
-            Add, edit, and manage all available services.
-          </Instruction>
+          <Instruction>Add, edit, and manage all available services.</Instruction>
         </Header>
 
         <Toolbar>
@@ -220,13 +193,14 @@ export default function Admin_Service() {
                 <Th>Name</Th>
                 <Th>Description</Th>
                 <Th>Est. Duration (Hours)</Th>
+                <Th>Parts</Th>
                 <Th>Actions</Th>
               </Tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <Tr>
-                  <Td colSpan={4}>
+                  <Td colSpan={5}>
                     <EmptyState>
                       <SpinnerComponent />
                     </EmptyState>
@@ -234,30 +208,63 @@ export default function Admin_Service() {
                 </Tr>
               ) : services.length > 0 ? (
                 services.map((service) => (
-                  <Tr key={service.id} $isDeleted={service.isDeleted}>
-                    <Td>{service.name}</Td>
-                    <Td>{service.description}</Td>
-                    <Td>{service.duration.toFixed(1)} hrs</Td>
-                    <Td>
-                      <UpdateButton
-                        onClick={() => handleOpenEditModal(service)}
-                        disabled={service.isDeleted}
-                      >
-                        <FaPencilAlt /> Edit
-                      </UpdateButton>
-                      {!service.isDeleted && (
-                        <ActionButton
-                          onClick={() => handleOpenDeleteModal(service)}
+                  <Fragment key={service.id}>
+                    <Tr key={service.id} $isDeleted={service.isDeleted}>
+                      <Td>{service.name}</Td>
+                      <Td>{service.description}</Td>
+                      <Td>{service.duration.toFixed(1)} hrs</Td>
+                      <Td>
+                        <ExpandButton onClick={() => handleToggleExpand(service.id)}>
+                          {expandedRowId === service.id ? <FaChevronUp /> : <FaChevronDown />}
+                        </ExpandButton>
+                      </Td>
+                      <Td>
+                        <UpdateButton onClick={() => handleOpenEditModal(service)} disabled={service.isDeleted}>
+                          <FaPencilAlt /> Edit
+                        </UpdateButton>
+                        {!service.isDeleted && (
+                          <ActionButton onClick={() => handleOpenDeleteModal(service)}>
+                            <FaTrash /> Delete
+                          </ActionButton>
+                        )}
+                      </Td>
+                    </Tr>
+                    <AnimatePresence>
+                      {expandedRowId === service.id && (
+                        <Tr
+                          className="expanded-row"
+                          as={motion.tr}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.2 }}
                         >
-                          <FaTrash /> Delete
-                        </ActionButton>
+                          <ExpandedContentCell colSpan={5}>
+                            <h4>Associated Parts</h4>
+                            <PartGallery>
+                              {service.parts && service.parts.length > 0 ? (
+                                service.parts.map((part) => (
+                                  <PartCard key={part.id}>
+                                    <PartImageWrapper>
+                                      {" "}
+                                      <img src={part.image} alt={part.name} />
+                                    </PartImageWrapper>
+                                    <PartName>{part.name}</PartName>
+                                  </PartCard>
+                                ))
+                              ) : (
+                                <p>No parts associated with this service.</p>
+                              )}
+                            </PartGallery>
+                          </ExpandedContentCell>
+                        </Tr>
                       )}
-                    </Td>
-                  </Tr>
+                    </AnimatePresence>
+                  </Fragment>
                 ))
               ) : (
                 <Tr>
-                  <Td colSpan={4}>
+                  <Td colSpan={5}>
                     <EmptyState>No services found.</EmptyState>
                   </Td>
                 </Tr>
