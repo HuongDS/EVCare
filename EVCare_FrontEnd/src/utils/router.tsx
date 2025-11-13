@@ -8,7 +8,6 @@ const Layout = lazy(() => import("../components/Layouts/CustomerLayout"));
 const AdminLayout = lazy(() => import("../pages/Admin/AdminComponents/AdminLayout"));
 const StaffLayout = lazy(() => import("../components/Layouts/StaffLayout"));
 const TechnicianDefaultLayout = lazy(() => import("../pages/Technician/Technician_Component/TechnicianLayout"));
-const TechnicianOrderLayout = lazy(() => import("../pages/Technician/Technician_Component/Technician_OrderLayout"));
 const HomePage = lazy(() => import("../pages/Users/HomePage/HomePage"));
 const ServiceList = lazy(() => import("../pages/Users/ServicesPage/ServiceList"));
 const AboutUs = lazy(() => import("../pages/Users/AboutUs/AboutUs"));
@@ -50,7 +49,6 @@ const BlockDateManagement = lazy(() => import("../pages/Admin/AdminBlockDates/Bl
 const CancelPage = lazy(() => import("../pages/Users/CancelPage/CancelPage"));
 const ThankYouPage = lazy(() => import("../pages/Users/ThankYou/ThankYou"));
 import {
-  LazyOrder,
   LazyHistory,
   LazySchedule,
   LazyGeneral,
@@ -369,17 +367,6 @@ const router = createBrowserRouter([
       { path: "schedule", element: <LazySchedule /> },
       { path: "my-jobs", element: <LazyMyJob /> },
     ],
-  },
-  {
-    path: "/technician/order",
-    element: (
-      <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
-        <SuspenseWrapper>
-          <TechnicianOrderLayout />
-        </SuspenseWrapper>
-      </ProtectedRoute>
-    ),
-    children: [{ path: "", element: <LazyOrder /> }],
   }, // OTHER ROUTES
   {
     path: "/test",

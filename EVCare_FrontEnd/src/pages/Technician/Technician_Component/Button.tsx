@@ -1,81 +1,36 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
-import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import ViewDetailsModal from "./ViewDetailsModal";
 import ButtonAction from "../../../components/Button/ButtonAction";
-import AlertModal from "./AlertModal";
+import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import { useState } from "react";
 
 interface ReviewButtonProps {
-  status: TechnicianWorkingSessionEnum;
-  orderId?: number;
+  onChangeStatus: (nextStatus: TechnicianWorkingSessionEnum) => void;
   appointment: TechnicianAppointmentsDto;
-  onAction: (nextStatus: TechnicianWorkingSessionEnum) => void;
-  onAfterAction?: () => void;
+  setIsOrder: (v: boolean) => void;
 }
 
-const ReviewButton: React.FC<ReviewButtonProps> = ({ status, orderId, appointment, onAction, onAfterAction }) => {
-  const navigate = useNavigate();
+const ReviewButton: React.FC<ReviewButtonProps> = ({ onChangeStatus, appointment, setIsOrder }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-
-  const handleNavigate = () => {
-    if (!orderId) {
-      console.error("OrderId is missing! Cannot navigate to order page.");
-      return;
-    }
-
-    navigate("/technician/order", {
-      state: {
-        orderId,
-        existingParts: appointment.parts || [],
-      },
-    });
-  };
-
-  const getAlertMessage = () => {
-    switch (status) {
-      case TechnicianWorkingSessionEnum.ADDING_PART:
-        return "You will not be able to add parts after confirming. Continue?";
-      case TechnicianWorkingSessionEnum.INPROGRESS:
-        return "Are you sure you have finished this task?";
-      default:
-        return "";
-    }
-  };
-
-  const handleConfirmAction = () => {
-    if (status === TechnicianWorkingSessionEnum.ADDING_PART) {
-      onAction(TechnicianWorkingSessionEnum.CONFIRM);
-    } else if (status === TechnicianWorkingSessionEnum.INPROGRESS) {
-      onAction(TechnicianWorkingSessionEnum.COMPLETED);
-    }
-
-    setShowAlert(false);
-    onAfterAction?.();
-  };
 
   return (
     <>
-      {status === TechnicianWorkingSessionEnum.PENDING && (
-        <ButtonAction
-          text="Confirm"
-          color="#fff"
-          backgroundColor="#00AD4E"
-          action={() => onAction(TechnicianWorkingSessionEnum.ADDING_PART)}
-        />
-      )}
-
-      {status === TechnicianWorkingSessionEnum.ADDING_PART && (
+      {appointment.status === TechnicianWorkingSessionEnum.ADDING_PART && (
         <div style={{ textAlign: "end" }}>
-          <ButtonAction text={"Order"} color="#00AD4E" backgroundColor="#fff" action={handleNavigate} />
+          <ButtonAction text={"Order"} color="#00AD4E" backgroundColor="#fff" action={() => setIsOrder(true)} />
           <div style={{ display: "inline-block", width: "10px", height: "10px" }} />
-          <ButtonAction text="Continue" color="#fff" backgroundColor="#00AD4E" action={() => setShowAlert(true)} />
+          <ButtonAction
+            text="Continue"
+            color="#fff"
+            backgroundColor="#00AD4E"
+            action={() => onChangeStatus(TechnicianWorkingSessionEnum.CONFIRM)}
+          />
         </div>
       )}
 
       <div style={{ textAlign: "end" }}>
-        {(status === TechnicianWorkingSessionEnum.CONFIRM || status === TechnicianWorkingSessionEnum.INPROGRESS) && (
+        {(appointment.status === TechnicianWorkingSessionEnum.CONFIRM ||
+          appointment.status === TechnicianWorkingSessionEnum.INPROGRESS) && (
           <ButtonAction
             text="View Details"
             color="#00AD4E"
@@ -86,22 +41,20 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({ status, orderId, appointmen
           />
         )}
 
-        {status === TechnicianWorkingSessionEnum.INPROGRESS && (
+        {appointment.status === TechnicianWorkingSessionEnum.INPROGRESS && (
           <>
             <div style={{ display: "inline-block", width: "10px", height: "10px" }} />
-            <ButtonAction text="Done" color="#fff" backgroundColor="#00AD4E" action={() => setShowAlert(true)} />
+            <ButtonAction
+              text="Done"
+              color="#fff"
+              backgroundColor="#00AD4E"
+              action={() => onChangeStatus(TechnicianWorkingSessionEnum.COMPLETED)}
+            />
           </>
         )}
       </div>
 
-      <AlertModal
-        open={showAlert}
-        onClose={() => setShowAlert(false)}
-        message={getAlertMessage()}
-        onConfirm={handleConfirmAction}
-      />
-
-      <ViewDetailsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} appointment={appointment} />
+      <ViewDetailsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} appointment={appointment ?? null} />
     </>
   );
 };
