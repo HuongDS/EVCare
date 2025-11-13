@@ -36,9 +36,9 @@ export default function TechnicianHistory() {
     SortOrder: sortById,
   });
 
-  const appointments = data?.items ?? [];
-  const totalItems = data?.totalItems ?? 0;
-  const totalPages = data?.totalPages ?? 1;
+  const appointments = data?.data?.items ?? [];
+  const totalItems = data?.data?.totalItems ?? 0;
+  const totalPages = data?.data?.totalPages ?? 1;
 
   const toggleSortById = () => {
     setSortById((prev) => (prev === "desc" ? "asc" : "desc"));

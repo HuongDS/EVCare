@@ -6,57 +6,34 @@ import { fetchTechnicianAddedParts } from "../../../services/getTechnicianOrder"
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
-import {
-  DamageLevelEnum,
-  DamageLevelLabels,
-  DamageLevelStringEnum,
-} from "../../../models/enums/DamageLevelEnum";
+import { DamageLevelEnum, DamageLevelLabels, DamageLevelStringEnum } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import { useNotification } from "../../../context/useNotification";
 import { useQuery } from "@tanstack/react-query";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import {
-  User,
-  Car,
-  Calendar,
-  Phone,
-  Wrench,
-  Package,
-  ChevronDown,
-  ChevronUp,
-  Image as ImageIcon,
-} from "lucide-react";
+import { User, Car, Calendar, Phone, Wrench, Package, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
 
 type Props = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
+  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
   onPartsUpdated?: (orderId: number) => void;
 };
 
-const TechnicianAppointmentCard: React.FC<Props> = ({
-  data,
-  onStatusChange,
-  onPartsUpdated,
-}) => {
+const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPartsUpdated }) => {
   const notification = useNotification();
-  const [currentStatus, setCurrentStatus] =
-    useState<TechnicianWorkingSessionEnum>(
-      data.status as TechnicianWorkingSessionEnum
-    );
-  const [damageLevels, setDamageLevels] = useState<
-    Record<number, DamageLevelEnum>
-  >({});
+  const [currentStatus, setCurrentStatus] = useState<TechnicianWorkingSessionEnum>(
+    data.status as TechnicianWorkingSessionEnum
+  );
+  const [damageLevels, setDamageLevels] = useState<Record<number, DamageLevelEnum>>({});
   const [expandedSections, setExpandedSections] = useState({
     images: false,
     services: false,
     parts: false,
   });
 
-  const { mutateAsync: updateWorkingSession } =
-    useUpdateTechnicianWorkingSession();
+  // call api o day de lay service
+
+  const { mutateAsync: updateWorkingSession } = useUpdateTechnicianWorkingSession();
 
   const {
     data: parts = [],
@@ -135,9 +112,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
       <CardHeader>
         <HeaderLeft>
           <AppointmentId>#{data.id}</AppointmentId>
-          <StatusBadge $status={currentStatus}>
-            {currentStatus.replace("_", " ")}
-          </StatusBadge>
+          <StatusBadge $status={currentStatus}>{currentStatus.replace("_", " ")}</StatusBadge>
         </HeaderLeft>
       </CardHeader>
 
@@ -192,11 +167,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
                 <ImageIcon size={18} />
                 Images ({data.appointmentImages.length})
               </SectionTitle>
-              {expandedSections.images ? (
-                <ChevronUp size={20} />
-              ) : (
-                <ChevronDown size={20} />
-              )}
+              {expandedSections.images ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </SectionHeader>
             {expandedSections.images && (
               <ImageGrid>
@@ -215,18 +186,12 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
               <Wrench size={18} />
               Services ({data.services?.length || 0})
             </SectionTitle>
-            {expandedSections.services ? (
-              <ChevronUp size={20} />
-            ) : (
-              <ChevronDown size={20} />
-            )}
+            {expandedSections.services ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
           </SectionHeader>
           {expandedSections.services && (
             <ServiceList>
               {data.services?.length ? (
-                data.services.map((s, idx) => (
-                  <ServiceTag key={idx}>{s}</ServiceTag>
-                ))
+                data.services.map((s, idx) => <ServiceTag key={idx}>{s}</ServiceTag>)
               ) : (
                 <EmptyText>No services</EmptyText>
               )}
@@ -241,11 +206,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
               <Package size={18} />
               Parts Added ({parts.length})
             </SectionTitle>
-            {expandedSections.parts ? (
-              <ChevronUp size={20} />
-            ) : (
-              <ChevronDown size={20} />
-            )}
+            {expandedSections.parts ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
           </SectionHeader>
           {expandedSections.parts && (
             <PartsContainer>
@@ -268,18 +229,8 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
                         <td>{p.quantity}</td>
                         <td>{p.price.toLocaleString()}₫</td>
                         <td>
-                          <DamageBadge
-                            $level={
-                              damageLevels[p.partID] ??
-                              DamageLevelEnum.NotAssessed
-                            }
-                          >
-                            {
-                              DamageLevelLabels[
-                                damageLevels[p.partID] ??
-                                  DamageLevelEnum.NotAssessed
-                              ]
-                            }
+                          <DamageBadge $level={damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed}>
+                            {DamageLevelLabels[damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed]}
                           </DamageBadge>
                         </td>
                       </tr>
@@ -295,12 +246,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
       </CardBody>
 
       <CardFooter>
-        <ReviewButton
-          status={currentStatus}
-          onAction={handleAction}
-          appointment={data}
-          orderId={data.orderId}
-        />
+        <ReviewButton status={currentStatus} onAction={handleAction} appointment={data} orderId={data.orderId} />
       </CardFooter>
     </CardContainer>
   );
