@@ -148,3 +148,23 @@ export async function getHistoryParts(props: {
     throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }
+
+export async function updateTechnician(technicianId: number, expYears: number, kpiPerDays: number) {
+  try {
+    await api.put(
+      "/api/Technician",
+      { expYears, kpiPerDays },
+      {
+        params: {
+          technicianId: technicianId,
+        },
+      }
+    );
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
