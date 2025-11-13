@@ -72,7 +72,6 @@ export default function TechnicianOrder({
 
   return (
     <PageContainer>
-      {/* Header */}
       <Header>
         <BackButton onClick={handleBack}>
           <ArrowLeft size={20} />
@@ -109,7 +108,6 @@ export default function TechnicianOrder({
         </div>
       </Header>
 
-      {/* Content */}
       <ContentWrapper>
         <CardGrid>
           {isLoading ? (
@@ -132,14 +130,8 @@ export default function TechnicianOrder({
             </EmptyState>
           )}
         </CardGrid>
-
-        {/* ✅ Fix Pagination logic */}
-        {/* {displayParts && displayParts.length > 1 && (
-          <Pagination onPageChange={handlePageChange} pageIndex={page} />
-        )} */}
       </ContentWrapper>
 
-      {/* Modals */}
       <ProductModal
         open={open}
         onClose={handleCloseProductModal}

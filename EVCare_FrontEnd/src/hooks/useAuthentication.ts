@@ -48,7 +48,7 @@ type FormDataResetPassword = {
 };
 
 export const useAuthentication = () => {
-  const [isSignUp, setIsSignUp] = useState(true); // true: signUp | false : login
+  const [isSignUp, setIsSignUp] = useState(false); // true: signUp | false : login
   const [isOTP, setIsOTP] = useState(false); // true: verify Otp
 
   // Form states
