@@ -67,29 +67,32 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({ status, orderId, appointmen
       )}
 
       {status === TechnicianWorkingSessionEnum.ADDING_PART && (
-        <>
+        <div style={{ textAlign: "end" }}>
           <ButtonAction text={"Order"} color="#00AD4E" backgroundColor="#fff" action={handleNavigate} />
+          <div style={{ display: "inline-block", width: "10px", height: "10px" }} />
           <ButtonAction text="Continue" color="#fff" backgroundColor="#00AD4E" action={() => setShowAlert(true)} />
-        </>
+        </div>
       )}
 
-      {status === TechnicianWorkingSessionEnum.INPROGRESS && (
-        <ButtonAction text="Done" color="#fff" backgroundColor="#00AD4E" action={() => setShowAlert(true)} />
-      )}
+      <div style={{ textAlign: "end" }}>
+        {(status === TechnicianWorkingSessionEnum.CONFIRM || status === TechnicianWorkingSessionEnum.INPROGRESS) && (
+          <ButtonAction
+            text="View Details"
+            color="#00AD4E"
+            backgroundColor="#ffffffff"
+            borderColor="#00AD4E"
+            backgroundColorHover="#ffffffff"
+            action={() => setIsModalOpen(true)}
+          />
+        )}
 
-      {(status === TechnicianWorkingSessionEnum.CONFIRM ||
-        status === TechnicianWorkingSessionEnum.COMPLETED ||
-        status === TechnicianWorkingSessionEnum.CANCELED ||
-        status === TechnicianWorkingSessionEnum.INPROGRESS) && (
-        <ButtonAction
-          text="View Details"
-          color="#00AD4E"
-          backgroundColor="#ffffffff"
-          borderColor="#00AD4E"
-          backgroundColorHover="#ffffffff"
-          action={() => setIsModalOpen(true)}
-        />
-      )}
+        {status === TechnicianWorkingSessionEnum.INPROGRESS && (
+          <>
+            <div style={{ display: "inline-block", width: "10px", height: "10px" }} />
+            <ButtonAction text="Done" color="#fff" backgroundColor="#00AD4E" action={() => setShowAlert(true)} />
+          </>
+        )}
+      </div>
 
       <AlertModal
         open={showAlert}

@@ -12,9 +12,7 @@ export const useTechnician_MyJob = () => {
   const [pageIndex, setPageIndex] = useState<number>(1);
   const queryClient = useQueryClient();
 
-  const savedStatus =
-    sessionStorage.getItem("activeStatus") ||
-    TechnicianWorkingSessionEnum.ADDING_PART;
+  const savedStatus = sessionStorage.getItem("activeStatus") || TechnicianWorkingSessionEnum.ADDING_PART;
   const [activeStatus, setActiveStatus] = useState<string>(savedStatus);
   useEffect(() => {
     sessionStorage.setItem("activeStatus", activeStatus);
@@ -26,13 +24,9 @@ export const useTechnician_MyJob = () => {
     PageIndex: pageIndex,
   });
 
-  const { mutateAsync: updateWorkingSession } =
-    useUpdateTechnicianWorkingSession();
+  const { mutateAsync: updateWorkingSession } = useUpdateTechnicianWorkingSession();
 
-  const handleUpdateStatus = async (
-    orderId: number,
-    status: TechnicianWorkingSessionEnum
-  ) => {
+  const handleUpdateStatus = async (orderId: number, status: TechnicianWorkingSessionEnum) => {
     try {
       await updateWorkingSession({ orderId: orderId, status: status });
       queryClient.invalidateQueries({ queryKey: ["TechnicianAppointments"] });
@@ -58,9 +52,7 @@ export const useTechnician_MyJob = () => {
       activeStatus === TechnicianWorkingSessionEnum.COMPLETED ||
       activeStatus === TechnicianWorkingSessionEnum.CANCELED
     ) {
-      return [...sourceData].sort((a, b) =>
-        sortById === "asc" ? a.id - b.id : b.id - a.id
-      );
+      return [...sourceData].sort((a, b) => (sortById === "asc" ? a.id - b.id : b.id - a.id));
     }
     return sourceData;
   }, [data?.data?.items, sortById, activeStatus]);
@@ -82,6 +74,9 @@ export const useTechnician_MyJob = () => {
     isFetching,
     sortById,
     setActiveStatus,
+    setSortById,
+    setPageSize,
+    setPageIndex,
     handleUpdateStatus,
     setPageIndex,
   };

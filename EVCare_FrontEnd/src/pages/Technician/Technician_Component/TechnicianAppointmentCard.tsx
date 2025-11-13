@@ -9,32 +9,15 @@ import { DamageLevelEnum } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import { useNotification } from "../../../context/useNotification";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import {
-  User,
-  Car,
-  Calendar,
-  Phone,
-  Wrench,
-  Package,
-  ChevronDown,
-  ChevronUp,
-  Image as ImageIcon,
-} from "lucide-react";
+import { User, Car, Calendar, Phone, Wrench, Package, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
 
 type Props = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
+  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
   onPartsUpdated?: (orderId: number) => void;
 };
 
-const TechnicianAppointmentCard: React.FC<Props> = ({
-  data,
-  onStatusChange,
-  onPartsUpdated,
-}) => {
+const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPartsUpdated }) => {
   const notification = useNotification();
   const [currentStatus, setCurrentStatus] =
     useState<TechnicianWorkingSessionEnum>(
@@ -45,8 +28,9 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
     services: false,
   });
 
-  const { mutateAsync: updateWorkingSession } =
-    useUpdateTechnicianWorkingSession();
+  // call api o day de lay service
+
+  const { mutateAsync: updateWorkingSession } = useUpdateTechnicianWorkingSession();
 
   const { data: appointment, isLoading } = useGetAppointmentPartCondition(
     data.id
@@ -87,9 +71,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
       <CardHeader>
         <HeaderLeft>
           <AppointmentId>#{data.id}</AppointmentId>
-          <StatusBadge $status={currentStatus}>
-            {currentStatus.replace("_", " ")}
-          </StatusBadge>
+          <StatusBadge $status={currentStatus}>{currentStatus.replace("_", " ")}</StatusBadge>
         </HeaderLeft>
         <HeaderRight>
           <ReviewButton
