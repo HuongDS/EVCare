@@ -31,34 +31,32 @@ type Props = {
   setIsOrder: (v: boolean) => void;
 };
 
-<<<<<<< HEAD
 const TechnicianAppointmentCard: React.FC<Props> = ({
   data,
   onStatusChange,
   onPartsUpdated,
+  setIsOrder,
 }) => {
-=======
-const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPartsUpdated, setIsOrder }) => {
->>>>>>> 4920cb0e51ef832a89e2572ae7489a7fc6be7cb6
   const notification = useNotification();
-  const [currentStatus, setCurrentStatus] = useState<TechnicianWorkingSessionEnum>(data.status);
+  const [currentStatus, setCurrentStatus] =
+    useState<TechnicianWorkingSessionEnum>(data.status);
   const [expandedSections, setExpandedSections] = useState({
     images: false,
     services: false,
   });
 
-<<<<<<< HEAD
-  const { mutateAsync: updateWorkingSession } =
-    useUpdateTechnicianWorkingSession();
-=======
   // call api o day de lay service
 
-  const { mutateAsync: updateWorkingSession } = useUpdateTechnicianWorkingSession();
-  const { data: appointment, isLoading } = useGetAppointmentPartCondition(data.id);
->>>>>>> 4920cb0e51ef832a89e2572ae7489a7fc6be7cb6
+  const { mutateAsync: updateWorkingSession } =
+    useUpdateTechnicianWorkingSession();
+  const { data: appointment, isLoading } = useGetAppointmentPartCondition(
+    data.id
+  );
 
   // assume dung
-  const handleChangeStatusWorkingSession = async (nextStatus: TechnicianWorkingSessionEnum) => {
+  const handleChangeStatusWorkingSession = async (
+    nextStatus: TechnicianWorkingSessionEnum
+  ) => {
     const prevStatus = currentStatus;
     setCurrentStatus(nextStatus);
     onStatusChange?.(data.orderId, nextStatus);
@@ -97,7 +95,11 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
           </StatusBadge>
         </HeaderLeft>
         <HeaderRight>
-          <ReviewButton onChangeStatus={handleChangeStatusWorkingSession} appointment={data} setIsOrder={setIsOrder} />
+          <ReviewButton
+            onChangeStatus={handleChangeStatusWorkingSession}
+            appointment={data}
+            setIsOrder={setIsOrder}
+          />
         </HeaderRight>
       </CardHeader>
 
@@ -152,7 +154,11 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
                   <ImageIcon size={18} />
                   Images ({data.appointmentImages.length})
                 </SectionTitle>
-                {expandedSections.images ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                {expandedSections.images ? (
+                  <ChevronUp size={20} />
+                ) : (
+                  <ChevronDown size={20} />
+                )}
               </SectionHeader>
               {expandedSections.images && (
                 <ImageGrid>
@@ -170,12 +176,18 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
                 <Wrench size={18} />
                 Services ({data.services?.length || 0})
               </SectionTitle>
-              {expandedSections.services ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              {expandedSections.services ? (
+                <ChevronUp size={20} />
+              ) : (
+                <ChevronDown size={20} />
+              )}
             </SectionHeader>
             {expandedSections.services && (
               <ServiceList>
                 {data.services?.length ? (
-                  data.services.map((s, idx) => <ServiceTag key={idx}>{s}</ServiceTag>)
+                  data.services.map((s, idx) => (
+                    <ServiceTag key={idx}>{s}</ServiceTag>
+                  ))
                 ) : (
                   <EmptyText>No services</EmptyText>
                 )}
@@ -210,7 +222,9 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
                       <td>{p.quantity}</td>
                       <td>{p.price.toLocaleString()}₫</td>
                       <td>
-                        <DamageBadge $level={p.damageLevel ?? DamageLevelEnum.NotAssessed}>
+                        <DamageBadge
+                          $level={p.damageLevel ?? DamageLevelEnum.NotAssessed}
+                        >
                           {p.damageLevel || DamageLevelEnum.NotAssessed}
                         </DamageBadge>
                       </td>
