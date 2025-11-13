@@ -100,7 +100,7 @@ namespace API.Controllers
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.ADD_SERVICE_FALL,
+                    message = ex.Message,
                     data = null
                 });
             }
@@ -153,7 +153,7 @@ namespace API.Controllers
                 return BadRequest(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.UPDATE_FAIL,
+                    message = ex.Message,
                     data = model.Id,
                 });
 
