@@ -1,7 +1,86 @@
-// import { CircleCheck, CircleX } from "lucide-react";
-import { CircleCheck, CircleX } from "lucide-react";
-import type { ReactNode } from "react";
+import { CircleCheck, CircleX, Eye, EyeOff } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import styled, { css } from "styled-components";
+
+interface IconData {
+  icon: ReactNode;
+  id?: string;
+  label: string;
+  type: string;
+  text: string;
+  required?: boolean;
+  setText: (val: string) => void;
+  error?: boolean;
+  errorMessage?: string;
+}
+
+export default function TextFieldWithIcon({
+  icon,
+  id,
+  type,
+  label,
+  text,
+  required = false,
+  setText,
+  error,
+  errorMessage,
+}: IconData) {
+  const isFilled = text.trim() !== "";
+  const [showPass, setShowPass] = useState(false);
+
+  const getIconPass = () => {
+    if (showPass) {
+      return (
+        <EyeOff
+          onClick={() => setShowPass(false)}
+          style={{ cursor: "pointer" }}
+          size={22}
+        />
+      );
+    }
+    return (
+      <Eye
+        onClick={() => setShowPass(true)}
+        style={{ cursor: "pointer" }}
+        size={22}
+      />
+    );
+  };
+
+  const isPassword = type === "password" && text.trim().length !== 0;
+
+  return (
+    <div>
+      <Field>
+        <div>{icon}</div>
+
+        <FieldGroup $hasText={text !== ""}>
+          <span>{label}</span>
+          <Input
+            id={id}
+            type={
+              isPassword ? (showPass ? "text" : "password") : type.toLowerCase()
+            }
+            value={text}
+            onChange={(e) => setText(e.target.value.trim())}
+            required={required}
+          />
+        </FieldGroup>
+        <IconGroup>
+          {isPassword && getIconPass()}
+          {error ? (
+            <CircleX className="status-icon" color="red" size={20} />
+          ) : (
+            isFilled && (
+              <CircleCheck className="status-icon" color="green" size={20} />
+            )
+          )}
+        </IconGroup>
+      </Field>
+      {error && <ErrorMessage>{errorMessage}</ErrorMessage>}
+    </div>
+  );
+}
 
 const Field = styled.div`
   display: flex;
@@ -70,60 +149,21 @@ const FieldGroup = styled.div<{ $hasText: boolean }>`
     `}
 `;
 
-interface IconData {
-  icon: ReactNode;
-  label: string;
-  type: string;
-  text: string;
-  required?: boolean;
-  setText: (val: string) => void;
-  error?: boolean;
-  errorMessage?: string;
-}
+const IconGroup = styled.div`
+  display: flex;
+  gap: 5%;
+`;
 
-export default function TextFieldWithIcon({
-  icon,
-  type,
-  label,
-  text,
-  required = false,
-  setText,
-  error,
-  errorMessage,
-}: IconData) {
-  const isFilled = text.trim() !== "";
-  return (
-    <div>
-      <Field>
-        <div>{icon}</div>
+const ErrorMessage = styled.p`
+  color: red;
+  font-size: 12px;
+  margin-left: 5px;
+  margin-bottom: 0;
+`;
 
-        <FieldGroup $hasText={text !== ""}>
-          <span>{label}</span>
-          <input
-            type={type.toLocaleLowerCase()}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            required={required}
-          />
-        </FieldGroup>
-        {error ? (
-          <CircleX className="status-icon" color="red" />
-        ) : (
-          isFilled && <CircleCheck className="status-icon" color="green" />
-        )}
-      </Field>
-      {error && (
-        <p
-          style={{
-            color: "red",
-            fontSize: "12px",
-            marginLeft: "5px",
-            marginBottom: 0,
-          }}
-        >
-          {errorMessage}
-        </p>
-      )}
-    </div>
-  );
-}
+const Input = styled.input`
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
+`;

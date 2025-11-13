@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateOrderParts } from "../services/updateOrderPartApi";
 import { useGetAllParts } from "../services/partApi";
 import { useUpdatePartCondition } from "../services/appointmentPartCondition";
-import { getTechnicianAddedParts } from "../services/getTechnicianOrder";
+// import { getTechnicianAddedParts } from "../services/getTechnicianOrder";
 
 import type { OrderPartsResponseDto } from "../models/OrderPartModel/Order_Parts_Model";
 import type { DamageLevelEnum } from "../models/enums/DamageLevelEnum";

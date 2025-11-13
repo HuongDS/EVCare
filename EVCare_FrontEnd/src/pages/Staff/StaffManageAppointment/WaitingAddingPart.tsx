@@ -12,6 +12,7 @@ interface Props {
 
 export default function WaitingAddingPart({ data }: Props) {
   const [dots, setDots] = useState("");
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -20,6 +21,11 @@ export default function WaitingAddingPart({ data }: Props) {
     return () => clearInterval(interval);
   }, []);
 
+  useStaffHubOrderChange<any>(async (type) => {
+    if (type === "OrderConfirmed") {
+      await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
+    }
+  });
   return (
     <PageContainer>
       <ContentCard>
@@ -173,3 +179,5 @@ import {
   InfoText,
   FooterNote,
 } from "./styles/WaitingAddingPart.styled";
+import { useStaffHubOrderChange } from "../../../hooks/useStaffHub";
+import { useQueryClient } from "@tanstack/react-query";

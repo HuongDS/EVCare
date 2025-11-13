@@ -1,28 +1,35 @@
-// src/services/getTechnicianOrder.ts
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api/api";
 import type {
+  PartAddByTech,
   ResponseDto,
-  TechnicianAddedPart,
 } from "../models/OrderPartModel/OrderTechnicianAdded";
-import { requestQueue } from "./requestQueue";
+import { handleError } from "../utils/errorHandler";
+import axios from "axios";
+import { ERROR_MESSAGE } from "../constants/messages/Message";
 
-export const fetchTechnicianAddedParts = async (
-  orderId: number
-): Promise<TechnicianAddedPart[]> => {
-  return requestQueue.enqueue(async () => {
-    const response = await api.get<ResponseDto<TechnicianAddedPart[]>>(
-      "/api/Order/technician-orders",
-      { params: { orderId } }
-    );
-    return response.data.data ?? [];
-  });
-};
-
-export const getTechnicianAddedParts = (orderId?: number) => {
+export const useGetPartOrderByTech = (orderId?: number) => {
   return useQuery({
     queryKey: ["TechnicianAddedParts", orderId],
-    queryFn: () => fetchTechnicianAddedParts(orderId!),
+    queryFn: async () => {
+      try {
+        const response = await api.get<ResponseDto<PartAddByTech[]>>(
+          "/api/Order/technician-orders",
+          { params: { orderId } }
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
     enabled: !!orderId,
     staleTime: 1000 * 60,
   });
