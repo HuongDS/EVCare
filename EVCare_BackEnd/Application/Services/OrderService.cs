@@ -219,6 +219,13 @@ namespace Application.Services
             {
                 throw new Exception("You are only updated when in adding part status");
             }
+            var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
+            var partsInAppointment = await _appointmentRepository.GetPartIdsInAppointment(appointment.Id);
+            foreach (var part in model.Parts) {
+                if (!partsInAppointment.Contains(part.Id)) {
+                    throw new Exception($"Part {part.Id} is not in appointment");
+                }
+            }
 
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
@@ -282,7 +289,18 @@ namespace Application.Services
             if (order.Status != TechnicianWorkingSessionEnum.AddingPart)
             {
                 throw new Exception("You are only updated when in adding part status");
+
             }
+            var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
+            var partsInAppointment = await _appointmentRepository.GetPartIdsInAppointment(appointment.Id);
+            foreach (var part in model.Parts)
+            {
+                if (!partsInAppointment.Contains(part.Id))
+                {
+                    throw new Exception($"Part {part.Id} is not in appointment");
+                }
+            }
+
 
             await _unitOfWork.ExecuteInTransactionAsync(async () => await AddOrder(model, technicianId));
         }

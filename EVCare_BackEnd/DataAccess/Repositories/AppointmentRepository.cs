@@ -710,5 +710,20 @@ namespace DataAccess.Repositories
                     ServiceName = x.Service.Name,
                 }).ToListAsync();
         }
+
+        public async Task<IEnumerable<int>> GetPartIdsInAppointment(int appointmentId) {
+            
+            var serviceIds = await _dbContext.AppointmentServices
+                .AsNoTracking()
+                .Where(x => x.AppointmentId == appointmentId)
+                .Select(x => x.ServiceId)
+                .ToListAsync();
+            return await _dbContext.ServiceParts
+                .AsNoTracking()
+                .Where(sp => serviceIds.Contains(sp.ServiceId))
+                .Select(sp => sp.PartId)
+                .Distinct()
+                .ToListAsync();
+        }
     }
 }

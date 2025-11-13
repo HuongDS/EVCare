@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace DataAccess.Dtos.Pagination {
    public class PartForServiceQueryDto : BaseQueryDto {
         public List<int>? ServiceIds { get; set; }
+        public int? AppointmentId { get; set; }
         public string? KeyWord { get; set; }
     }
 }

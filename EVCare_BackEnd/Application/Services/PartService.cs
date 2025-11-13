@@ -350,6 +350,10 @@ namespace Application.Services
         }
 
         public async Task<PageResultDto<PartViewModel>> GetPartsForService(PartForServiceQueryDto model) {
+
+            if (model.AppointmentId != null) {
+                return await _partRepository.GetPartsForAppointmentId(model);
+            }
             return await _partRepository.GetPartsForService(model);
         }
 
