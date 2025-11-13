@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { formatDate } from "../../../utils/formatDate";
-import { updateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
+import { useUpdateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
 import { getAppointmentPartCondition } from "../../../services/appointmentPartCondition";
 import { fetchTechnicianAddedParts } from "../../../services/getTechnicianOrder";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
-import {
-  DamageLevelEnum,
-  DamageLevelLabels,
-} from "../../../models/enums/DamageLevelEnum";
+import { DamageLevelEnum, DamageLevelLabels } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
 import { useNotification } from "../../../context/useNotification";
 import { useQuery } from "@tanstack/react-query";
@@ -34,28 +31,19 @@ import SpinnerComponent from "../../../components/SpinnerComponent";
 
 type Props = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (
-    orderId: number,
-    newStatus: TechnicianWorkingSessionEnum
-  ) => void;
+  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
   onPartsUpdated?: (orderId: number) => void;
 };
 
-const AppointmentCard: React.FC<Props> = ({
-  data,
-  onStatusChange,
-  onPartsUpdated,
-}) => {
+const AppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPartsUpdated }) => {
   const notification = useNotification();
+  const { mutateAsync: updateWorkingSession } = useUpdateTechnicianWorkingSession();
 
-  const [currentStatus, setCurrentStatus] =
-    useState<TechnicianWorkingSessionEnum>(
-      data.status as TechnicianWorkingSessionEnum
-    );
+  const [currentStatus, setCurrentStatus] = useState<TechnicianWorkingSessionEnum>(
+    data.status as TechnicianWorkingSessionEnum
+  );
 
-  const [damageLevels, setDamageLevels] = useState<
-    Record<number, DamageLevelEnum>
-  >({});
+  const [damageLevels, setDamageLevels] = useState<Record<number, DamageLevelEnum>>({});
 
   // ✅ Fetch parts bằng React Query (dùng fetchTechnicianAddedParts mới)
   const {
@@ -109,7 +97,7 @@ const AppointmentCard: React.FC<Props> = ({
     onStatusChange?.(data.orderId, nextStatus);
 
     try {
-      await updateTechnicianWorkingSession({
+      await updateWorkingSession({
         orderId: data.orderId,
         status: nextStatus,
       });
@@ -204,16 +192,8 @@ const AppointmentCard: React.FC<Props> = ({
                     <span>
                       {p.partName} × {p.quantity} — {p.price.toLocaleString()}₫
                     </span>
-                    <DamageLevelBadgeStyled
-                      $level={
-                        damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed
-                      }
-                    >
-                      {
-                        DamageLevelLabels[
-                          damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed
-                        ]
-                      }
+                    <DamageLevelBadgeStyled $level={damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed}>
+                      {DamageLevelLabels[damageLevels[p.partID] ?? DamageLevelEnum.NotAssessed]}
                     </DamageLevelBadgeStyled>
                   </PartItem>
                 ))}
@@ -226,12 +206,7 @@ const AppointmentCard: React.FC<Props> = ({
       </ListSection>
 
       <ButtonWrapper>
-        <ReviewButton
-          status={currentStatus}
-          onAction={handleAction}
-          appointment={data}
-          orderId={data.orderId}
-        />
+        <ReviewButton status={currentStatus} onAction={handleAction} appointment={data} orderId={data.orderId} />
       </ButtonWrapper>
     </CardContainer>
   );
