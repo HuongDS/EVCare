@@ -1,9 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../api/api";
-import type {
-  ResponseDto,
-  TechnicianAppointmentsDto,
-} from "../models/AppointmentsModel/Technician_Appointments_Model";
+import type { ResponseDto, TechnicianAppointmentsDto } from "../models/AppointmentsModel/Technician_Appointments_Model";
 import { handleError } from "../utils/errorHandler";
 import axios from "axios";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
@@ -37,23 +34,15 @@ export const useUpdateTechnicianWorkingSession = () => {
 export const useFinishTechnicianSession = () => {
   return useMutation({
     mutationKey: ["finish"],
-    mutationFn: async (payload: {
-      technicianId: number[];
-      orderId: number;
-    }) => {
+    mutationFn: async (payload: { technicianId: number[]; orderId: number }) => {
       try {
-        const response = await api.put<ResponseDto<number>>(
-          "/api/TechnicianWorkingSession/technician-status",
-          null,
-          {
-            params: {
-              technicianId: payload.technicianId,
-              orderId: payload.orderId,
-            },
-            paramsSerializer: (p: any) =>
-              QueryString.stringify(p, { arrayFormat: "repeat" }),
-          }
-        );
+        const response = await api.put<ResponseDto<number>>("/api/TechnicianWorkingSession/technician-status", null, {
+          params: {
+            technicianId: payload.technicianId,
+            orderId: payload.orderId,
+          },
+          paramsSerializer: (p: any) => QueryString.stringify(p, { arrayFormat: "repeat" }),
+        });
         return response.data;
       } catch (error) {
         handleError(error);

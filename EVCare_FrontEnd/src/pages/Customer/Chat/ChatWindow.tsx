@@ -75,7 +75,16 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const formatMessageTime = (timestamp?: string) => {
     if (!timestamp) return "";
     const date = new Date(timestamp);
-    return date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+    const time = date.toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const day = date.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    return `${time}, ${day}`;
   };
 
   const allMessages = [...history, ...messages];

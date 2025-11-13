@@ -10,12 +10,7 @@ const TechnicianOrderLayout: React.FC = () => {
   return (
     <EmployeeLayout
       role={RoleEnum.TECHNICIAN}
-      menuOverride={
-        <TechnicianOrderMenu
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
-      }
+      menuOverride={<TechnicianOrderMenu selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />}
     >
       <TechnicianOrder selectedCategory={selectedCategory} />
     </EmployeeLayout>
