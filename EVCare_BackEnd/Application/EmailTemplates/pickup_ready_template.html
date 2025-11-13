@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="en" style="margin:0; padding:0;">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EVCare Notification</title>
+</head>
+
+<body style="margin:0; padding:0; background:#f5f7fa; font-family:Arial, sans-serif;">
+
+  
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+        <tr>
+            <td align="center">
+
+            
+                <table width="600" cellpadding="0" cellspacing="0"
+                       style="background:white; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.08); padding:40px;">
+
+                    
+                    <tr>
+                        <td align="center" style="padding-bottom:20px;">
+                            <img src="https://res.cloudinary.com/ddojmkykj/image/upload/v1762996254/Logo/logo_dmxluq.png"
+                                 alt="EVCare"
+                                 style="width:180px; border-radius:6px;" />
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td align="center" style="font-size:22px; font-weight:bold; color:#222; padding:10px 0 25px 0;">
+                            Your vehicle is ready for pickup
+                        </td>
+                    </tr>
+
+                   
+                    <tr>
+                        <td style="font-size:15px; color:#444; line-height:1.6;">
+                            Hi <b>{{CustomerName}}</b>,
+                            <br><br>
+                            Your <b>{{VehicleModel}}</b> (license plate <b>{{LicensePlate}}</b>) has been completed at
+                            <b>{{ServiceCenterName}}</b> on <b>{{CompletedAt}}</b>.
+                            <br><br>
+                        </td>
+                    </tr>
+
+                  
+                    <tr>
+                        <td style="font-size:15px; color:#222; padding-top:10px;">
+                            <b>Appointment details</b>
+                            <br><br>
+
+                            <div style="color:#444;">
+                                {{ServiceList}}
+                            </div>
+
+                            <br>
+                            <div style="color:#444;">
+                                <b>Estimated total:</b> {{Amount}}
+                            </div>
+                        </td>
+                    </tr>
+
+                
+                    <tr>
+                        <td style="font-size:15px; color:#444; line-height:1.7; padding-top:25px;">
+                            Please come early to pay and pick up your vehicle.
+                            <br><br>
+                            We're open <b>{{OpenDate}}</b> – <b>{{EndDate}}</b>
+                            ({{OpenTime}} – {{CloseTime}}).
+                            <br><br>
+                        </td>
+                    </tr>
+
+                    
+                    <tr>
+                        <td style="font-size:15px; color:#222; padding-top:10px;">
+                            Best regards,<br>
+                            <b>{{ServiceCenterName}}</b>
+                        </td>
+                    </tr>
+
+                </table>
+               
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
