@@ -26,7 +26,7 @@ export const ButtonsContainer = styled.div`
 `;
 
 export const ConfirmButton = styled.button`
-  background-color: #ff6b00; /* màu cảnh báo cam */
+  background-color: #ff6b00; 
   color: #fff;
   border: none;
   border-radius: 8px;

@@ -26,7 +26,7 @@ export const Menu = styled.nav<{ open?: boolean }>`
       left: 0;
       bottom: 0;
       height: 2px;
-      width: 100%; /* fix width */
+      width: 100%;
       background: #00ad4e;
       transform: scaleX(0);
       transform-origin: center;
