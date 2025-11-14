@@ -39,17 +39,14 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({ application }) => {
 
   return (
     <CardContainer>
-      {/* Header: Status + Date Off */}
       <HeaderSection>
         <DateOff>
           Date Off: {dayjs(application.dateOff).format("YYYY-MM-DD")}
         </DateOff>
-        <StatusBadge approvedColor={getStatusColor()}>
+        <StatusBadge $approvedColor={getStatusColor()}>
           {getStatus()}
         </StatusBadge>
       </HeaderSection>
-
-      {/* Reason + Note side by side */}
       <InfoRow>
         <div>
           <Label>Reason:</Label>
@@ -69,7 +66,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({ application }) => {
         </div>
       </InfoRow>
 
-      {/* Created at */}
       <CreatedAt>
         Created At: {dayjs(application.createdAt).format("YYYY-MM-DD")}
       </CreatedAt>
