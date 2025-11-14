@@ -28,13 +28,13 @@ export const HeaderSection = styled.div`
   gap: 4px;
 `;
 
-export const StatusBadge = styled.span<{ approvedColor: string }>`
+export const StatusBadge = styled.span<{ $approvedColor: string }>`
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 0.95em;
   font-weight: 600;
   color: #fff;
-  background-color: ${(props) => props.approvedColor};
+  background-color: ${(props) => props.$approvedColor};
   text-align: center;
   min-width: 90px;
 
@@ -53,8 +53,6 @@ export const DateOff = styled.div`
     font-size: 0.95em;
   }
 `;
-
-// Reason + Note side by side
 export const InfoRow = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -91,7 +89,6 @@ export const InfoBox = styled.div`
   word-break: break-word;
   transition: all 0.3s ease;
 
-  /* ===== Scrollbar style ===== */
   &::-webkit-scrollbar {
     width: 6px;
   }

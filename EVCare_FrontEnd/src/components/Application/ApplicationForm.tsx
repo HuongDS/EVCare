@@ -91,7 +91,7 @@ export default function ApplicationForm({
       }
     },
     onError: (error: unknown) => {
-      console.error("❌ Mutation error:", error);
+      console.error("Mutation error:", error);
       setLocalStatus("error");
       notification.error({
         message: "Network Error",
@@ -194,10 +194,6 @@ export default function ApplicationForm({
             </Field>
           </Grid>
           <Grid>
-            <Field>
-              <Label>ID</Label>
-              <Input readOnly value={account.id} />
-            </Field>
             <Field>
               <Label>Email</Label>
               <Input readOnly value={account.email} />

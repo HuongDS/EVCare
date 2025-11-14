@@ -7,7 +7,9 @@ type TechnicianHub<T> = {
   data: T;
 };
 
-export function useTechnicianHub<T>(onUpdate: (type: string, data: T) => void) {
+export function useTechnicianHubNewJob<T>(
+  onUpdate: (type: string, data: T) => void
+) {
   const onUpdateRef = useRef(onUpdate);
 
   useEffect(() => {
