@@ -216,7 +216,7 @@ namespace Application.Services
                         AppointmentId = appointment.Id,
                         PartId = techId.PartId,
                         TechicianId = techId.TechnicianId,
-                        Level = levelEnum
+                        Level = levelEnum ?? DamageLevelEnum.NotAssessed
                     });
                 }
                 await _appointmentPartConditionRepository.RemoveByAppointmentIdAsync(appointment.Id);

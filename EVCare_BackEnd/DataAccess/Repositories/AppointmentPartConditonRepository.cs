@@ -48,7 +48,7 @@ namespace DataAccess.Repositories {
                     };
            }
 
-        public async Task<DamageLevelEnum> GetAppointmentPartConditionsByTechIdAndOrderIdAsync(int partId, int technicianId) {
+        public async Task<DamageLevelEnum?> GetAppointmentPartConditionsByTechIdAndOrderIdAsync(int partId, int technicianId) {
             
             return await _dbcontext.AppointmentPartConditions
                 .Where(apc => apc.PartId == partId && apc.TechicianId == technicianId)
@@ -62,5 +62,7 @@ namespace DataAccess.Repositories {
                 .Where(apc => apc.AppointmentId == id)
                 .ExecuteDeleteAsync();
         }
+
+       
     }
 }
