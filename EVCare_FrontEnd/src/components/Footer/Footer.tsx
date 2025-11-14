@@ -1,6 +1,12 @@
 import { Link } from "react-router";
 import logo from "../../assets/EVCare.png";
-import { FooterWrapper, Brand, Links, Contact, SubFooter } from "./Footer.styled";
+import {
+  FooterWrapper,
+  Brand,
+  Links,
+  Contact,
+  SubFooter,
+} from "./Footer.styled";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -10,7 +16,10 @@ export default function Footer() {
       <FooterWrapper>
         <Brand>
           <img src={logo} alt="EVCare logo" />
-          <p>Chuyên cung cấp dịch vụ bảo trì và chăm sóc xe điện EV với công nghệ hàng đầu.</p>
+          <p>
+            Specializing in providing EV maintenance and care services with
+            leading technology.
+          </p>
         </Brand>
 
         <Links>
