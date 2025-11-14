@@ -21,9 +21,6 @@ const ContactUs = lazy(() => import("../pages/Users/Contact/ContactUs"));
 const OrderList = lazy(
   () => import("../pages/Customer/OrderHistory/Appointment/AppointmentList")
 );
-const Rating = lazy(
-  () => import("../pages/Customer/OrderHistory/Rating/Rating")
-);
 const Test = lazy(() => import("../components/Test"));
 const PageNotFound = lazy(() => import("../components/Layouts/PageNotFound"));
 const UserProfilePage = lazy(
@@ -194,14 +191,6 @@ const router = createBrowserRouter([
             element: (
               <SuspenseWrapper>
                 <AppointmentList />
-              </SuspenseWrapper>
-            ),
-          },
-          {
-            path: "rating",
-            element: (
-              <SuspenseWrapper>
-                <Rating />
               </SuspenseWrapper>
             ),
           },
