@@ -11,5 +11,6 @@ namespace DataAccess.Interfaces {
         Task CreateAppointmentPartConditionAsync(AppointmentPartCondition appointmentPartCondition);
         Task DeleteAppointmentPartConditionsByAppointmentIdAsync(int appointmentId, int technicianId);
         Task<AppointmentPartConditionViewModel> GetAppointmentPartConditionsAsync(int appointmentId, int technicianId);
+        Task RemoveByAppointmentIdAsync(int id);
     }
 }

@@ -46,5 +46,11 @@ namespace DataAccess.Repositories {
                         PartDamageLevels = parts
                     };
            }
+
+        public async Task RemoveByAppointmentIdAsync(int id) {
+            await _dbcontext.AppointmentPartConditions
+                .Where(apc => apc.AppointmentId == id)
+                .ExecuteDeleteAsync();
+        }
     }
 }
