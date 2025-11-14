@@ -1,4 +1,12 @@
-import { Calendar, Phone, User, Car, FileText, CreditCard } from "lucide-react";
+import {
+  Calendar,
+  Phone,
+  User,
+  Car,
+  FileText,
+  CreditCard,
+  Info,
+} from "lucide-react";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate } from "../../../utils/formatDate";
 import {
@@ -27,7 +35,6 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
     orderDetail?.data?.id ?? 0
   );
 
-  //gộp các item cùng id
   const mergeOrder =
     orderDetail?.data?.parts.reduce((acc, part) => {
       if (acc[part.id]) {
@@ -40,10 +47,8 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
       return acc;
     }, {} as Record<number, (typeof orderDetail.data.parts)[0]>) || {};
 
-  // Chuyển object thành array
   const mergedPartsArray = Object.values(mergeOrder);
 
-  //tính các chi phí trong order
   const subtotal =
     orderDetail?.data?.parts.reduce(
       (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
@@ -56,7 +61,6 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
     return subtotal + vatAmount;
   };
 
-  //hàm tải invoice
   const { refetch, isLoading } = useDownloadInvoice(orderDetail?.data?.id ?? 0);
 
   const handleDownloadInvoice = async () => {
@@ -205,10 +209,15 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
                   <TableHeader>
                     <tr>
                       <th>Description</th>
-                      <th>Qty</th>
+                      <th>Quantity</th>
                       <th>Unit Price</th>
                       <th>Service Price</th>
-                      <th>Amount</th>
+                      <th>
+                        Amount{" "}
+                        <Tooltip title="Amount = (Unit Price + Service Price) x Quantity">
+                          <Info />
+                        </Tooltip>
+                      </th>
                     </tr>
                   </TableHeader>
                   <TableBody>
@@ -302,3 +311,4 @@ import {
   InvoiceFooter,
   SpinStyled,
 } from "./styles/Appointment_Invoice.styled";
+import { Tooltip } from "antd";

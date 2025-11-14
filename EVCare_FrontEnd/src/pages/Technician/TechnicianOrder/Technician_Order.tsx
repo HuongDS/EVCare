@@ -1,4 +1,10 @@
-import { ArrowLeft, ShoppingCart, Search, Package, LayoutGrid } from "lucide-react";
+import {
+  ArrowLeft,
+  ShoppingCart,
+  Search,
+  Package,
+  LayoutGrid,
+} from "lucide-react";
 import { useState } from "react";
 import ProductCard from "../Technician_Component/ProductCard";
 import ProductModal from "../Technician_Component/ProductModal";
@@ -38,15 +44,14 @@ import type { ServiceViewModel } from "../../../models/AppointmentsModel/Technic
 import type { PartInServiceDetail } from "../../../models/PartModel/PartModel";
 
 interface TechnicianOrderProps {
-  propOrderId?: number;
+  orderId: number;
   onPartsUpdated?: (orderId: number) => void;
   setIsOrder: (v: boolean) => void;
   appointmentId: number;
 }
 
 export default function TechnicianOrder({
-  propOrderId,
-  onPartsUpdated,
+  orderId,
   setIsOrder,
   appointmentId,
 }: TechnicianOrderProps) {
@@ -58,6 +63,8 @@ export default function TechnicianOrder({
     pageIndex,
     searchQuery,
     isSending,
+    isUpdating,
+    appointmentHasCondition,
     pageSize,
     open,
     selectedPart,
@@ -68,9 +75,12 @@ export default function TechnicianOrder({
     loadingPartInService,
     totalPages,
     totalItems,
+    damageLevels,
+    setDamageLevels,
     handleAddToCart,
     handleRemoveFromCart,
     handleSendCart,
+    handleUpdateCart,
     handleOpenProductModal,
     handleCloseProductModal,
     handleOpenCart,
@@ -79,8 +89,7 @@ export default function TechnicianOrder({
     handleSearchChange,
     handleCartQuantityChange,
   } = useTechnicianOrder({
-    propOrderId,
-    onPartsUpdated,
+    orderId,
     selectedCategory: currentCategory,
     appointmentId,
   });
@@ -91,11 +100,14 @@ export default function TechnicianOrder({
   };
 
   const hasCartItems = cart.length > 0;
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartItemCount = cart.length;
 
   return (
     <PageContainer>
-      <Overlay $isOpen={isSidebarOpen} onClick={() => setIsSidebarOpen(false)} />
+      <Overlay
+        $isOpen={isSidebarOpen}
+        onClick={() => setIsSidebarOpen(false)}
+      />
       <SidebarWrapper $isOpen={isSidebarOpen}>
         <SidebarHeader>
           <h2>All Services</h2>
@@ -154,7 +166,10 @@ export default function TechnicianOrder({
             <CartBadge $show={hasCartItems}>{cartItemCount}</CartBadge>
           </CartButton>
 
-          <ServiceToggleButton onClick={() => setIsSidebarOpen(true)} aria-label="Choose Services">
+          <ServiceToggleButton
+            onClick={() => setIsSidebarOpen(true)}
+            aria-label="Choose Services"
+          >
             <LayoutGrid size={20} />
           </ServiceToggleButton>
         </div>
@@ -163,10 +178,17 @@ export default function TechnicianOrder({
       <ContentWrapper>
         <CardGrid>
           {loadingPartInService ? (
-            Array.from({ length: pageSize }).map((_, idx) => <ProductCard key={idx} isSkeleton />)
-          ) : partsInService?.data?.items && partsInService?.data?.items?.length > 0 ? (
+            Array.from({ length: pageSize }).map((_, idx) => (
+              <ProductCard key={idx} isSkeleton />
+            ))
+          ) : partsInService?.data?.items &&
+            partsInService?.data?.items?.length > 0 ? (
             partsInService?.data.items.map((part: PartInServiceDetail) => (
-              <ProductCard key={part.id} part={part} onClick={() => handleOpenProductModal(part)} />
+              <ProductCard
+                key={part.id}
+                part={part}
+                onClick={() => handleOpenProductModal(part)}
+              />
             ))
           ) : (
             <EmptyState>
@@ -177,29 +199,43 @@ export default function TechnicianOrder({
           )}
         </CardGrid>
 
-        {!loadingPartInService && (partsInService?.data?.totalItems ?? 0) > pageSize && (
-          <PaginationWrapper>
-            <Pagination
-              pageIndex={pageIndex}
-              totalPage={totalPages ?? 0}
-              totalItems={totalItems ?? 0}
-              pageSize={pageSize}
-              onPageChange={handlePageChange}
-            />
-          </PaginationWrapper>
-        )}
+        {!loadingPartInService &&
+          (partsInService?.data?.totalItems ?? 0) > pageSize && (
+            <PaginationWrapper>
+              <Pagination
+                pageIndex={pageIndex}
+                totalPage={totalPages ?? 0}
+                totalItems={totalItems ?? 0}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+              />
+            </PaginationWrapper>
+          )}
       </ContentWrapper>
 
-      <ProductModal open={open} onClose={handleCloseProductModal} part={selectedPart} onAddToCart={handleAddToCart} />
+      <ProductModal
+        open={open}
+        onClose={handleCloseProductModal}
+        part={selectedPart}
+        onAddToCart={handleAddToCart}
+      />
 
       <CartModal
+        appointmentHasCondition={
+          appointmentHasCondition?.data?.partDamageLevels ?? []
+        }
         open={cartOpen}
         onClose={handleCloseCart}
         cart={cart}
         onQuantityChange={handleCartQuantityChange}
         onRemove={handleRemoveFromCart}
         onSend={handleSendCart}
-        loading={isSending}
+        onUpdate={handleUpdateCart}
+        isSending={isSending}
+        isUpdating={isUpdating}
+        orderId={orderId}
+        damageLevels={damageLevels}
+        setDamageLevels={setDamageLevels}
       />
     </PageContainer>
   );

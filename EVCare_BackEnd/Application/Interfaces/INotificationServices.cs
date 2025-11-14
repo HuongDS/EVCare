@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Accounts;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.Invoice;
 using DataAccess.Dtos.Payment;
@@ -18,5 +19,6 @@ namespace Application.Interfaces
 
         Task SendEmailToRemider(VehicleReminderDto model);
         Task SendPaymentPendingPickupEmailAsync(PaymentPendingPickupEmailModel model);
+        Task SendNewAccountNotificationAsync(AccountEmailViewModel accountEmailViewModel);
     }
 }

@@ -20,11 +20,6 @@ import { handleError } from "../utils/errorHandler";
 import axios from "axios";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 
-/**
- * Tạo 1 order mới khi staff check in cho khách hàng
- * @param params
- * @returns
- */
 export const useCreateNewOrder = () => {
   return useMutation({
     mutationFn: async (params: CreateOrderParams) => {
@@ -37,11 +32,6 @@ export const useCreateNewOrder = () => {
   });
 };
 
-/**
- * Lấy order detail
- * @param orderId
- * @returns
- */
 export const useGetOrderDetail = (orderId: number) => {
   return useQuery({
     queryKey: ["OrderDetail", orderId],
@@ -55,10 +45,6 @@ export const useGetOrderDetail = (orderId: number) => {
   });
 };
 
-/**
- * [STAFF] - Dùng hàm này để update part quantity được order từ technicians
- * @returns
- */
 export const useStaffUpdateOrder = () => {
   return useMutation({
     mutationFn: async (params: UpdateOrderRequest<OrderPartDto>) => {
@@ -82,10 +68,6 @@ export const useStaffUpdateOrder = () => {
   });
 };
 
-/**
- * [STAFF] - Hàm dùng để update order status
- * @returns
- */
 export const useUpdateOrderStatus = () => {
   return useMutation({
     mutationFn: async (params: UpdateOrderStatusPrams) => {

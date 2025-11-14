@@ -1,8 +1,8 @@
-// src/services/appointmentPartCondition.ts
 import axios from "axios";
 import { api } from "../api/api";
 import type {
   AppointmentPartCondition,
+  PartDamageLevelDetail,
   ResponseDto,
   UpdatePartDamageDto,
 } from "../models/OrderPartModel/AppointmentPartCondition";
@@ -13,12 +13,11 @@ import { handleError } from "../utils/errorHandler";
 export const useSetPartCondition = () => {
   return useMutation({
     mutationKey: ["SetCondition"],
-    mutationFn: async (data: AppointmentPartCondition) => {
+    mutationFn: async (data: PartDamageLevelDetail) => {
       try {
-        const response = await api.post<ResponseDto<AppointmentPartCondition>>(
-          "/api/AppointmentPartCondition",
-          data
-        );
+        const response = await api.post<
+          ResponseDto<AppointmentPartCondition<PartDamageLevelDetail>>
+        >("/api/AppointmentPartCondition", data);
         return response.data;
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -33,7 +32,7 @@ export const useSetPartCondition = () => {
 
 export const useUpdatePartCondition = () => {
   return useMutation({
-    mutationKey: ["UpdatePa"],
+    mutationKey: ["UpdatePartCondition"],
     mutationFn: async (payload: UpdatePartDamageDto) => {
       try {
         const response = await api.put<ResponseDto<UpdatePartDamageDto>>(
@@ -57,10 +56,9 @@ export const useGetAppointmentPartCondition = (appointmentId: number) => {
     queryKey: ["AppointmentHasCondition", appointmentId],
     queryFn: async () => {
       try {
-        const response = await api.get<ResponseDto<AppointmentPartCondition>>(
-          "/api/AppointmentPartCondition/",
-          { params: { appointmentId } }
-        );
+        const response = await api.get<
+          ResponseDto<AppointmentPartCondition<PartDamageLevelDetail>>
+        >("/api/AppointmentPartCondition/", { params: { appointmentId } });
         return response.data;
       } catch (error) {
         handleError(error);

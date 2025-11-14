@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import { motion } from "framer-motion"; // Nên import motion từ framer-motion
+import { motion } from "framer-motion";
 
-// Cập nhật interface để sử dụng transient props
 interface FocusWordProps {
   $isActive: boolean;
   $manualMode: boolean;
@@ -22,7 +21,6 @@ export const FocusWord = styled.span<FocusWordProps>`
   position: relative;
   font-size: 3rem;
   font-weight: 900;
-  /* Sử dụng transient props để định kiểu */
   cursor: ${({ $manualMode }) => ($manualMode ? "pointer" : "default")};
   transition: filter ${({ $animationDuration }) => $animationDuration}s ease;
 
@@ -31,7 +29,6 @@ export const FocusWord = styled.span<FocusWordProps>`
   );
 `;
 
-// Cập nhật interface
 interface FocusFrameProps {
   $borderColor: string;
   $glowColor: string;
@@ -49,7 +46,6 @@ export const FocusFrame = styled(motion.div)<FocusFrameProps>`
     position: absolute;
     width: 1rem;
     height: 1rem;
-    /* Sử dụng transient props */
     border: 3px solid ${({ $borderColor }) => $borderColor};
     filter: drop-shadow(0px 0px 4px ${({ $glowColor }) => $glowColor});
     border-radius: 3px;
