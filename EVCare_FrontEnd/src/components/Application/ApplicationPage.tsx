@@ -66,7 +66,7 @@ const ApplicationPage: React.FC<ApplicationPageProps> = ({
     <PageWrapper>
       <SortTable sortName={tabs} active={activeTab} onChange={onTabChange} />
 
-      {activeTab === "Send Application" ? (
+      {activeTab === "SendApplication" ? (
         <ApplicationForm
           onSuccess={(data) => {
             onSuccess?.(data);
@@ -74,7 +74,7 @@ const ApplicationPage: React.FC<ApplicationPageProps> = ({
           }}
           onError={onError}
         />
-      ) : activeTab === "My Applications" ? (
+      ) : activeTab === "MyApplications" ? (
         <>
           <SectionTitle>My Applications</SectionTitle>
           <ApplicationsContainer>
@@ -84,7 +84,7 @@ const ApplicationPage: React.FC<ApplicationPageProps> = ({
               <EmptyText>You have no leave applications yet.</EmptyText>
             )}
             {applications.map((app) => (
-              <ApplicationCard application={app} />
+              <ApplicationCard key={app.createdAt} application={app} />
             ))}
           </ApplicationsContainer>
           <PaginationWrapper>
@@ -101,7 +101,13 @@ const ApplicationPage: React.FC<ApplicationPageProps> = ({
         </>
       ) : (
         <div style={{ width: "100%", textAlign: "center", marginTop: "40px" }}>
-          <h2 style={{ color: "#16a34a" }}>{activeTab}</h2>
+          <h2 style={{ color: "#16a34a" }}>
+            {activeTab === "SendApplication"
+              ? "Send Application"
+              : activeTab === "MyApplications"
+              ? "My Applications"
+              : activeTab}
+          </h2>
         </div>
       )}
     </PageWrapper>
