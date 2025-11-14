@@ -3,7 +3,7 @@ import type { ApplicationResponseDTO } from "../../../models/ApplicationModel/Ap
 import ApplicationPage from "../../../components/Application/ApplicationPage";
 
 export default function Technician_Application() {
-  const [activeTab, setActiveTab] = useState("Send Application");
+  const [activeTab, setActiveTab] = useState("SendApplication");
 
   const handleSuccess = (data: ApplicationResponseDTO) => {
     console.log("Send application successfully:", data);
@@ -15,7 +15,7 @@ export default function Technician_Application() {
 
   return (
     <ApplicationPage
-      tabs={["Send Application", "My Applications"]}
+      tabs={["SendApplication", "MyApplications"]}
       activeTab={activeTab}
       onTabChange={setActiveTab}
       onSuccess={handleSuccess}

@@ -89,7 +89,6 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
             ref={(el) => {
               if (el) wordRefs.current[index] = el;
             }}
-            /* Truyền vào transient props */
             $isActive={isActive}
             $manualMode={manualMode}
             $blurAmount={blurAmount}
@@ -103,7 +102,6 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
       })}
 
       <FocusFrame
-        /* Truyền vào transient props */
         $borderColor={borderColor}
         $glowColor={glowColor}
         animate={{
