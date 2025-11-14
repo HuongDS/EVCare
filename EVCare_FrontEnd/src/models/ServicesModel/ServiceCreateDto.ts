@@ -3,4 +3,5 @@ export type ServiceCreateDto = {
   description: string;
   duration: number;
   serviceCategoryId: number;
+  partsIds: number[];
 };

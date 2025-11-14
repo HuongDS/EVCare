@@ -164,7 +164,7 @@ namespace API.Controllers
                 await _partService.DeleteAPart(id, accountId);
                 return Ok(new ResponseDto<int>
                 {
-                    statusCode = HttpStatus.OK,
+                    statusCode = HttpStatus.NO_CONTENT,
                     message = Message.PART_DELETE_SUCCESSFULLY,
                 });
 

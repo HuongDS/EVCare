@@ -10,12 +10,11 @@ import type { Service } from "../models/ServicesModel/ServiceViewModel";
 import type { PageResultDto } from "../models/PageResult/PageResultDto";
 import type { ServiceCategoryAdminDto } from "../models/ServicesModel/ServiceCategoryAdminDto";
 import type { ServiceCategoryCreateDto } from "../models/ServicesModel/ServiceCategoryCreateDto";
+import type { ServiceUpdateDto } from "../models/ServicesModel/ServiceUpdateDto";
 
 export async function getAllServices() {
   try {
-    const response = await api.get<ResponseDto<ServiceCategoryViewModel[]>>(
-      "/api/ServiceCategory"
-    );
+    const response = await api.get<ResponseDto<ServiceCategoryViewModel[]>>("/api/ServiceCategory");
     return response.data;
   } catch (error) {
     handleError(error);
@@ -57,7 +56,7 @@ export async function deleteService(params: { serviceId: number }) {
   }
 }
 
-export async function updateService(data: Service) {
+export async function updateService(data: ServiceUpdateDto) {
   try {
     const response = await api.put("/api/Service", data);
     return response.data;
@@ -76,12 +75,9 @@ export async function getAllServicesWithPagination(params: {
   pageIndex?: number;
 }) {
   try {
-    const response = await api.get<ResponseDto<PageResultDto<Service>>>(
-      "/api/Service",
-      {
-        params: params,
-      }
-    );
+    const response = await api.get<ResponseDto<PageResultDto<Service>>>("/api/Service", {
+      params: params,
+    });
     return response.data;
   } catch (error) {
     handleError(error);
@@ -90,9 +86,7 @@ export async function getAllServicesWithPagination(params: {
 
 export async function getAllServiceCategories(pageSize?: number) {
   try {
-    const response = await api.get<
-      ResponseDto<PageResultDto<ServiceCategoryAdminDto>>
-    >("/api/ServiceCategory/admin", {
+    const response = await api.get<ResponseDto<PageResultDto<ServiceCategoryAdminDto>>>("/api/ServiceCategory/admin", {
       params: {
         pageSize: pageSize ?? 1000,
       },
@@ -105,10 +99,7 @@ export async function getAllServiceCategories(pageSize?: number) {
 
 export async function createServiceCategory(data: ServiceCategoryCreateDto) {
   try {
-    const response = await api.post<ResponseDto<number>>(
-      "/api/ServiceCategory",
-      data
-    );
+    const response = await api.post<ResponseDto<number>>("/api/ServiceCategory", data);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -119,10 +110,7 @@ export async function createServiceCategory(data: ServiceCategoryCreateDto) {
   }
 }
 
-export async function updateServiceCategory(
-  id: number,
-  data: ServiceCategoryCreateDto
-) {
+export async function updateServiceCategory(id: number, data: ServiceCategoryCreateDto) {
   try {
     const response = await api.put(`/api/ServiceCategory/${id}`, data);
     return response.data;

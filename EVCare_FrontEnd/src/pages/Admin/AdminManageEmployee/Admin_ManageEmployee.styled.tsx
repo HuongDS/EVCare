@@ -420,6 +420,8 @@ export const ModalBody = styled.div`
   font-size: 1rem;
   color: #374151;
   line-height: 1.6;
+  flex: 1;
+  overflow-y: auto;
 
   p {
     margin: 0 0 12px 0;
@@ -459,4 +461,75 @@ export const ModalButton = styled.button<{ $isConfirm: boolean }>`
     border: 1px solid #d1d5db;
     &:hover { background: #f9fafb; }
   `}
+`;
+
+export const KpiSection = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+`;
+
+export const KpiItem = styled.div`
+  background: rgba(0, 173, 78, 0.08);
+  border: 1px solid rgba(0, 173, 78, 0.15);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+export const KpiValue = styled.span`
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #00ad4e;
+  line-height: 1.2;
+`;
+
+export const KpiLabel = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #065f46;
+  text-transform: uppercase;
+  margin-top: 4px;
+`;
+
+const BaseActionButton = styled.button`
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #e5e7eb !important;
+    color: #9ca3af !important;
+    border-color: #d1d5db !important;
+  }
+`;
+
+export const UpdateButton = styled(BaseActionButton)`
+  color: #065f46;
+  background: #dcfce7;
+  border: 1px solid transparent;
+
+  &:hover:not(:disabled) {
+    background: #bbf7d0;
+    color: #064e3b;
+  }
 `;
