@@ -13,5 +13,6 @@ namespace DataAccess.Dtos.Invoice
         public decimal Total_Price { get; set; }
         public PaymentMethodEnum Payment_Method { get; set; }
 
+
     }
 }
