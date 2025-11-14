@@ -345,7 +345,7 @@ export const PreviewDate = styled.div`
 
 export const ActionButtons = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 12px;
   margin-top: 24px;
 
