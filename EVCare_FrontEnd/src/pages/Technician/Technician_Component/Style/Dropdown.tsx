@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-// ===== Styled Components =====
 const DropdownContainer = styled.div`
   border: 1px solid #c1c2c5;
   border-radius: 6px;
@@ -68,14 +67,12 @@ const ListItem = styled.li`
   }
 `;
 
-// ===== Props =====
 interface DropdownProps {
   id?: string | number;
   triggerLabel: string;
   items: { label: string; onClick: () => void }[];
 }
 
-// ===== Component =====
 const Dropdown: React.FC<DropdownProps> = ({ triggerLabel, items }) => {
   const [open, setOpen] = useState(false);
 
