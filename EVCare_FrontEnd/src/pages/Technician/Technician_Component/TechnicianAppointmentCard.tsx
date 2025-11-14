@@ -1,59 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { formatDate } from "../../../utils/formatDate";
-import { useUpdateTechnicianWorkingSession } from "../../../services/TechnicianWorkingSessionApi";
 import { useGetAppointmentPartCondition } from "../../../services/appointmentPartCondition";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
-import { ERROR_MESSAGE } from "../../../constants/messages/Message";
-import { DamageLevelEnum } from "../../../models/enums/DamageLevelEnum";
+import {
+  MSG_TITLE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
+import { DamageLevelStringEnum } from "../../../models/enums/DamageLevelEnum";
 import ReviewButton from "./Button";
-import { useNotification } from "../../../context/useNotification";
 import SpinnerComponent from "../../../components/SpinnerComponent";
-import { User, Car, Calendar, Phone, Wrench, Package, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
+import {
+  User,
+  Car,
+  Calendar,
+  Phone,
+  Wrench,
+  Package,
+  ChevronDown,
+  ChevronUp,
+  Image as ImageIcon,
+} from "lucide-react";
 
 type Props = {
   data: TechnicianAppointmentsDto;
-  onStatusChange?: (orderId: number, newStatus: TechnicianWorkingSessionEnum) => void;
-  onPartsUpdated?: (orderId: number) => void;
   setIsOrder: (v: boolean) => void;
+  handleUpdateStatus: (
+    status: TechnicianWorkingSessionEnum,
+    message: string,
+    description: string
+  ) => void;
 };
 
-const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPartsUpdated, setIsOrder }) => {
-  const notification = useNotification();
-  const [currentStatus, setCurrentStatus] = useState<TechnicianWorkingSessionEnum>(data.status);
+const TechnicianAppointmentCard: React.FC<Props> = ({
+  data,
+  setIsOrder,
+  handleUpdateStatus,
+}) => {
   const [expandedSections, setExpandedSections] = useState({
     images: false,
     services: false,
   });
+  const [isAlert, setIsAlert] = useState(false);
 
-  const { mutateAsync: updateWorkingSession } = useUpdateTechnicianWorkingSession();
-  const { data: appointment, isLoading } = useGetAppointmentPartCondition(data.id);
-
-  // assume dung
-  const handleChangeStatusWorkingSession = async (nextStatus: TechnicianWorkingSessionEnum) => {
-    const prevStatus = currentStatus;
-    setCurrentStatus(nextStatus);
-    onStatusChange?.(data.orderId, nextStatus);
-    try {
-      await updateWorkingSession({
-        orderId: data.orderId,
-        status: nextStatus,
-      });
-      onPartsUpdated?.(data.orderId);
-    } catch (err) {
-      console.error(err);
-      setCurrentStatus(prevStatus);
-      onStatusChange?.(data.orderId, prevStatus);
-      notification.error({
-        message: ERROR_MESSAGE.CAN_NOT_UPDATE_STATUS,
-        showProgress: true,
-      });
-    }
-  };
-
-  useEffect(() => {
-    setCurrentStatus(data.status as TechnicianWorkingSessionEnum);
-  }, [data.status]);
+  const { data: appointment, isLoading } = useGetAppointmentPartCondition(
+    data.id
+  );
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -64,10 +56,18 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
       <CardHeader>
         <HeaderLeft>
           <AppointmentId>#{data.id}</AppointmentId>
-          <StatusBadge $status={currentStatus}>{currentStatus.replace("_", " ")}</StatusBadge>
+          <StatusBadge $status={data.status}>
+            {data.status.replace("_", " ")}
+          </StatusBadge>
         </HeaderLeft>
         <HeaderRight>
-          <ReviewButton onChangeStatus={handleChangeStatusWorkingSession} appointment={data} setIsOrder={setIsOrder} />
+          <ReviewButton
+            setIsOpenAlert={setIsAlert}
+            onChangeStatus={handleUpdateStatus}
+            appointment={data}
+            appointmentHasCondition={appointment?.data?.partDamageLevels ?? []}
+            setIsOrder={setIsOrder}
+          />
         </HeaderRight>
       </CardHeader>
 
@@ -122,7 +122,11 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
                   <ImageIcon size={18} />
                   Images ({data.appointmentImages.length})
                 </SectionTitle>
-                {expandedSections.images ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                {expandedSections.images ? (
+                  <ChevronUp size={20} />
+                ) : (
+                  <ChevronDown size={20} />
+                )}
               </SectionHeader>
               {expandedSections.images && (
                 <ImageGrid>
@@ -140,12 +144,18 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
                 <Wrench size={18} />
                 Services ({data.services?.length || 0})
               </SectionTitle>
-              {expandedSections.services ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              {expandedSections.services ? (
+                <ChevronUp size={20} />
+              ) : (
+                <ChevronDown size={20} />
+              )}
             </SectionHeader>
             {expandedSections.services && (
               <ServiceList>
                 {data.services?.length ? (
-                  data.services.map((s, idx) => <ServiceTag key={idx}>{s}</ServiceTag>)
+                  data.services.map((s, idx) => (
+                    <ServiceTag key={idx}>{s}</ServiceTag>
+                  ))
                 ) : (
                   <EmptyText>No services</EmptyText>
                 )}
@@ -180,8 +190,12 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
                       <td>{p.quantity}</td>
                       <td>{p.price.toLocaleString()}₫</td>
                       <td>
-                        <DamageBadge $level={p.damageLevel ?? DamageLevelEnum.NotAssessed}>
-                          {p.damageLevel || DamageLevelEnum.NotAssessed}
+                        <DamageBadge
+                          $level={
+                            p.damageLevel ?? DamageLevelStringEnum.NotAssessed
+                          }
+                        >
+                          {p.damageLevel || DamageLevelStringEnum.NotAssessed}
                         </DamageBadge>
                       </td>
                     </tr>
@@ -194,6 +208,20 @@ const TechnicianAppointmentCard: React.FC<Props> = ({ data, onStatusChange, onPa
           </PartsContainer>
         </PartSection>
       </ContentWrapper>
+      {isAlert && (
+        <AlertModal
+          message="You can’t update the cart after confirming. Proceed?"
+          open={isAlert}
+          onClose={() => setIsAlert(false)}
+          onConfirm={() =>
+            handleUpdateStatus(
+              TechnicianWorkingSessionEnum.CONFIRM,
+              MSG_TITLE.TECH_CONFIRM_ORDER,
+              SUCCESS_MESSAGE.SEND_REVIEW_SUCCESS
+            )
+          }
+        />
+      )}
     </CardContainer>
   );
 };
@@ -228,3 +256,4 @@ import {
   ServiceTag,
   StatusBadge,
 } from "./Style/TechnicianAppointmentCard.styled";
+import AlertModal from "./AlertModal";
