@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.AppointmentPartCondition;
+using DataAccess.Enums;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,5 +47,22 @@ namespace DataAccess.Repositories {
                         PartDamageLevels = parts
                     };
            }
+
+        public async Task<DamageLevelEnum?> GetAppointmentPartConditionsByTechIdAndOrderIdAsync(int partId, int technicianId) {
+            
+            return await _dbcontext.AppointmentPartConditions
+                .Where(apc => apc.PartId == partId && apc.TechicianId == technicianId)
+                .Select(apc => apc.Level)
+                .FirstOrDefaultAsync();
+
+        }
+
+        public async Task RemoveByAppointmentIdAsync(int id) {
+            await _dbcontext.AppointmentPartConditions
+                .Where(apc => apc.AppointmentId == id)
+                .ExecuteDeleteAsync();
+        }
+
+       
     }
 }

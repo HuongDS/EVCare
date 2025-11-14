@@ -22,6 +22,8 @@ namespace DataAccess.Dtos.Employees
 
         public int? TechnicianId { get; set; }
         public double? ExpYear { get; set; }
+        public int? KPIGetDays { get; set; }
+        public int? CompletedOrderToday { get; set; }
         public List<ServiceViewFormModel>? Skills { get; set; }
 
 

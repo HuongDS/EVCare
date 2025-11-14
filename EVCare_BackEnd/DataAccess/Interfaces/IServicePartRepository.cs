@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace DataAccess.Interfaces {
     public interface IServicePartRepository {
         Task AddRangeAsync(int serviceId, IEnumerable<int> partIds);
+        Task DeleteByPartIdAsync(int id);
         Task DeleteByServiceIdAsync(int serviceId);
 
     }

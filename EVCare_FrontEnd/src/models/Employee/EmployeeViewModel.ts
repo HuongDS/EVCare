@@ -14,5 +14,7 @@ export type EmployeeViewModel = {
   avatar?: string;
   technicianId?: number;
   expYear?: number;
+  kpiGetDays?: number;
+  completedOrderToday?: number;
   skills: ServiceViewFormModel[];
 };

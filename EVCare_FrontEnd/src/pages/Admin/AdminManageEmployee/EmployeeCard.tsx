@@ -1,7 +1,7 @@
 import React from "react";
 import type { EmployeeViewModel } from "../../../models/Employee/EmployeeViewModel";
 import { EmployeeStatusEnum, RoleEnum } from "../../../models/enums";
-import { FaEnvelope, FaPhone, FaIdCard, FaStar } from "react-icons/fa";
+import { FaEnvelope, FaPhone, FaIdCard, FaStar, FaCalendarCheck, FaChartLine } from "react-icons/fa";
 
 import {
   CardWrapper,
@@ -23,11 +23,17 @@ import {
   SkillTag,
   Actions,
   ActionButton,
+  KpiSection,
+  KpiItem,
+  KpiValue,
+  KpiLabel,
+  UpdateButton,
 } from "./Admin_ManageEmployee.styled";
 
 interface Props {
   emp: EmployeeViewModel;
   onBan: (id: number) => void;
+  onEdit: (emp: EmployeeViewModel) => void;
 }
 
 const renderStatus = (status: EmployeeStatusEnum) => {
@@ -52,7 +58,7 @@ const renderStatus = (status: EmployeeStatusEnum) => {
   );
 };
 
-const EmployeeCard: React.FC<Props> = ({ emp, onBan }) => {
+const EmployeeCard: React.FC<Props> = ({ emp, onBan, onEdit }) => {
   return (
     <CardWrapper $isBanned={emp.isBanned}>
       <Header>
@@ -97,6 +103,21 @@ const EmployeeCard: React.FC<Props> = ({ emp, onBan }) => {
           <ExperienceBadge>
             <FaStar /> {emp.expYear} years experience
           </ExperienceBadge>
+          <KpiSection>
+            <KpiItem>
+              <KpiValue>{emp.completedOrderToday ?? 0}</KpiValue>
+              <KpiLabel>
+                <FaCalendarCheck /> Completed Today
+              </KpiLabel>
+            </KpiItem>
+            <KpiItem>
+              <KpiValue>{emp.kpiGetDays ?? 0}</KpiValue>
+              <KpiLabel>
+                <FaChartLine /> KPI Days
+              </KpiLabel>
+            </KpiItem>
+          </KpiSection>
+          <SectionTitle>Skills</SectionTitle>
           <SkillsList>
             {emp.skills?.map((s) => (
               <SkillTag key={s.id}>{s.name}</SkillTag>
@@ -106,7 +127,15 @@ const EmployeeCard: React.FC<Props> = ({ emp, onBan }) => {
         </TechSection>
       )}
 
-      <Actions>{!emp.isBanned && <ActionButton onClick={() => onBan(emp.accountId)}>Ban</ActionButton>}</Actions>
+      <Actions>
+        {!emp.isBanned && (
+          <>
+            {emp.role === RoleEnum.TECHNICIAN && <UpdateButton onClick={() => onEdit(emp)}>Edit KPI</UpdateButton>}
+            <div style={{ height: "10px", width: "10px" }} />
+            <ActionButton onClick={() => onBan(emp.accountId)}>Ban</ActionButton>
+          </>
+        )}
+      </Actions>
     </CardWrapper>
   );
 };

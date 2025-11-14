@@ -23,5 +23,6 @@ namespace DataAccess.Interfaces
         Task<decimal> GetTotalPriceOfParts();
         Task<IEnumerable<PartViewModel>> GetLowStockParts();
         Task<PageResultDto<PartViewModel>> GetPartsForService(PartForServiceQueryDto model);
+        Task<PageResultDto<PartViewModel>> GetPartsForAppointmentId(PartForServiceQueryDto model);
     }
 }

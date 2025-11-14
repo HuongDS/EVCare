@@ -25,11 +25,11 @@ namespace Application.DomainEvents
             _techHub = techHub;
             _accountService = accountService;
         }
-        public virtual async Task HandleAsync<T>(OrderStatusChangeEventEnum type, IEnumerable<int>? technicianId, T? data)
+        public virtual async Task HandleAsync<T>(OrderStatusChangeEventEnum type, IEnumerable<int>? technicianIds, T? data)
         {
             if (type == OrderStatusChangeEventEnum.OrderConfirmed)
             {
-                var technicianAccountId = await _accountService.GetAccountIdByTechnicianIds(technicianId);
+                var technicianAccountId = await _accountService.GetAccountIdByTechnicianIds(technicianIds);
                 await _staffHub.Clients.All.SendAsync("TechnicianConfirmOrder", new
                 {
                     Type = "OrderConfirmed",

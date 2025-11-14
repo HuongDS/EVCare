@@ -30,9 +30,13 @@ namespace Application.Services
         private readonly IAccountRepository _accountRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IServicePartRepository _servicePartRepository;
         public PartService(
             IPartRepository partRepository, IPartCategoryRepository partCategoryRepository, IMapper mapper
-            , IPartHistoryRepository partHistoryRepository, IAccountRepository accountRepository, IUnitOfWork unitOfWork)
+            , IPartHistoryRepository partHistoryRepository, 
+            IAccountRepository accountRepository, IUnitOfWork unitOfWork
+            , IServicePartRepository servicePartRepository
+            )
         {
             _partRepository = partRepository;
             _partCategoryRepository = partCategoryRepository;
@@ -40,6 +44,7 @@ namespace Application.Services
             _partHistoryRepository = partHistoryRepository;
             _accountRepository = accountRepository;
             _unitOfWork = unitOfWork;
+            _servicePartRepository = servicePartRepository;
         }
 
         public async Task<int> CreateAPart(PartCreateModel model, int accountId)
@@ -75,32 +80,7 @@ namespace Application.Services
 
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
              {
-                 var part = await _partRepository.GetByIdAsync(id);
-                 if (part == null)
-                 {
-                     throw new Exception("Part not found");
-                 }
-                 if (part.Deleted_At != DateTime.MinValue)
-                 {
-                     throw new Exception("Part has been deleted");
-                 }
-                 part.Deleted_At = DateTime.Now;
-                 await _partRepository.UpdateAsync(part);
-                 var account = await _accountRepository.GetByIdAsync(accountId);
-                 var partHistory = new PartHistory
-                 {
-                     PartId = part.Id,
-                     OldQuantity = part.Stock,
-                     NewQuantity = part.Stock,
-                     OldUnitPrice = part.Price,
-                     NewUnitPrice = part.Price,
-                     OldReplacePrice = part.ReplacementPrice,
-                     NewReplacePrice = part.ReplacementPrice,
-                     ActionType = DataAccess.Enums.ActionTypeEnum.Delete,
-                     ChangeDate = DateTime.Now,
-                     EmployeeName = account.First_Name + " " + account.Last_Name
-                 };
-                 await _partHistoryRepository.AddAsync(partHistory);
+                await DetelePart(id, accountId);
              });
         }
         public async Task DetelePart(int id, int accountId)
@@ -131,6 +111,7 @@ namespace Application.Services
                 EmployeeName = account.First_Name + " " + account.Last_Name
             };
             await _partHistoryRepository.AddAsync(partHistory);
+            await _servicePartRepository.DeleteByPartIdAsync(part.Id);
         }
 
 
@@ -350,6 +331,10 @@ namespace Application.Services
         }
 
         public async Task<PageResultDto<PartViewModel>> GetPartsForService(PartForServiceQueryDto model) {
+
+            if (model.AppointmentId != null) {
+                return await _partRepository.GetPartsForAppointmentId(model);
+            }
             return await _partRepository.GetPartsForService(model);
         }
 
