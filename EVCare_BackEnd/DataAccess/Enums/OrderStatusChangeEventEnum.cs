@@ -12,5 +12,6 @@ namespace DataAccess.Enums
         OrderStatusUpdate = 1,
         StaffConfirmed = 2,
         TechnicianDoneTask = 3,
+        AssignedTechnicians = 4,
     }
 }
