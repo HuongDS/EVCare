@@ -1,4 +1,3 @@
-// sendApplication.ts
 import { api } from "../api/api";
 import type {
   ResponseDto,
@@ -11,10 +10,7 @@ export async function sendApplication(
   request: ApplicationRequestDTO
 ): Promise<ResponseDto<ApplicationResponseDTO | null>> {
   try {
-    const response = await api.post<ResponseDto<ApplicationResponseDTO>>(
-      "/api/Application/send-application",
-      request
-    );
+    const response = await api.post<ResponseDto<ApplicationResponseDTO>>("/api/Application/send-application", request);
 
     return response.data;
   } catch (error) {
