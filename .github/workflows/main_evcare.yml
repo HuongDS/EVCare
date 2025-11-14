@@ -29,7 +29,6 @@ jobs:
     - name: Publish project
       run: dotnet publish ./EVCare_BackEnd/API/API.csproj -c Release -o ./publish
 
-    # 🔹 Đổi chỗ FTP Deploy thành Azure Deploy
     - name: Login to Azure
       uses: azure/login@v2
       with:
@@ -43,4 +42,5 @@ jobs:
         app-name: 'EVCare'
         slot-name: 'Production'
         package: ./publish
+
 

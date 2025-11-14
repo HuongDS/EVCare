@@ -179,19 +179,17 @@ namespace Application.Services
             if (appointment == null) {
                 throw new Exception("Appointment not found");
             }
+            var utcNow = DateTime.UtcNow;
+            var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            var vnTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vnZone);
+            if (DateOnly.FromDateTime(vnTime) < DateOnly.FromDateTime(appointment.Appointment_Date)) {
+                throw new Exception("Cannot update appointment before appointment date");
+            }
 
             if (appointment.Status == AppointmentStatusEnum.Done || appointment.Status == AppointmentStatusEnum.Canceled) {
                 throw new Exception("Cannot update status of completed or canceled appointment");
             }
-            if (model.Status == AppointmentStatusEnum.CheckedIn) {
-                var utcNow = DateTime.UtcNow;
-                var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                var vnTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vnZone);
-                if (DateOnly.FromDateTime(appointment.Appointment_Date) != DateOnly.FromDateTime(vnTime)) {
-                    throw new Exception("Can only check-in on the day of the appointment");
-
-                }
-            }
+           
             _mapper.Map(model, appointment);
             if (appointment.Employee == null)
                 appointment.EmployeeId = employeeId;

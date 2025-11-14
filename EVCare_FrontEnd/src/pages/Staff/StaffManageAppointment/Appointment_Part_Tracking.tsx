@@ -131,6 +131,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
 
   const { mutateAsync: updateOrder, isPending: orderPending } =
     useStaffUpdateOrder();
+
   const queryClient = useQueryClient();
 
   const handleConfirmOrder = async () => {
@@ -244,7 +245,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
                   <PriceRow>
                     <PriceItem>
                       <Label>Unit:</Label>
-                      <Value>{formatCurrency(part.price)}₫</Value>
+                      <TotalValue>{formatCurrency(part.price)}₫</TotalValue>
                     </PriceItem>
                     <PriceItem>
                       <Label>Replace:</Label>
@@ -483,5 +484,4 @@ import {
   TotalLabel,
   TotalRow,
   TotalValue,
-  Value,
 } from "./styles/Appointment_Part_Tracking.styled";

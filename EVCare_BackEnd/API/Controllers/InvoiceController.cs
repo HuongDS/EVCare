@@ -97,12 +97,7 @@ namespace API.Controllers
             try
             {
                 await _invoiceService.PaymentCallback(Request.Query);
-                return Ok(new
-                {
-                    statusCode = 200,
-                    message = "Payment processed successfully"
-                });
-
+                return Redirect("https://ev-care.netlify.app/CompleteVNPay");
             }
             catch (Exception ex)
             {

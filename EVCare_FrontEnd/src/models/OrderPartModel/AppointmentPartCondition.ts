@@ -1,16 +1,18 @@
-import type { DamageLevelEnum } from "../enums/DamageLevelEnum";
+import type { DamageLevelStringEnum } from "../enums/DamageLevelEnum";
 
-export interface AppointmentPartCondition {
+export type AppointmentPartCondition<T> = {
   appointmentId: number;
-  partDamageLevels: {
-    partId: number;
-    partName: string;
-    partUrl: string;
-    damageLevel: DamageLevelEnum;
-    quantity: number;
-    price: number;
-  }[];
-}
+  partDamageLevels: T[];
+};
+
+export type PartDamageLevelDetail = {
+  partId: number;
+  partName: string;
+  partUrl: string;
+  damageLevel: DamageLevelStringEnum;
+  quantity: number;
+  price: number;
+};
 
 export type ResponseDto<T> = {
   statusCode: number;
@@ -22,6 +24,6 @@ export interface UpdatePartDamageDto {
   appointmentId: number;
   partDamageLevels: {
     partId: number;
-    levelEnum: DamageLevelEnum;
+    levelEnum: DamageLevelStringEnum;
   }[];
 }

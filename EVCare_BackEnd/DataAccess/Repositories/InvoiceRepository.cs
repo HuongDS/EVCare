@@ -165,8 +165,6 @@ namespace DataAccess.Repositories
         }
 
         public async Task<InvoiceDetailViewModel> GetInvoiceDetailByOrderIdAsync(int orderId) {
-
-            var serviceCenter = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
             var partLists = await _dbContext.OrderParts
                  .AsNoTracking()
                  .Where(x => x.OrderId == orderId)
@@ -181,7 +179,12 @@ namespace DataAccess.Repositories
 
                  }).ToListAsync();
             var subTotal = partLists.Sum(x => x.Quantity * (x.UnitPrice + x.ReplacePrice));
-            var total = subTotal * (1 + serviceCenter.Vat / 100m);
+            var tax  = await _dbContext.Orders
+                .AsNoTracking()
+                .Where(x => x.Id == orderId)
+                .Select(x => x.Vat)
+                .FirstOrDefaultAsync();
+            var total = subTotal * (1 + tax / 100m);
 
             var query = await _dbContext.Invoices.AsNoTracking()
                 .Where(x => x.OrderId == orderId)
@@ -192,7 +195,7 @@ namespace DataAccess.Repositories
                     PaymentDate = x.Updated_At,
                     PaymentStatus = x.Status,
                     SubTotal = subTotal,
-                    Vat = serviceCenter.Vat,
+                    Vat = tax,
                     Total = total,
                     PaymentMethod = x.Payment_Method
 

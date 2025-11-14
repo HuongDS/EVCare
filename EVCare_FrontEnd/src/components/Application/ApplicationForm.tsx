@@ -29,7 +29,6 @@ import DatePicker from "./DatePickerLazyPerformance";
 import { Editor } from "@tinymce/tinymce-react";
 import { useNotification } from "../../context/useNotification";
 
-// ✅ Thêm interface props ở đây
 interface ApplicationFormProps {
   onSuccess?: (data: ApplicationResponseDTO) => void;
   onError?: (message: string) => void;
@@ -92,7 +91,7 @@ export default function ApplicationForm({
       }
     },
     onError: (error: unknown) => {
-      console.error("❌ Mutation error:", error);
+      console.error("Mutation error:", error);
       setLocalStatus("error");
       notification.error({
         message: "Network Error",
@@ -196,10 +195,6 @@ export default function ApplicationForm({
           </Grid>
           <Grid>
             <Field>
-              <Label>ID</Label>
-              <Input readOnly value={account.id} />
-            </Field>
-            <Field>
               <Label>Email</Label>
               <Input readOnly value={account.email} />
             </Field>
@@ -281,8 +276,7 @@ export default function ApplicationForm({
               ? "Send Again"
               : "Send"
           }
-          color="white"
-          backgroundColor={localStatus === "error" ? "#dc2626" : "#16a34a"}
+          variant="primary"
           type="submit"
           action={() => {}}
           disabled={localStatus === "pending"}

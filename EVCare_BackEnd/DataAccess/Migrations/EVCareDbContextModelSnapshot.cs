@@ -485,6 +485,9 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("Vat")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppointmentId")
@@ -1686,13 +1689,13 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.ServicePart", b =>
                 {
                     b.HasOne("DataAccess.Entities.Part", "Part")
-                        .WithMany()
+                        .WithMany("ServiceParts")
                         .HasForeignKey("PartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DataAccess.Entities.Service", "Service")
-                        .WithMany()
+                        .WithMany("ServiceParts")
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1845,6 +1848,8 @@ namespace DataAccess.Migrations
                     b.Navigation("OrderParts");
 
                     b.Navigation("PartHistories");
+
+                    b.Navigation("ServiceParts");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.PartCategory", b =>
@@ -1856,6 +1861,8 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Entities.Service", b =>
                 {
+                    b.Navigation("ServiceParts");
+
                     b.Navigation("TechnicianSkills");
                 });
 

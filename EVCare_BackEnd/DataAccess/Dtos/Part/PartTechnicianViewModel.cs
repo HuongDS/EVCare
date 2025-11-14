@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Enums;
 
 namespace DataAccess.Dtos.Part
 {
@@ -16,7 +17,8 @@ namespace DataAccess.Dtos.Part
         public decimal Price { get; set; }
         public decimal ReplacementPrice { get; set; }
         public int Stock{ get;set; }
-        
+       
+
         public string ImageUrl { get; set; }
     }
 }

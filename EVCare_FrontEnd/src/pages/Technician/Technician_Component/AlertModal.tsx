@@ -78,16 +78,10 @@ const AlertModal: React.FC<AlertModalProps> = ({
         <ModalWrapper>
           <ModalMessage>{message}</ModalMessage>
           <ButtonsContainer>
-            <ButtonAction
-              text="Cancel"
-              color="#333"
-              backgroundColor="#ccc"
-              action={onClose}
-            />
+            <ButtonAction text="Cancel" variant="danger" action={onClose} />
             <ButtonAction
               text="Confirm"
-              color="#fff"
-              backgroundColor="#00AD4E"
+              variant="primary"
               action={() => {
                 onConfirm();
                 onClose();
