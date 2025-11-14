@@ -17,30 +17,17 @@ import {
   SubmitButton,
   LoadingSpinner,
 } from "./AdminServiceCenter.styled";
-import { FaSave, FaBuilding, FaRegClock, FaTools } from "react-icons/fa";
+import { FaSave, FaBuilding, FaRegClock, FaTools, FaPercentage } from "react-icons/fa";
 import { useNotification } from "../../../context/useNotification";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import type { ServiceCenterAdminModel } from "../../../models/ServiceCenter/ServiceCenterAdminModel";
-import {
-  adminGetCenterInformation,
-  updateCenterInformation,
-} from "../../../services/serviceCenterService";
+import { adminGetCenterInformation, updateCenterInformation } from "../../../services/serviceCenterService";
 import { PHONE_NUMBER_REGEX } from "../../../constants/regexs/PhoneNumberRegex";
 
-const daysOfWeek = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
+const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export default function AdminServiceCenter() {
-  const [formData, setFormData] = useState<ServiceCenterAdminModel | null>(
-    null
-  );
+  const [formData, setFormData] = useState<ServiceCenterAdminModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const notification = useNotification();
@@ -64,16 +51,22 @@ export default function AdminServiceCenter() {
     fetchData();
   }, [notification]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    const isNumericField = [
-      "capacity",
-      "workSlot",
-      "dailyBookingLimit",
-    ].includes(name);
-    const processedValue = isNumericField ? parseInt(value) || 0 : value;
+    const isNumericField = ["capacity", "workSlot", "dailyBookingLimit"];
+    const isFloatField = ["vat"];
+    let processedValue: string | number = value;
+    if (isNumericField.includes(name)) {
+      processedValue = parseInt(value);
+      if (isNaN(processedValue)) {
+        processedValue = 0;
+      }
+    } else if (isFloatField.includes(name)) {
+      processedValue = parseFloat(value);
+      if (isNaN(processedValue)) {
+        processedValue = 0;
+      }
+    }
     setFormData((prev) => (prev ? { ...prev, [name]: processedValue } : null));
   };
 
@@ -91,14 +84,8 @@ export default function AdminServiceCenter() {
       if (formData.name.trim().length <= 0) {
         throw new Error("Please input center's name.");
       }
-      if (
-        formData.capacity <= 0 ||
-        formData.dailyBookingLimit <= 0 ||
-        formData.workSlot <= 0
-      ) {
-        throw new Error(
-          "Capacity, Daily Booking Limit or Work Slot must be greater than 0."
-        );
+      if (formData.capacity <= 0 || formData.dailyBookingLimit <= 0 || formData.workSlot <= 0) {
+        throw new Error("Capacity, Daily Booking Limit or Work Slot must be greater than 0.");
       }
       const response = await updateCenterInformation(formData);
       notification.success({
@@ -119,9 +106,7 @@ export default function AdminServiceCenter() {
   if (isLoading) {
     return (
       <PageWrapper>
-        <div
-          style={{ display: "grid", placeItems: "center", minHeight: "80vh" }}
-        >
+        <div style={{ display: "grid", placeItems: "center", minHeight: "80vh" }}>
           <SpinnerComponent />
         </div>
       </PageWrapper>
@@ -132,9 +117,7 @@ export default function AdminServiceCenter() {
     <PageWrapper>
       <Header>
         <Title>Service Center Configuration</Title>
-        <Instruction>
-          Manage your center's operational details, hours, and booking capacity.
-        </Instruction>
+        <Instruction>Manage your center's operational details, hours, and booking capacity.</Instruction>
       </Header>
 
       <ConfigWrapper
@@ -272,9 +255,7 @@ export default function AdminServiceCenter() {
               disabled={isSubmitting}
               required
             />
-            <InstructionText>
-              Max number of vehicles serviced at the same time.
-            </InstructionText>
+            <InstructionText>Max number of vehicles serviced at the same time.</InstructionText>
           </InputGroup>
 
           <InputGroup>
@@ -289,16 +270,12 @@ export default function AdminServiceCenter() {
               disabled={isSubmitting}
               required
             />
-            <InstructionText>
-              Number of bookable slots per day (e.g., 8 slots).
-            </InstructionText>
+            <InstructionText>Number of bookable slots per day (e.g., 8 slots).</InstructionText>
           </InputGroup>
 
           <FullWidthWrapper>
             <InputGroup>
-              <StyledLabel htmlFor="dailyBookingLimit">
-                Daily Booking Limit
-              </StyledLabel>
+              <StyledLabel htmlFor="dailyBookingLimit">Daily Booking Limit</StyledLabel>
               <StyledInput
                 id="dailyBookingLimit"
                 name="dailyBookingLimit"
@@ -309,10 +286,30 @@ export default function AdminServiceCenter() {
                 disabled={isSubmitting}
                 required
               />
-              <InstructionText>
-                Total number of bookings allowed per day. (e.g., Capacity * Work
-                Slots)
-              </InstructionText>
+              <InstructionText>Total number of bookings allowed per day. (e.g., Capacity * Work Slots)</InstructionText>
+            </InputGroup>
+          </FullWidthWrapper>
+
+          <SectionTitle>
+            <FaPercentage />
+            VAT
+          </SectionTitle>
+
+          <FullWidthWrapper>
+            <InputGroup>
+              <StyledLabel htmlFor="capacity">Concurrent VAT</StyledLabel>
+              <StyledInput
+                id="vat"
+                name="vat"
+                type="number"
+                min={0}
+                value={formData?.vat || 0}
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+                step={0.01}
+                required
+              />
+              <InstructionText>Tax for each invoice at the center.</InstructionText>
             </InputGroup>
           </FullWidthWrapper>
         </ConfigGrid>
