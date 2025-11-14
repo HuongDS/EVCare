@@ -17,6 +17,8 @@ import { EmptyState } from "../Technician_Component/EmptyState";
 import { Pagination } from "../../../components/Paginations/Pagination";
 import { useState } from "react";
 import TechnicianOrder from "../TechnicianOrder/Technician_Order";
+import { useTechnicianHubNewJob } from "../../../hooks/useTechnicianHub";
+import { useNotification } from "../../../context/useNotification";
 
 const pageVariants = {
   hidden: { opacity: 0 },
@@ -41,6 +43,17 @@ export default function Technician_MyJob() {
   } = useTechnician_MyJob();
   const myJobStatuses = ["Adding Part", "Confirm", "In Progress", "Completed"];
   const [isOrder, setIsOrder] = useState(false);
+  const notification = useNotification();
+
+  useTechnicianHubNewJob<string>(async (type, data) => {
+    if (type === "NewJob" && data === "You was assigned new job.") {
+      notification.success({
+        message: "New Job",
+        description: data,
+        showProgress: true,
+      });
+    }
+  });
 
   return isOrder ? (
     <TechnicianOrder

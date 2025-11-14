@@ -219,6 +219,7 @@ export const useTechnicianOrder = ({
 
   const { data: partsInService, isLoading: loadingPartInService } =
     useGetPartsInServices({
+      keyWord: searchQuery,
       ...((selectedCategory !== 0 && { serviceIds: [selectedCategory] }) || {}),
       ...((selectedCategory === 0 && { appointmentId: appointmentId }) || {}),
       pageIndex: pageIndex,

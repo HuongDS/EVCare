@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Zoom from "react-medium-image-zoom";
 import { formatDate } from "../../../utils/formatDate";
 import { useGetAppointmentPartCondition } from "../../../services/appointmentPartCondition";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
@@ -131,7 +132,9 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
               {expandedSections.images && (
                 <ImageGrid>
                   {data.appointmentImages.map((img, idx) => (
-                    <ImageThumb key={idx} src={img} alt={`img-${idx}`} />
+                    <Zoom key={idx}>
+                      <ImageThumb key={idx} src={img} alt={`img-${idx}`} />
+                    </Zoom>
                   ))}
                 </ImageGrid>
               )}
@@ -217,7 +220,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
             handleUpdateStatus(
               TechnicianWorkingSessionEnum.CONFIRM,
               MSG_TITLE.TECH_CONFIRM_ORDER,
-              SUCCESS_MESSAGE.SEND_REVIEW_SUCCESS
+              SUCCESS_MESSAGE.TECHNICIAN_CONFIRM_ORDER
             )
           }
         />
