@@ -265,9 +265,16 @@ export const TableHeader = styled.thead`
     }
 
     &:nth-child(3),
-    &:nth-child(4),
+    &:nth-child(4) {
+      text-align: right;
+    }
+
     &:nth-child(5) {
       text-align: right;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 5px;
     }
   }
 

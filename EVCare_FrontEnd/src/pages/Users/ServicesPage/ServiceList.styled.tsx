@@ -142,7 +142,6 @@ export const ServiceStorySection = styled(motion.section)<{
   grid-template-columns: 1fr 1fr;
   gap: 3rem;
   align-items: center;
-  /* Đảo cột dựa vào prop $imagePosition */
   grid-template-areas: ${(props) =>
     props.$imagePosition === "left" ? "'image text'" : "'text image'"};
 
@@ -219,7 +218,7 @@ export const StickyBookButton = styled(motion.button)`
   background: linear-gradient(135deg, #00c656 0%, ${EVCareGreen} 100%);
   color: #fff;
   border: none;
-  padding: 1rem 1.8rem; /* To hơn 1 chút */
+  padding: 1rem 1.8rem;
   border-radius: 50px;
   font-family: "Outfit", sans-serif;
   font-weight: 700;
