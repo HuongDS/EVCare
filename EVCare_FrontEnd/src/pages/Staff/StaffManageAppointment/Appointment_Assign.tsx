@@ -40,7 +40,6 @@ export default function Appointment_Assign({ data }: props) {
     // Status: "Available",
   });
 
-  //search technician hiện có
   const filteredTechnicians =
     technicians?.data?.items?.filter((tech) => {
       const nameMatch = tech.fullName
@@ -67,19 +66,16 @@ export default function Appointment_Assign({ data }: props) {
     setSearchQuery("");
   };
 
-  //xóa technician ra khỏi list
   const handleRemoveTechnician = (technicianID: number) => {
     setSelectedTechnicians(
       selectedTechnicians.filter((st) => st.technicianID !== technicianID)
     );
   };
 
-  //lấy mảng id các technician để gán qua api
   const techniciansList = selectedTechnicians
     .map((tech) => tech.technicianID)
     .flat();
 
-  //Thay đổi appointment status - gán technicians vào appointment
   const { mutateAsync: assignTech, isPending } = useAssignTechnician();
   const { mutateAsync: appointmentStatus } = useChangeAppointmentStatus();
   const handleAssignTechnician = async () => {

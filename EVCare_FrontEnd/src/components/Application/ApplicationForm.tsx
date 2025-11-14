@@ -29,7 +29,6 @@ import DatePicker from "./DatePickerLazyPerformance";
 import { Editor } from "@tinymce/tinymce-react";
 import { useNotification } from "../../context/useNotification";
 
-// ✅ Thêm interface props ở đây
 interface ApplicationFormProps {
   onSuccess?: (data: ApplicationResponseDTO) => void;
   onError?: (message: string) => void;
@@ -281,8 +280,7 @@ export default function ApplicationForm({
               ? "Send Again"
               : "Send"
           }
-          color="white"
-          backgroundColor={localStatus === "error" ? "#dc2626" : "#16a34a"}
+          variant="primary"
           type="submit"
           action={() => {}}
           disabled={localStatus === "pending"}

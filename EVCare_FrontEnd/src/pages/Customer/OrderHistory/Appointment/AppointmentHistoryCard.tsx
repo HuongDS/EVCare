@@ -25,6 +25,7 @@ import type { CardData } from "../../../../models/Pics/CardData.ts";
 import { LazyReviewPicsSection } from "./LazyReviewPicsSection.tsx";
 import { useAppDispatch } from "../../../../states/store.ts";
 import { openModel3d } from "../../../../states/uiSlice.ts";
+import ShowButton from "../../../../components/Button/ShowButton.tsx";
 
 interface props {
   data: AppointmentViewDetailModel;
@@ -111,32 +112,16 @@ export default function AppointmentHistoryCard({
             <>
               <ButtonAction
                 text="View Detail"
-                color="white"
-                backgroundColor="#00ad4e"
+                variant="primary"
                 action={() => onViewAppointmentDetail(appointmentId)}
               />
-
-              {/* {data.status === AppointmentStatusEnum.INPROGRESS ||
-                (data.status === AppointmentStatusEnum.DONE && (
-                  <ButtonAction
-                    text="View 3D Model"
-                    color="white"
-                    backgroundColor="#00ad4e"
-                    action={() => {
-                      setModel3dData(data.id);
-                      dispatch(openModel3d());
-                    }}
-                  />
-                ))} */}
 
               {(data.status === AppointmentStatusEnum.IN_PROGRESS ||
                 data.status === AppointmentStatusEnum.READY_FOR_PICKUP ||
                 data.status === AppointmentStatusEnum.DONE) && (
-                <ButtonAction
+                <ShowButton
                   text="View 3D Model"
-                  color="white"
-                  backgroundColor="#00ad4e"
-                  action={() => {
+                  onclick={() => {
                     setModel3dData(appointmentId);
                     dispatch(openModel3d());
                   }}
@@ -147,8 +132,7 @@ export default function AppointmentHistoryCard({
                 <div style={{ marginLeft: "10px" }}>
                   <ButtonAction
                     text="Write Review"
-                    color="white"
-                    backgroundColor="#00ad4e"
+                    variant="secondary"
                     action={() => onOpen()}
                   />
                 </div>

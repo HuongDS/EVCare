@@ -26,10 +26,9 @@ export const useGetTechnicianAppointments = (params?: {
     queryKey: ["TechnicianAppointments", params],
     queryFn: async () => {
       try {
-        const response = await api.get<ResponseDto<PageModel<TechnicianAppointmentsDto>>>(
-          "/api/Appointment/get-appointment-technician",
-          { params }
-        );
+        const response = await api.get<
+          ResponseDto<PageModel<TechnicianAppointmentsDto>>
+        >("/api/Appointment/get-appointment-technician", { params });
 
         return response.data;
       } catch (error) {
@@ -40,19 +39,27 @@ export const useGetTechnicianAppointments = (params?: {
   });
 };
 
-export const useGetServicesInAppointment = (params: { appointmentId: number }) => {
+export const useGetServicesInAppointment = (params: {
+  appointmentId: number;
+}) => {
   return useQuery({
     queryKey: ["ServicesInAppointment", params],
     queryFn: async () => {
       try {
-        const response = await api.get<ResponseDto<ServiceViewModel[]>>("/api/Appointment/appointment-services", {
-          params,
-        });
+        const response = await api.get<ResponseDto<ServiceViewModel[]>>(
+          "/api/Appointment/appointment-services",
+          {
+            params,
+          }
+        );
         return response.data;
       } catch (error) {
         handleError(error);
         if (axios.isAxiosError(error)) {
-          const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
           throw new Error(errMsg);
         }
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
@@ -66,15 +73,21 @@ export const useGetPartsInServices = (params: GetPartsInServicesParams) => {
     queryKey: ["PartsInService", params],
     queryFn: async () => {
       try {
-        const response = await api.get<ResponseDto<PageModel<PartInServiceDetail>>>("/api/Part/service-parts", {
+        const response = await api.get<
+          ResponseDto<PageModel<PartInServiceDetail>>
+        >("/api/Part/service-parts", {
           params,
-          paramsSerializer: (p) => QueryString.stringify(p, { arrayFormat: "repeat" }),
+          paramsSerializer: (p) =>
+            QueryString.stringify(p, { arrayFormat: "repeat" }),
         });
         return response.data;
       } catch (error) {
         handleError(error);
         if (axios.isAxiosError(error)) {
-          const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
           throw new Error(errMsg);
         }
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
