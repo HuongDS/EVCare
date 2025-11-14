@@ -82,7 +82,7 @@ export default function WaitingAddingPart({ data }: Props) {
                   <TechName>{tech.fullName}</TechName>
                   <TechStatus>
                     <PulsingDot />
-                    Active
+                    {tech.status}
                   </TechStatus>
                 </TechnicianCard>
               ))}

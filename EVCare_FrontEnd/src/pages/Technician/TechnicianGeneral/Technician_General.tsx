@@ -5,6 +5,10 @@ import {
   Activity,
   TrendingUp,
   Clock,
+<<<<<<< HEAD
+  IdCard,
+=======
+>>>>>>> 84575d925942c252a30ad79a15ddf03055c60499
   Phone,
   Mail,
   UserRoundPen,
@@ -59,6 +63,10 @@ const TechnicianGeneral: React.FC = () => {
 
   const navigate = useNavigate();
   const { data: techInfo } = useGetAccount();
+<<<<<<< HEAD
+
+=======
+>>>>>>> 84575d925942c252a30ad79a15ddf03055c60499
   const statuses = [
     TechnicianWorkingSessionEnum.ADDING_PART,
     TechnicianWorkingSessionEnum.CONFIRM,
@@ -157,6 +165,16 @@ const TechnicianGeneral: React.FC = () => {
 
               <ProfileInfo>
                 <InfoRow>
+<<<<<<< HEAD
+                  <IdCard size={20} />
+                  <span>ID:</span>
+                  <span style={{ marginLeft: "auto", color: "#6b7280" }}>
+                    {techInfo.data?.id}
+                  </span>
+                </InfoRow>
+                <InfoRow>
+=======
+>>>>>>> 84575d925942c252a30ad79a15ddf03055c60499
                   <Phone size={20} />
                   <span>Phone:</span>
                   <span style={{ marginLeft: "auto", color: "#6b7280" }}>

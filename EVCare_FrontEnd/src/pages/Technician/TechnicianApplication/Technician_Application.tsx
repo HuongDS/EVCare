@@ -1,4 +1,3 @@
-// Technician_Application.tsx
 import { useState } from "react";
 import type { ApplicationResponseDTO } from "../../../models/ApplicationModel/ApplicationModels";
 import ApplicationPage from "../../../components/Application/ApplicationPage";
