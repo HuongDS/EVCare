@@ -185,7 +185,7 @@ namespace Application.Services
                     _partRepository.Update(part);
                 }
                 var appointment = await _appointmentRepository.GetByOrderIdAsync(model.Id);
-                await _appointmentPartConditionRepository.RemoveByAppointmentIdAsync(appointment.Id);
+               
                 await _orderRepository.RemoveOrderPartsAsync(model.Id);
                 foreach (var part in model.OrderParts)
                 {
@@ -204,14 +204,27 @@ namespace Application.Services
                         Price = originalPart.Price,
                         ReplacementPrice = originalPart.ReplacementPrice
                     });
-                    await _appointmentPartConditionRepository.CreateAppointmentPartConditionAsync(new AppointmentPartCondition
+
+                  
+                }
+                var newAppointmentParts = new List<AppointmentPartCondition>();
+                foreach (var techId in model.OrderParts)
+                {
+                    var levelEnum = await _appointmentPartConditionRepository.GetAppointmentPartConditionsByTechIdAndOrderIdAsync(techId.PartId, techId.TechnicianId);
+                    newAppointmentParts.Add(new AppointmentPartCondition
                     {
                         AppointmentId = appointment.Id,
-                        PartId = part.PartId,
-                        Level = part.LevelEnum,
-                        TechicianId = part.TechnicianId
+                        PartId = techId.PartId,
+                        TechicianId = techId.TechnicianId,
+                        Level = levelEnum
                     });
                 }
+                await _appointmentPartConditionRepository.RemoveByAppointmentIdAsync(appointment.Id);
+                foreach (var apc in newAppointmentParts)
+                {
+                    await _appointmentPartConditionRepository.CreateAppointmentPartConditionAsync(apc);
+                }
+
 
             });
 
