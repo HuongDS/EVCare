@@ -12,6 +12,6 @@ namespace DataAccess.Dtos.OrderParts
         public int PartId { get; set; }
         public int TechnicianId { get; set; }
         public int Quantity { get; set; }
-        public DamageLevelEnum LevelEnum { get; set; }
+      
     }
 }

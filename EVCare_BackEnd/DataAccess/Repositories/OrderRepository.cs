@@ -36,6 +36,7 @@ namespace DataAccess.Repositories
                   .ThenInclude(x=>x.Technician)
                    .ThenInclude(x=>x.Employee)
                     .ThenInclude(x=>x.Account)
+                  .Include(x=>x.Appointment).ThenInclude(x=>x.AppointmentPartConditions)
                 .Select(x => new OrderViewModel
                 {
                     Id = x.Id,
@@ -51,7 +52,8 @@ namespace DataAccess.Repositories
                         TechnicianId = x.TechnicianId,
                         TechnicianName = x.Technician.Employee.Account.First_Name+" " +x.Technician.Employee.Account.Last_Name,
                         ReplacementPrice = x.Part.ReplacementPrice,
-                        Stock = x.Part.Stock
+                        Stock = x.Part.Stock,
+                         
 
                     }),
                     Vat = center.Vat,
