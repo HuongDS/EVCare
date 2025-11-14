@@ -117,14 +117,12 @@ export const Pagination: React.FC<PaginationProps> = ({
     const showEllipsisStart = pageIndex > 3;
     const showEllipsisEnd = pageIndex < totalPage - 2;
 
-    // Always show first page
     pages.push(1);
 
     if (showEllipsisStart) {
       pages.push("...");
     }
 
-    // Show pages around current page
     for (
       let i = Math.max(2, pageIndex - 1);
       i <= Math.min(totalPage - 1, pageIndex + 1);
@@ -139,7 +137,6 @@ export const Pagination: React.FC<PaginationProps> = ({
       pages.push("...");
     }
 
-    // Always show last page if there's more than 1 page
     if (totalPage > 1) {
       pages.push(totalPage);
     }

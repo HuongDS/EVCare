@@ -63,7 +63,11 @@ export const BookButton = styled(Button as any)`
   gap: 0.5rem;
 
   &:hover {
-    background: linear-gradient(135deg, ${lighten(0.05, EVCareGreen)} 0%, ${EVCareGreen} 100%);
+    background: linear-gradient(
+      135deg,
+      ${lighten(0.05, EVCareGreen)} 0%,
+      ${EVCareGreen} 100%
+    );
     box-shadow: 0 6px 20px rgba(0, 173, 78, 0.4);
     transform: translateY(-2px);
   }
@@ -131,13 +135,16 @@ export const ServicesContainer = styled.div`
   margin-bottom: 4rem;
 `;
 
-export const ServiceStorySection = styled(motion.section)<{ $imagePosition: "left" | "right" }>`
+export const ServiceStorySection = styled(motion.section)<{
+  $imagePosition: "left" | "right";
+}>`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 3rem;
   align-items: center;
   /* Đảo cột dựa vào prop $imagePosition */
-  grid-template-areas: ${(props) => (props.$imagePosition === "left" ? "'image text'" : "'text image'")};
+  grid-template-areas: ${(props) =>
+    props.$imagePosition === "left" ? "'image text'" : "'text image'"};
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -162,6 +169,7 @@ export const ServiceImageContainer = styled.div`
 
 export const ServiceTextContainer = styled.div`
   grid-area: text;
+  font-family: "Outfit", sans-serif;
 `;
 
 export const ServiceTitle = styled.h2`
@@ -184,12 +192,14 @@ export const ServiceDescription = styled.p`
   margin-bottom: 1.5rem;
   line-height: 1.7;
   font-weight: 600;
+  font-family: "Outfit", sans-serif;
 `;
 
 export const ServiceDuration = styled.p`
   color: #334155;
   font-size: 1.2rem;
   font-weight: 600;
+  font-family: "Outfit", sans-serif;
   margin-bottom: 1.5rem;
   strong {
     font-weight: 700;
@@ -225,7 +235,11 @@ export const StickyBookButton = styled(motion.button)`
     position: absolute;
     inset: -3px;
     border-radius: 50px;
-    background: linear-gradient(135deg, ${lighten(0.1, EVCareGreen)}, ${EVCareGreen});
+    background: linear-gradient(
+      135deg,
+      ${lighten(0.1, EVCareGreen)},
+      ${EVCareGreen}
+    );
     filter: blur(8px);
     opacity: 0.7;
     z-index: -1;

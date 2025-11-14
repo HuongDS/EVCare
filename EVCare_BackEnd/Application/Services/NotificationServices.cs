@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Application.Helper;
 using Application.Interfaces;
 using AutoMapper;
+using DataAccess.Dtos.Accounts;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.Invoice;
 using DataAccess.Dtos.Payment;
@@ -205,6 +206,10 @@ namespace Application.Services
                 }
             };
             await notificationApi.Send(notification);
+        }
+
+        public Task SendNewAccountNotificationAsync(AccountEmailViewModel accountEmailViewModel) {
+            throw new NotImplementedException();
         }
     }
 }

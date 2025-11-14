@@ -1,32 +1,12 @@
-import { useEffect, useState } from "react";
-import { Box, Modal, Fade, Backdrop, IconButton } from "@mui/material";
-import {
-  CartContainer,
-  CartList,
-  CheckoutBox,
-  CartItem,
-  ItemDetails,
-  ItemLeft,
-  ItemRight,
-  QuantityControl,
-  QuantityNumber,
-  PriceTag,
-  TotalSection,
-  TotalLine,
-  TotalValue,
-  CheckoutHeader,
-  ProductLine,
-  Title,
-  EmptyCartMessage,
-} from "./Style/CartModal.styled";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { type Dispatch, type SetStateAction } from "react";
+import { Modal, Fade, Backdrop } from "@mui/material";
+import { ShoppingCart, Trash2, Minus, Plus, X } from "lucide-react";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 import {
-  DamageLevelEnum,
-  DamageLevelLabels,
+  DamageLevelStringEnum,
   damageColorMap,
 } from "../../../models/enums/DamageLevelEnum";
-import ButtonAction from "../../../components/Button/ButtonAction";
+import type { PartDamageLevelDetail } from "../../../models/OrderPartModel/AppointmentPartCondition";
 
 interface CartModalProps {
   open: boolean;
@@ -34,51 +14,39 @@ interface CartModalProps {
   cart: { part: OrderPartsResponseDto; quantity: number }[];
   onQuantityChange: (partId: number, newQty: number) => void;
   onRemove: (partId: number) => void;
-  onSend: (damageLevels: Record<number, DamageLevelEnum>) => void;
-  loading: boolean;
+  onSend: (orderId: number) => void;
+  onUpdate: (orderId: number) => void;
+  isSending: boolean;
+  isUpdating: boolean;
+  orderId: number;
+  damageLevels: Record<number, DamageLevelStringEnum>;
+  setDamageLevels: Dispatch<
+    SetStateAction<Record<number, DamageLevelStringEnum>>
+  >;
+  appointmentHasCondition: PartDamageLevelDetail[];
 }
 
-const boxStyle = {
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "92%",
-  maxWidth: 950,
-  bgcolor: "background.paper",
-  borderRadius: "16px",
-  boxShadow: "0 12px 32px rgba(0, 173, 78, 0.25)",
-  p: 3,
-  maxHeight: "88vh",
-  overflowY: "auto",
-};
-
 export default function CartModal({
+  appointmentHasCondition,
   open,
   onClose,
   cart,
   onQuantityChange,
   onRemove,
   onSend,
-  loading,
+  onUpdate,
+  isSending,
+  isUpdating,
+  orderId,
+  damageLevels,
+  setDamageLevels,
 }: CartModalProps) {
-  const [damageLevels, setDamageLevels] = useState<
-    Record<number, DamageLevelEnum>
-  >({});
-
-  useEffect(() => {
-    const initLevels: Record<number, DamageLevelEnum> = {};
-    cart.forEach(({ part }) => {
-      initLevels[part.id] =
-        damageLevels[part.id] ?? DamageLevelEnum.NotAssessed;
-    });
-    setDamageLevels(initLevels);
-  }, [cart]);
-
   const total = cart.reduce(
     (sum, item) => sum + (item.part.price ?? 0) * item.quantity,
     0
   );
+
+  const isProcessing = isSending || isUpdating;
 
   return (
     <Modal
@@ -86,152 +54,206 @@ export default function CartModal({
       onClose={onClose}
       closeAfterTransition
       slots={{ backdrop: Backdrop }}
-      slotProps={{ backdrop: { timeout: 400 } }}
+      slotProps={{ backdrop: { timeout: 300 } }}
     >
-      <Fade in={open} timeout={400}>
-        <Box sx={boxStyle}>
-          <Title>Part's Cart ({cart.length})</Title>
-          <CartContainer>
-            <CartList>
+      <Fade in={open} timeout={300}>
+        <ModalContainer>
+          <Header>
+            <HeaderLeft>
+              <CartIcon>
+                <ShoppingCart size={24} />
+              </CartIcon>
+              <HeaderText>
+                <Title>Parts Order Cart</Title>
+                <ItemCount>
+                  {cart.length} {cart.length === 1 ? "item" : "items"}
+                </ItemCount>
+              </HeaderText>
+            </HeaderLeft>
+            <CloseButton onClick={onClose}>
+              <X size={24} />
+            </CloseButton>
+          </Header>
+
+          <ContentWrapper>
+            <CartSection>
               {cart.length === 0 ? (
-                <EmptyCartMessage>Your cart is empty</EmptyCartMessage>
+                <EmptyState>
+                  <ShoppingCart size={64} opacity={0.3} />
+                  <EmptyText>Your cart is empty</EmptyText>
+                  <EmptyHint>Add some parts to get started</EmptyHint>
+                </EmptyState>
               ) : (
-                cart.map(({ part, quantity }) => (
-                  <CartItem key={part.id}>
-                    <ItemLeft>
-                      <ItemDetails>{part.name}</ItemDetails>
-                      <PriceTag>
-                        {(part.price ?? 0).toLocaleString("vi-VN")} VNĐ
-                      </PriceTag>
-                    </ItemLeft>
-                    <ItemRight>
-                      <QuantityControl>
-                        <IconButton
-                          size="small"
-                          onClick={() =>
-                            onQuantityChange(part.id, Math.max(1, quantity - 1))
+                <CartList>
+                  {cart.map(({ part, quantity }) => (
+                    <CartItem key={part.id}>
+                      <ItemInfo>
+                        <PartName>{part.name}</PartName>
+                        <PartPrice>
+                          {(part.price ?? 0).toLocaleString("vi-VN")}₫
+                        </PartPrice>
+                      </ItemInfo>
+
+                      <ItemControls>
+                        <QuantityControl>
+                          <QuantityButton
+                            onClick={() =>
+                              onQuantityChange(
+                                part.id,
+                                Math.max(1, quantity - 1)
+                              )
+                            }
+                            disabled={quantity <= 1}
+                          >
+                            <Minus size={16} />
+                          </QuantityButton>
+                          <QuantityDisplay>{quantity}</QuantityDisplay>
+                          <QuantityButton
+                            onClick={() =>
+                              onQuantityChange(part.id, quantity + 1)
+                            }
+                          >
+                            <Plus size={16} />
+                          </QuantityButton>
+                        </QuantityControl>
+
+                        <DamageSelect
+                          value={
+                            damageLevels[part.id] ??
+                            DamageLevelStringEnum.Critical
                           }
-                          disabled={quantity <= 1}
-                          sx={{
-                            border: "1px solid #ddd",
-                            borderRadius: "8px",
-                            width: "30px",
-                            height: "30px",
-                            color: "#00ad4e",
-                            transition: "0.3s",
-                            "&:hover": {
-                              backgroundColor: "#00ad4e20",
-                            },
-                          }}
-                        >
-                          –
-                        </IconButton>
-                        <QuantityNumber>{quantity}</QuantityNumber>
-                        <IconButton
-                          size="small"
-                          onClick={() =>
-                            onQuantityChange(part.id, quantity + 1)
-                          }
-                          sx={{
-                            border: "1px solid #ddd",
-                            borderRadius: "8px",
-                            width: "30px",
-                            height: "30px",
-                            color: "#00ad4e",
-                            transition: "0.3s",
-                            "&:hover": {
-                              backgroundColor: "#00ad4e20",
-                            },
-                          }}
-                        >
-                          +
-                        </IconButton>
-                        <select
-                          value={damageLevels[part.id]}
                           onChange={(e) =>
                             setDamageLevels((prev) => ({
                               ...prev,
-                              [part.id]: Number(e.target.value),
+                              [part.id]: e.target
+                                .value as DamageLevelStringEnum,
                             }))
                           }
-                          style={{
-                            marginLeft: "10px",
-                            fontSize: "12px",
-                            padding: "4px 6px",
-                            borderRadius: "6px",
-                            border: "1px solid #ccc",
-                            backgroundColor:
-                              damageColorMap[damageLevels[part.id]],
-                            color: "#fff",
-                            fontWeight: 600,
-                            cursor: "pointer",
-                          }}
+                          $color={
+                            damageColorMap[
+                              damageLevels[part.id] ??
+                                DamageLevelStringEnum.Critical
+                            ]
+                          }
                         >
-                          {Object.entries(DamageLevelLabels).map(
+                          {Object.entries(DamageLevelStringEnum).map(
                             ([key, label]) => (
                               <option key={key} value={key}>
                                 {label}
                               </option>
                             )
                           )}
-                        </select>
-                      </QuantityControl>
-                      <IconButton
-                        color="error"
-                        onClick={() => onRemove(part.id)}
-                        sx={{
-                          ml: 1,
-                          backgroundColor: "#fff",
-                          "&:hover": { backgroundColor: "#ffebee" },
-                        }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </ItemRight>
-                  </CartItem>
-                ))
+                        </DamageSelect>
+
+                        <DeleteButton onClick={() => onRemove(part.id)}>
+                          <Trash2 size={18} />
+                        </DeleteButton>
+                      </ItemControls>
+
+                      <ItemTotal>
+                        {((part.price ?? 0) * quantity).toLocaleString("vi-VN")}
+                        ₫
+                      </ItemTotal>
+                    </CartItem>
+                  ))}
+                </CartList>
               )}
-            </CartList>
+            </CartSection>
 
-            <CheckoutBox>
-              <CheckoutHeader>Checkout Summary</CheckoutHeader>
-              <TotalSection>
-                <h4>Items</h4>
-                {cart.map(({ part, quantity }) => (
-                  <ProductLine key={part.id}>
-                    <span>{part.name}</span>
-                    <span>
-                      {(part.price ?? 0).toLocaleString("vi-VN")} × {quantity}
-                    </span>
-                  </ProductLine>
-                ))}
-              </TotalSection>
+            <SummarySection>
+              <SummaryCard>
+                <SummaryTitle>Order Summary</SummaryTitle>
 
-              <TotalLine>
-                <strong>Total</strong>
-                <TotalValue>{total.toLocaleString("vi-VN")} VNĐ</TotalValue>
-              </TotalLine>
+                {/* {cart.length > 0 && ( */}
+                <>
+                  <SummaryItems>
+                    {cart.map(({ part, quantity }) => (
+                      <SummaryItem key={part.id}>
+                        <ItemName>
+                          {part.name} <Quantity>×{quantity}</Quantity>
+                        </ItemName>
+                        <ItemAmount>
+                          {((part.price ?? 0) * quantity).toLocaleString(
+                            "vi-VN"
+                          )}
+                          ₫
+                        </ItemAmount>
+                      </SummaryItem>
+                    ))}
+                  </SummaryItems>
 
-              <div
-                style={{
-                  opacity: loading ? 0.6 : 1,
-                  pointerEvents: loading ? "none" : "auto",
-                  marginTop: "12px",
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <ButtonAction
-                  text={loading ? "Sending..." : "Send"}
-                  color="white"
-                  backgroundColor={loading ? "#ccc" : "#00ad4e"}
-                  action={() => onSend(damageLevels)}
-                />
-              </div>
-            </CheckoutBox>
-          </CartContainer>
-        </Box>
+                  <Divider />
+
+                  <TotalRow>
+                    <TotalLabel>Total Amount</TotalLabel>
+                    <TotalAmount>{total.toLocaleString("vi-VN")}₫</TotalAmount>
+                  </TotalRow>
+
+                  <ActionButton
+                    onClick={() =>
+                      appointmentHasCondition.length > 0
+                        ? onUpdate(orderId)
+                        : onSend(orderId)
+                    }
+                    disabled={isProcessing}
+                    $processing={isProcessing}
+                  >
+                    {isProcessing
+                      ? appointmentHasCondition.length > 0
+                        ? "Updating..."
+                        : "Sending..."
+                      : appointmentHasCondition.length > 0
+                      ? "Update Cart"
+                      : "Send Order"}
+                  </ActionButton>
+                </>
+                {/* )} */}
+              </SummaryCard>
+            </SummarySection>
+          </ContentWrapper>
+        </ModalContainer>
       </Fade>
     </Modal>
   );
 }
+
+import {
+  ActionButton,
+  CartIcon,
+  CartItem,
+  CartList,
+  CartSection,
+  CloseButton,
+  ContentWrapper,
+  DamageSelect,
+  DeleteButton,
+  Divider,
+  EmptyHint,
+  EmptyState,
+  EmptyText,
+  Header,
+  HeaderLeft,
+  HeaderText,
+  ItemAmount,
+  ItemControls,
+  ItemCount,
+  ItemInfo,
+  ItemName,
+  ItemTotal,
+  ModalContainer,
+  PartName,
+  PartPrice,
+  Quantity,
+  QuantityButton,
+  QuantityControl,
+  QuantityDisplay,
+  SummaryCard,
+  SummaryItem,
+  SummaryItems,
+  SummarySection,
+  SummaryTitle,
+  Title,
+  TotalAmount,
+  TotalLabel,
+  TotalRow,
+} from "./Style/CartModal.styled";

@@ -3,27 +3,59 @@ import ViewDetailsModal from "./ViewDetailsModal";
 import ButtonAction from "../../../components/Button/ButtonAction";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { useState } from "react";
+import type { PartDamageLevelDetail } from "../../../models/OrderPartModel/AppointmentPartCondition";
+import {
+  MSG_TITLE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
 
 interface ReviewButtonProps {
-  onChangeStatus: (nextStatus: TechnicianWorkingSessionEnum) => void;
+  onChangeStatus: (
+    status: TechnicianWorkingSessionEnum,
+    message: string,
+    description: string
+  ) => void;
   appointment: TechnicianAppointmentsDto;
+  appointmentHasCondition: PartDamageLevelDetail[];
   setIsOrder: (v: boolean) => void;
+  setIsOpenAlert: (v: boolean) => void;
 }
 
-const ReviewButton: React.FC<ReviewButtonProps> = ({ onChangeStatus, appointment, setIsOrder }) => {
+const ReviewButton: React.FC<ReviewButtonProps> = ({
+  onChangeStatus,
+  appointment,
+  appointmentHasCondition,
+  setIsOrder,
+  setIsOpenAlert,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>
       {appointment.status === TechnicianWorkingSessionEnum.ADDING_PART && (
         <div style={{ textAlign: "end" }}>
-          <ButtonAction text={"Order"} color="#00AD4E" backgroundColor="#fff" action={() => setIsOrder(true)} />
-          <div style={{ display: "inline-block", width: "10px", height: "10px" }} />
+          {appointmentHasCondition.length > 0 ? (
+            <ButtonAction
+              text="Update"
+              variant="outline"
+              action={() => setIsOrder(true)}
+            />
+          ) : (
+            <ButtonAction
+              text={"Order"}
+              variant="primary"
+              action={() => setIsOrder(true)}
+            />
+          )}
+
+          <div
+            style={{ display: "inline-block", width: "10px", height: "10px" }}
+          />
+
           <ButtonAction
             text="Continue"
-            color="#fff"
-            backgroundColor="#00AD4E"
-            action={() => onChangeStatus(TechnicianWorkingSessionEnum.CONFIRM)}
+            variant="secondary"
+            action={() => setIsOpenAlert(true)}
           />
         </div>
       )}
@@ -33,28 +65,36 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({ onChangeStatus, appointment
           appointment.status === TechnicianWorkingSessionEnum.INPROGRESS) && (
           <ButtonAction
             text="View Details"
-            color="#00AD4E"
-            backgroundColor="#ffffffff"
-            borderColor="#00AD4E"
-            backgroundColorHover="#ffffffff"
+            variant="outline"
             action={() => setIsModalOpen(true)}
           />
         )}
 
         {appointment.status === TechnicianWorkingSessionEnum.INPROGRESS && (
           <>
-            <div style={{ display: "inline-block", width: "10px", height: "10px" }} />
+            <div
+              style={{ display: "inline-block", width: "10px", height: "10px" }}
+            />
             <ButtonAction
               text="Done"
-              color="#fff"
-              backgroundColor="#00AD4E"
-              action={() => onChangeStatus(TechnicianWorkingSessionEnum.COMPLETED)}
+              variant="primary"
+              action={() =>
+                onChangeStatus(
+                  TechnicianWorkingSessionEnum.COMPLETED,
+                  MSG_TITLE.TECH_COMPLETED,
+                  SUCCESS_MESSAGE.TECHNICIAN_COMPLETED
+                )
+              }
             />
           </>
         )}
       </div>
 
-      <ViewDetailsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} appointment={appointment ?? null} />
+      <ViewDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        appointment={appointment ?? null}
+      />
     </>
   );
 };

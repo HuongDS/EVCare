@@ -27,7 +27,6 @@ interface TextTypeProps {
   startOnVisible?: boolean;
 }
 
-/* 🎨 Styled Components */
 const TextContainer = styled.div`
   display: inline-block;
   white-space: pre-wrap;

@@ -31,13 +31,16 @@ namespace Application.Services
         private readonly IOrderPartRepository _orderPartRepository;
         private readonly IPartRepository _partRepository;
         private readonly ITechnicianWorkingSessionRepository _technicianWorkingSessionRepository;
-
+        private readonly IAppointmentPartConditionRepository _appointmentPartConditionRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IServiceCenterRepository _serviceCenterRepository;
 
         public OrderService(IOrderRepository orderRepository,
             IAppointmentRepository appointmentRepository,
             IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository, IUnitOfWork unitOfWork
             , ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
+            , IAppointmentPartConditionRepository appointmentPartConditionRepository,
+            IServiceCenterRepository serviceCenterRepository
             )
         {
             _orderRepository = orderRepository;
@@ -47,6 +50,8 @@ namespace Application.Services
             _partRepository = partRepository;
             _unitOfWork = unitOfWork;
             _technicianWorkingSessionRepository = technicianWorkingSessionRepository;
+            _appointmentPartConditionRepository = appointmentPartConditionRepository;
+            _serviceCenterRepository = serviceCenterRepository;
         }
         public async Task<ResponseDto<OrderResponseDto>> CreateOrderAsync(OrderCreateRequestDto data)
         {
@@ -58,7 +63,9 @@ namespace Application.Services
             {
                 throw new Exception(Message.APPOINTMENT_NOT_FOUND);
             }
+            var serviceCenter = await _serviceCenterRepository.GetCenterInforAsync();
             var newOrder = _mapper.Map<Order>(data);
+            newOrder.Vat = serviceCenter.Vat;
             var addedEntity = await _orderRepository.AddAsync(newOrder);
             var appointment = await _appointmentRepository.GetByIdAsync(data.appointmentID);
             appointment.OrderId = addedEntity.Id;
@@ -182,6 +189,8 @@ namespace Application.Services
                     part.Stock += op.Quantity;
                     _partRepository.Update(part);
                 }
+                var appointment = await _appointmentRepository.GetByOrderIdAsync(model.Id);
+               
                 await _orderRepository.RemoveOrderPartsAsync(model.Id);
                 foreach (var part in model.OrderParts)
                 {
@@ -200,7 +209,27 @@ namespace Application.Services
                         Price = originalPart.Price,
                         ReplacementPrice = originalPart.ReplacementPrice
                     });
+
+                  
                 }
+                var newAppointmentParts = new List<AppointmentPartCondition>();
+                foreach (var techId in model.OrderParts)
+                {
+                    var levelEnum = await _appointmentPartConditionRepository.GetAppointmentPartConditionsByTechIdAndOrderIdAsync(techId.PartId, techId.TechnicianId);
+                    newAppointmentParts.Add(new AppointmentPartCondition
+                    {
+                        AppointmentId = appointment.Id,
+                        PartId = techId.PartId,
+                        TechicianId = techId.TechnicianId,
+                        Level = levelEnum ?? DamageLevelEnum.NotAssessed
+                    });
+                }
+                await _appointmentPartConditionRepository.RemoveByAppointmentIdAsync(appointment.Id);
+                foreach (var apc in newAppointmentParts)
+                {
+                    await _appointmentPartConditionRepository.CreateAppointmentPartConditionAsync(apc);
+                }
+
 
             });
 

@@ -1,81 +1,129 @@
 import styled from "styled-components";
 
+type ButtonVariant = "primary" | "secondary" | "danger" | "outline";
+
 type ActionButtonProps = {
   text: string;
-  color?: string;
-  backgroundColor?: string;
-  borderColor?: string;
+  variant?: ButtonVariant;
   action: () => void;
   icon?: React.ReactNode;
   type?: "button" | "submit";
   disabled?: boolean;
-  backgroundColorHover?: string;
+  fullWidth?: boolean;
 };
 
-const ActionButton = styled.button<{
-  $color: string;
-  $bg: string;
-  $borderColor: string;
-  $backgroundColorHover: string;
+const getButtonStyles = (variant: ButtonVariant) => {
+  switch (variant) {
+    case "primary":
+      return {
+        bg: "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)",
+        color: "white",
+        hoverBg: "#00c853",
+        shadow: "0 4px 12px rgba(0, 173, 78, 0.3)",
+      };
+    case "secondary":
+      return {
+        bg: "white",
+        color: "#00ad4e",
+        hoverBg: "#e8f5e9",
+        shadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+        border: "2px solid #00ad4e",
+      };
+    case "danger":
+      return {
+        bg: "#f44336",
+        color: "white",
+        hoverBg: "#d32f2f",
+        shadow: "0 4px 12px rgba(244, 67, 54, 0.3)",
+      };
+    case "outline":
+      return {
+        bg: "transparent",
+        color: "#666",
+        hoverBg: "#f5f5f5",
+        shadow: "none",
+        border: "2px solid #e0e0e0",
+      };
+    default:
+      return {
+        bg: "#00ad4e",
+        color: "white",
+        hoverBg: "#00c853",
+        shadow: "0 4px 12px rgba(0, 173, 78, 0.3)",
+      };
+  }
+};
+
+const StyledButton = styled.button<{
+  $variant: ButtonVariant;
+  $fullWidth?: boolean;
 }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-
-  padding: 5px 14px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-family: "Outfit", sans-serif;
   font-size: 15px;
-  font-weight: 500;
-
-  color: ${({ $color }) => $color || "#ffffff"};
-  background-color: ${({ $bg }) => $bg || "#007b55"};
-  border: 2px solid ${({ $borderColor }) => $borderColor || "#ffffffff"};
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease;
+  width: ${({ $fullWidth }) => ($fullWidth ? "100%" : "auto")};
 
-  &:hover:not(:disabled) {
-    background-color: ${({ $backgroundColorHover }) => $backgroundColorHover || "#153f00"};
-    transform: translateY(-1px);
-  }
+  ${({ $variant }) => {
+    const styles = getButtonStyles($variant);
+    return `
+      background: ${styles.bg};
+      color: ${styles.color};
+      box-shadow: ${styles.shadow};
+      ${styles.border ? `border: ${styles.border};` : ""}
+      
+      &:hover:not(:disabled) {
+        background: ${styles.hoverBg};
+        transform: translateY(-2px);
+        box-shadow: ${styles.shadow.replace("0.3", "0.4")};
+      }
+    `;
+  }}
 
   &:active:not(:disabled) {
-    background-color: #005c40;
     transform: translateY(0);
   }
 
   &:disabled {
-    background-color: #e0e0e0;
+    background: #e0e0e0;
     color: #9e9e9e;
     cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  svg {
+    flex-shrink: 0;
   }
 `;
 
 export default function ButtonAction({
   icon,
   text,
-  color = "white",
-  backgroundColor = "#007b55",
-  borderColor = backgroundColor,
-  backgroundColorHover = "#f5f9f3",
+  variant = "primary",
   action,
   type = "button",
   disabled = false,
+  fullWidth = false,
 }: ActionButtonProps) {
   return (
-    <ActionButton
-      $color={color}
-      $borderColor={borderColor}
-      $bg={backgroundColor}
-      $backgroundColorHover={backgroundColorHover}
+    <StyledButton
+      $variant={variant}
+      $fullWidth={fullWidth}
       onClick={action}
       type={type}
       disabled={disabled}
     >
       {icon}
       {text}
-    </ActionButton>
+    </StyledButton>
   );
 }
