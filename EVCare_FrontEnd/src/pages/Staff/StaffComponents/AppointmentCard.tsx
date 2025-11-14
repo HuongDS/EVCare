@@ -146,7 +146,7 @@ export default function AppointmentCard({
             )
           ) : null}
 
-          {(data.status === "AddingPart" || data.status === "InProgress") && (
+          {data.status === "InProgress" && (
             <ActionButton
               $variant={hasTechnicianOnleave ? "warning" : "secondary"}
               onClick={onOpenReassign}
