@@ -30,12 +30,13 @@ namespace DataAccess.Repositories
 
         public async Task<OrderViewModel> GetOrderDetailAsync(int orderId)
         {
-            var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
+            
             var query = await _dbSet.AsNoTracking().Where(x => x.Id == orderId)
                 .Include(x=>x.OrderParts)
                   .ThenInclude(x=>x.Technician)
                    .ThenInclude(x=>x.Employee)
                     .ThenInclude(x=>x.Account)
+                  .Include(x=>x.Appointment).ThenInclude(x=>x.AppointmentPartConditions)
                 .Select(x => new OrderViewModel
                 {
                     Id = x.Id,
@@ -43,7 +44,6 @@ namespace DataAccess.Repositories
                     Select(x => new Dtos.Part.PartTechnicianViewModel
                     {
                         Id = x.PartId,
-
                         ImageUrl = x.Part.Image,
                         Name = x.Part.Name,
                         Price = x.Price,
@@ -51,11 +51,11 @@ namespace DataAccess.Repositories
                         TechnicianId = x.TechnicianId,
                         TechnicianName = x.Technician.Employee.Account.First_Name+" " +x.Technician.Employee.Account.Last_Name,
                         ReplacementPrice = x.Part.ReplacementPrice,
-                        Stock = x.Part.Stock
-
+                        Stock = x.Part.Stock,
+                   
                     }),
-                    Vat = center.Vat,
-                    Price = x.OrderParts.Sum(x => (x.Price + x.ReplacementPrice) * x.Quantity) * (1 + center.Vat / 100m)
+                    Vat = x.Vat,
+                    Price = x.OrderParts.Sum(x => (x.Price + x.ReplacementPrice) * x.Quantity) * (1 + x.Vat / 100m)
 
                 }).FirstOrDefaultAsync();
 

@@ -135,7 +135,6 @@ export const useChangeAppointmentStatus = () => {
   });
 };
 
-//[STAFF] - NGO CHI VY: Get technicians today for assigning work
 export const useGetTechniciansToday = (params: GetTechnicianParams) => {
   return useQuery({
     queryKey: ["TechniciansToday", params],

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces;
 using AutoMapper;
+using DataAccess.Dtos.Accounts;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.Invoice;
 using DataAccess.Dtos.Payment;
@@ -109,6 +110,15 @@ namespace Application.Services {
                        .Replace("{{OpenTime}}", model.OpenTime.ToString())
                        .Replace("{{CloseTime}}", model.CloseTime.ToString());
             await _emailSender.SendAsync(model.Email, "Your Vehicle is Ready for Pickup", html,$"Dear {model.CustomerName}, your vehicle is ready for pickup.");
+        }
+
+        public async Task SendNewAccountNotificationAsync(AccountEmailViewModel accountEmailViewModel) {
+            string html = LoadTemplate("password_reset_required_email_template.html");
+            html = html.Replace("{{employeeName}}", accountEmailViewModel.EmployeeName)
+                       .Replace("{{username}}", accountEmailViewModel.Email)
+                       .Replace("{{tempPassword}}", accountEmailViewModel.Password)
+                       .Replace("{{year}}", accountEmailViewModel.DateCreated.ToString("dd/MM/yyyy"));
+            await _emailSender.SendAsync(accountEmailViewModel.Email, "Your New Account Information", html,$"Dear {accountEmailViewModel.EmployeeName}, your account has been created.");
         }
     }
 }

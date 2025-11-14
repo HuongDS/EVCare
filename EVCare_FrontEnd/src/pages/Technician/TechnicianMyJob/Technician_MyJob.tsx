@@ -17,6 +17,8 @@ import { EmptyState } from "../Technician_Component/EmptyState";
 import { Pagination } from "../../../components/Paginations/Pagination";
 import { useState } from "react";
 import TechnicianOrder from "../TechnicianOrder/Technician_Order";
+import { useTechnicianHubNewJob } from "../../../hooks/useTechnicianHub";
+import { useNotification } from "../../../context/useNotification";
 
 const pageVariants = {
   hidden: { opacity: 0 },
@@ -30,14 +32,43 @@ const itemVariants = {
 };
 
 export default function Technician_MyJob() {
-  const { data, activeStatus, appointments, isLoading, setActiveStatus, setPageIndex } = useTechnician_MyJob();
+  const {
+    data,
+    activeStatus,
+    appointments,
+    isLoading,
+    setActiveStatus,
+    setPageIndex,
+    handleUpdateStatus,
+  } = useTechnician_MyJob();
   const myJobStatuses = ["Adding Part", "Confirm", "In Progress", "Completed"];
   const [isOrder, setIsOrder] = useState(false);
+  const notification = useNotification();
+
+  useTechnicianHubNewJob<string>(async (type, data) => {
+    if (type === "NewJob" && data === "You was assigned new job.") {
+      notification.success({
+        message: "New Job",
+        description: data,
+        showProgress: true,
+      });
+    }
+  });
 
   return isOrder ? (
-    <TechnicianOrder appointmentId={data?.data?.items?.at(0)?.id ?? 0} setIsOrder={setIsOrder} />
+    <TechnicianOrder
+      appointmentId={data?.data?.items?.at(0)?.id ?? 0}
+      setIsOrder={setIsOrder}
+      orderId={data?.data?.items?.at(0)?.orderId ?? 0}
+    />
   ) : (
-    <PageWrapper key="technician-myjob" variants={pageVariants} initial="hidden" animate="visible" exit="exit">
+    <PageWrapper
+      key="technician-myjob"
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+    >
       <ContentWrapper>
         <Header>
           <Title variants={itemVariants}>My Jobs</Title>
@@ -64,7 +95,12 @@ export default function Technician_MyJob() {
               <SpinnerComponent />
             ) : appointments.length > 0 ? (
               appointments.map((item: any) => (
-                <TechnicianAppointmentCard setIsOrder={setIsOrder} key={item.id} data={item} />
+                <TechnicianAppointmentCard
+                  handleUpdateStatus={handleUpdateStatus}
+                  setIsOrder={setIsOrder}
+                  key={item.id}
+                  data={item}
+                />
               ))
             ) : (
               <EmptyState />

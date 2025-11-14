@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { TechnicianWorkingSessionEnum } from "../models/enums/TechnicianWorkingSessionEnum";
 import { useGetTechnicianAppointments } from "../services/appointmentTechnicianApi";
 import { useUpdateTechnicianWorkingSession } from "../services/TechnicianWorkingSessionApi";
@@ -12,50 +12,66 @@ export const useTechnician_MyJob = () => {
   const [pageIndex, setPageIndex] = useState<number>(1);
   const queryClient = useQueryClient();
 
-  const savedStatus = sessionStorage.getItem("activeStatus") || TechnicianWorkingSessionEnum.ADDING_PART;
+  const savedStatus =
+    sessionStorage.getItem("activeStatus") ||
+    TechnicianWorkingSessionEnum.ADDING_PART;
   const [activeStatus, setActiveStatus] = useState<string>(savedStatus);
-  useEffect(() => {
-    sessionStorage.setItem("activeStatus", activeStatus);
-  }, [activeStatus]);
 
   const { data, isLoading, isFetching } = useGetTechnicianAppointments({
     Status: String(activeStatus),
     PageSize: pageSize,
     PageIndex: pageIndex,
+    SortField: "orderId",
+    SortOrder: "desc",
   });
 
-  const { mutateAsync: updateWorkingSession } = useUpdateTechnicianWorkingSession();
+  useEffect(() => {
+    sessionStorage.setItem(
+      "activeStatus",
+      data?.data?.items?.at(0)?.status ?? "AddingPart"
+    );
+  }, [data?.data?.items?.at(0)?.status]);
 
-  const handleUpdateStatus = async (orderId: number, status: TechnicianWorkingSessionEnum) => {
+  const { mutateAsync: updateWorkingSession } =
+    useUpdateTechnicianWorkingSession();
+
+  const handleUpdateStatus = async (
+    status: TechnicianWorkingSessionEnum,
+    message: string,
+    description: string
+  ) => {
     try {
-      await updateWorkingSession({ orderId: orderId, status: status });
-      queryClient.invalidateQueries({ queryKey: ["TechnicianAppointments"] });
+      await updateWorkingSession({
+        orderId: data?.data?.items?.at(0)?.orderId ?? 0,
+        status: status,
+      });
+      await queryClient.getQueryData(["TechnicianAppointments"]);
       setActiveStatus(status);
       notification.success({
-        message: "Update Working Session",
-        description: "Success",
+        message: message,
+        description: description,
         showProgress: true,
       });
-    } catch (error) {
+    } catch (err) {
       notification.error({
-        message: "Update Working Session",
-        description: (error as Error).message,
+        message: message,
+        description: (err as Error).message,
         showProgress: true,
       });
     }
   };
 
-  const appointments = useMemo(() => {
-    const sourceData = data?.data?.items ?? [];
+  // const appointments = useMemo(() => {
+  //   const sourceData = data?.data?.items ?? [];
 
-    if (
-      activeStatus === TechnicianWorkingSessionEnum.COMPLETED ||
-      activeStatus === TechnicianWorkingSessionEnum.CANCELED
-    ) {
-      return [...sourceData].sort((a, b) => (sortById === "asc" ? a.id - b.id : b.id - a.id));
-    }
-    return sourceData;
-  }, [data?.data?.items, sortById, activeStatus]);
+  //   if (
+  //     activeStatus === TechnicianWorkingSessionEnum.COMPLETED ||
+  //     activeStatus === TechnicianWorkingSessionEnum.CANCELED
+  //   ) {
+  //     return [...sourceData].sort((a, b) => (sortById === "asc" ? a.id - b.id : b.id - a.id));
+  //   }
+  //   return sourceData;
+  // }, [data?.data?.items, sortById, activeStatus]);
 
   const sortName: TechnicianWorkingSessionEnum[] = [
     TechnicianWorkingSessionEnum.ADDING_PART,
@@ -69,7 +85,7 @@ export const useTechnician_MyJob = () => {
     data,
     activeStatus,
     sortName,
-    appointments,
+    appointments: data?.data?.items ?? [],
     isLoading: isLoading || isFetching,
     isFetching,
     sortById,

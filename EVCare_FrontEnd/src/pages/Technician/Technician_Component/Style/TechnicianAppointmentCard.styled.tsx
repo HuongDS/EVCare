@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { DamageLevelEnum } from "../../../../models/enums/DamageLevelEnum";
+import { DamageLevelStringEnum } from "../../../../models/enums/DamageLevelEnum";
 
 export const CardContainer = styled.div`
   background: white;
@@ -256,20 +256,20 @@ export const PartsTable = styled.table`
   }
 `;
 
-export const DamageBadge = styled.span<{ $level: DamageLevelEnum }>`
+export const DamageBadge = styled.span<{ $level: DamageLevelStringEnum }>`
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
   background: ${(props) => {
     switch (props.$level) {
-      case DamageLevelEnum.Minor:
+      case DamageLevelStringEnum.Minor:
         return "#e8f5e9";
-      case DamageLevelEnum.Moderate:
+      case DamageLevelStringEnum.Moderate:
         return "#fff3e0";
-      case DamageLevelEnum.Severe:
+      case DamageLevelStringEnum.Severe:
         return "#ffe0e0";
-      case DamageLevelEnum.Critical:
+      case DamageLevelStringEnum.Critical:
         return "#ffcdd2";
       default:
         return "#f5f5f5";
@@ -277,13 +277,13 @@ export const DamageBadge = styled.span<{ $level: DamageLevelEnum }>`
   }};
   color: ${(props) => {
     switch (props.$level) {
-      case DamageLevelEnum.Minor:
+      case DamageLevelStringEnum.Minor:
         return "#2e7d32";
-      case DamageLevelEnum.Moderate:
+      case DamageLevelStringEnum.Moderate:
         return "#e65100";
-      case DamageLevelEnum.Severe:
+      case DamageLevelStringEnum.Severe:
         return "#d32f2f";
-      case DamageLevelEnum.Critical:
+      case DamageLevelStringEnum.Critical:
         return "#b71c1c";
       default:
         return "#666";

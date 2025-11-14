@@ -79,11 +79,13 @@ namespace Application.Services
         public async Task<int> CreateInvoice(InvoiceCreateModel model)
         {
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
+            var serviceCenterInfo = await _serviceCenterRepository.GetCenterInforAsync();
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
             invoice.Create_At = DateTime.UtcNow.AddHours(7);
             invoice.Updated_At = DateTime.UtcNow.AddHours(7);
+           
             var order = await _orderRepository.GetByIdAsync(invoice.OrderId);
             order.Status = OrderStatusEnum.Completed;
             await _orderRepository.UpdateAsync(order);
@@ -99,12 +101,14 @@ namespace Application.Services
         public async Task<string> CreatePaymentUrl(HttpContext context, InvoiceCreateModel model)
         {
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
+            var serviceCenterInfo = await _serviceCenterRepository.GetCenterInforAsync();
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
             var random = new Random();
             long orderCode = ((long)random.Next(0, int.MaxValue) << 32) | (uint)random.Next(0, int.MaxValue);
             invoice.OrderCode = orderCode;
+           
             await _redisService.SaveDate(invoice, orderCode.ToString());
             return _vnPayService.CreatePaymentUrl(context, model,invoice.OrderCode);
         }
@@ -162,12 +166,14 @@ namespace Application.Services
 
             var invoices = await _invoiceRepository.GetInvoiceByOrderId(model.OrderId);
             if (invoices != null) throw new Exception("Order has existed");
+            var serviceCenterInfo = await _serviceCenterRepository.GetCenterInforAsync();
             var (url, orderCode) = await _payOSService.CreateCheckoutUrlAsync(model);
             var customerId = await _orderRepository.GetCustomerIdByOrderId(model.OrderId);
             var invoice = _mapper.Map<Invoice>(model);
             invoice.CustomerId = customerId;
             invoice.OrderCode = orderCode;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
+            
             await _redisService.SaveDate(invoice, orderCode.ToString());
             return url;
         }

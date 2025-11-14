@@ -2,6 +2,7 @@ import styled from "styled-components";
 import StatusTag from "../../../components/StatusTags/StatusTag";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import { formatDate } from "../../../utils/formatDate";
+import logo from "../../../assets/EVCare.png";
 import {
   TriangleAlert,
   Calendar,
@@ -11,17 +12,23 @@ import {
   Wrench,
   Eye,
   RefreshCw,
+  Info,
 } from "lucide-react";
 import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
+import { Tooltip } from "antd";
 
 type AppointmentCardProps = {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
   onOpenProgress: () => void;
   hasTechnicianOnleave: boolean;
   onOpenReassign: () => void;
+  setShowDetail: (v: boolean) => void;
+  setDetailAppointment: (
+    v: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
+  ) => void;
 };
 
 export default function AppointmentCard({
@@ -29,6 +36,8 @@ export default function AppointmentCard({
   onOpenProgress,
   hasTechnicianOnleave,
   onOpenReassign,
+  setShowDetail,
+  setDetailAppointment,
 }: AppointmentCardProps) {
   return (
     <CardContainer>
@@ -40,6 +49,20 @@ export default function AppointmentCard({
         <DateSection>
           <Calendar size={16} />
           {formatDate(data.appointmentDate)}
+          <Tooltip
+            title="View the appointment's information"
+            placement="left"
+            color="#00ad4e"
+          >
+            <Info
+              size={20}
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setDetailAppointment(data);
+                setShowDetail(true);
+              }}
+            />
+          </Tooltip>
         </DateSection>
       </CardHeader>
 
@@ -49,7 +72,7 @@ export default function AppointmentCard({
             src={
               data.appointmentImages && data.appointmentImages.length > 0
                 ? data.appointmentImages[0]
-                : "https://i.pinimg.com/736x/79/74/12/797412081b120609d902b4966fa435b7.jpg"
+                : logo
             }
             alt="Vehicle"
           />

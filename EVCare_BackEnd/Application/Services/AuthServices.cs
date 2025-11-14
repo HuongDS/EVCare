@@ -42,12 +42,15 @@ namespace Application.Services
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ITechnicianRepository _technicianRepository;
         private readonly IGoogleValidator _googleValidator;
+        private readonly INotificationServices _notificationServices;
 
         public AuthServices(IAccountRepository accountRepository, ITokenServices tokenServices
             , IConfiguration configuration, IRefreshTokenRepository refreshTokenRepository,
             ICustomerRepository customerRepository, IOtpServices otpServices,
             IEmployeeRepository employeeRepository, ITechnicianRepository technicianRepository
-            ,IGoogleValidator googleValidator)
+            ,IGoogleValidator googleValidator
+            , INotificationServices notificationServices
+            )
         {
             this._accountRepository = accountRepository;
             this._tokenServices = tokenServices;
@@ -58,6 +61,7 @@ namespace Application.Services
             this._employeeRepository = employeeRepository;
             this._technicianRepository = technicianRepository;
             _googleValidator = googleValidator;
+            this._notificationServices = notificationServices;
         }
         public async Task<ResponseDto<RegisterResponseDto>> RegisterAsync(RegisterRequestDto data)
         {
@@ -223,6 +227,14 @@ namespace Application.Services
                 tmp.TechnicianId = newIdReturned;
                 await _employeeRepository.UpdateAsync(tmp);
             };
+            await _notificationServices.SendNewAccountNotificationAsync(new AccountEmailViewModel
+            {
+                Email = newAccount.Email,
+                DateCreated = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7)),
+                Password = data.accountInfo.password,
+                EmployeeName = newAccount.First_Name + " " + newAccount.Last_Name,
+
+            });
             return newIdReturned;
         }
         public async Task<ResponseDto<LoginResponseDto>> LoginAsync(LoginRequestDto data, HttpContext context)
