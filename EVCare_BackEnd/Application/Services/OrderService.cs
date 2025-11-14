@@ -31,13 +31,14 @@ namespace Application.Services
         private readonly IOrderPartRepository _orderPartRepository;
         private readonly IPartRepository _partRepository;
         private readonly ITechnicianWorkingSessionRepository _technicianWorkingSessionRepository;
-
+        private readonly IAppointmentPartConditionRepository _appointmentPartConditionRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public OrderService(IOrderRepository orderRepository,
             IAppointmentRepository appointmentRepository,
             IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository, IUnitOfWork unitOfWork
             , ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
+            , IAppointmentPartConditionRepository appointmentPartConditionRepository
             )
         {
             _orderRepository = orderRepository;
@@ -47,6 +48,7 @@ namespace Application.Services
             _partRepository = partRepository;
             _unitOfWork = unitOfWork;
             _technicianWorkingSessionRepository = technicianWorkingSessionRepository;
+            _appointmentPartConditionRepository = appointmentPartConditionRepository;
         }
         public async Task<ResponseDto<OrderResponseDto>> CreateOrderAsync(OrderCreateRequestDto data)
         {
@@ -182,6 +184,8 @@ namespace Application.Services
                     part.Stock += op.Quantity;
                     _partRepository.Update(part);
                 }
+                var appointment = await _appointmentRepository.GetByOrderIdAsync(model.Id);
+                await _appointmentPartConditionRepository.RemoveByAppointmentIdAsync(appointment.Id);
                 await _orderRepository.RemoveOrderPartsAsync(model.Id);
                 foreach (var part in model.OrderParts)
                 {
@@ -199,6 +203,13 @@ namespace Application.Services
                         TechnicianId = part.TechnicianId,
                         Price = originalPart.Price,
                         ReplacementPrice = originalPart.ReplacementPrice
+                    });
+                    await _appointmentPartConditionRepository.CreateAppointmentPartConditionAsync(new AppointmentPartCondition
+                    {
+                        AppointmentId = appointment.Id,
+                        PartId = part.PartId,
+                        Level = part.LevelEnum,
+                        TechicianId = part.TechnicianId
                     });
                 }
 
