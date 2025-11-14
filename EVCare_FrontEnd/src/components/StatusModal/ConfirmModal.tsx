@@ -30,16 +30,10 @@ const ConfirmModal = ({
         <ModalWrapper>
           <ModalMessage>{message}</ModalMessage>
           <ButtonsContainer>
-            <ButtonAction
-              text="Close"
-              color="#333"
-              backgroundColor="#ccc"
-              action={onClose}
-            />
+            <ButtonAction text="Close" variant="outline" action={onClose} />
             <ButtonAction
               text="Confirm"
-              color="#fff"
-              backgroundColor="#00AD4E"
+              variant="primary"
               action={() => {
                 onConfirm();
                 onClose();

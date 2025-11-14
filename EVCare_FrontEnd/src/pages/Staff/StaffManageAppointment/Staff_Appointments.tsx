@@ -44,6 +44,9 @@ export default function Staff_Appoinments() {
   );
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showReassignModal, setShowReassignModal] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
+  const [detailAppointment, setDetailAppointment] =
+    useState<StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>>();
   useEffect(() => setCurrentPage(1), [searchValue]);
 
   const { data: applications } = useGetApplication({});
@@ -170,6 +173,8 @@ export default function Staff_Appoinments() {
                   onOpenProgress={() => handleOpenProgress(item)}
                   hasTechnicianOnleave={checkTechnicianOnleave(item.id)}
                   onOpenReassign={() => handleOpenReassign(item)}
+                  setShowDetail={setShowDetail}
+                  setDetailAppointment={setDetailAppointment}
                 />
               )
             )
@@ -207,6 +212,14 @@ export default function Staff_Appoinments() {
           appointmentId={selectedAppointmentId}
         />
       )}
+
+      {showDetail && (
+        <Appointment_Detail
+          isOpen={showDetail}
+          setIsOpen={setShowDetail}
+          appointment={detailAppointment ?? undefined}
+        />
+      )}
     </PageTransition>
   );
 }
@@ -219,4 +232,4 @@ import {
   PageTransition,
   AppoitmentWrapper,
 } from "./styles/Staff_Appointments.styled";
-import SpinnerComponent from "../../../components/SpinnerComponent";
+import Appointment_Detail from "./Appointment_Detail";

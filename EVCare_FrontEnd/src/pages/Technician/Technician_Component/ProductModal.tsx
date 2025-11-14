@@ -93,8 +93,7 @@ export default function ProductModal({
 
                 <ButtonAction
                   text="Add To Cart"
-                  color="white"
-                  backgroundColor={part ? "#00AD4E" : "#ccc"}
+                  variant="secondary"
                   action={handleAdd}
                 />
               </TopRow>
