@@ -292,12 +292,12 @@ export default function AdminServiceCenter() {
 
           <SectionTitle>
             <FaPercentage />
-            VAT
+            VAT (%)
           </SectionTitle>
 
           <FullWidthWrapper>
             <InputGroup>
-              <StyledLabel htmlFor="capacity">Concurrent VAT</StyledLabel>
+              <StyledLabel htmlFor="capacity">Concurrent VAT (%)</StyledLabel>
               <StyledInput
                 id="vat"
                 name="vat"
