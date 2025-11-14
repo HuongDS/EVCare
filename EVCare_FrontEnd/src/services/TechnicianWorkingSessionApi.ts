@@ -6,9 +6,6 @@ import axios from "axios";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
 import QueryString from "qs";
 
-/**
- * @param payload { orderId, status }
- */
 export const useUpdateTechnicianWorkingSession = () => {
   return useMutation({
     mutationKey: ["TechnicianWorkingSession"],
