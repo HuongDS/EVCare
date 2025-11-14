@@ -14,6 +14,7 @@ namespace DataAccess.Dtos.ServiceCenter
         public TimeSpan? CloseTime { get; set; }
         public string? Hotline { get; set; }
 
+        public decimal? Vat { get; set; }
         public int? Capacity { get; set; }
         public int? WorkSlot { get; set; }
         public int? DailyBookingLimit { get; set; }
