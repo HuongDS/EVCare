@@ -3,16 +3,8 @@ import { api } from "../api/api";
 import type { ResponseDto } from "../models/AppointmentsModel/Technician_Appointments_Model";
 import type { TechnicianDetailModel } from "../models/Techinician/TechnicianDetailModel";
 
-/**
- * [TECHNICIAN] - Get technician detail by ID
- * @param technicianId : ID of the technician
- */
-export const getTechnicianDetail = async (
-  technicianId: number
-): Promise<TechnicianDetailModel> => {
-  const { data } = await api.get<ResponseDto<TechnicianDetailModel>>(
-    `/api/Technician/detail/${technicianId}`
-  );
+export const getTechnicianDetail = async (technicianId: number): Promise<TechnicianDetailModel> => {
+  const { data } = await api.get<ResponseDto<TechnicianDetailModel>>(`/api/Technician/detail/${technicianId}`);
   return data.data!;
 };
 
