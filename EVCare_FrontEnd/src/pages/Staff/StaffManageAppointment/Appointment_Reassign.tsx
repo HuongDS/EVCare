@@ -137,9 +137,9 @@ export default function Appointment_Reassign({
 
   const queryClient = useQueryClient();
   const handleReAssign = async () => {
-    const checkStatusForTechnicianAssign = (): "Pending" | "InProgress" => {
+    const checkStatusForTechnicianAssign = (): "AddingPart" | "InProgress" => {
       if (appointment.status === "AddingPart") {
-        return "Pending";
+        return "AddingPart";
       } else {
         return "InProgress";
       }
@@ -150,14 +150,16 @@ export default function Appointment_Reassign({
         technicianIds: assignedTechnicianIDs,
         status: checkStatusForTechnicianAssign(),
       });
-      queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
+      await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
       setSelectedTechnicians([]);
       setIsSuccessModalOpen(true);
       setModalMessage("ReAssign Technicians successfully");
     } catch (error) {
       handleError(error);
       setIsErrorModalOpen(true);
-      setModalMessage("ReAssign Technicians failed! Try again");
+      setModalMessage(
+        (error as Error).message || "ReAssign Technicians failed! Try again"
+      );
     }
   };
 
@@ -175,13 +177,16 @@ export default function Appointment_Reassign({
       });
       notification.success({
         message: "Finish Session",
-        description: "Technician is finished session successfully",
+        description: "Technician's session is finished successfully",
         showProgress: true,
       });
+      await refetch();
     } catch (error) {
       notification.error({
         message: "Finish Session Failed",
-        description: "Failed to finish session of this technician",
+        description:
+          (error as Error).message ||
+          "Failed to finish session of this technician",
         showProgress: true,
       });
     }
@@ -193,7 +198,7 @@ export default function Appointment_Reassign({
     const techniciansLeave = appointment.technicians
       .filter((tech) => tech.status === "OnLeave")
       .map((tech) => tech.id);
-    if (techniciansLeave) {
+    if (techniciansLeave.length > 0) {
       await handleFinishSession(techniciansLeave);
     }
   };
@@ -247,6 +252,10 @@ export default function Appointment_Reassign({
                           technicianID: assignment.id,
                         }}
                         isPreviouslyAssigned
+                        technicianLength={appointment.technicians.length}
+                        onFinishSession={() =>
+                          handleFinishSession([assignment.id])
+                        }
                       />
                     ))}
                 </TechnicianGrid>
@@ -410,19 +419,23 @@ interface TechnicianCardProps {
   technician: TechnicianModel<TechnicianSkills>;
   onAdd?: () => void;
   onRemove?: () => void;
+  onFinishSession?: () => void;
   isSelected?: boolean;
   isPreviouslyAssigned?: boolean;
   assignmentInfo?: {
     technicianID: number;
   };
+  technicianLength?: number;
 }
 export const TechnicianCard = ({
   technician,
   onAdd,
   onRemove,
+  onFinishSession,
   isSelected = false,
   isPreviouslyAssigned = false,
   assignmentInfo,
+  technicianLength = 1,
 }: TechnicianCardProps) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
   const displayedSkills = showAllSkills
@@ -528,6 +541,12 @@ export const TechnicianCard = ({
           Add Technician
         </ActionButton>
       )}
+
+      {isPreviouslyAssigned &&
+        technicianLength > 1 &&
+        technician.status === "OnLeave" && (
+          <ActionButton onClick={onFinishSession}>Finish Session</ActionButton>
+        )}
     </TechnicianCardWrapper>
   );
 };
