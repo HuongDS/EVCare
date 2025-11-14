@@ -214,8 +214,11 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
                       <th>Service Price</th>
                       <th>
                         Amount{" "}
-                        <Tooltip title="Amount = (Unit Price + Service Price) x Quantity">
-                          <Info />
+                        <Tooltip
+                          title="Amount = (Unit Price + Service Price) x Quantity"
+                          color="#00ad4e"
+                        >
+                          <Info size={20} />
                         </Tooltip>
                       </th>
                     </tr>
