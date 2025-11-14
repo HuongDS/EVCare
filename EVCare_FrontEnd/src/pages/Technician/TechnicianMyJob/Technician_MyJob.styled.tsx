@@ -22,8 +22,8 @@ export const Header = styled.header`
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  padding-bottom: 24px;
-  margin-bottom: 24px;
+  /* padding-bottom: 24px;
+  margin-bottom: 24px; */
 `;
 
 export const Title = styled(motion.h1)`

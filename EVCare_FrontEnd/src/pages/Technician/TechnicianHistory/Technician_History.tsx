@@ -24,7 +24,9 @@ import { EmptyState } from "../Technician_Component/EmptyState";
 const PAGE_SIZE = LENGTH.VIEW_HISTORY_MAX || 10;
 
 export default function TechnicianHistory() {
-  const [statusFilter, setStatusFilter] = useState<"Completed" | "Canceled">("Completed");
+  const [statusFilter, setStatusFilter] = useState<"Completed" | "Canceled">(
+    "Completed"
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [sortById, setSortById] = useState<"asc" | "desc">("desc");
 
@@ -46,19 +48,32 @@ export default function TechnicianHistory() {
   };
 
   return (
-    <PageWrapper key="technician-history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <PageWrapper
+      key="technician-history"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <ContentWrapper>
         <Header>
           <Title>History Jobs</Title>
-          <Instruction>Review completed or canceled appointments assigned to you.</Instruction>
+          <Instruction>
+            Review completed or canceled appointments assigned to you.
+          </Instruction>
         </Header>
 
         <FilterBar>
           <StatusFilterTabs>
-            <TabButton $isActive={statusFilter === "Completed"} onClick={() => setStatusFilter("Completed")}>
+            <TabButton
+              $isActive={statusFilter === "Completed"}
+              onClick={() => setStatusFilter("Completed")}
+            >
               Completed
             </TabButton>
-            <TabButton $isActive={statusFilter === "Canceled"} onClick={() => setStatusFilter("Canceled")}>
+            <TabButton
+              $isActive={statusFilter === "Canceled"}
+              onClick={() => setStatusFilter("Canceled")}
+            >
               Canceled
             </TabButton>
           </StatusFilterTabs>
@@ -83,7 +98,13 @@ export default function TechnicianHistory() {
             {isLoading ? (
               <SpinnerComponent />
             ) : appointments.length > 0 ? (
-              appointments.map((item) => <TechnicianAppointmentCard key={item.id} data={item} />)
+              appointments.map((item) => (
+                <TechnicianAppointmentCard
+                  handleUpdateStatus={() => 1}
+                  setIsOrder={() => 1}
+                  data={item}
+                />
+              ))
             ) : (
               <EmptyState />
             )}

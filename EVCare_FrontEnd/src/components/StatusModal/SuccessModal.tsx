@@ -96,12 +96,7 @@ const PopUp = ({ header, message, action }: PopUpProps) => {
         <p>{message}</p>
       </BodyContainer>
       <ButtonContainer>
-        <ButtonAction
-          action={action}
-          text="Continue"
-          backgroundColor="#00AD4E"
-          color="white"
-        />
+        <ButtonAction action={action} text="Continue" variant="primary" />
       </ButtonContainer>
     </Container>
   );

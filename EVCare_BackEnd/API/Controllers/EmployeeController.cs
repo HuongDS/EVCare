@@ -1,7 +1,9 @@
 ﻿using API.Filters;
+using Application.DomainEvents;
 using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
+using Application.Services;
 using DataAccess.Dtos.Appointment;
 using DataAccess.Dtos.Employees;
 using DataAccess.Dtos.Others;
@@ -22,15 +24,21 @@ namespace API.Controllers
         private readonly IEmployeeServices _employeeServices;
         private readonly IAppointmentService _appointmentService;
         private readonly ITechnicianWorkingSessionService _technicianWorkingSessionService;
+        private readonly OnAssignTechnician _onAssignTechnician;
+        private readonly IAccountService _accountService;
 
         public EmployeeController(
             IEmployeeServices employeeServices,
             IAppointmentService appointmentService,
-            ITechnicianWorkingSessionService technicianWorkingSessionService)
+            ITechnicianWorkingSessionService technicianWorkingSessionService,
+            OnAssignTechnician onAssignTechnician,
+            IAccountService accountService)
         {
             this._employeeServices = employeeServices;
             this._appointmentService = appointmentService;
             _technicianWorkingSessionService = technicianWorkingSessionService;
+            _onAssignTechnician = onAssignTechnician;
+            _accountService = accountService;
         }
         [HttpGet("check-slots")]
         [Authorize(Roles = "Staff")]
@@ -79,6 +87,9 @@ namespace API.Controllers
             try
             {
                 await _technicianWorkingSessionService.AddTechnicianToOrder(model);
+                var accountTechIds = await _accountService.GetAccountIdByTechnicianIds(model.TechnicianIds);
+                var accountTechIdStrings = accountTechIds.Select(a => a.ToString());
+                await _onAssignTechnician.HandleAsync(accountTechIdStrings);
                 return Ok(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.CREATED,

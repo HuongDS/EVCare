@@ -280,8 +280,8 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
       </ContentWrapper>
       {isSuccess && (
         <SuccessModal
-          header="Appointment Payment"
-          message="Appointment is paid successfully"
+          header="Order Payment"
+          message="Order is paid successfully"
           action={handleCloseModal}
         />
       )}

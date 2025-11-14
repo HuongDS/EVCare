@@ -71,7 +71,7 @@ namespace API.Controllers
                     orderId = data.orderId
                 }).ToList();
                 var response = await _orderService.AddPartsToOrder(newAddList, data.orderId);
-                await _onStatusOrderChange.HandleAsync<OrderPartsViewDto>(OrderStatusChangeEventEnum.OrderConfirmed, technicianIds, response.data);
+                //await _onStatusOrderChange.HandleAsync<OrderPartsViewDto>(OrderStatusChangeEventEnum.OrderConfirmed, technicianIds, response.data);
                 return Ok(response);
             }
             catch (Exception ex)
