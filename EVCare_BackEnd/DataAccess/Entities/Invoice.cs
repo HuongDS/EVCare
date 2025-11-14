@@ -21,7 +21,8 @@ namespace DataAccess.Entities
         public PaymentStatusEnum Status { get; set; }
         public DateTime Create_At { get; set; }
         public DateTime Updated_At { get; set; }
+        public decimal Vat { get; set; }
 
-        
+
     }
 }
