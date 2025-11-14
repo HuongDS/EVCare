@@ -1,4 +1,12 @@
-import { Calendar, Phone, User, Car, FileText, CreditCard } from "lucide-react";
+import {
+  Calendar,
+  Phone,
+  User,
+  Car,
+  FileText,
+  CreditCard,
+  Info,
+} from "lucide-react";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate } from "../../../utils/formatDate";
 import {
@@ -201,10 +209,15 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
                   <TableHeader>
                     <tr>
                       <th>Description</th>
-                      <th>Qty</th>
+                      <th>Quantity</th>
                       <th>Unit Price</th>
                       <th>Service Price</th>
-                      <th>Amount</th>
+                      <th>
+                        Amount{" "}
+                        <Tooltip title="Amount = (Unit Price + Service Price) x Quantity">
+                          <Info />
+                        </Tooltip>
+                      </th>
                     </tr>
                   </TableHeader>
                   <TableBody>
@@ -298,3 +311,4 @@ import {
   InvoiceFooter,
   SpinStyled,
 } from "./styles/Appointment_Invoice.styled";
+import { Tooltip } from "antd";

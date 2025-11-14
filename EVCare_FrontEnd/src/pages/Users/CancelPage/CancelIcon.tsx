@@ -3,7 +3,6 @@ import styled, { keyframes, css } from "styled-components";
 
 const MAIN_RED = "#FF4D4F";
 
-// Animation xuất hiện
 const pop = keyframes`
   50% { transform: scale(1.1); }
 `;

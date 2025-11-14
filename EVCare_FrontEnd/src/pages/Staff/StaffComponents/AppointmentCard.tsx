@@ -2,6 +2,7 @@ import styled from "styled-components";
 import StatusTag from "../../../components/StatusTags/StatusTag";
 import type { StaffAppointmentsDto } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import { formatDate } from "../../../utils/formatDate";
+import logo from "../../../assets/EVCare.png";
 import {
   TriangleAlert,
   Calendar,
@@ -71,7 +72,7 @@ export default function AppointmentCard({
             src={
               data.appointmentImages && data.appointmentImages.length > 0
                 ? data.appointmentImages[0]
-                : "https://i.pinimg.com/736x/79/74/12/797412081b120609d902b4966fa435b7.jpg"
+                : logo
             }
             alt="Vehicle"
           />
