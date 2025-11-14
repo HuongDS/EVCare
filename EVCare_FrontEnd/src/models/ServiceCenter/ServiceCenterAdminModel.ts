@@ -9,4 +9,5 @@ export type ServiceCenterAdminModel = {
   dailyBookingLimit: number;
   workStartDay: string;
   workEndDay: string;
+  vat: number;
 };
