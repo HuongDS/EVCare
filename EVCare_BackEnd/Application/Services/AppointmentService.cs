@@ -182,7 +182,7 @@ namespace Application.Services
             var utcNow = DateTime.UtcNow;
             var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vnZone);
-            if (vnTime < appointment.Appointment_Date) {
+            if (DateOnly.FromDateTime(vnTime) < DateOnly.FromDateTime(appointment.Appointment_Date)) {
                 throw new Exception("Cannot update appointment before appointment date");
             }
 
