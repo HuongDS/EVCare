@@ -85,7 +85,7 @@ namespace Application.Services
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Completed;
             invoice.Create_At = DateTime.UtcNow.AddHours(7);
             invoice.Updated_At = DateTime.UtcNow.AddHours(7);
-            invoice.Vat = serviceCenterInfo.Vat;
+           
             var order = await _orderRepository.GetByIdAsync(invoice.OrderId);
             order.Status = OrderStatusEnum.Completed;
             await _orderRepository.UpdateAsync(order);
@@ -108,7 +108,7 @@ namespace Application.Services
             var random = new Random();
             long orderCode = ((long)random.Next(0, int.MaxValue) << 32) | (uint)random.Next(0, int.MaxValue);
             invoice.OrderCode = orderCode;
-            invoice.Vat = serviceCenterInfo.Vat;
+           
             await _redisService.SaveDate(invoice, orderCode.ToString());
             return _vnPayService.CreatePaymentUrl(context, model,invoice.OrderCode);
         }
@@ -173,7 +173,7 @@ namespace Application.Services
             invoice.CustomerId = customerId;
             invoice.OrderCode = orderCode;
             invoice.Status = DataAccess.Enums.PaymentStatusEnum.Pending;
-            invoice.Vat = serviceCenterInfo.Vat;
+            
             await _redisService.SaveDate(invoice, orderCode.ToString());
             return url;
         }
