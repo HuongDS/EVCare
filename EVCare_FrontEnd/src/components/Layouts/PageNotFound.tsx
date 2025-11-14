@@ -49,25 +49,34 @@ const BottomHalf = styled(Half)`
   clip-path: inset(50% 0 0 0);
 `;
 
-const CarWrapper = styled.div`
+const AnimatedContentWrapper = styled.div`
   position: absolute;
-  top: 31.5%;
-  left: 0;
-  transform: translateY(-50%);
-  opacity: 0;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  white-space: nowrap;
   pointer-events: none;
-  z-index: 50;
+  z-index: 60;
+  opacity: 0;
+`;
+
+const CarWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  opacity: 1;
 `;
 
 const Subtitle = styled.h2`
   color: #16a34a;
   font-size: 2rem;
-  position: absolute;
-  top: 31.5%;
-  left: 0;
-  white-space: nowrap;
-  transform: translateY(-50%);
-  opacity: 0;
+  margin: 0;
+  opacity: 1;
 `;
 
 const Description = styled.p`
@@ -105,25 +114,23 @@ const PageNotFound: React.FC = () => {
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const animatedContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const car = carRef.current;
-    const subtitle = subtitleRef.current;
     const top = topRef.current;
     const bottom = bottomRef.current;
     const wrapper = wrapperRef.current;
-    if (!car || !subtitle || !top || !bottom || !wrapper) return;
+    const animatedContent = animatedContentRef.current;
+    if (!top || !bottom || !wrapper || !animatedContent) return;
 
     const animate = () => {
       const wrapperRect = wrapper.getBoundingClientRect();
       const splitZoneStart = wrapperRect.left - 5;
       const splitZoneEnd = wrapperRect.right + 5;
       const screenWidth = window.innerWidth;
-      const carWidth = car.offsetWidth;
-      const textWidth = subtitle.offsetWidth;
-
-      gsap.killTweensOf([car, subtitle]);
-      gsap.set([car, subtitle], { opacity: 0 });
+      const contentWidth = animatedContent.offsetWidth;
+      gsap.killTweensOf(animatedContent);
+      gsap.set(animatedContent, { opacity: 0 });
 
       const tl = gsap.timeline({
         repeat: -1,
@@ -131,17 +138,17 @@ const PageNotFound: React.FC = () => {
         repeatDelay: 0.5,
       });
 
-      tl.set(car, { x: -carWidth - 150, opacity: 1 })
-        .set(subtitle, { x: -carWidth - textWidth - 170, opacity: 1 })
-        .to([car, subtitle], {
-          x: `+=${screenWidth + carWidth + textWidth + 400}`,
-          duration: 6,
-          onUpdate: () => {
-            const carRect = car.getBoundingClientRect();
-            const carFront = carRect.left + carRect.width;
-            const carBack = carRect.left;
+      tl.set(animatedContent, { x: -screenWidth - contentWidth, opacity: 1 })
 
-            if (carFront > splitZoneStart && carBack < splitZoneEnd) {
+        .to(animatedContent, {
+          x: `+=${2 * screenWidth + contentWidth}`,
+          duration: 8,
+          onUpdate: () => {
+            const contentRect = animatedContent.getBoundingClientRect();
+            const contentFront = contentRect.left + contentRect.width;
+            const contentBack = contentRect.left;
+            //Split effect 404
+            if (contentFront > splitZoneStart && contentBack < splitZoneEnd) {
               gsap.to(top, { y: -25, duration: 0.18, overwrite: "auto" });
               gsap.to(bottom, { y: 35, duration: 0.18, overwrite: "auto" });
             } else {
@@ -150,7 +157,8 @@ const PageNotFound: React.FC = () => {
             }
           },
         })
-        .to([car, subtitle], { opacity: 0, duration: 0.3 });
+
+        .to(animatedContent, { opacity: 0, duration: 0.3 });
     };
 
     animate();
@@ -165,13 +173,13 @@ const PageNotFound: React.FC = () => {
       <NumberWrapper ref={wrapperRef}>
         <TopHalf ref={topRef}>404</TopHalf>
         <BottomHalf ref={bottomRef}>404</BottomHalf>
+        <AnimatedContentWrapper ref={animatedContentRef}>
+          <Subtitle ref={subtitleRef}>Page Not Found</Subtitle>
+          <CarWrapper ref={carRef}>
+            <Car size={90} color={MAIN_GREEN} />
+          </CarWrapper>
+        </AnimatedContentWrapper>
       </NumberWrapper>
-
-      <CarWrapper ref={carRef}>
-        <Car size={90} color={MAIN_GREEN} />
-      </CarWrapper>
-
-      <Subtitle ref={subtitleRef}>Page Not Found</Subtitle>
 
       <Description>
         Oops! Looks like this road doesn’t exist. Let’s get you back on track to
