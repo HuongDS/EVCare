@@ -18,6 +18,7 @@ namespace DataAccess.Entities
 
         public ICollection<OrderPart> OrderParts { get; set; }
         public Invoice? Invoice { get; set; }
+        public decimal Vat { get; set; }
         public ICollection<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }
         public DateTime Updated_At { get ; set; }
     }
