@@ -195,10 +195,6 @@ export default function ApplicationForm({
           </Grid>
           <Grid>
             <Field>
-              <Label>ID</Label>
-              <Input readOnly value={account.id} />
-            </Field>
-            <Field>
               <Label>Email</Label>
               <Input readOnly value={account.email} />
             </Field>
