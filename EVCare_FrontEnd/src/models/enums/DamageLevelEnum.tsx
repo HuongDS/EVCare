@@ -14,18 +14,18 @@ export enum DamageLevelStringEnum {
   Critical = "Critical",
 }
 
-export const DamageLevelLabels: Record<DamageLevelEnum, string> = {
-  [DamageLevelEnum.NotAssessed]: "Not Assessed",
-  [DamageLevelEnum.Minor]: "Minor",
-  [DamageLevelEnum.Moderate]: "Moderate",
-  [DamageLevelEnum.Severe]: "Severe",
-  [DamageLevelEnum.Critical]: "Critical",
+export const DamageLevelLabels: Record<DamageLevelStringEnum, string> = {
+  [DamageLevelStringEnum.NotAssessed]: "Not Assessed",
+  [DamageLevelStringEnum.Minor]: "Minor",
+  [DamageLevelStringEnum.Moderate]: "Moderate",
+  [DamageLevelStringEnum.Severe]: "Severe",
+  [DamageLevelStringEnum.Critical]: "Critical",
 };
 
-export const damageColorMap: Record<DamageLevelEnum, string> = {
-  [DamageLevelEnum.NotAssessed]: "#9ca3af",
-  [DamageLevelEnum.Minor]: "#22c55e",
-  [DamageLevelEnum.Moderate]: "#facc15",
-  [DamageLevelEnum.Severe]: "#f97316",
-  [DamageLevelEnum.Critical]: "#ef4444",
+export const damageColorMap: Record<DamageLevelStringEnum, string> = {
+  [DamageLevelStringEnum.NotAssessed]: "#9ca3af",
+  [DamageLevelStringEnum.Minor]: "#22c55e",
+  [DamageLevelStringEnum.Moderate]: "#facc15",
+  [DamageLevelStringEnum.Severe]: "#f97316",
+  [DamageLevelStringEnum.Critical]: "#ef4444",
 };
