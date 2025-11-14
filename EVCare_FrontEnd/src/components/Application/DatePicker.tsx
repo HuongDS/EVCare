@@ -1,4 +1,3 @@
-// 📁 DatePicker.tsx
 import { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { DayPicker } from "react-day-picker";
@@ -50,7 +49,6 @@ const CalendarWrapper = styled.div`
     color: #111827;
   }
 
-  /* 🎯 Đổi màu mũi tên điều hướng (tương thích bản mới) */
   .rdp-nav_button {
     color: #16a34a !important;
   }
@@ -59,7 +57,6 @@ const CalendarWrapper = styled.div`
     color: #15803d !important;
   }
 
-  /* Một số phiên bản dùng SVG fill thay vì stroke */
   .rdp-nav_button svg path {
     fill: #16a34a !important;
   }
