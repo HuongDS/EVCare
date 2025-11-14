@@ -179,9 +179,9 @@ namespace DataAccess.Repositories
 
                  }).ToListAsync();
             var subTotal = partLists.Sum(x => x.Quantity * (x.UnitPrice + x.ReplacePrice));
-            var tax  = await _dbContext.Invoices
+            var tax  = await _dbContext.Orders
                 .AsNoTracking()
-                .Where(x => x.OrderId == orderId)
+                .Where(x => x.Id == orderId)
                 .Select(x => x.Vat)
                 .FirstOrDefaultAsync();
             var total = subTotal * (1 + tax / 100m);
@@ -195,7 +195,7 @@ namespace DataAccess.Repositories
                     PaymentDate = x.Updated_At,
                     PaymentStatus = x.Status,
                     SubTotal = subTotal,
-                    Vat = x.Vat,
+                    Vat = tax,
                     Total = total,
                     PaymentMethod = x.Payment_Method
 
