@@ -5,7 +5,6 @@ import {
   Activity,
   TrendingUp,
   Clock,
-  IdCard,
   Phone,
   Mail,
   UserRoundPen,
@@ -157,13 +156,6 @@ const TechnicianGeneral: React.FC = () => {
               </ProfileHeader>
 
               <ProfileInfo>
-                <InfoRow>
-                  <IdCard size={20} />
-                  <span>ID:</span>
-                  <span style={{ marginLeft: "auto", color: "#6b7280" }}>
-                    {techInfo.data?.id}
-                  </span>
-                </InfoRow>
                 <InfoRow>
                   <Phone size={20} />
                   <span>Phone:</span>
