@@ -27,7 +27,6 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
     orderDetail?.data?.id ?? 0
   );
 
-  //gộp các item cùng id
   const mergeOrder =
     orderDetail?.data?.parts.reduce((acc, part) => {
       if (acc[part.id]) {
@@ -40,10 +39,8 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
       return acc;
     }, {} as Record<number, (typeof orderDetail.data.parts)[0]>) || {};
 
-  // Chuyển object thành array
   const mergedPartsArray = Object.values(mergeOrder);
 
-  //tính các chi phí trong order
   const subtotal =
     orderDetail?.data?.parts.reduce(
       (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
@@ -56,7 +53,6 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
     return subtotal + vatAmount;
   };
 
-  //hàm tải invoice
   const { refetch, isLoading } = useDownloadInvoice(orderDetail?.data?.id ?? 0);
 
   const handleDownloadInvoice = async () => {
