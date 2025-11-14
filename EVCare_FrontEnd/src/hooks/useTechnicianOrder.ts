@@ -1,77 +1,146 @@
-// src/hooks/useTechnicianOrder.ts
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useNotification } from "../context/useNotification";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { useUpdateOrderParts } from "../services/updateOrderPartApi";
+import {
+  useAddPartToOrder,
+  useUpdateOrderParts,
+} from "../services/updateOrderPartApi";
 import { useUpdatePartCondition } from "../services/appointmentPartCondition";
 
-import type { OrderPartsResponseDto } from "../models/OrderPartModel/Order_Parts_Model";
-import type { DamageLevelEnum } from "../models/enums/DamageLevelEnum";
-import { useGetPartsInServices, useGetServicesInAppointment } from "../services/appointmentTechnicianApi";
+import type {
+  OrderPartsResponseDto,
+  ResponseDto,
+} from "../models/OrderPartModel/Order_Parts_Model";
+import { DamageLevelStringEnum } from "../models/enums/DamageLevelEnum";
+import {
+  useGetPartsInServices,
+  useGetServicesInAppointment,
+} from "../services/appointmentTechnicianApi";
+import type {
+  AppointmentPartCondition,
+  PartDamageLevelDetail,
+} from "../models/OrderPartModel/AppointmentPartCondition";
 
 interface UseTechnicianOrderProps {
-  propOrderId?: number;
-  onPartsUpdated?: (orderId: number) => void;
+  orderId: number;
   selectedCategory: number;
   appointmentId: number;
 }
 
 export const useTechnicianOrder = ({
-  propOrderId,
-  onPartsUpdated,
+  orderId,
   selectedCategory,
   appointmentId,
 }: UseTechnicianOrderProps) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const notification = useNotification();
   const queryClient = useQueryClient();
 
-  const stateOrderId = (location.state as { orderId?: number })?.orderId;
-  const [currentOrderId] = useState<number | null>(propOrderId ?? stateOrderId ?? null);
-
-  const [open, setOpen] = useState(false);
-  const [selectedPart, setSelectedPart] = useState<OrderPartsResponseDto | null>(null);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [cart, setCart] = useState<{ part: OrderPartsResponseDto; quantity: number }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const pageSize = 8;
   const [pageIndex, setPageIndex] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [selectedPart, setSelectedPart] =
+    useState<OrderPartsResponseDto | null>(null);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cart, setCart] = useState<
+    { part: OrderPartsResponseDto; quantity: number }[]
+  >([]);
+  const [damageLevels, setDamageLevels] = useState<
+    Record<number, DamageLevelStringEnum>
+  >({});
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const { mutateAsync: updateOrderPart, isPending: orderUpdating } = useUpdateOrderParts();
+  const { mutateAsync: createOrderParts, isPending: creating } =
+    useAddPartToOrder();
   const { mutateAsync: updatePartCondition } = useUpdatePartCondition();
+  const { mutateAsync: updateOrderPart, isPending: updating } =
+    useUpdateOrderParts();
+  const appointment = queryClient.getQueryData<
+    ResponseDto<AppointmentPartCondition<PartDamageLevelDetail>>
+  >(["AppointmentHasCondition", appointmentId]);
+
+  useEffect(() => {
+    if (
+      appointment?.data &&
+      !isInitialized &&
+      appointment.data.partDamageLevels
+    ) {
+      const initialCart = appointment.data.partDamageLevels.map((part) => ({
+        part: {
+          id: part.partId,
+          name: part.partName,
+          quantity: part.quantity,
+          price: part.price,
+          imageUrl: part.partUrl,
+        } as OrderPartsResponseDto,
+        quantity: part.quantity ?? 1,
+      }));
+      setCart(initialCart);
+
+      const initLevels: Record<number, DamageLevelStringEnum> = {};
+      appointment.data.partDamageLevels.map((part) => {
+        initLevels[part.partId] =
+          part.damageLevel ?? DamageLevelStringEnum.NotAssessed;
+      });
+      setDamageLevels(initLevels);
+
+      setIsInitialized(true);
+    }
+  }, [isInitialized]);
 
   const handleAddToCart = (part: OrderPartsResponseDto, quantity: number) => {
     setCart((prev) => {
       const exist = prev.find((item) => item.part.id === part.id);
       if (exist) {
-        return prev.map((item) => (item.part.id === part.id ? { ...item, quantity: item.quantity + quantity } : item));
+        return prev.map((item) =>
+          item.part.id === part.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
       }
       return [...prev, { part, quantity }];
+    });
+
+    setDamageLevels((prev) => {
+      if (!prev[part.id]) {
+        return { ...prev, [part.id]: DamageLevelStringEnum.NotAssessed };
+      }
+      return prev;
     });
     setCartOpen(true);
   };
 
   const handleRemoveFromCart = (partId: number) => {
     setCart((prev) => prev.filter((item) => item.part.id !== partId));
+    setDamageLevels((prev) => {
+      const newLevels = { ...prev };
+      delete newLevels[partId];
+      return newLevels;
+    });
   };
 
   const handleCartQuantityChange = (partId: number, quantity: number) => {
-    setCart((prev) => prev.map((item) => (item.part.id === partId ? { ...item, quantity } : item)));
+    setCart((prev) =>
+      prev.map((item) =>
+        item.part.id === partId ? { ...item, quantity } : item
+      )
+    );
   };
 
-  const handleSendCart = async (damageLevels: Record<number, DamageLevelEnum>) => {
-    if (!currentOrderId || orderUpdating) return;
+  const handleSendCart = async (orderId: number) => {
+    console.log(cart);
+
     try {
-      await updateOrderPart({
-        orderId: currentOrderId,
+      await createOrderParts({
+        orderId: orderId,
         parts: cart.map((c) => ({ id: c.part.id, quantity: c.quantity })),
       });
 
       await updatePartCondition({
-        appointmentId: currentOrderId,
+        appointmentId: appointmentId,
         partDamageLevels: Object.entries(damageLevels).map(([id, level]) => ({
           partId: Number(id),
           levelEnum: level,
@@ -79,23 +148,52 @@ export const useTechnicianOrder = ({
       });
 
       notification.success({
-        message: "Update Successful",
-        description: "Parts and damage levels updated successfully!",
+        message: "Add Parts Successful",
+        description: "Parts and damage levels are added successfully!",
         showProgress: true,
       });
 
       await queryClient.invalidateQueries({
-        queryKey: ["TechnicianAddedParts", currentOrderId],
+        queryKey: ["AppointmentHasCondition", orderId],
       });
-
-      onPartsUpdated?.(currentOrderId);
       setCartOpen(false);
-      navigate("/technician/my-jobs", { state: { tab: "ADDING_PART" } });
     } catch (err) {
-      console.error(err);
+      notification.error({
+        message: "Add Parts Failed",
+        description: "Failed to add parts or damage levels",
+        showProgress: true,
+      });
+    }
+  };
+
+  const handleUpdateCart = async (orderId: number) => {
+    console.log(cart);
+
+    try {
+      await updateOrderPart({
+        orderId: orderId,
+        parts: cart.map((c) => ({ id: c.part.id, quantity: c.quantity })),
+      });
+      await updatePartCondition({
+        appointmentId: appointmentId,
+        partDamageLevels: Object.entries(damageLevels).map(([id, level]) => ({
+          partId: Number(id),
+          levelEnum: level,
+        })),
+      });
+      notification.success({
+        message: "Update Successful",
+        description: "Parts and damage levels are updated successfully!",
+        showProgress: true,
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["AppointmentHasCondition", orderId],
+      });
+      setCartOpen(false);
+    } catch (err) {
       notification.error({
         message: "Update Failed",
-        description: "Failed to update parts or damage levels.",
+        description: "Failed to update parts or damage levels",
         showProgress: true,
       });
     }
@@ -116,21 +214,26 @@ export const useTechnicianOrder = ({
     setPageIndex(1);
   };
 
-  const { data: serviceLists, isLoading: loadingServices } = useGetServicesInAppointment({ appointmentId });
+  const { data: serviceLists, isLoading: loadingServices } =
+    useGetServicesInAppointment({ appointmentId });
 
-  const { data: partsInService, isLoading: loadingPartInService } = useGetPartsInServices({
-    ...((selectedCategory !== 0 && { serviceIds: [selectedCategory] }) || {}),
-    ...((selectedCategory === 0 && { appointmentId: appointmentId }) || {}),
-    pageIndex: pageIndex,
-    pageSize: pageSize,
-  });
+  const { data: partsInService, isLoading: loadingPartInService } =
+    useGetPartsInServices({
+      ...((selectedCategory !== 0 && { serviceIds: [selectedCategory] }) || {}),
+      ...((selectedCategory === 0 && { appointmentId: appointmentId }) || {}),
+      pageIndex: pageIndex,
+      pageSize: pageSize,
+    });
 
   return {
     cart,
+    orderId,
     pageIndex,
     pageSize,
     searchQuery,
-    isSending: orderUpdating,
+    isSending: creating,
+    isUpdating: updating,
+    appointmentHasCondition: appointment,
     open,
     selectedPart,
     cartOpen,
@@ -140,7 +243,10 @@ export const useTechnicianOrder = ({
     loadingServices,
     partsInService,
     loadingPartInService,
+    damageLevels,
+    setDamageLevels,
     handleAddToCart,
+    handleUpdateCart,
     handleRemoveFromCart,
     handleCartQuantityChange,
     handleSendCart,
