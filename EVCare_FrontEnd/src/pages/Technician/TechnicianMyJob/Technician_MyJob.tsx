@@ -37,6 +37,7 @@ export default function Technician_MyJob() {
     activeStatus,
     appointments,
     isLoading,
+    isUpdating,
     setActiveStatus,
     setPageIndex,
     handleUpdateStatus,
@@ -96,6 +97,7 @@ export default function Technician_MyJob() {
             ) : appointments.length > 0 ? (
               appointments.map((item: any) => (
                 <TechnicianAppointmentCard
+                  isUpdating={isUpdating}
                   handleUpdateStatus={handleUpdateStatus}
                   setIsOrder={setIsOrder}
                   key={item.id}

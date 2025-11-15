@@ -64,7 +64,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
 
   //gọi hàm để lấy order detail
   const { data: order, isSuccess } = useGetOrderDetail(data.orderId);
-  const { data: appointments } = useGetAllAppointments({
+  const { data: appointments, isLoading } = useGetAllAppointments({
     pageSize: 20,
     sortOrder: "desc",
     sortField: "Appointment_Date",
@@ -377,7 +377,11 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
             </SectionTitle>
           </TechnicianHeader>
 
-          {workingTechnicians.length > 0 ? (
+          {isLoading ? (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <ColorSpinner width="4em" height="4em" />
+            </div>
+          ) : workingTechnicians.length > 0 ? (
             <TechnicianList>
               {workingTechnicians.map((tech) => (
                 <TechnicianItem key={tech.id}>
@@ -485,3 +489,4 @@ import {
   TotalRow,
   TotalValue,
 } from "./styles/Appointment_Part_Tracking.styled";
+import ColorSpinner from "../StaffComponents/ColorSpinner";

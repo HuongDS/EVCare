@@ -78,11 +78,15 @@ export const MainContent = styled.main`
 `;
 
 export const SortWrapper = styled.div`
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
   margin-bottom: 12px;
 `;
 
 export const SortButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 5px;
   background: ${PRIMARY};
   color: white;
   border: none;

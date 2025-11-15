@@ -12,6 +12,7 @@ import {
   FileText,
   UserPlus,
 } from "lucide-react";
+import logo from "../../../assets/EVCare.png";
 import {
   Select,
   DatePicker,
@@ -377,10 +378,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
                       $selected={selectedVehicle === vehicle.id}
                     >
                       <VehicleImage
-                        src={
-                          vehicle.image ||
-                          "https://i.pinimg.com/736x/79/74/12/797412081b120609d902b4966fa435b7.jpg"
-                        }
+                        src={vehicle.image || logo}
                         alt={vehicle.licensePlate}
                       />
                       <VehicleInfo>

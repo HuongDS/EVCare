@@ -27,12 +27,16 @@ interface UseTechnicianOrderProps {
   orderId: number;
   selectedCategory: number;
   appointmentId: number;
+  setCurrentCategory: (v: number) => void;
+  setIsOrder: (v: boolean) => void;
 }
 
 export const useTechnicianOrder = ({
   orderId,
   selectedCategory,
   appointmentId,
+  setCurrentCategory,
+  setIsOrder,
 }: UseTechnicianOrderProps) => {
   const navigate = useNavigate();
   const notification = useNotification();
@@ -157,10 +161,12 @@ export const useTechnicianOrder = ({
         queryKey: ["AppointmentHasCondition", orderId],
       });
       setCartOpen(false);
+      setIsOrder(false);
     } catch (err) {
       notification.error({
         message: "Add Parts Failed",
-        description: "Failed to add parts or damage levels",
+        description:
+          (err as Error).message || "Failed to add parts or damage levels",
         showProgress: true,
       });
     }
@@ -193,7 +199,8 @@ export const useTechnicianOrder = ({
     } catch (err) {
       notification.error({
         message: "Update Failed",
-        description: "Failed to update parts or damage levels",
+        description:
+          (err as Error).message || "Failed to update parts or damage levels",
         showProgress: true,
       });
     }
@@ -217,14 +224,22 @@ export const useTechnicianOrder = ({
   const { data: serviceLists, isLoading: loadingServices } =
     useGetServicesInAppointment({ appointmentId });
 
-  const { data: partsInService, isLoading: loadingPartInService } =
-    useGetPartsInServices({
-      keyWord: searchQuery,
-      ...((selectedCategory !== 0 && { serviceIds: [selectedCategory] }) || {}),
-      ...((selectedCategory === 0 && { appointmentId: appointmentId }) || {}),
-      pageIndex: pageIndex,
-      pageSize: pageSize,
-    });
+  const {
+    data: partsInService,
+    isLoading: loadingPartInService,
+    refetch,
+  } = useGetPartsInServices({
+    ...((searchQuery !== "" && { keyWord: searchQuery }) || {}),
+    ...((selectedCategory !== 0 && { serviceIds: [selectedCategory] }) || {}),
+    ...((selectedCategory === 0 && { appointmentId: appointmentId }) || {}),
+    pageIndex: pageIndex,
+    pageSize: pageSize,
+  });
+
+  const handleSelectAllParts = async () => {
+    setCurrentCategory(0);
+    refetch();
+  };
 
   return {
     cart,
@@ -258,5 +273,6 @@ export const useTechnicianOrder = ({
     handleCloseCart,
     handlePageChange,
     handleSearchChange,
+    handleSelectAllParts,
   };
 };

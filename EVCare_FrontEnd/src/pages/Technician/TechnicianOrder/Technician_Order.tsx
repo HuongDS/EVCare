@@ -88,14 +88,22 @@ export default function TechnicianOrder({
     handlePageChange,
     handleSearchChange,
     handleCartQuantityChange,
+    handleSelectAllParts,
   } = useTechnicianOrder({
     orderId,
     selectedCategory: currentCategory,
     appointmentId,
+    setCurrentCategory,
+    setIsOrder,
   });
 
   const handleServiceSelect = (service: ServiceViewModel) => {
     setCurrentCategory(service.serviceId);
+    setIsSidebarOpen(false);
+  };
+
+  const handleAllPart = () => {
+    handleSelectAllParts();
     setIsSidebarOpen(false);
   };
 
@@ -119,15 +127,23 @@ export default function TechnicianOrder({
           {loadingServices ? (
             <LoadingSpinner>Loading...</LoadingSpinner>
           ) : (
-            serviceLists?.data?.map((service) => (
+            <>
               <ServiceItem
-                key={service.serviceId}
-                $isActive={service.serviceId === currentCategory}
-                onClick={() => handleServiceSelect(service)}
+                $isActive={0 === currentCategory}
+                onClick={handleAllPart}
               >
-                {service.serviceName}
+                <div>All Parts</div>
               </ServiceItem>
-            ))
+              {serviceLists?.data?.map((service) => (
+                <ServiceItem
+                  key={service.serviceId}
+                  $isActive={service.serviceId === currentCategory}
+                  onClick={() => handleServiceSelect(service)}
+                >
+                  {service.serviceName}
+                </ServiceItem>
+              ))}
+            </>
           )}
         </ServiceList>
       </SidebarWrapper>
