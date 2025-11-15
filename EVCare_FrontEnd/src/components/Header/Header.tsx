@@ -24,7 +24,8 @@ export default function Header() {
   // const [tongle, setTongle] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const [enabled, setEnabled] = useState(true);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const [enabled, setEnabled] = useState(false);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 750);
   const dispatch = useDispatch<AppDispatch>();
@@ -111,7 +112,7 @@ export default function Header() {
 
   return (
     <Navbar $isScrolled={isScrolled}>
-      <ChristmasTheme enabled={enabled} />
+      {user?.role === "Customer" && <ChristmasTheme enabled={enabled} />}
       <Logo>
         <Link to="/">
           <img src={logo} alt="EVCare logo" />

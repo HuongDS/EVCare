@@ -19,52 +19,6 @@
 <body style="padding: 0; margin: 0">
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
-  <div id="snow"></div>
-
-  <style>
-    #snow {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 99999;
-    }
-
-    .snowflake {
-      position: absolute;
-      top: -10px;
-      font-size: 18px;
-      animation-name: fall;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      color: white;
-    }
-
-    @keyframes fall {
-      to {
-        transform: translateY(100vh) rotate(360deg);
-      }
-    }
-  </style>
-
-  <script>
-    function createSnowflake() {
-      const snow = document.createElement("div");
-      snow.classList.add("snowflake");
-      snow.innerText = "❄";
-      snow.style.left = Math.random() * 100 + "vw";
-      snow.style.animationDuration = Math.random() * 5 + 5 + "s";
-      snow.style.opacity = Math.random();
-      document.getElementById("snow").appendChild(snow);
-
-      setTimeout(() => snow.remove(), 10000);
-    }
-    setInterval(createSnowflake, 200);
-  </script>
-
 </body>
 
 
