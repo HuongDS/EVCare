@@ -27,7 +27,7 @@ export const StyledWrapper = styled.div`
     --nav-button-padding-y: 0.6em;
     --nav-button-border-radius: 8px;
     --nav-button-font-size: 16px;
-    --nav-button-hover-bg: linear-gradient(135deg, #00c656 0%, #00ad4e 100%); /* Hover gradient xanh */
+    --nav-button-hover-bg: linear-gradient(135deg, #00c656 0%, #00ad4e 100%);
     --nav-button-hover-text-color: #fff;
     --nav-button-distance: 0.875em;
     --underline-border-width: 1px;
@@ -150,7 +150,8 @@ export const StyledWrapper = styled.div`
   .popup-window hr {
     margin: var(--underline-margin-y) 0;
     border: none;
-    border-bottom: var(--underline-border-width) solid var(--underline-border-color);
+    border-bottom: var(--underline-border-width) solid
+      var(--underline-border-color);
   }
 
   /* actions */

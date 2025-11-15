@@ -64,7 +64,8 @@ export default function AppointmentHistoryCard({
     if (data.status === AppointmentStatusEnum.DONE) {
       setIsDisplayReviewButton(true);
     }
-    if (data.appointmentImages.length > 1) setPics(data.appointmentImages.map((p, i) => ({ id: i, url: p })));
+    if (data.appointmentImages.length > 1)
+      setPics(data.appointmentImages.map((p, i) => ({ id: i, url: p })));
   }, [data.status, data.appointmentImages]);
 
   return (
@@ -77,7 +78,8 @@ export default function AppointmentHistoryCard({
       <GeneralStyled>
         <DateStyled>
           <h5>
-            Date: <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
+            Date:{" "}
+            <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
           </h5>
           <div>
             <StatusTag status={data.status} />
@@ -91,7 +93,10 @@ export default function AppointmentHistoryCard({
             {pics.length > 1 ? (
               <LazyReviewPicsSection data={pics} />
             ) : (
-              <img src={data.appointmentImages ? data.appointmentImages[0] : Car} alt="" />
+              <img
+                src={data.appointmentImages ? data.appointmentImages[0] : Car}
+                alt=""
+              />
             )}
           </ImageWrapper>
           <ServiceWrapper>
@@ -108,6 +113,7 @@ export default function AppointmentHistoryCard({
               <ButtonAction
                 text="View Detail"
                 variant="primary"
+                fullWidth={false}
                 action={() => onViewAppointmentDetail(appointmentId)}
               />
 
@@ -116,6 +122,7 @@ export default function AppointmentHistoryCard({
                 data.status === AppointmentStatusEnum.DONE) && (
                 <ShowButton
                   text="View 3D Model"
+                  height="48px"
                   onclick={() => {
                     setModel3dData(appointmentId);
                     dispatch(openModel3d());
@@ -137,7 +144,11 @@ export default function AppointmentHistoryCard({
           {isOpenReviewForm && (
             <ReviewWrapper>
               {/* <ReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} /> */}
-              <LazyReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} />
+              <LazyReviewModal
+                appointmentData={data}
+                onClose={onClose}
+                open={isOpenReviewForm}
+              />
             </ReviewWrapper>
           )}
         </ButtonStyle>

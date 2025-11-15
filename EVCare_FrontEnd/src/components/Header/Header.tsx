@@ -16,12 +16,15 @@ import { stopAdminDashboardConnection } from "../../signalr/adminConnection";
 import { stopStaffDashboardConnection } from "../../signalr/staffConnection";
 import { stopChatConnection } from "../../signalr/chatConnection";
 import { stopTechnicianConnection } from "../../signalr/technicianConnection";
+import { ChristmasTheme } from "../XmasTheme/ChristmasTheme";
+import ThemeToggleRound from "../XmasTheme/ButtonTheme";
 
 export default function Header() {
   // const [showAuth, setShowAuth] = useState(false);
   // const [tongle, setTongle] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const [enabled, setEnabled] = useState(true);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 750);
   const dispatch = useDispatch<AppDispatch>();
@@ -108,6 +111,7 @@ export default function Header() {
 
   return (
     <Navbar $isScrolled={isScrolled}>
+      <ChristmasTheme enabled={enabled} />
       <Logo>
         <Link to="/">
           <img src={logo} alt="EVCare logo" />
@@ -126,13 +130,18 @@ export default function Header() {
         <div
           style={{
             display: "flex",
+            alignItems: "center",
           }}
         >
           <DropdownMenu handleLogout={handleLogout} />
+          <ThemeToggleRound enabled={enabled} setEnabled={setEnabled} />
         </div>
       ) : (
         <Buttons>
-          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
+          <button
+            className="btn btn-fill"
+            onClick={() => dispatch(openLogin())}
+          >
             Get Started
           </button>
         </Buttons>

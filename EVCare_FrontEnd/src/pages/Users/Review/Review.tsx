@@ -107,18 +107,28 @@ export default function ReviewServicePage() {
 
   const handleSelectService = (serviceId: number) => {
     setSelectedServices((prev) =>
-      prev.includes(serviceId) ? prev.filter((id) => id !== serviceId) : [...prev, serviceId]
+      prev.includes(serviceId)
+        ? prev.filter((id) => id !== serviceId)
+        : [...prev, serviceId]
     );
   };
 
   const toggleSortOrder = () => {
-    setSortOrder((prev) => (prev === SORT_ORDER.NEWEST ? SORT_ORDER.OLDEST : SORT_ORDER.NEWEST));
+    setSortOrder((prev) =>
+      prev === SORT_ORDER.NEWEST ? SORT_ORDER.OLDEST : SORT_ORDER.NEWEST
+    );
   };
 
   if (loading && pageIndex === 1) return <SpinnerComponent />;
 
   return (
-    <ClickSpark sparkColor="#16a34a" sparkSize={10} sparkRadius={15} sparkCount={8} duration={400}>
+    <ClickSpark
+      sparkColor="#16a34a"
+      sparkSize={10}
+      sparkRadius={15}
+      sparkCount={8}
+      duration={400}
+    >
       <Banner />
 
       <S.Container>
@@ -152,20 +162,32 @@ export default function ReviewServicePage() {
             <S.ActiveFilterInfo>
               <span>Filtering by: </span>
               {(minRating > 1 || maxRating < 5) && (
-                <span>{minRating === maxRating ? `${minRating}★` : `${minRating}★ to ${maxRating}★`}</span>
+                <span>
+                  {minRating === maxRating
+                    ? `${minRating}★`
+                    : `${minRating}★ to ${maxRating}★`}
+                </span>
               )}
-              {selectedServices.length > 0 && <span> {selectedServices.length} services</span>}
+              {selectedServices.length > 0 && (
+                <span> {selectedServices.length} services</span>
+              )}
             </S.ActiveFilterInfo>
           )}
 
-          <ReviewSection reviews={reviews} />
+          {loading ? <SpinnerComponent /> : <ReviewSection reviews={reviews} />}
 
-          {loading && pageIndex > 1 && <S.LoadingText>Loading more...</S.LoadingText>}
+          {loading && pageIndex > 1 && (
+            <S.LoadingText>Loading more...</S.LoadingText>
+          )}
           <div ref={observerRef} style={{ height: 1 }}></div>
 
-          {!loading && reviews.length === 0 && <S.EndText>No reviews match your filters.</S.EndText>}
+          {!loading && reviews.length === 0 && (
+            <S.EndText>No reviews match your filters.</S.EndText>
+          )}
 
-          {!hasMore && !loading && reviews.length > 0 && <S.EndText>No more reviews.</S.EndText>}
+          {!hasMore && !loading && reviews.length > 0 && (
+            <S.EndText>No more reviews.</S.EndText>
+          )}
         </S.MainContent>
       </S.Container>
     </ClickSpark>
