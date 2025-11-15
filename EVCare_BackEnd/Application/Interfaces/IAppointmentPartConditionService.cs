@@ -10,5 +10,6 @@ namespace Application.Interfaces {
         Task CreateAppointmentPartConditionAsync(AppointmentPartConditionCreateModel dto, int technicianId);
         Task<AppointmentPartConditionViewModel> GetAppointmentPartConditionsAsync(int appointmentId, int technicianId);
         Task UpdateAppointmentPartConditionAsync(AppointmentPartConditionCreateModel dto, int technicianId);
+        Task UpdateAppointmentPartConditionStatusAsync(int technicianId, int appointmentId);
     }
 }
