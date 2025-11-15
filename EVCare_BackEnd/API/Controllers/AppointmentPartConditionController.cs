@@ -38,7 +38,25 @@ namespace API.Controllers {
             }
         }
 
-
+        [HttpPut("appointment-part-condtition-status")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> UpdateAppointmentPartConditionStatus([FromQuery]int technicianId,[FromQuery]int appointmentId) {
+            try {
+                await _appointmentPartConditionService.UpdateAppointmentPartConditionStatusAsync(technicianId, appointmentId);
+                return Ok(new {
+                    statusCode = HttpStatus.OK,
+                    message = "Appointment part condition status updated successfully",
+                   
+                });
+            } catch (Exception e) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = 400,
+                    message = e.Message,
+                   
+                });
+            }
+        }
 
         [HttpPost]
         [Authorize(Roles = "Technician")]

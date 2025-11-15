@@ -52,10 +52,13 @@ namespace DataAccess.Repositories
                         TechnicianName = x.Technician.Employee.Account.First_Name+" " +x.Technician.Employee.Account.Last_Name,
                         ReplacementPrice = x.Part.ReplacementPrice,
                         Stock = x.Part.Stock,
-                   
+                        IsReplaced = x.IsReplaced
+                        
                     }),
                     Vat = x.Vat,
-                    Price = x.OrderParts.Sum(x => (x.Price + x.ReplacementPrice) * x.Quantity) * (1 + x.Vat / 100m)
+                    Price = x.OrderParts.Sum(x => (x.Price + x.ReplacementPrice) * x.Quantity) * (1 + x.Vat / 100m),
+                    PercentInprogress = x.OrderParts.Count() == 0 ? 0 :
+                        (decimal)(x.OrderParts.Where(op => op.IsReplaced).Count() * 100 / x.OrderParts.Count()),
 
                 }).FirstOrDefaultAsync();
 
