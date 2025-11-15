@@ -500,6 +500,5 @@ export const SubmitButton = styled.button`
 
 export const SpinnerWrapper = styled.div`
   display: flex;
-  width: 100%;
   justify-content: center;
 `;

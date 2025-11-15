@@ -164,7 +164,7 @@ export default function TechnicianOrder({
           </HeaderText>
         </HeaderContent>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ display: "flex", alignContent: "center", gap: "10px" }}>
           <SearchWrapper>
             <SearchIcon>
               <Search size={20} />
