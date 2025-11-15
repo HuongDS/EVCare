@@ -338,5 +338,25 @@ namespace Application.Services
         {
             return await _orderPartRepository.GetOrdersForTechnicianAsync(technicianId, orderId);
         }
+
+        public async Task UpdateOrderPartStatusAsync(OrderPartStatusUpdateModel model, int technicianId) {
+            var orderPart = await _orderPartRepository.GetOrderPartByOrderIdAndPartId(model.OrderId, model.PartId, technicianId);
+            if (orderPart == null) {
+                throw new Exception("Order part not found");
+            }
+            orderPart.IsReplaced = model.IsReplaced;
+            await _orderPartRepository.UpdateAsync(orderPart);
+            var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
+            var appoimentPartConditions = await _appointmentPartConditionRepository
+                .GetAppointmentPartConditionsByTechIdAndPartIdAndAppointmentIdAsync(appointment.Id, model.PartId, technicianId);
+            if (appoimentPartConditions != null) {
+                if (model.IsReplaced) {
+                    appoimentPartConditions.Level = DamageLevelEnum.Done;
+                    await _appointmentPartConditionRepository.UpdateAsync(appoimentPartConditions);
+                }
+               
+
+            }
+        }
     }
 }

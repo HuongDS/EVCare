@@ -51,5 +51,19 @@ namespace Application.Services {
                 }
             });
         }
+
+        public async Task UpdateAppointmentPartConditionStatusAsync(int technicianId, int appointmentId) {
+            
+            await _unitOfWork.ExecuteInTransactionAsync(async () => {
+                var appointmentPartConditions = await _appointmentPartConditionRepository
+                    .GetAppointmentPartConditionsByTechIdAndAppointmentId(appointmentId, technicianId);
+                if (appointmentPartConditions == null || !appointmentPartConditions.Any()) {
+                    throw new Exception("No appointment part conditions found for the given appointment and technician.");
+                }
+                foreach (var condition in appointmentPartConditions) {
+                    condition.Level = DataAccess.Enums.DamageLevelEnum.Done;
+                }
+            });
+        }
     }
 }

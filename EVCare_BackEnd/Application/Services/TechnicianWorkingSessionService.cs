@@ -7,6 +7,7 @@ using Application.DomainEvents;
 using Application.Interfaces;
 using DataAccess.Dtos.Technician;
 using DataAccess.Entities;
+using DataAccess.Enums;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
 
@@ -21,7 +22,8 @@ namespace Application.Services
         private readonly IEmployeeRepository _employeeRepository;
         private readonly OnAssignTechnician _onAssignTechnician;
         private readonly IAccountRepository _accountRepository;
-        private readonly ITechnicianRepository _technicianRepository;
+        private readonly IAppointmentPartConditionRepository _appointmentPartConditionRepository;
+        private readonly IOrderPartRepository _orderPartRepository;
 
         public TechnicianWorkingSessionService(ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
             , IOrderRepository orderRepository
@@ -30,7 +32,8 @@ namespace Application.Services
             , IEmployeeRepository employeeRepository
             , OnAssignTechnician onAssignTechnician
             , IAccountRepository accountRepository,
-            ITechnicianRepository technicianRepository
+             IAppointmentPartConditionRepository appointmentPartConditionRepository,
+            IOrderPartRepository orderPartRepository
             ) {
             _orderRepository = orderRepository;
             _appointmentRepository = appointmentRepository;
@@ -39,7 +42,8 @@ namespace Application.Services
             _employeeRepository = employeeRepository;
             _onAssignTechnician = onAssignTechnician;
             _accountRepository = accountRepository;
-            _technicianRepository = technicianRepository;
+            _appointmentPartConditionRepository = appointmentPartConditionRepository;
+            _orderPartRepository = orderPartRepository;
         }
 
         public async Task AddTechnicianToOrder(AssignTechniciansModel model) {
@@ -95,25 +99,27 @@ namespace Application.Services
             }
             await _technicianWorkingSessionRepository.UpdateStatusTechnicinInOrder(technicianId, orderId);
             await _employeeRepository.MarkAvaliableTechnician(technicianId);
-            if (await _technicianWorkingSessionRepository.CheckOrderDone(orderId)) {
-                var order = await _orderRepository.GetByIdAsync(orderId);
-                order.Status = DataAccess.Enums.OrderStatusEnum.Completed;
-                await _orderRepository.UpdateAsync(order);
-                appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(orderId);
-                appointment.Status = DataAccess.Enums.AppointmentStatusEnum.ReadyForPickup;
 
-                await _appointmentRepository.UpdateAsync(appointment);
+            
+            //if (await _technicianWorkingSessionRepository.CheckOrderDone(orderId)) {
+            //    var order = await _orderRepository.GetByIdAsync(orderId);
+            //    order.Status = DataAccess.Enums.OrderStatusEnum.Completed;
+            //    await _orderRepository.UpdateAsync(order);
+            //    appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(orderId);
+            //    appointment.Status = DataAccess.Enums.AppointmentStatusEnum.ReadyForPickup;
 
-                if (await _appointmentRepository.CheckAllReadyForPickup(appointment.VehicleId)) {
-                    var ids = await _appointmentRepository.GetAppointmentReadyForPickUpByVehicleId(appointment.VehicleId);
-                    foreach (var id in ids) {
-                        var data = await _appointmentRepository.GetPaymentPendingPickupEmailModel(id);
-                        await _notificationServices.SendPaymentPendingPickupEmailAsync(data);
+            //    await _appointmentRepository.UpdateAsync(appointment);
 
-                    }
+            //    if (await _appointmentRepository.CheckAllReadyForPickup(appointment.VehicleId)) {
+            //        var ids = await _appointmentRepository.GetAppointmentReadyForPickUpByVehicleId(appointment.VehicleId);
+            //        foreach (var id in ids) {
+            //            var data = await _appointmentRepository.GetPaymentPendingPickupEmailModel(id);
+            //            await _notificationServices.SendPaymentPendingPickupEmailAsync(data);
 
-                }
-            }
+            //        }
+
+            //    }
+            //}
 
 
         }
@@ -143,7 +149,21 @@ namespace Application.Services
             }
             if (model.Status == DataAccess.Enums.TechnicianWorkingSessionEnum.Completed)
             {
-                //await _employeeRepository.MarkAvaliableTechnician(technician);
+                await _orderPartRepository.UpdateCompletedStatusByOrderIdAndTechnicianId(model.OrderId, technician);
+                var partIds = await _orderPartRepository.GetPartIdsInAppointmentByTechId(model.OrderId,technician);
+                foreach (var partId in partIds)
+                {
+                    var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
+                    var appoimentPartConditions = await _appointmentPartConditionRepository
+                        .GetAppointmentPartConditionsByTechIdAndPartIdAndAppointmentIdAsync(appointment.Id, partId, technician);
+                    if (appoimentPartConditions != null) {
+                        
+                        appoimentPartConditions.Level = DamageLevelEnum.Done;
+                        await _appointmentPartConditionRepository.UpdateAsync(appoimentPartConditions);
+                        
+                    }
+                }
+
                 if (await _technicianWorkingSessionRepository.CheckOrderDone(model.OrderId))
                 {
                     var order = await _orderRepository.GetByIdAsync(model.OrderId);
