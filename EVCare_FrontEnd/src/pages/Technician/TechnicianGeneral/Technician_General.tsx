@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Statistic, Typography } from "antd";
-<<<<<<< HEAD
 import {
   Calendar,
   Activity,
@@ -10,9 +9,6 @@ import {
   Mail,
   UserRoundPen,
 } from "lucide-react";
-=======
-import { Calendar, Activity, TrendingUp, Clock, Phone, Mail, UserRoundPen } from "lucide-react";
->>>>>>> 226d3ce051008d385e5f39a2a658f0c722413db8
 import dayjs from "dayjs";
 
 import { useGetTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
