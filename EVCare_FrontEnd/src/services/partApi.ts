@@ -47,9 +47,26 @@ export async function createPart(data: NewPartDto) {
   }
 }
 
+type tempModelToFixConflictPropertyInBackend = {
+  id: number;
+  name: string;
+  stock: number;
+  description: string;
+  replacementPrice: number;
+  price: number;
+  categoryId: number;
+  isDeleted: boolean;
+  imageUrl: string;
+};
+
 export async function updatePart(id: number, data: PartDetailDto) {
   try {
-    await api.put("/api/Part", data, {
+    const processedData: tempModelToFixConflictPropertyInBackend = {
+      ...data,
+      stock: data.quantity,
+    };
+
+    await api.put("/api/Part", processedData, {
       params: {
         id: id,
       },
