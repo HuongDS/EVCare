@@ -11,7 +11,12 @@ import { getBlockedDate } from "../../../services/serviceCenterService";
 import type { BlockedDateViewModel } from "../../../models/BlockedDate/BlockedDateViewModel";
 import { TechnicianWorkingSessionEnum } from "../../../models/enums";
 
-import { ScheduleWrapper, ScheduleTitle, CalendarContainer, ErrorMessage } from "./Technician_Schedule.styled";
+import {
+  ScheduleWrapper,
+  ScheduleTitle,
+  CalendarContainer,
+  ErrorMessage,
+} from "./Technician_Schedule.styled";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 
 type SimpleAppointment = {
@@ -71,7 +76,9 @@ const TechnicianSchedule: React.FC = () => {
 
       if (!Array.isArray(raw)) return [];
 
-      return raw.filter((d): d is string => typeof d === "string").map((d) => new Date(d));
+      return raw
+        .filter((d): d is string => typeof d === "string")
+        .map((d) => new Date(d));
     },
     staleTime: 1000 * 60 * 5,
   });
@@ -86,12 +93,19 @@ const TechnicianSchedule: React.FC = () => {
       const res = await getBlockedDate();
       const raw = res?.data;
 
-      const list = Array.isArray(raw) ? raw : raw && typeof raw === "object" ? Object.values(raw) : [];
+      const list = Array.isArray(raw)
+        ? raw
+        : raw && typeof raw === "object"
+        ? Object.values(raw)
+        : [];
 
       return list
         .filter(
           (d): d is { dateTime: string; reason: string } =>
-            typeof d === "object" && d !== null && "dateTime" in d && typeof (d as any).dateTime === "string"
+            typeof d === "object" &&
+            d !== null &&
+            "dateTime" in d &&
+            typeof (d as any).dateTime === "string"
         )
         .map((d) => ({
           dateTime: dayjs(d.dateTime),
@@ -101,12 +115,20 @@ const TechnicianSchedule: React.FC = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  const loading = appointmentQueries.some((q) => q.isLoading) || isLoadingDateOff || isLoadingBlocked;
+  const loading =
+    appointmentQueries.some((q) => q.isLoading) ||
+    isLoadingDateOff ||
+    isLoadingBlocked;
 
-  const firstError = appointmentQueries.find((q) => q.error)?.error || errorDateOff || errorBlocked;
+  const firstError =
+    appointmentQueries.find((q) => q.error)?.error ||
+    errorDateOff ||
+    errorBlocked;
 
   const appointments: SimpleAppointment[] = useMemo(() => {
-    const allAppointments = appointmentQueries.flatMap((q) => q.data?.data?.items ?? []);
+    const allAppointments = appointmentQueries.flatMap(
+      (q) => q.data?.data?.items ?? []
+    );
 
     return allAppointments.map((a) => ({
       id: a.id,
@@ -164,11 +186,18 @@ const TechnicianSchedule: React.FC = () => {
       <ScheduleTitle>Technician Schedule</ScheduleTitle>
 
       {loading && <SpinnerComponent />}
-      {firstError && <ErrorMessage>{(firstError as Error)?.message || "Failed to load schedule data"}</ErrorMessage>}
+      {firstError && (
+        <ErrorMessage>
+          {(firstError as Error)?.message || "Failed to load schedule data"}
+        </ErrorMessage>
+      )}
 
       {!loading && !firstError && (
         <CalendarContainer>
-          <LazyPerformanceSchedule events={events} renderEventContent={renderEventContent} />
+          <LazyPerformanceSchedule
+            events={events}
+            renderEventContent={renderEventContent}
+          />
         </CalendarContainer>
       )}
     </ScheduleWrapper>

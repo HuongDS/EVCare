@@ -8,6 +8,7 @@ import {
   MSG_TITLE,
   SUCCESS_MESSAGE,
 } from "../../../constants/messages/Message";
+import ColorSpinner from "../../Staff/StaffComponents/ColorSpinner";
 
 interface ReviewButtonProps {
   onChangeStatus: (
@@ -19,6 +20,7 @@ interface ReviewButtonProps {
   appointmentHasCondition: PartDamageLevelDetail[];
   setIsOrder: (v: boolean) => void;
   setIsOpenAlert: (v: boolean) => void;
+  isUpdating: boolean;
 }
 
 const ReviewButton: React.FC<ReviewButtonProps> = ({
@@ -27,13 +29,14 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
   appointmentHasCondition,
   setIsOrder,
   setIsOpenAlert,
+  isUpdating,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>
       {appointment.status === TechnicianWorkingSessionEnum.ADDING_PART && (
-        <div style={{ textAlign: "end" }}>
+        <div style={{ textAlign: "end", display: "flex", gap: "5px" }}>
           {appointmentHasCondition.length > 0 ? (
             <ButtonAction
               text="Update"
@@ -48,15 +51,25 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
             />
           )}
 
-          <div
-            style={{ display: "inline-block", width: "10px", height: "10px" }}
-          />
-
-          <ButtonAction
-            text="Continue"
-            variant="secondary"
-            action={() => setIsOpenAlert(true)}
-          />
+          {isUpdating ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <ColorSpinner width="2em" height="2em" />
+            </div>
+          ) : (
+            <>
+              <ButtonAction
+                text="Continue"
+                variant="secondary"
+                action={() => setIsOpenAlert(true)}
+              />
+            </>
+          )}
         </div>
       )}
 
@@ -70,24 +83,32 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
           />
         )}
 
-        {appointment.status === TechnicianWorkingSessionEnum.INPROGRESS && (
-          <>
+        {appointment.status === TechnicianWorkingSessionEnum.INPROGRESS &&
+          (isUpdating ? (
             <div
-              style={{ display: "inline-block", width: "10px", height: "10px" }}
-            />
-            <ButtonAction
-              text="Done"
-              variant="primary"
-              action={() =>
-                onChangeStatus(
-                  TechnicianWorkingSessionEnum.COMPLETED,
-                  MSG_TITLE.TECH_COMPLETED,
-                  SUCCESS_MESSAGE.TECHNICIAN_COMPLETED
-                )
-              }
-            />
-          </>
-        )}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <ColorSpinner width="2em" height="2em" />
+            </div>
+          ) : (
+            <>
+              <ButtonAction
+                text="Done"
+                variant="primary"
+                action={() =>
+                  onChangeStatus(
+                    TechnicianWorkingSessionEnum.COMPLETED,
+                    MSG_TITLE.TECH_COMPLETED,
+                    SUCCESS_MESSAGE.TECHNICIAN_COMPLETED
+                  )
+                }
+              />
+            </>
+          ))}
       </div>
 
       <ViewDetailsModal
