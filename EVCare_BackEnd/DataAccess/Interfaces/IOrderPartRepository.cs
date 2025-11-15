@@ -16,10 +16,14 @@ namespace DataAccess.Interfaces
         Task AddRange(IEnumerable<OrderPart> orderPartLists);
         Task AddRangeAsync(List<OrderPart> orderParts);
         Task <IEnumerable<OrderPart>> GetOrderPart(int orderId, int technicianId);
+        Task<OrderPart> GetOrderPartByOrderIdAndPartId(int orderId, int partId, int technicianId);
         Task<IEnumerable<OrderPartViewModel>> GetOrderPartViewModelAsync(int orderId);
         Task<IEnumerable<OrderPartViewModel>> GetOrdersForTechnicianAsync(int technicianId, int orderId);
         Task<List<PartBrief>> GetPartBriefs();
+        Task<List<int>> GetPartIdsInAppointmentByTechId(int orderId, int technician);
         Task<IEnumerable<PartSummaryViewModel>> GetTopParts(PartSummaryQueryDto model);
         Task RemoveRange(int orderId, int technicianId);
+        Task UpdateAsync(OrderPart orderPart);
+        Task UpdateCompletedStatusByOrderIdAndTechnicianId(int orderId, int technician);
     }
 }

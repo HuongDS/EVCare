@@ -21,7 +21,7 @@ namespace DataAccess.Repositories
         public async Task<PageResultDto<CustomerViewModel>> GetAllCustomers(CustomerQueryDto model)
         {
             var query = _dbContext.Customers.AsNoTracking()
-                .Include(x=>x.Account)
+                .Include(x => x.Account)
                 .Select(x => new CustomerViewModel
                 {
                     AccountId = x.AccountId,
@@ -30,15 +30,16 @@ namespace DataAccess.Repositories
                     Email = x.Account.Email,
                     PhoneNumber = x.Account.Phone,
                     Address = x.Address,
-                    Vehicles = x.Vehicles.Where(x => x.Deleted_At == DateTime.MinValue)                   
+                    Vehicles = x.Vehicles.Where(x => x.Deleted_At == DateTime.MinValue)
                     .Select(v => new Dtos.Vehicle.VehicleViewModel
                     {
                         CategoryName = v.Category.Name,
                         LicensePlate = v.LicensePlate,
-                        cateId = (v.Category.Deleted_At!=DateTime.MinValue)?0:v.CategoryId,
+                        cateId = (v.Category.Deleted_At != DateTime.MinValue) ? 0 : v.CategoryId,
                         Id = v.Id,
                         Image = v.Image,
-                    })
+                    }),
+                    CustomerId = x.Id,
                 });
 
 
@@ -53,11 +54,12 @@ namespace DataAccess.Repositories
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
         }
 
-        public Task<int> GetBannedCustomers() {
-           return _dbContext.Customers
-                .Include(x=>x.Account)
-                .Where(x => x.Account.Deleted_At != DateTime.MinValue)
-                .CountAsync();
+        public Task<int> GetBannedCustomers()
+        {
+            return _dbContext.Customers
+                 .Include(x => x.Account)
+                 .Where(x => x.Account.Deleted_At != DateTime.MinValue)
+                 .CountAsync();
         }
 
         public async Task<CustomerViewDto?> GetCustomerByAccountId(int accountId)
