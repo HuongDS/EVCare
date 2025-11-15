@@ -52,7 +52,7 @@ export const UpdatePartForm = ({
       setFormData((prev) => ({
         ...prev,
         [name]:
-          name === "price" || name === "replacementPrice" || name === "stock" || name === "categoryId"
+          name === "price" || name === "replacementPrice" || name === "quantity" || name === "categoryId"
             ? Number(value)
             : value,
       }));
@@ -182,8 +182,8 @@ export const UpdatePartForm = ({
           <InputGroup>
             <StyledLabel htmlFor="update-stock">Inventory stock</StyledLabel>
             <StyledInput
-              id="update-stock"
-              name="stock"
+              id="quantity"
+              name="quantity"
               type="number"
               value={formData.quantity}
               onChange={handleInputChange}
