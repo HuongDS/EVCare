@@ -471,6 +471,7 @@ namespace DataAccess.Repositories
                         ReplacementPrice = op.ReplacementPrice,
                         Stock = op.Part.Stock,
                         Id = op.PartId,
+                        IsReplaced = op.IsReplaced
 
                     }).ToList(),
                     Status = a.Order.TechnicianWorkingSessions

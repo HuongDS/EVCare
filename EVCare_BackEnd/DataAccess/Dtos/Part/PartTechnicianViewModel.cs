@@ -17,8 +17,7 @@ namespace DataAccess.Dtos.Part
         public decimal Price { get; set; }
         public decimal ReplacementPrice { get; set; }
         public int Stock{ get;set; }
-       
-
+        public bool IsReplaced { get; set; }
         public string ImageUrl { get; set; }
     }
 }

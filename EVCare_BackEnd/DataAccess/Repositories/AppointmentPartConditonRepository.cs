@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.AppointmentPartCondition;
+using DataAccess.Entities;
 using DataAccess.Enums;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,11 @@ namespace DataAccess.Repositories {
                                     .FirstOrDefault().Quantity,
                     Price = a.Appointment.Order.OrderParts
                                     .Where(op => op.PartId == a.PartId && op.TechnicianId == technicianId)
-                                    .FirstOrDefault().Price
+                                    .FirstOrDefault().Price,
+                    IsReplaced = a.Appointment.Order.OrderParts
+                                    .Where(op => op.PartId == a.PartId && op.TechnicianId == technicianId)
+                                    .FirstOrDefault().IsReplaced
+
                 }).ToListAsync();
                     return new AppointmentPartConditionViewModel
                     {
@@ -47,6 +52,15 @@ namespace DataAccess.Repositories {
                         PartDamageLevels = parts
                     };
            }
+
+        public async Task<AppointmentPartCondition> GetAppointmentPartConditionsByTechIdAndPartIdAndAppointmentIdAsync(int appointmentId, int partId, int technicianId) {
+            return await _dbcontext.AppointmentPartConditions
+                .Where(apc => apc.AppointmentId == appointmentId
+                    && apc.PartId == partId 
+                    && apc.TechicianId == technicianId)
+                .FirstOrDefaultAsync();
+
+        }
 
         public async Task<DamageLevelEnum?> GetAppointmentPartConditionsByTechIdAndOrderIdAsync(int partId, int technicianId) {
             
@@ -63,6 +77,16 @@ namespace DataAccess.Repositories {
                 .ExecuteDeleteAsync();
         }
 
-       
+        public async Task UpdateAsync(AppointmentPartCondition appoimentPartConditions) {
+            _dbcontext.AppointmentPartConditions.Update(appoimentPartConditions);
+            await _dbcontext.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<AppointmentPartCondition>> GetAppointmentPartConditionsByTechIdAndAppointmentId(int appointmentId, int technicianId) {
+            
+            return await _dbcontext.AppointmentPartConditions
+                .Where(apc => apc.AppointmentId == appointmentId && apc.TechicianId == technicianId)
+                .ToListAsync();
+        }
     }
 }
