@@ -10,6 +10,7 @@ namespace DataAccess.Enums {
         Minor = 30,
         Moderate = 50,
         Severe = 70,
-        Critical = 100
+        Critical = 100,
+        Done = -36
     }
 }

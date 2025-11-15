@@ -55,6 +55,12 @@ namespace DataAccess.Repositories
                 .ToListAsync();
         }
 
+        public async Task<OrderPart> GetOrderPartByOrderIdAndPartId(int orderId, int partId, int technicianId) {
+           return await _dbContext.OrderParts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.OrderId == orderId && x.PartId == partId && x.TechnicianId == technicianId);
+        }
+
         public async Task<IEnumerable<OrderPartViewModel>> GetOrderPartViewModelAsync(int orderId)
         {
             var result = await _dbContext.OrderParts.Include(o => o.Part).Where(o => o.OrderId == orderId).Select(o => new OrderPartViewModel
@@ -125,6 +131,14 @@ namespace DataAccess.Repositories
 
         }
 
+        public async Task<List<int>> GetPartIdsInAppointmentByTechId(int orderId, int technician) {
+            return await _dbContext.OrderParts
+                .AsNoTracking()
+                .Where(x => x.OrderId == orderId && x.TechnicianId == technician)
+                .Select(x => x.PartId)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<PartSummaryViewModel>> GetTopParts(PartSummaryQueryDto model) {
             var query = _dbContext.OrderParts
                 .AsNoTracking()
@@ -156,6 +170,17 @@ namespace DataAccess.Repositories
         public async Task RemoveRange(int orderId, int technicianId)
         {
             await _dbContext.OrderParts.Where(x => x.OrderId == orderId && x.TechnicianId == technicianId).ExecuteDeleteAsync();
+        }
+
+        public async Task UpdateAsync(OrderPart orderPart) {
+            _dbContext.Update(orderPart);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateCompletedStatusByOrderIdAndTechnicianId(int orderId, int technician) {
+            await _dbContext.OrderParts
+                .Where(x => x.OrderId == orderId && x.TechnicianId == technician)
+                .ExecuteUpdateAsync(o => o.SetProperty(x => x.IsReplaced, true));
         }
     }
 }
