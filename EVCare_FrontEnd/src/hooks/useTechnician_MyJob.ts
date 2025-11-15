@@ -26,11 +26,19 @@ export const useTechnician_MyJob = () => {
   });
 
   useEffect(() => {
-    sessionStorage.setItem(
-      "activeStatus",
-      data?.data?.items?.at(0)?.status ?? "AddingPart"
-    );
-  }, [data?.data?.items?.at(0)?.status]);
+    if (data?.data?.items?.length) {
+      const activeAppointment = data.data.items.find(
+        (appointment) =>
+          appointment.status !== TechnicianWorkingSessionEnum.COMPLETED &&
+          appointment.status !== TechnicianWorkingSessionEnum.CANCELED
+      );
+
+      if (activeAppointment) {
+        setActiveStatus(activeAppointment.status);
+        sessionStorage.setItem("activeStatus", activeAppointment.status);
+      }
+    }
+  }, [data?.data?.items]);
 
   const { mutateAsync: updateWorkingSession, isPending: isUpdating } =
     useUpdateTechnicianWorkingSession();
@@ -45,7 +53,9 @@ export const useTechnician_MyJob = () => {
         orderId: data?.data?.items?.at(0)?.orderId ?? 0,
         status: status,
       });
-      await queryClient.getQueryData(["TechnicianAppointments"]);
+      await queryClient.invalidateQueries({
+        queryKey: ["TechnicianAppointments"],
+      });
       setActiveStatus(status);
       notification.success({
         message: message,

@@ -34,7 +34,6 @@ import {
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import type { FullCustomerInfor } from "../../../models/CustomerModels/FullCustomerInfor";
-import { useGetCustomerID } from "../../../services/customerServices";
 import { useCreateNewOrder } from "../../../services/orderServiceApi";
 import type { Dayjs } from "dayjs";
 import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
@@ -52,6 +51,7 @@ interface Props {
 
 export default function CreateAppointmentPage({ onBack }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedCustomer, setSelectedCustomer] =
     useState<FullCustomerInfor | null>(null);
   const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
@@ -69,19 +69,17 @@ export default function CreateAppointmentPage({ onBack }: Props) {
   >([]);
 
   const { data: customers, isLoading } = useGetAllCustomer({
-    keyword: searchQuery,
+    ...((debouncedQuery !== "" && { keyword: debouncedQuery }) || {}),
   });
   const { data: services } = useGetAllServices({});
 
-  const filteredCustomers =
-    customers?.data?.items.filter(
-      (customer) =>
-        customer.customerName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        customer.phoneNumber.includes(searchQuery) ||
-        customer.email.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || [];
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
 
   const handleCustomerSelect = (customer: FullCustomerInfor) => {
     if (customer.banned) {
@@ -92,10 +90,6 @@ export default function CreateAppointmentPage({ onBack }: Props) {
     setSelectedVehicle(null);
     setSearchQuery("");
   };
-
-  const { data: customerDetail } = useGetCustomerID(
-    selectedCustomer?.accountId || 0
-  );
 
   const {
     mutateAsync: staffCreateAppointment,
@@ -137,7 +131,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
       const Images = await handleUploadImages();
 
       const appointmentData = {
-        customerId: customerDetail?.data?.id || 0,
+        customerId: selectedCustomer.customerId,
         vehicleId: selectedVehicle,
         note: note || "",
         appointment_Date: appointmentDate.add(7, "hour").toISOString(),
@@ -232,7 +226,6 @@ export default function CreateAppointmentPage({ onBack }: Props) {
             }
           }
 
-          // const cutoffStartDate = startTime?.add(1, "hour");
           if (selectedHour === startTime?.hour()) {
             for (let m = 0; m < startTime?.minute(); m++) disabled.push(m);
             return disabled;
@@ -282,9 +275,9 @@ export default function CreateAppointmentPage({ onBack }: Props) {
               />
             </SearchBox>
 
-            {searchQuery && filteredCustomers.length > 0 ? (
+            {!selectedCustomer && (customers?.data?.items.length ?? 0) > 0 ? (
               <CustomerResults>
-                {filteredCustomers.slice(0, 5).map((customer) => (
+                {customers?.data?.items.slice(0, 5).map((customer) => (
                   <CustomerCard
                     key={customer.accountId}
                     onClick={() => handleCustomerSelect(customer)}
@@ -331,7 +324,7 @@ export default function CreateAppointmentPage({ onBack }: Props) {
               ) : (
                 <NOT_FOUND_ITEMS
                   icon={<UserPlus size={40} />}
-                  message={"Enter customer information for searching"}
+                  message={`No customer is found by ${debouncedQuery}`}
                   height="175px"
                 />
               ))
