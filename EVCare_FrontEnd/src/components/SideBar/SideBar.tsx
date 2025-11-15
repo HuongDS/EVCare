@@ -18,7 +18,6 @@ import {
   ScheduleOutlined,
   WechatWorkOutlined,
   ApartmentOutlined,
-  CalendarOutlined,
   ClockCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -162,23 +161,17 @@ const menuByRole: Record<RoleEnum, MenuItem[]> = {
     },
     {
       key: "3",
-      icon: <CalendarOutlined />,
-      label: "Schedule",
-      route: "/technician/schedule",
-    },
-    {
-      key: "4",
       icon: <ClockCircleOutlined />,
       label: "History",
       route: "/technician/history",
     },
     {
-      key: "5",
+      key: "4",
       icon: <SolutionOutlined />,
       label: "Application",
       route: "/technician/application",
     },
-    { key: "6", icon: <LogoutOutlined />, label: "Logout", isLogout: true },
+    { key: "5", icon: <LogoutOutlined />, label: "Logout", isLogout: true },
   ],
 
   [RoleEnum.CUSTOMER]: [],
@@ -220,21 +213,12 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
   const items: MenuProps["items"] = menuByRole[role].map((item) => ({
     key: item.key,
     icon: item.icon,
-    label: item.isLogout ? (
-      item.label
-    ) : (
-      <LinkStyled to={item.route!}>{item.label}</LinkStyled>
-    ),
+    label: item.isLogout ? item.label : <LinkStyled to={item.route!}>{item.label}</LinkStyled>,
   }));
 
   return (
     <SidebarContainer>
-      <MenuStyled
-        mode="inline"
-        selectedKeys={selectedKey}
-        items={items}
-        onClick={handleClick}
-      />
+      <MenuStyled mode="inline" selectedKeys={selectedKey} items={items} onClick={handleClick} />
     </SidebarContainer>
   );
 };
