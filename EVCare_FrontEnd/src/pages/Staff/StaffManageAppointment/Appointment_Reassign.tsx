@@ -57,7 +57,8 @@ export default function Appointment_Reassign({
   const { data: technicians, isFetching } = useGetTechniciansToday({
     Status: "Available",
   });
-  const { mutateAsync: finishSession } = useFinishTechnicianSession();
+  const { mutateAsync: finishSession, isPending } =
+    useFinishTechnicianSession();
 
   if (isLoading) {
     return (
@@ -192,14 +193,29 @@ export default function Appointment_Reassign({
     }
   };
 
+  const activeTechs = appointment.technicians.filter(
+    (tech) => tech.workingSessionStatus !== "Completed"
+  );
+  const onLeave = activeTechs.filter((tech) => tech.status === "OnLeave");
+  const busy = activeTechs.filter((tech) => tech.status === "Busy");
+  const techniciansLeave = activeTechs
+    .filter((tech) => tech.status === "OnLeave")
+    .map((tech) => tech.id);
+
+  const showFinish =
+    onLeave.length > 0 &&
+    (busy.length > 0 || onLeave.length < activeTechs.length);
+
   const handleSubmit = async () => {
     await handleReAssign();
 
-    const techniciansLeave = appointment.technicians
-      .filter((tech) => tech.status === "OnLeave")
-      .map((tech) => tech.id);
     if (techniciansLeave.length > 0) {
       await handleFinishSession(techniciansLeave);
+    }
+
+    const busy = activeTechs.filter((tech) => tech.status === "Busy");
+    if (busy.length === 0) {
+      close();
     }
   };
 
@@ -248,14 +264,14 @@ export default function Appointment_Reassign({
                       <TechnicianCard
                         key={assignment.id}
                         technician={assignment}
-                        assignmentInfo={{
-                          technicianID: assignment.id,
-                        }}
                         isPreviouslyAssigned
-                        technicianLength={appointment.technicians.length}
                         onFinishSession={() =>
                           handleFinishSession([assignment.id])
                         }
+                        showFinish={
+                          showFinish && assignment.status === "OnLeave"
+                        }
+                        isFinishing={isPending}
                       />
                     ))}
                 </TechnicianGrid>
@@ -370,21 +386,21 @@ export default function Appointment_Reassign({
               </SearchWrapper>
 
               <SearchResultsContainer>
-                <TechnicianGrid>
-                  {isFetching ? (
-                    <SpinnerWrapper>
-                      <ColorSpinner width="3em" height="3em" />
-                    </SpinnerWrapper>
-                  ) : (
-                    filteredTechnicians.map((technician) => (
+                {isFetching ? (
+                  <SpinnerWrapper>
+                    <ColorSpinner width="4em" height="4em" />
+                  </SpinnerWrapper>
+                ) : (
+                  <TechnicianGrid>
+                    {filteredTechnicians.map((technician) => (
                       <TechnicianCard
                         key={technician.id}
                         technician={technician}
                         onAdd={() => handleAddTechnician(technician)}
                       />
-                    ))
-                  )}
-                </TechnicianGrid>
+                    ))}
+                  </TechnicianGrid>
+                )}
 
                 {filteredTechnicians.length === 0 && (
                   <EmptyState>
@@ -422,20 +438,18 @@ interface TechnicianCardProps {
   onFinishSession?: () => void;
   isSelected?: boolean;
   isPreviouslyAssigned?: boolean;
-  assignmentInfo?: {
-    technicianID: number;
-  };
-  technicianLength?: number;
+  showFinish?: boolean;
+  isFinishing?: boolean;
 }
 export const TechnicianCard = ({
   technician,
+  showFinish,
   onAdd,
   onRemove,
   onFinishSession,
   isSelected = false,
   isPreviouslyAssigned = false,
-  assignmentInfo,
-  technicianLength = 1,
+  isFinishing = false,
 }: TechnicianCardProps) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
   const displayedSkills = showAllSkills
@@ -467,9 +481,7 @@ export const TechnicianCard = ({
         />
         <TechnicianInfo>
           <h3>{technician.fullName}</h3>
-          <TechnicianId>
-            ID: {assignmentInfo?.technicianID || technician.id}
-          </TechnicianId>
+          <TechnicianId>ID: {technician.id}</TechnicianId>
           <StatusBadge $status={technician.status}>
             {technician.status}
           </StatusBadge>
@@ -543,10 +555,13 @@ export const TechnicianCard = ({
       )}
 
       {isPreviouslyAssigned &&
-        technicianLength > 1 &&
-        technician.status === "OnLeave" && (
+        showFinish &&
+        technician.status === "OnLeave" &&
+        (isFinishing ? (
+          <ColorSpinner width="2em" height="2em" />
+        ) : (
           <ActionButton onClick={onFinishSession}>Finish Session</ActionButton>
-        )}
+        ))}
     </TechnicianCardWrapper>
   );
 };

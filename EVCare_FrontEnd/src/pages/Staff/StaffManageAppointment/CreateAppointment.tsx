@@ -589,4 +589,3 @@ import {
   VehiclePlate,
 } from "./styles/CreateAppointment.styled";
 import ColorSpinner from "../StaffComponents/ColorSpinner";
-import { debounce } from "@mui/material";
