@@ -31,12 +31,14 @@ type Props = {
     message: string,
     description: string
   ) => void;
+  isUpdating: boolean;
 };
 
 const TechnicianAppointmentCard: React.FC<Props> = ({
   data,
   setIsOrder,
   handleUpdateStatus,
+  isUpdating,
 }) => {
   const [expandedSections, setExpandedSections] = useState({
     images: false,
@@ -68,6 +70,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
             appointment={data}
             appointmentHasCondition={appointment?.data?.partDamageLevels ?? []}
             setIsOrder={setIsOrder}
+            isUpdating={isUpdating}
           />
         </HeaderRight>
       </CardHeader>

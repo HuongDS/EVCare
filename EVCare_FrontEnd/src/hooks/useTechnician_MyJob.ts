@@ -17,7 +17,7 @@ export const useTechnician_MyJob = () => {
     TechnicianWorkingSessionEnum.ADDING_PART;
   const [activeStatus, setActiveStatus] = useState<string>(savedStatus);
 
-  const { data, isLoading, isFetching } = useGetTechnicianAppointments({
+  const { data, isLoading } = useGetTechnicianAppointments({
     Status: String(activeStatus),
     PageSize: pageSize,
     PageIndex: pageIndex,
@@ -32,7 +32,7 @@ export const useTechnician_MyJob = () => {
     );
   }, [data?.data?.items?.at(0)?.status]);
 
-  const { mutateAsync: updateWorkingSession } =
+  const { mutateAsync: updateWorkingSession, isPending: isUpdating } =
     useUpdateTechnicianWorkingSession();
 
   const handleUpdateStatus = async (
@@ -86,8 +86,8 @@ export const useTechnician_MyJob = () => {
     activeStatus,
     sortName,
     appointments: data?.data?.items ?? [],
-    isLoading: isLoading || isFetching,
-    isFetching,
+    isLoading: isLoading,
+    isUpdating,
     sortById,
     pageSize,
     setActiveStatus,
