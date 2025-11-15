@@ -1,19 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Statistic, Typography } from "antd";
-<<<<<<< HEAD
-import {
-  Calendar,
-  Activity,
-  TrendingUp,
-  Clock,
-  IdCard,
-  Phone,
-  Mail,
-  UserRoundPen,
-} from "lucide-react";
-=======
 import { Calendar, Activity, TrendingUp, Clock, Phone, Mail, UserRoundPen } from "lucide-react";
->>>>>>> 431433f08b5b3fb08a4fa440a51686e1f514e2b6
 import dayjs from "dayjs";
 
 import { useGetTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
@@ -64,10 +51,6 @@ const TechnicianGeneral: React.FC = () => {
 
   const navigate = useNavigate();
   const { data: techInfo } = useGetAccount();
-<<<<<<< HEAD
-=======
-
->>>>>>> 431433f08b5b3fb08a4fa440a51686e1f514e2b6
   const statuses = [
     TechnicianWorkingSessionEnum.ADDING_PART,
     TechnicianWorkingSessionEnum.CONFIRM,
@@ -152,16 +135,6 @@ const TechnicianGeneral: React.FC = () => {
 
               <ProfileInfo>
                 <InfoRow>
-<<<<<<< HEAD
-                  <IdCard size={20} />
-                  <span>ID:</span>
-                  <span style={{ marginLeft: "auto", color: "#6b7280" }}>
-                    {techInfo.data?.id}
-                  </span>
-                </InfoRow>
-                <InfoRow>
-=======
->>>>>>> 431433f08b5b3fb08a4fa440a51686e1f514e2b6
                   <Phone size={20} />
                   <span>Phone:</span>
                   <span style={{ marginLeft: "auto", color: "#6b7280" }}>{techInfo.data?.phone}</span>
