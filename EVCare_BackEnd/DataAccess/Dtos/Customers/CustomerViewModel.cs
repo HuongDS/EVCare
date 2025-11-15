@@ -16,6 +16,7 @@ namespace DataAccess.Dtos.Customers
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
         public IEnumerable<VehicleViewModel> Vehicles { get; set; }
+        public int? CustomerId { get; set; }
 
     }
 }
