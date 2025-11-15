@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Statistic, Typography } from "antd";
-<<<<<<< HEAD
 import {
   Calendar,
   Activity,
   TrendingUp,
   Clock,
-  IdCard,
   Phone,
   Mail,
   UserRoundPen,
 } from "lucide-react";
-=======
-import { Calendar, Activity, TrendingUp, Clock, Phone, Mail, UserRoundPen } from "lucide-react";
->>>>>>> 431433f08b5b3fb08a4fa440a51686e1f514e2b6
 import dayjs from "dayjs";
 
 import { useGetTechnicianAppointments } from "../../../services/appointmentTechnicianApi";
@@ -64,10 +59,6 @@ const TechnicianGeneral: React.FC = () => {
 
   const navigate = useNavigate();
   const { data: techInfo } = useGetAccount();
-<<<<<<< HEAD
-=======
-
->>>>>>> 431433f08b5b3fb08a4fa440a51686e1f514e2b6
   const statuses = [
     TechnicianWorkingSessionEnum.ADDING_PART,
     TechnicianWorkingSessionEnum.CONFIRM,
@@ -89,24 +80,35 @@ const TechnicianGeneral: React.FC = () => {
   useEffect(() => {
     const allAppointments = queries.flatMap((q) => q.data?.data?.items ?? []);
 
-    const mappedAppointments: TechnicianAppointment[] = allAppointments.map((a) => ({
-      id: a.id,
-      appointmentDate: a.appointmentDate,
-      customerName: a.customerName,
-      status: a.status,
-      services: a.services.map((s, index) => ({ id: index, name: s })),
-    }));
+    const mappedAppointments: TechnicianAppointment[] = allAppointments.map(
+      (a) => ({
+        id: a.id,
+        appointmentDate: a.appointmentDate,
+        customerName: a.customerName,
+        status: a.status,
+        services: a.services.map((s, index) => ({ id: index, name: s })),
+      })
+    );
 
     const recentAppointments = mappedAppointments
-      .sort((a, b) => new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.appointmentDate).getTime() -
+          new Date(a.appointmentDate).getTime()
+      )
       .slice(0, 5);
 
     setAppointments(recentAppointments);
 
-    const completed = mappedAppointments.filter((app) => app.status === "Completed").length;
+    const completed = mappedAppointments.filter(
+      (app) => app.status === "Completed"
+    ).length;
     setCompletedAppointment(completed);
     setTotal(mappedAppointments.length);
-  }, [queries.map((q) => q.data).join?.(""), queries.map((q) => q.data).toString()]);
+  }, [
+    queries.map((q) => q.data).join?.(""),
+    queries.map((q) => q.data).toString(),
+  ]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -144,7 +146,10 @@ const TechnicianGeneral: React.FC = () => {
                   src={`https://ui-avatars.com/api/?name=${techInfo.data?.last_Name}&background=667eea&color=fff&bold=true`}
                   alt="Avatar"
                 />
-                <Title level={3} style={{ margin: "1rem 0 0.5rem", color: "#111" }}>
+                <Title
+                  level={3}
+                  style={{ margin: "1rem 0 0.5rem", color: "#111" }}
+                >
                   {techInfo.data?.first_Name} {techInfo.data?.last_Name}
                 </Title>
                 <RoleTag>{techInfo.data?.role}</RoleTag>
@@ -152,19 +157,11 @@ const TechnicianGeneral: React.FC = () => {
 
               <ProfileInfo>
                 <InfoRow>
-<<<<<<< HEAD
-                  <IdCard size={20} />
-                  <span>ID:</span>
-                  <span style={{ marginLeft: "auto", color: "#6b7280" }}>
-                    {techInfo.data?.id}
-                  </span>
-                </InfoRow>
-                <InfoRow>
-=======
->>>>>>> 431433f08b5b3fb08a4fa440a51686e1f514e2b6
                   <Phone size={20} />
                   <span>Phone:</span>
-                  <span style={{ marginLeft: "auto", color: "#6b7280" }}>{techInfo.data?.phone}</span>
+                  <span style={{ marginLeft: "auto", color: "#6b7280" }}>
+                    {techInfo.data?.phone}
+                  </span>
                 </InfoRow>
                 <InfoRow>
                   <Mail size={20} />
@@ -195,7 +192,10 @@ const TechnicianGeneral: React.FC = () => {
           )}
 
           <StyledCard>
-            <Title level={4} style={{ marginBottom: "1.5rem", color: "#1f2937" }}>
+            <Title
+              level={4}
+              style={{ marginBottom: "1.5rem", color: "#1f2937" }}
+            >
               Today's Statistics
             </Title>
             <StatsGrid>
@@ -211,13 +211,20 @@ const TechnicianGeneral: React.FC = () => {
                 <TrendingUp size={28} />
                 <Statistic
                   title="Success Rate"
-                  value={Number((completedAppointment / (total || 1)) * 100).toFixed(2)}
+                  value={Number(
+                    (completedAppointment / (total || 1)) * 100
+                  ).toFixed(2)}
                   suffix="%"
                 />
               </StatBox>
               <StatBox $type="info">
                 <Clock size={28} />
-                <Statistic title="Pending" value={appointments.filter((a) => a.status === "Pending").length} />
+                <Statistic
+                  title="Pending"
+                  value={
+                    appointments.filter((a) => a.status === "Pending").length
+                  }
+                />
               </StatBox>
             </StatsGrid>
           </StyledCard>
@@ -240,14 +247,22 @@ const TechnicianGeneral: React.FC = () => {
             <tbody>
               {appointments.map((appointment) => (
                 <tr key={appointment.id}>
-                  <td style={{ fontWeight: 600, color: "#667eea" }}>#{appointment.id}</td>
+                  <td style={{ fontWeight: 600, color: "#667eea" }}>
+                    #{appointment.id}
+                  </td>
                   <td>{formatDate(appointment.appointmentDate)}</td>
-                  <td style={{ fontWeight: 500 }}>{appointment.customerName}</td>
+                  <td style={{ fontWeight: 500 }}>
+                    {appointment.customerName}
+                  </td>
                   <td>
                     {appointment.services.slice(0, 2).map((s) => (
                       <ServiceTag key={s.id}>{s.name}</ServiceTag>
                     ))}
-                    {appointment.services.length > 2 && <ServiceTag>+{appointment.services.length - 2}</ServiceTag>}
+                    {appointment.services.length > 2 && (
+                      <ServiceTag>
+                        +{appointment.services.length - 2}
+                      </ServiceTag>
+                    )}
                   </td>
                   <td>
                     <StatusTag status={appointment.status} />
