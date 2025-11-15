@@ -1,10 +1,6 @@
 import axios from "axios";
 import { api } from "../api/api";
-import type {
-  ResponseDto,
-  PageModel,
-  OrderPartsResponseDto,
-} from "../models/OrderPartModel/Order_Parts_Model";
+import type { ResponseDto, PageModel, OrderPartsResponseDto } from "../models/OrderPartModel/Order_Parts_Model";
 import type { NewPartDto } from "../models/PartModel/NewPartDto";
 import { handleError } from "../utils/errorHandler";
 import { ERROR_MESSAGE } from "../constants/messages/Message";
@@ -22,9 +18,7 @@ export const useGetAllParts = (params?: {
     queryKey: ["AllParts"],
     queryFn: async () => {
       try {
-        const response = await api.get<
-          ResponseDto<PageModel<OrderPartsResponseDto>>
-        >("/api/Part", {
+        const response = await api.get<ResponseDto<PageModel<OrderPartsResponseDto>>>("/api/Part", {
           params,
         });
         return response.data;
@@ -53,9 +47,26 @@ export async function createPart(data: NewPartDto) {
   }
 }
 
+type tempModelToFixConflictPropertyInBackend = {
+  id: number;
+  name: string;
+  stock: number;
+  description: string;
+  replacementPrice: number;
+  price: number;
+  categoryId: number;
+  isDeleted: boolean;
+  imageUrl: string;
+};
+
 export async function updatePart(id: number, data: PartDetailDto) {
   try {
-    await api.put("/api/Part", data, {
+    const processedData: tempModelToFixConflictPropertyInBackend = {
+      ...data,
+      stock: data.quantity,
+    };
+
+    await api.put("/api/Part", processedData, {
       params: {
         id: id,
       },
@@ -83,14 +94,11 @@ export async function deletePart(data: number) {
 
 export async function getPartCategories(pageSize?: number) {
   try {
-    const response = await api.get<ResponseDto<PageResultDto<Category>>>(
-      "/api/PartCategory",
-      {
-        params: {
-          pageSize: pageSize ?? 1000,
-        },
-      }
-    );
+    const response = await api.get<ResponseDto<PageResultDto<Category>>>("/api/PartCategory", {
+      params: {
+        pageSize: pageSize ?? 1000,
+      },
+    });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -101,16 +109,9 @@ export async function getPartCategories(pageSize?: number) {
   }
 }
 
-export async function getAllParts02(params?: {
-  PartName?: string;
-  PageSize?: number;
-  PageIndex?: number;
-}) {
+export async function getAllParts02(params?: { PartName?: string; PageSize?: number; PageIndex?: number }) {
   try {
-    const response = await api.get<ResponseDto<PageModel<PartDetailDto>>>(
-      "/api/Part",
-      { params }
-    );
+    const response = await api.get<ResponseDto<PageModel<PartDetailDto>>>("/api/Part", { params });
 
     return (
       response.data.data ?? {
@@ -137,8 +138,7 @@ export async function exportParts() {
   try {
     const response = await api.get("/api/Part/export", {
       headers: {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       },
       responseType: "blob",
     });
@@ -156,8 +156,7 @@ export async function getPartTemplate() {
   try {
     const response = await api.get("/api/Part/template", {
       headers: {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       },
       responseType: "blob",
     });

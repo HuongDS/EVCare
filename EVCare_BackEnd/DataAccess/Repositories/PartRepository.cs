@@ -156,11 +156,11 @@ namespace DataAccess.Repositories
 
         public async Task<PageResultDto<PartViewModel>> GetPartsForAppointmentId(PartForServiceQueryDto model) {
             var serviceIds = await _dbContext.AppointmentServices
-         .Where(x => x.AppointmentId == model.AppointmentId)
-         .Select(x => x.ServiceId)
-         .ToListAsync();
+                .Where(x => x.AppointmentId == model.AppointmentId)
+                .Select(x => x.ServiceId)
+                .ToListAsync();
             var query = _dbContext.ServiceParts.AsNoTracking()
-                       
+                        .Where(x=>serviceIds.Contains(x.ServiceId))
                         .Select(x => x.Part)         
                         .Distinct()                   
                         .Select(p => new PartViewModel

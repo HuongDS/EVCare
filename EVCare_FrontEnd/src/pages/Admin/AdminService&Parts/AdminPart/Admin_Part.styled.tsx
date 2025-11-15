@@ -113,7 +113,7 @@ export const TabButton = styled.button<{ $isActive: boolean }>`
 
 export const TabContent = styled.div`
   width: 100%;
-  overflow: hidden; // Quan trọng cho AnimatePresence
+  overflow: hidden;
 `;
 
 export const FormWrapper = styled(motion.form)`
@@ -208,7 +208,6 @@ export const PrimaryButton = styled.button`
 `;
 
 export const DraggerWrapper = styled.div`
-  /* Style cho Ant Design Dragger */
   .ant-upload.ant-upload-drag {
     background: rgba(255, 255, 255, 0.8);
     border: 2px dashed #00ad4e;
@@ -250,7 +249,6 @@ export const TableWrapper = styled(motion.div)`
 export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  /* THÊM: Cho phép đặt độ rộng cột */
   table-layout: fixed;
 `;
 
@@ -372,19 +370,27 @@ export const ButtonRow = styled.div`
 `;
 
 export const CancelButton = styled.button`
-  padding: 12px 24px;
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  font-size: 1.1rem;
   font-weight: 700;
   font-family: "Outfit", sans-serif;
+  color: #00ad4e;
+  background: #fdfdfdff;
   border: none;
   border-radius: 10px;
   cursor: pointer;
+  margin-top: 32px;
   transition: all 0.3s ease;
-  background: #fff;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 173, 78, 0.3);
 
   &:hover {
-    background: #f9fafb;
+    background: #c2c2c281;
+    box-shadow: 0 6px 16px rgba(0, 173, 78, 0.4);
+    transform: translateY(-2px);
   }
 `;
