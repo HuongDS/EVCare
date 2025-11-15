@@ -32,7 +32,6 @@ import QueryString from "qs";
 import type { AppointmentStatusEnum } from "../models/enums";
 import type { AppointmentViewDetailModel } from "../models/AppointmentsModel/AppointmentViewDetailModel";
 
-//[STAFF]: Get All appointments
 export const useGetAllAppointments = (params: GetAppointmentsParams = {}) => {
   return useQuery({
     queryKey: ["Staff Appointments", params],
@@ -107,7 +106,6 @@ export async function getAppointmentById(appointmentId: number) {
   }
 }
 
-//[STAFF] - NGO CHI VY: Set Appointment Status - Appointment Steps
 export const useChangeAppointmentStatus = () => {
   return useMutation({
     mutationFn: async (payload: ChangeAppointmentStatusParams) => {
@@ -215,7 +213,6 @@ export async function countAppointmentsWithStatusInMonth(
   }
 }
 
-//[STAFF] - Assign technicians into appointment
 export const useAssignTechnician = () => {
   return useMutation({
     mutationFn: async (params: AssignTechnicianParams) => {
@@ -240,7 +237,6 @@ export const useAssignTechnician = () => {
   });
 };
 
-//[STAFF] - Lấy các appointment có kỹ thuật viên
 export const useGetAppointmentHaveTech = (params: GetAppointmentsParams) => {
   return useQuery({
     queryKey: ["AppointmentHaveTech", params],
@@ -269,7 +265,6 @@ export const useGetAppointmentHaveTech = (params: GetAppointmentsParams) => {
   });
 };
 
-//[STAFF] - Lấy appointment detail sử dụng tanstack
 export const useGetAppointmentById = (appointmentId: number) => {
   return useQuery({
     queryKey: ["AppointmentDetail", appointmentId],
@@ -296,7 +291,6 @@ export const useGetAppointmentById = (appointmentId: number) => {
   });
 };
 
-//[STAFF] - Nhập lịch bảo trì tiếp theo
 export const useEnterRemindSchedule = () => {
   return useMutation({
     mutationFn: async (payload: RemindSchedulePayload) => {
@@ -318,7 +312,6 @@ export const useEnterRemindSchedule = () => {
   });
 };
 
-//[STAFF] - Tạo 1 appointment mới
 export const useStaffCreateAppointment = () => {
   return useMutation({
     mutationFn: async (payload: StaffCreateAppointmentPayload) => {
