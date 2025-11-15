@@ -280,9 +280,6 @@ export default function Admin_Part() {
 
   const handleUpdateSubmit = async (id: number, payload: PartDetailDto) => {
     try {
-      if (payload.price === 0 || payload.replacementPrice === 0 || payload.quantity === 0) {
-        throw new Error("Price, Replacement Price or Quantity must be greater than 0 when you updating !");
-      }
       await updatePart(id, payload);
       notification.success({
         message: "Update Part",
@@ -676,13 +673,15 @@ export default function Admin_Part() {
           </AnimatePresence>
         </TabContent>
       </ContentWrapper>
-      <Pagination
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-        totalItems={totalItems}
-        totalPage={totalPages}
-        onPageChange={onPageChange}
-      />
+      {activeTab !== "update" && activeTab !== "add" && (
+        <Pagination
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          totalPage={totalPages}
+          onPageChange={onPageChange}
+        />
+      )}
       <DeleteConfirmationModal
         isOpen={deleteModal.isOpen}
         itemName={deleteModal.part?.name || ""}
