@@ -20,6 +20,7 @@ const DAMAGE_COLORS: Record<string, string> = {
   Moderate: "#EDA853",
   Severe: "#FF5F2E",
   Critical: "#FF0000",
+  Done: "#00ad4e",
 };
 
 interface ModelProps {
@@ -39,7 +40,6 @@ export function Model3dScence({
 
   const { nodes } = useGLTF(data?.vehicleModel3DUrl) as unknown as GLTFResult;
 
-  // Tô màu theo damage level
   const damageMap = new Map<string, string>();
   data.partCategoryAppointmentViewModels?.forEach((cat) => {
     cat?.damagedPartViewModels?.forEach((p) => {

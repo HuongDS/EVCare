@@ -30,6 +30,7 @@ export default function Appointment_Assign({ data }: props) {
   >([]);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [confirm, setConfirm] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const queryClient = useQueryClient();
 
@@ -114,6 +115,18 @@ export default function Appointment_Assign({ data }: props) {
     ).length;
   };
 
+  const handleConfirmAssign = () => {
+    const isAssign = data.services.some(
+      (service) => getTechnicianCountForService(service.id) < 1
+    );
+
+    if (isAssign) {
+      setConfirm(true);
+    } else {
+      handleAssignTechnician();
+    }
+  };
+
   return (
     <PageContainer>
       <ContentWrapper>
@@ -145,7 +158,7 @@ export default function Appointment_Assign({ data }: props) {
                   {isPending ? (
                     <ColorSpinner width="3em" height="3em" />
                   ) : (
-                    <SubmitButton onClick={handleAssignTechnician}>
+                    <SubmitButton onClick={handleConfirmAssign}>
                       <CheckCircle size={20} />
                       Assign
                     </SubmitButton>
@@ -191,26 +204,28 @@ export default function Appointment_Assign({ data }: props) {
                   const isHighlighted = techCount > 0;
                   return (
                     <ServiceTag key={service.id} $highlight={isHighlighted}>
-                      {service.name}
-                      {!isHighlighted && (
-                        <Tooltip
-                          title="No technicians have been assigned to this service yet"
-                          color="#00ad4e"
-                        >
-                          <PiWarning color="orange" size={20} />
-                        </Tooltip>
-                      )}
-                      {techCount > 0 && (
-                        <span
-                          style={{
-                            marginLeft: "6px",
-                            color: "#00ad4e",
-                            fontWeight: 600,
-                          }}
-                        >
-                          ({techCount} tech{techCount > 1 ? "s" : ""})
-                        </span>
-                      )}
+                      <span>{service.name}</span>
+                      <p>
+                        {!isHighlighted && (
+                          <Tooltip
+                            title="No technicians have been assigned to this service yet"
+                            color="#00ad4e"
+                          >
+                            <PiWarning color="orange" size={20} />
+                          </Tooltip>
+                        )}
+                        {techCount > 0 && (
+                          <span
+                            style={{
+                              color: "#00ad4e",
+                              fontWeight: 600,
+                              fontSize: "12px",
+                            }}
+                          >
+                            ({techCount} tech{techCount > 1 ? "s" : ""})
+                          </span>
+                        )}
+                      </p>
                     </ServiceTag>
                   );
                 })}
@@ -265,6 +280,15 @@ export default function Appointment_Assign({ data }: props) {
           header="Assign Technician"
           message={modalMessage}
           action={handleCloseModal}
+        />
+      )}
+
+      {confirm && (
+        <ConfirmModal
+          onClose={() => setConfirm(false)}
+          onConfirm={handleAssignTechnician}
+          open={confirm}
+          message="Some services do not have any assigned technicians yet"
         />
       )}
     </PageContainer>
@@ -415,3 +439,4 @@ import {
 } from "./styles/Appointment_Assign.styled";
 import { PiWarning } from "react-icons/pi";
 import { Tooltip } from "antd";
+import ConfirmModal from "../../../components/StatusModal/ConfirmModal";

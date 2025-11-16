@@ -272,7 +272,7 @@ export const DamageBadge = styled.span<{ $level: DamageLevelStringEnum }>`
       case DamageLevelStringEnum.Critical:
         return "#ffcdd2";
       default:
-        return "#f5f5f5";
+        return "#00ad4e";
     }
   }};
   color: ${(props) => {
@@ -286,7 +286,7 @@ export const DamageBadge = styled.span<{ $level: DamageLevelStringEnum }>`
       case DamageLevelStringEnum.Critical:
         return "#b71c1c";
       default:
-        return "#666";
+        return "#ffffff";
     }
   }};
 `;

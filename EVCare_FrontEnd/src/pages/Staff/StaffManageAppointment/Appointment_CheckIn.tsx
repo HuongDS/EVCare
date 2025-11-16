@@ -166,7 +166,9 @@ export default function Appointment_CheckIn({ data, close }: Props) {
 
               <InfoItem>
                 <InfoLabel>License Plate</InfoLabel>
-                <InfoValue>{data.vehiclePlateNumber}</InfoValue>
+                <InfoValue>
+                  {formatPlateNumber(data.vehiclePlateNumber)}
+                </InfoValue>
               </InfoItem>
             </InfoGrid>
           </Card>
@@ -295,3 +297,4 @@ import {
   SpinnerWrapper,
   VehicleImage,
 } from "./styles/Appointment_CheckIn.styled";
+import { formatPlateNumber } from "../../../utils/formatPlateNumber";

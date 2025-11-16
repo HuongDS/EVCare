@@ -33,6 +33,7 @@ export type StaffAppointmentsDto<T> = {
   status: string;
   technicians: T[];
   orderId: number;
+  orderStatus: string;
   note: string;
 };
 
