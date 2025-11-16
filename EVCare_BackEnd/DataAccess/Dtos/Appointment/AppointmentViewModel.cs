@@ -25,6 +25,7 @@ namespace DataAccess.Dtos.Appointment
 
         public IEnumerable<TechnicianViewModel>? Technicians{ get; set; }
         public int? OrderId { get; set; }
+        public OrderStatusEnum OrderStatus { get; set; }
 
         public string? Note { get; set; }
         public int? ReviewId { get; set; }

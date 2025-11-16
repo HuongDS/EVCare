@@ -361,6 +361,7 @@ namespace DataAccess.Repositories
                     LicensePlate = a.Vehicle.LicensePlate,
                     Note = a.Note,
                     OrderId = a.OrderId,
+                    OrderStatus = a.Order.Status,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone,
 
@@ -393,7 +394,6 @@ namespace DataAccess.Repositories
             var orderedAppointments = appointmentIds
                 .Select(id => appointments.FirstOrDefault(a => a.Id == id))
                 .Where(a => a != null)
-    
                 .ToList();
 
 
