@@ -131,6 +131,14 @@ namespace DataAccess.Repositories
 
         }
 
+        public async Task<IEnumerable<int>> GetPartByOrderId(int orderId) {
+            return await _dbContext.OrderParts
+                .AsNoTracking()
+                .Where(x => x.OrderId == orderId)
+                .Select(x => x.PartId)
+                .ToListAsync();
+        }
+
         public async Task<List<int>> GetPartIdsInAppointmentByTechId(int orderId, int technician) {
             return await _dbContext.OrderParts
                 .AsNoTracking()
