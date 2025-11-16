@@ -121,4 +121,23 @@ const ModalStyled = styled(Modal)`
 const ModalBodyStyled = styled.div`
   max-height: 80vh;
   overflow-y: auto;
+  padding-right: 5px;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #e4f3eb;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #b1e6c9;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #00ad4e;
+  }
 `;
