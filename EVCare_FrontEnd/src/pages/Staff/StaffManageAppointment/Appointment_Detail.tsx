@@ -52,11 +52,13 @@ export default function Appointment_Detail({
       case "InProgress":
         return { bg: "#e3f2fd", color: "#1976d2", border: "#90caf9" };
       case "Done":
-        return { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" };
+        return { bg: "#d7ffe9", color: "#00ad4e", border: "#03b800" };
       case "Canceled":
         return { bg: "#ffebee", color: "#c62828", border: "#ef9a9a" };
       case "Confirmed":
         return { bg: "#e3f2fd", color: "#1976d2", border: "#90caf9" };
+      case "ReadyForPickup":
+        return { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" };
       default:
         return { bg: "#f5f5f5", color: "#616161", border: "#e0e0e0" };
     }
@@ -95,7 +97,14 @@ export default function Appointment_Detail({
           <HeaderCard>
             <HeaderTop>
               <LeftSection>
-                <AppointmentId>#{appointment?.id}</AppointmentId>
+                <AppointmentId>AID: #{appointment?.id}</AppointmentId>
+                {appointment.status !== "Canceled" && appointment.orderId ? (
+                  <AppointmentId>
+                    OrderID: #{appointment?.orderId}
+                  </AppointmentId>
+                ) : (
+                  <AppointmentId>OrderID: N/A</AppointmentId>
+                )}
                 <StatusBadge
                   style={{
                     background: statusStyle.bg,
@@ -103,17 +112,7 @@ export default function Appointment_Detail({
                     borderColor: statusStyle.border,
                   }}
                 >
-                  {appointment?.status === "InProgress"
-                    ? "In Progress"
-                    : appointment?.status === "Pending"
-                    ? "Pending"
-                    : appointment?.status === "Done"
-                    ? "Completed"
-                    : appointment?.status === "Canceled"
-                    ? "Canceled"
-                    : appointment?.status === "CheckedIn"
-                    ? "CheckedIn"
-                    : "Confirmed"}
+                  {appointment.status}
                 </StatusBadge>
               </LeftSection>
               <DateSection>
@@ -177,7 +176,9 @@ export default function Appointment_Detail({
                   </InfoItem>
                   <InfoItem>
                     <IconLabel>License Plate</IconLabel>
-                    <InfoValue>{appointment?.licensePlate}</InfoValue>
+                    <InfoValue>
+                      {formatPlateNumber(appointment?.licensePlate)}
+                    </InfoValue>
                   </InfoItem>
                 </InfoGrid>
               </Card>
@@ -290,3 +291,4 @@ import {
   StatusBadge,
   VehicleImage,
 } from "./styles/Appointment_Detail.styled";
+import { formatPlateNumber } from "../../../utils/formatPlateNumber";
