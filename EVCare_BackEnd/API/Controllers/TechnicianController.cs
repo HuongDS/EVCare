@@ -3,6 +3,7 @@ using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
 using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Part;
 using DataAccess.Dtos.Technician;
 using DataAccess.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -114,9 +115,9 @@ namespace API.Controllers
 
         [HttpPut()]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateTechnicianProfile([FromQuery] int technicianId,[FromBody] TechnicianUpdateModel model) {
+        public async Task<IActionResult> UpdateTechnicianProfile([FromQuery] int technicianId, [FromBody] TechnicianUpdateModel model) {
             try {
-                
+
                 await _technicianService.UpdateTechnicianProfile(technicianId, model);
                 return Ok(new ResponseDto<int>
                 {
@@ -131,6 +132,30 @@ namespace API.Controllers
                     statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                 });
+            }
+        }
+
+        [HttpGet("parts/pending")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> GetTechnicianPendingParts([FromQuery] TechnicianPendingPartModel query) {
+            try {
+                var data = await _technicianService.GetTechnicianPendingParts(query);
+                return Ok(new ResponseDto<IEnumerable<PartTechnicianViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.GET_TECHNICIAN_SUCCESSFULLY,
+                    data = data
+                });
+            }
+            catch (Exception ex) {
+                {
+                    return BadRequest(new ResponseDto<object>
+                    {
+                        statusCode = HttpStatus.BAD_REQUEST,
+                        message = ex.Message,
+                        data = null
+                    });
+                }
             }
         }
     }

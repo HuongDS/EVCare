@@ -20,6 +20,7 @@ namespace DataAccess.Interfaces
         Task<IEnumerable<OrderPartViewModel>> GetOrderPartViewModelAsync(int orderId);
         Task<IEnumerable<OrderPartViewModel>> GetOrdersForTechnicianAsync(int technicianId, int orderId);
         Task<List<PartBrief>> GetPartBriefs();
+        Task<IEnumerable<int>> GetPartByOrderId(int orderId);
         Task<List<int>> GetPartIdsInAppointmentByTechId(int orderId, int technician);
         Task<IEnumerable<PartSummaryViewModel>> GetTopParts(PartSummaryQueryDto model);
         Task RemoveRange(int orderId, int technicianId);
