@@ -432,6 +432,7 @@ namespace DataAccess.Repositories
                 .AsNoTracking()
                 .AsSplitQuery()
                 .Where(a => orderIds.Contains(a.OrderId.Value))
+                .Include(a=>a.AppointmentPartConditions)
                  .Include(a => a.Vehicle)
                     .ThenInclude(v => v.Category)
                 .Include(a => a.Customer)
@@ -473,7 +474,7 @@ namespace DataAccess.Repositories
                         ReplacementPrice = op.ReplacementPrice,
                         Stock = op.Part.Stock,
                         Id = op.PartId,
-                        IsReplaced = op.IsReplaced,
+                        PartStatus = a.AppointmentPartConditions.Where(apc => apc.PartId == op.PartId).Select(apc => apc.Level).FirstOrDefault(),
                         TechnicianId = op.TechnicianId
                     }).ToList(),
                     Status = a.Order.TechnicianWorkingSessions
