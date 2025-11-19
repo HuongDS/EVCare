@@ -40,7 +40,7 @@ namespace API.Controllers
         }
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateTechnicianSkill([FromQuery]int techId,TechnicianSkillUpdateModel model)
+        public async Task<IActionResult> UpdateTechnicianSkill(TechnicianSkillCreateModel model)
         {
             try
             {

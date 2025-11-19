@@ -462,8 +462,11 @@ namespace DataAccess.Repositories
                     PhoneNumber = a.Customer.Account.Phone,
                     Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
                     OrderId = a.OrderId,
-                    Parts = a.Order.OrderParts.Select(op => new PartTechnicianViewModel
+                    Parts = a.Order.OrderParts
+                    .Where(op => op.TechnicianId == technicianId)
+                    .Select(op => new PartTechnicianViewModel
                     {
+                        TechnicianName = op.Technician.Employee.Account.First_Name + " " + op.Technician.Employee.Account.Last_Name,
                         Name = op.Part.Name,
                         Quantity = op.Quantity,
                         ImageUrl = op.Part.Image,
@@ -471,7 +474,9 @@ namespace DataAccess.Repositories
                         ReplacementPrice = op.ReplacementPrice,
                         Stock = op.Part.Stock,
                         Id = op.PartId,
-                        IsReplaced = op.IsReplaced
+                        IsReplaced = op.IsReplaced,
+                        TechnicianId = op.TechnicianId
+                        
 
                     }).ToList(),
                     Status = a.Order.TechnicianWorkingSessions
@@ -482,6 +487,7 @@ namespace DataAccess.Repositories
 
             var orderedAppointments = orderIds.Select(id=> appointments.FirstOrDefault(a => a.OrderId == id))
                 .Where(a => a != null)
+                .DistinctBy(x=>x.Id)
                 .ToList();
             return new PageResultDto<AppointmentTechnicianViewModel>(orderedAppointments, pagedResult.TotalItems, model.PageSize.Value, model.PageIndex.Value);
 
