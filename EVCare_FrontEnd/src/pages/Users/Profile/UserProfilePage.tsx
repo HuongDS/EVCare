@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FiUser, FiFileText } from "react-icons/fi";
 import HeaderBar from "./HeaderBar";
-// import RankBadge from "./RankBadge";
 import PersonalInfoForm from "./InforForm";
 import SpendingSection from "./SpendingSection";
 import VehiclesSection from "./VehicleSection";
@@ -14,9 +13,7 @@ import { getCustomerId } from "../../../services/customerServices";
 import { getUser } from "../../../token/tokenStore";
 import { handleError } from "../../../utils/errorHandler";
 import { ERROR_MESSAGE } from "../../../constants/messages/Message";
-// import { CustomerRankEnum, RoleEnum } from "../../../models/enums";
 import type { AccountUpdateDto } from "../../../models/Accounts/AccountUpdateDto";
-// import type { CustomerViewDto } from "../../../models/CustomerModels/CustomerViewDto";
 import type { AccountViewModel } from "../../../models/Accounts/accountViewModel";
 import type { InvoiceViewModel } from "../../../models/Invoice/InvoiceViewModel";
 import { getInvoices } from "../../../services/invoicesService";
@@ -35,7 +32,6 @@ function UserProfileComponent() {
 
   const [vehicles, setVehicles] = useState<VehicleViewDto[]>([]);
   const [profileData, setProfileData] = useState<AccountViewModel>();
-  // const [cusProfile, setCusProfile] = useState<CustomerViewDto>();
   const [totalSpending, setTotalSpending] = useState<number>(0);
   const [invoices, setInvoices] = useState<InvoiceViewModel[]>([]);
   const [user, setUser] = useState<User | null>(null);
@@ -121,10 +117,6 @@ function UserProfileComponent() {
     }
   };
 
-  // useEffect(() => {
-  //   fetchVehicle();
-  // }, [vehicles, setVehicles]);
-
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -151,7 +143,6 @@ function UserProfileComponent() {
         setVehicles(response04?.data || []);
         setUser(user);
         setInvoices(response03?.data || []);
-        // setCusProfile(response02?.data);
         setTotalSpending(response03?.data ? response03.data.reduce((acc, item) => acc + item.totalPrice, 0) : 0);
       } catch (error) {
         handleError(error);
@@ -244,7 +235,7 @@ function UserProfileComponent() {
 
               {activeTab === "invoices" && user?.role === RoleEnum.CUSTOMER && (
                 <div className="profile-card invoices-section">
-                  <InvoiceSection invoices={invoices.slice(0, 10)} />
+                  <InvoiceSection invoices={invoices} />
                 </div>
               )}
             </div>
