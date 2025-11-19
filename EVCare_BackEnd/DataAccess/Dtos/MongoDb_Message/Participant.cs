@@ -15,5 +15,6 @@ namespace DataAccess.Dtos.MongoDb_Message
         public string? Name { get; set; }
         public string? Phone { get; set; }
         public string? EmployeeId { get; set; }
+        public string? EmployeeImage { get; set; }
     }
 }

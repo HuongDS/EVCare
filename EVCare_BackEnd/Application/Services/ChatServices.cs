@@ -58,7 +58,6 @@ namespace Application.Services
 
             await _msg.InsertOneAsync(msg);
 
-            // Update conversation's last message and unread count
             conv.LastMessage = new LastMessage
             {
                 Text = text,
