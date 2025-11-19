@@ -25,6 +25,7 @@ namespace Application.Services
                 ServiceId = serviceId
             });
             await _technicianSkillRepository.AddTechnicianSkillAsync(technicianSkills);
+            await _technicianSkillRepository.SaveChangeAsynce();
         }
 
         public async Task UpdateTechnicianSkillAsync(TechnicianSkillCreateModel model) {
