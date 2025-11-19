@@ -8,6 +8,7 @@ using DataAccess.Dtos.OrderPart;
 using DataAccess.Dtos.OrderParts;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Part;
+using DataAccess.Dtos.Technician;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,12 @@ namespace DataAccess.Repositories
                 }
             }
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int orderId, int partId, int oldTechnicianId) {
+            await _dbContext.OrderParts
+                .Where(x => x.OrderId == orderId && x.PartId == partId && x.TechnicianId == oldTechnicianId)
+                .ExecuteDeleteAsync();
         }
 
         public async Task<IEnumerable<OrderPart>> GetOrderPart(int orderId, int technicianId)
@@ -131,11 +138,39 @@ namespace DataAccess.Repositories
 
         }
 
+        public async Task<IEnumerable<int>> GetPartByOrderId(int orderId) {
+            return await _dbContext.OrderParts
+                .AsNoTracking()
+                .Where(x => x.OrderId == orderId)
+                .Select(x => x.PartId)
+                .ToListAsync();
+        }
+
         public async Task<List<int>> GetPartIdsInAppointmentByTechId(int orderId, int technician) {
             return await _dbContext.OrderParts
                 .AsNoTracking()
                 .Where(x => x.OrderId == orderId && x.TechnicianId == technician)
                 .Select(x => x.PartId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<PartTechnicianViewModel>> GetTechnicianPendingParts(TechnicianPendingPartModel query) {
+            return await _dbContext.OrderParts
+                .AsNoTracking()
+                .Include(x => x.Part)
+                .Include(x => x.Technician).ThenInclude(t => t.Employee).ThenInclude(e => e.Account)
+                .Where(x => query.TechnicianIds.Contains(x.TechnicianId) && x.OrderId == query.OrderId && !x.IsReplaced)
+                .Select(x => new PartTechnicianViewModel {
+                    Id = x.PartId,
+                    Name = x.Part.Name,
+                    TechnicianId = x.TechnicianId,
+                    TechnicianName = x.Technician.Employee.Account.First_Name +" " + x.Technician.Employee.Account.Last_Name,
+                    Quantity = x.Quantity,
+                    Price = x.Price,
+                    ReplacementPrice = x.Part.ReplacementPrice,
+                    ImageUrl = x.Part.Image,
+                    Stock = x.Part.Stock
+                })
                 .ToListAsync();
         }
 
