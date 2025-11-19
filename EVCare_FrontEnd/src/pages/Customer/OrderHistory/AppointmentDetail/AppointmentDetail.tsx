@@ -14,11 +14,6 @@ import {
   Title,
   TitleID,
   Wrapper,
-  // TechnicianTable,
-  // TableHeader,
-  // TableRow,
-  // TableCell,
-  // Avatar,
   WaitingMessage,
   PartList,
   PartItem,
@@ -47,6 +42,7 @@ import type { PartsDetailDto } from "../../../../models/OrderModel/ViewOrderMode
 import { useGetOrderDetail } from "../../../../services/orderServiceApi";
 import { useGetTechniciansByOrderId } from "../../../../services/technicianService";
 import { useEffect, useState } from "react";
+import { AppointmentStatusEnum } from "../../../../models/enums";
 
 interface Props {
   onClose: () => void;
@@ -80,7 +76,13 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
       0
     ) ?? 0;
 
-  const getProgressDisplay = (percent: number) => {
+  const getProgressDisplay = (percent: number, isCancel?: boolean) => {
+    if (isCancel) {
+      return {
+        text: "This appointment has been cancled.",
+        color: "#6b7280",
+      };
+    }
     if (percent === 0) {
       return {
         text: "Technician is checking the car",
@@ -99,7 +101,7 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
     };
   };
 
-  const progressInfo = getProgressDisplay(progressPercent);
+  const progressInfo = getProgressDisplay(progressPercent, data.status === AppointmentStatusEnum.CANCELED);
 
   return (
     <DetailWrapper>
@@ -126,7 +128,7 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
                 <span>{progressInfo.text}</span>
               </ProgressLabel>
 
-              {progressPercent !== 100 && (
+              {progressPercent !== 100 && data.status !== AppointmentStatusEnum.CANCELED && (
                 <ProgressBarBg>
                   <ProgressBarFill style={{ width: `${progressPercent}%` }} />
                 </ProgressBarBg>
