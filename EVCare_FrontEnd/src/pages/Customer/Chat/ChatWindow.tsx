@@ -8,9 +8,6 @@ import { RoleEnum } from "../../../models/enums";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../states/store";
 import type { Conversation } from "../../../models/Message/Conversation";
-// import { RoleEnum } from "../../../models/enums";
-// import { useSelector } from "react-redux";
-// import type { RootState } from "../../../states/store";
 
 interface ChatWindowProps {
   conversationId: string;
@@ -102,12 +99,21 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           />
         )}
         <div className="chat-header-content">
-          <Avatar size={40} icon={<UserOutlined />} className="chat-header-avatar" />
+          <Avatar
+            size={40}
+            icon={<UserOutlined />}
+            src={selectedConversation?.participants[1]?.employeeImage}
+            className="chat-header-avatar"
+          />
           <div>
             <h3 className="chat-header-title">
               {role === RoleEnum.STAFF
                 ? `Customer #${selectedConversation?.participants[0]?.name}`
-                : `Staff #${selectedConversation ? selectedConversation.participants[1]?.name : "EVCare Assistant"}`}
+                : `Staff #${
+                    selectedConversation && selectedConversation.participants[1]?.name
+                      ? selectedConversation.participants[1]?.name
+                      : "EVCare Assistant"
+                  }`}
             </h3>
             <p className="chat-header-status" style={{ color: isStaffAvailable ? "#00ad4e" : "#ef4444" }}>
               {isStaffAvailable ? "Active" : "Staff Offline"}
@@ -116,7 +122,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
       </div>
 
-      {/* Messages Area */}
       {isStaffAvailable ? (
         <>
           <div className="chat-messages-area">
@@ -158,7 +163,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               </>
             )}
           </div>
-          {/* Input Area */}
+
           <div className="chat-input-area">
             <div className="chat-input-container">
               <div className="chat-input-field">
