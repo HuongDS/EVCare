@@ -245,5 +245,28 @@ namespace API.Controllers
             }
 
         }
+
+        [HttpPut("part/technician")]
+        [Authorize(Roles ="Staff")]
+       public async Task<IActionResult> UpdateOrderPartTechnician(OrderPartUpdateTechnicianModel model) {
+            try {
+                await _orderService.UpdateOrderPartTechnicianAsync(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.ORDER_PARTS_TECHNICIAN_UPDATE_SUCCESS,
+                    data = model.OrderId
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+
+        }
     }
 }

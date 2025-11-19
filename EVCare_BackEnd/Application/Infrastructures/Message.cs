@@ -196,5 +196,7 @@ namespace Application.Infrastructures
         public static string GET_INVOICE_DETAIL_SUCCESSFULLY = "Get Invoice detail successfully";
 
         public static string ORDER_PARTS_STATUS_UPDATE_SUCCESS  = "Order parts status updated successfully";
+
+        public static string ORDER_PARTS_TECHNICIAN_UPDATE_SUCCESS  = "Order parts technician updated successfully";
     }
 }

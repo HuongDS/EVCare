@@ -250,6 +250,7 @@ namespace Application.Services
             }
             var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
             var partsInAppointment = await _appointmentRepository.GetPartIdsInAppointment(appointment.Id);
+
             foreach (var part in model.Parts) {
                 if (!partsInAppointment.Contains(part.Id)) {
                     throw new Exception($"Part {part.Id} is not in appointment");
@@ -271,6 +272,14 @@ namespace Application.Services
                 }
 
                 await _orderPartRepository.RemoveRange(model.OrderId, technicianId);
+                var existingPartIds = await _orderPartRepository.GetPartByOrderId(model.OrderId);
+                foreach (var part in model.Parts)
+                {
+                    if (existingPartIds.Contains(part.Id))
+                    {
+                        throw new Exception($"Part {part.Id} is already in order");
+                    }
+                }
 
                 await AddOrder(model, technicianId);
 
@@ -322,13 +331,21 @@ namespace Application.Services
             }
             var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
             var partsInAppointment = await _appointmentRepository.GetPartIdsInAppointment(appointment.Id);
+            var existingOrderParts = await _orderPartRepository.GetPartByOrderId(model.OrderId);
             foreach (var part in model.Parts)
             {
                 if (!partsInAppointment.Contains(part.Id))
                 {
                     throw new Exception($"Part {part.Id} is not in appointment");
                 }
+                if(existingOrderParts.Contains(part.Id))
+                {
+                    throw new Exception($"Part {part.Id} is already in order");
+                }
             }
+
+         
+
 
 
             await _unitOfWork.ExecuteInTransactionAsync(async () => await AddOrder(model, technicianId));
@@ -357,6 +374,22 @@ namespace Application.Services
                
 
             }
+        }
+
+        public async Task UpdateOrderPartTechnicianAsync(OrderPartUpdateTechnicianModel model) {
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                foreach (var orderPart in model.UpdateParts) {
+                    await _orderPartRepository.DeleteAsync(model.OrderId, orderPart.PartId, orderPart.OldTechnicianId);
+                    var newOrderPart = new OrderPart
+                    {
+                        OrderId = model.OrderId,
+                        PartId = orderPart.PartId,
+                        TechnicianId = orderPart.NewTechnicianId,
+                    };
+                    await _orderPartRepository.AddRange(new List<OrderPart> { newOrderPart });
+                }
+            });
         }
     }
 }
