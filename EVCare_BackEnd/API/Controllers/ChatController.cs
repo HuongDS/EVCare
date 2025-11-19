@@ -29,21 +29,6 @@ namespace API.Controllers
             _staffRoutingService = staffRoutingService;
         }
 
-        //[HttpPost("conversations/domain")]
-        //[ServiceFilter(typeof(SetAccountIdFilter))]
-        //public async Task<IActionResult> CreateDomain()
-        //{
-        //    var accountId = (int)HttpContext.Items["AccountId"];
-        //    var staffAccountId = await _staffRoutingService.FindAvailableAsync(accountId.ToString());
-        //    var conversation = await _conversationService.CreateOrGetConsultationAsync(accountId.ToString(), staffAccountId);
-        //    return Ok(new ResponseDto<object>
-        //    {
-        //        statusCode = HttpStatus.OK,
-        //        message = Application.Infrastructures.Message.DOMAIN_CREATE_SUCCESS,
-        //        data = conversation.Id
-        //    });
-        //}
-
         [HttpPost("conversations/domain/AI")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
         public async Task<IActionResult> CreateDomainWithAi()

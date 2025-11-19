@@ -55,6 +55,7 @@ import {
 } from "../pages/Technician/Technician_Component/TechnicianLazyPage";
 import { AppointmentList } from "../pages/Technician/TechnicianMyJob/Technician_MyJob.styled";
 import CompleteVNPay from "../pages/Users/CompleteVNPay/CompleteVNPay";
+import GlobalErrorPage from "../pages/ErrorPage/GlobalErrorPage";
 
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <Suspense fallback={<SpinnerComponent />}>{children}</Suspense>;
@@ -63,6 +64,7 @@ const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) 
 const router = createBrowserRouter([
   {
     path: "/",
+    errorElement: <GlobalErrorPage />,
     element: (
       <SuspenseWrapper>
         <Layout />
@@ -182,6 +184,7 @@ const router = createBrowserRouter([
   }, // ADMIN ROUTES
   {
     path: "/admin",
+    errorElement: <GlobalErrorPage />,
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.ADMIN]}>
         <SuspenseWrapper>
@@ -282,6 +285,7 @@ const router = createBrowserRouter([
   }, // STAFF ROUTES
   {
     path: "/staff",
+    errorElement: <GlobalErrorPage />,
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.STAFF]}>
         <SuspenseWrapper>
@@ -344,6 +348,7 @@ const router = createBrowserRouter([
   }, // TECHNICIAN ROUTES
   {
     path: "/technician",
+    errorElement: <GlobalErrorPage />,
     element: (
       <ProtectedRoute allowedRoles={[RoleEnum.TECHNICIAN]}>
         <SuspenseWrapper>
@@ -362,7 +367,7 @@ const router = createBrowserRouter([
     path: "/test",
     element: (
       <SuspenseWrapper>
-          <Test />
+        <Test />
       </SuspenseWrapper>
     ),
   },
