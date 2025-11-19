@@ -46,6 +46,7 @@ namespace DataAccess
      
         public DbSet<Invoice> Invoices { get; set; }
         DatabaseFacade Database { get; }
+        public DbSet<OrderDetailLog> OrderDetailLogs { get; set; }
         public Task<int> SaveChangesAsync();
     }
 }
