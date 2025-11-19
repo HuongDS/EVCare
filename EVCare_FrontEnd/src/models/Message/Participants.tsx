@@ -6,4 +6,5 @@ export type Participants = {
   name: string;
   phone: string;
   employeeId?: string;
+  employeeImage?: string;
 };
