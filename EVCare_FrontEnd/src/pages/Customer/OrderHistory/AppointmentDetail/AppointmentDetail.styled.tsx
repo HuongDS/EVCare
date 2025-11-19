@@ -547,3 +547,74 @@ export const SummaryLine = styled.div`
     color: #00ad4e;
   }
 `;
+
+export const ProgressContainer = styled.div`
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 20px;
+`;
+
+export const ProgressLabel = styled.div<{ $color?: string }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+
+  span:first-child {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  span:last-child {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: ${(props) => props.$color || "#00ad4e"};
+  }
+`;
+
+export const ProgressBarBg = styled.div`
+  width: 100%;
+  height: 10px;
+  background-color: #e5e7eb;
+  border-radius: 5px;
+  overflow: hidden;
+`;
+
+export const ProgressBarFill = styled.div`
+  height: 100%;
+  background: linear-gradient(90deg, #00ad4e 0%, #00c853 100%);
+  border-radius: 5px;
+  transition: width 1s ease-in-out;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.2) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0.2) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 20px 20px;
+    animation: move 2s linear infinite;
+  }
+
+  @keyframes move {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 20px 20px;
+    }
+  }
+`;

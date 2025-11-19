@@ -9,6 +9,7 @@ export type ViewOrderDataDto<T> = {
   parts: T[];
   vat: number;
   price: number;
+  percentInprogress: number;
 };
 
 export type PartsDetailDto = {
