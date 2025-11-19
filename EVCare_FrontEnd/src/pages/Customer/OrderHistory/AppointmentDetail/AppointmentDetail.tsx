@@ -35,6 +35,10 @@ import {
   TableHeader,
   TableCell,
   Avatar,
+  ProgressContainer,
+  ProgressLabel,
+  ProgressBarBg,
+  ProgressBarFill,
 } from "./AppointmentDetail.styled";
 import NameBoxComponent from "../NameBox";
 import type { AppointmentViewDetailModel } from "../../../../models/AppointmentsModel/AppointmentViewDetailModel";
@@ -62,21 +66,12 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
   const { data: order } = useGetOrderDetail(data.orderId);
   const { data: technicians } = useGetTechniciansByOrderId(data.orderId);
   const [processedData, setProcessedData] = useState<PartsDetailDto[]>([]);
+  const progressPercent = order?.data?.percentInprogress ?? 0;
 
   if (!open) return;
 
   useEffect(() => {
-    const tmp = order?.data?.parts.reduce((acc, item) => {
-      const key = item.id;
-      if (!acc[key]) {
-        const { technicianId, ...rest } = item;
-        acc[key] = rest;
-      } else {
-        acc[key].quantity += item.quantity;
-      }
-      return acc;
-    }, {} as any);
-    setProcessedData(tmp ? Object.values(tmp) : []);
+    setProcessedData(order?.data?.parts ?? []);
   }, [order]);
 
   const subtotal =
@@ -84,6 +79,27 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
       (acc: number, part: PartsDetailDto) => acc + (part.price + part.replacementPrice) * part.quantity,
       0
     ) ?? 0;
+
+  const getProgressDisplay = (percent: number) => {
+    if (percent === 0) {
+      return {
+        text: "Technician is checking the car",
+        color: "#6b7280",
+      };
+    }
+    if (percent === 100) {
+      return {
+        text: "Done",
+        color: "#00ad4e",
+      };
+    }
+    return {
+      text: `${percent}%`,
+      color: "#00ad4e",
+    };
+  };
+
+  const progressInfo = getProgressDisplay(progressPercent);
 
   return (
     <DetailWrapper>
@@ -102,6 +118,21 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
               Status: <StatusBadge status={data?.status || ""}>{data?.status}</StatusBadge>
             </Status>
           </Row>
+
+          {order?.data && (
+            <ProgressContainer>
+              <ProgressLabel $color={progressInfo.color}>
+                <span>Progress</span>
+                <span>{progressInfo.text}</span>
+              </ProgressLabel>
+
+              {progressPercent !== 100 && (
+                <ProgressBarBg>
+                  <ProgressBarFill style={{ width: `${progressPercent}%` }} />
+                </ProgressBarBg>
+              )}
+            </ProgressContainer>
+          )}
 
           <ModalContent>
             <Section>
