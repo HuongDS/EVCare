@@ -375,5 +375,21 @@ namespace Application.Services
 
             }
         }
+
+        public async Task UpdateOrderPartTechnicianAsync(OrderPartUpdateTechnicianModel model) {
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                foreach (var orderPart in model.UpdateParts) {
+                    await _orderPartRepository.DeleteAsync(model.OrderId, orderPart.PartId, orderPart.OldTechnicianId);
+                    var newOrderPart = new OrderPart
+                    {
+                        OrderId = model.OrderId,
+                        PartId = orderPart.PartId,
+                        TechnicianId = orderPart.NewTechnicianId,
+                    };
+                    await _orderPartRepository.AddRange(new List<OrderPart> { newOrderPart });
+                }
+            });
+        }
     }
 }
