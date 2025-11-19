@@ -85,6 +85,9 @@ namespace DataAccess.Repositories
                         Id = x.ServiceId,
                         Name = x.Service.Name
                     }).ToList(),
+                    OrderId = a.OrderId,
+                    OrderStatus = a.Order.Status,
+                    LicensePlate = a.Vehicle.LicensePlate,
                     Status = a.Status,
                     VehicleModel = a.Vehicle.Category.Name,
                     AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
