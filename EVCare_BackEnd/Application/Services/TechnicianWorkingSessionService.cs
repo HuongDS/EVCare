@@ -101,25 +101,25 @@ namespace Application.Services
             await _employeeRepository.MarkAvaliableTechnician(technicianId);
 
 
-            if (await _technicianWorkingSessionRepository.CheckOrderDone(orderId)) {
-                var order = await _orderRepository.GetByIdAsync(orderId);
-                order.Status = DataAccess.Enums.OrderStatusEnum.Completed;
-                await _orderRepository.UpdateAsync(order);
-                appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(orderId);
-                appointment.Status = DataAccess.Enums.AppointmentStatusEnum.ReadyForPickup;
+            //if (await _technicianWorkingSessionRepository.CheckOrderDone(orderId)) {
+            //    var order = await _orderRepository.GetByIdAsync(orderId);
+            //    order.Status = DataAccess.Enums.OrderStatusEnum.Completed;
+            //    await _orderRepository.UpdateAsync(order);
+            //    appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(orderId);
+            //    appointment.Status = DataAccess.Enums.AppointmentStatusEnum.ReadyForPickup;
 
-                await _appointmentRepository.UpdateAsync(appointment);
+            //    await _appointmentRepository.UpdateAsync(appointment);
 
-                if (await _appointmentRepository.CheckAllReadyForPickup(appointment.VehicleId)) {
-                    var ids = await _appointmentRepository.GetAppointmentReadyForPickUpByVehicleId(appointment.VehicleId);
-                    foreach (var id in ids) {
-                        var data = await _appointmentRepository.GetPaymentPendingPickupEmailModel(id);
-                        await _notificationServices.SendPaymentPendingPickupEmailAsync(data);
+            //    if (await _appointmentRepository.CheckAllReadyForPickup(appointment.VehicleId)) {
+            //        var ids = await _appointmentRepository.GetAppointmentReadyForPickUpByVehicleId(appointment.VehicleId);
+            //        foreach (var id in ids) {
+            //            var data = await _appointmentRepository.GetPaymentPendingPickupEmailModel(id);
+            //            await _notificationServices.SendPaymentPendingPickupEmailAsync(data);
 
-                    }
+            //        }
 
-                }
-            }
+            //    }
+            //}
 
 
         }
