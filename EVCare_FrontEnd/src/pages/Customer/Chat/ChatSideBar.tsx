@@ -47,6 +47,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
                     icon={<UserOutlined />}
                     className={`conversation-avatar ${isSelected ? "selected" : ""}`}
                     src={item.participants[1].employeeImage}
+                    style={{ objectFit: "cover" }}
                   />
                   {unreadCount > 0 && (
                     <div className="conversation-unread-badge">
