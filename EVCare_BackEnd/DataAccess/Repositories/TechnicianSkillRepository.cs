@@ -24,8 +24,10 @@ namespace DataAccess.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-      
-
-       
+        public async Task DeleteTechnicianSkillByTechnicianIdAsync(int technicianId) {
+            await _dbContext.TechnicianSkills
+                .Where(x => x.TechnicianId == technicianId)
+                .ExecuteDeleteAsync();
+        }
     }
 }
