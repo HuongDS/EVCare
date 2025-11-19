@@ -76,7 +76,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
         setView("new_choice");
       }
     })();
-  }, []);
+  }, [pageIndex]);
 
   const handleOpenStaffModal = () => {
     setSelectedAppointmentId(0);
