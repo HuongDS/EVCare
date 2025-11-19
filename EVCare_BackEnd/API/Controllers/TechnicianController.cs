@@ -158,5 +158,29 @@ namespace API.Controllers
                 }
             }
         }
+
+        [HttpGet("technician-repaired-parts")]
+        [Authorize(Roles = "Staff,Admin")]
+        public async Task<IActionResult> GetTechnicianRepairedParts([FromQuery] TechnicianPartQueryDto query) {
+            try {
+                var data = await _technicianService.GetTechnicianRepairedParts(query);
+                return Ok(new ResponseDto<PageResultDto<TechnicianPartViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.GET_TECHNICIAN_SUCCESSFULLY,
+                    data = data
+                });
+            }
+            catch (Exception ex) {
+                {
+                    return BadRequest(new ResponseDto<object>
+                    {
+                        statusCode = HttpStatus.BAD_REQUEST,
+                        message = ex.Message,
+                        data = null
+                    });
+                }
+            }
+        }
     }
 }

@@ -64,6 +64,49 @@ namespace DataAccess.Repositories
             return data.Id;
         }
 
+        public async Task<PageResultDto<TechnicianPartViewModel>> GetTechnicianRepairedParts(TechnicianPartQueryDto model) {
+            var query = _dbContext.Technicians.AsNoTracking()
+                .Include(x => x.Employee).ThenInclude(x => x.Account)
+                .Where(x => x.Employee.Account.Deleted_At == DateTime.MinValue && x.Employee.Status == EmployeeStatusEnum.Available);
+            if(model.Keyword != null) {
+                query = query.Where(x => (x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name).ToLower().Contains( model.Keyword.ToLower() ));
+            }
+            
+            query = query.Include(x=>x.TechnicianSkills).ThenInclude(x=>x.Service).ThenInclude(x=>x.ServiceParts).ThenInclude(x=>x.Part);
+            if(model.PartIds != null && model.PartIds.Count() >0 ) {
+                query = query
+                    .Where(x=>x.TechnicianSkills.Any(p=>p.Service.ServiceParts.Any(part=>model.PartIds.Contains(part.PartId))));
+            }
+          var newQuery = query.Select(x=> new TechnicianPartViewModel
+          {
+                Id = x.Id,
+                FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
+                ExpYears = x.ExpYear,
+                Email = x.Employee.Account.Email,
+                Phone = x.Employee.Account.Phone,
+                Parts = x.TechnicianSkills
+                .SelectMany(ts=>ts.Service.ServiceParts)
+                .Select(sp=> new
+                {
+                    Id = sp.PartId,
+                    Name = sp.Part.Name,
+
+                }).
+                Distinct().
+                Select(x=> new Dtos.Part.PartViewFormModel {
+                    Id = x.Id,
+                    Name = x.Name,
+                }),
+
+              Status = x.Employee.Status,
+                KPIPerDays = x.KPIPerDays,
+                CompletedOrders = x.CompletedOrders,
+            });
+            newQuery = newQuery.ApplySorting( model.SortField, model.SortOrder);
+            return await PaginationHelper.PaginationAsync(newQuery, model.PageSize.Value, model.PageIndex.Value);
+             
+        }
+
         public async Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(TechnicianQueryDto model)
         {
 

@@ -20,5 +20,6 @@ namespace DataAccess.Interfaces
         Task<IEnumerable<TechnicianCusViewModel>> GetTechniciansByOrderId(int orderId);
         Task<int> GetTechnicianStatus(EmployeeStatusEnum? status);
         Task UpdateCompletedOrderAsync();
+        Task<PageResultDto<TechnicianPartViewModel>> GetTechnicianRepairedParts(TechnicianPartQueryDto query);
     }
 }
