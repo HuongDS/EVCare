@@ -14,6 +14,7 @@ namespace Application.Interfaces
     {
         Task<TechnicianViewModel> GetTechnicianDetail(int technicianId);
         Task<IEnumerable<PartTechnicianViewModel>> GetTechnicianPendingParts(TechnicianPendingPartModel query);
+        Task<PageResultDto<TechnicianPartViewModel>> GetTechnicianRepairedParts(TechnicianPartQueryDto query);
         Task<IEnumerable<TechnicianCusViewModel>> GetTechniciansByOrderId(int orderId);
         Task<int> GetTechnicianStatus(EmployeeStatusEnum? status);
 
