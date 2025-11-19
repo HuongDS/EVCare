@@ -1,24 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ApplicationForm from "./ApplicationForm";
 import SortTable from "../../pages/Technician/Technician_Component/SortTable";
 import ApplicationCard from "./ApplicationCard";
-import { useQuery } from "@tanstack/react-query";
 import { getApplications } from "../../services/getApplicationApi";
-import type {
-  ApplicationResponseDTO,
-  ResponseDto,
-  PageModel,
-} from "../../models/ApplicationModel/ApplicationModels";
+import type { ApplicationResponseDTO } from "../../models/ApplicationModel/ApplicationModels";
 import {
   PageWrapper,
   SectionTitle,
   ApplicationsContainer,
   LoadingText,
-  ErrorText,
   EmptyText,
   PaginationWrapper,
 } from "./ApplicationPage.styled";
 import { Pagination } from "../Paginations/Pagination";
+import { useNotification } from "../../context/useNotification";
 
 interface ApplicationPageProps {
   tabs: string[];
@@ -28,35 +23,32 @@ interface ApplicationPageProps {
   onError?: (message: string) => void;
 }
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 10;
 
-const ApplicationPage: React.FC<ApplicationPageProps> = ({
-  tabs,
-  activeTab,
-  onTabChange,
-  onSuccess,
-  onError,
-}) => {
+const ApplicationPage: React.FC<ApplicationPageProps> = ({ tabs, activeTab, onTabChange, onSuccess, onError }) => {
   const [pageIndex, setPageIndex] = useState(1);
+  const [applicationsData, setApplicationsData] = useState<ApplicationResponseDTO[]>([]);
+  const notification = useNotification();
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
 
-  const {
-    data: applicationsData,
-    isLoading,
-    isError,
-  } = useQuery<ResponseDto<PageModel<ApplicationResponseDTO>>, Error>({
-    queryKey: ["myApplications", pageIndex],
-    queryFn: () =>
-      getApplications({
-        isApproved: undefined,
-        pageSize: PAGE_SIZE,
-        pageIndex,
-      }),
-    staleTime: 1000 * 60,
-  });
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await getApplications({ pageIndex: pageIndex, pageSize: PAGE_SIZE });
+      setApplicationsData(response.data?.items ?? []);
+      setTotalItems(response.data?.totalItems ?? 0);
+      setTotalPages(response.data?.totalPages ?? 1);
+    } catch (error) {
+      notification.error({ message: (error as Error).message });
+    }
+    setIsLoading(false);
+  };
 
-  const applications = applicationsData?.data?.items ?? [];
-  const totalPages = applicationsData?.data?.totalPages ?? 1;
-  const totalItems = applicationsData?.data?.totalItems ?? 0;
+  useEffect(() => {
+    fetchData();
+  }, [pageIndex]);
 
   const handlePageChange = (page: number) => {
     setPageIndex(page);
@@ -79,11 +71,8 @@ const ApplicationPage: React.FC<ApplicationPageProps> = ({
           <SectionTitle>My Applications</SectionTitle>
           <ApplicationsContainer>
             {isLoading && <LoadingText>Loading applications...</LoadingText>}
-            {isError && <ErrorText>Failed to load applications.</ErrorText>}
-            {!isLoading && applications.length === 0 && (
-              <EmptyText>You have no leave applications yet.</EmptyText>
-            )}
-            {applications.map((app) => (
+            {!isLoading && applicationsData.length === 0 && <EmptyText>You have no leave applications yet.</EmptyText>}
+            {applicationsData.map((app) => (
               <ApplicationCard key={app.createdAt} application={app} />
             ))}
           </ApplicationsContainer>
