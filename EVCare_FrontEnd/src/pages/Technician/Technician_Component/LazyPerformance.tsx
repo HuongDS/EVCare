@@ -1,5 +1,4 @@
 import { lazy, Suspense, type ComponentType } from "react";
-import LoadingOverlay from "./LoadingOverlay";
 
 export function LazyPerformance<P extends Record<string, unknown>>(
   importFn: () => Promise<{ default: ComponentType<P> }>
@@ -7,7 +6,7 @@ export function LazyPerformance<P extends Record<string, unknown>>(
   const LazyComponent = lazy(importFn);
 
   return (props: P) => (
-    <Suspense fallback={<LoadingOverlay />}>
+    <Suspense>
       <LazyComponent {...props} />
     </Suspense>
   );

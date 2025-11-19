@@ -4,7 +4,6 @@ import { ReactLenis } from "lenis/react";
 import { motion, type Variants } from "framer-motion";
 
 import {
-  // PageWrapper,
   HeaderSection,
   ServiceLabel,
   MainTitle,
@@ -26,12 +25,7 @@ import {
 import BookingForm from "../../Customer/Booking/BookingForm"; // Đảm bảo đường dẫn đúng
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../states/store"; // Đảm bảo đường dẫn đúng
-import {
-  closeAppointmentForm,
-  openAppointmentForm,
-  openLogin,
-  setAction,
-} from "../../../states/uiSlice"; // Đảm bảo đường dẫn đúng
+import { closeAppointmentForm, openAppointmentForm, openLogin, setAction } from "../../../states/uiSlice"; // Đảm bảo đường dẫn đúng
 import { ACTION } from "../../../constants/messages/Actions"; // Đảm bảo đường dẫn đúng
 import { getAllActiveService } from "../../../services/servicesApi"; // Đảm bảo đường dẫn đúng
 import ServiceCarousel from "./ServiceCarousel"; // Đảm bảo đường dẫn đúng
@@ -59,24 +53,16 @@ const ServiceList = () => {
   const [sortBy, setSortBy] = useState<SortBy>("Name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [showForm, setShowForm] = useState(false);
-  const [loadingForm, setLoadingForm] = useState(false); // (NEW) State loading riêng cho form
+  const [loadingForm, setLoadingForm] = useState(false);
   const [currenPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [isHaveData, setIsHaveData] = useState(true);
 
-  const { data, isLoading, isSuccess } = getAllActiveService(
-    searchValue,
-    9,
-    currenPage,
-    sortBy,
-    sortOrder
-  );
+  const { data, isLoading, isSuccess } = getAllActiveService(searchValue, 9, currenPage, sortBy, sortOrder);
 
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { createAppointmentFormOpen } = useSelector(
-    (state: RootState) => state.ui
-  );
+  const { createAppointmentFormOpen } = useSelector((state: RootState) => state.ui);
 
   const handleSortChange = useCallback(
     (newSortBy: SortBy): void => {
@@ -128,9 +114,15 @@ const ServiceList = () => {
   }, [searchValue]);
 
   const placeholderImages = [
-    "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1883",
-    "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1883",
-    "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740",
+    "https://res.cloudinary.com/ddojmkykj/image/upload/v1763560611/services/504350ff-f752-4fe5-8245-8878cd7dfbc5.jpg",
+    "https://res.cloudinary.com/ddojmkykj/image/upload/v1763560706/services/2e5e97a2-a7a1-46b3-bd19-9f87218af709.webp",
+    "https://res.cloudinary.com/ddojmkykj/image/upload/v1763560740/services/cde265d1-eadb-41e0-9d87-24ca48df97f3.jpg",
+    "https://res.cloudinary.com/ddojmkykj/image/upload/v1763560781/services/d944eca5-3edc-4da4-bdb6-332ba569ec5f.webp",
+    "https://res.cloudinary.com/ddojmkykj/image/upload/v1763560845/services/35f3c5f0-03c1-433c-bab8-1e251817d251.webp",
+    "https://res.cloudinary.com/ddojmkykj/image/upload/v1763560906/services/49c8d5c8-a978-44cd-8ed5-d9f7c08ee251.webp",
+    "https://res.cloudinary.com/ddojmkykj/image/upload/v1763560927/services/d23b568f-b96d-4990-b37f-73e2effa2aa0.webp",
+    "https://res.cloudinary.com/ddojmkykj/image/upload/v1763561065/services/e6945e06-64fd-48e9-9bae-6492efd97778.webp",
+    "https://res.cloudinary.com/ddojmkykj/image/upload/v1763561088/services/4b2c2ea2-4188-4c36-87e2-2b937ffc58da.webp",
   ];
 
   return (
@@ -152,18 +144,11 @@ const ServiceList = () => {
           <SortSection id="service-list-start">
             <ButtonGroup>
               <SortLabel>Sort by:</SortLabel>
-              <SortButton
-                active={sortBy === "Name"}
-                onClick={() => handleSortChange("Name")}
-              >
+              <SortButton active={sortBy === "Name"} onClick={() => handleSortChange("Name")}>
                 Name {sortBy === "Name" && (sortOrder === "asc" ? "↑" : "↓")}
               </SortButton>
-              <SortButton
-                active={sortBy === "Duration"}
-                onClick={() => handleSortChange("Duration")}
-              >
-                Duration{" "}
-                {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
+              <SortButton active={sortBy === "Duration"} onClick={() => handleSortChange("Duration")}>
+                Duration {sortBy === "Duration" && (sortOrder === "asc" ? "↑" : "↓")}
               </SortButton>
             </ButtonGroup>
             <SearchBar
@@ -182,10 +167,7 @@ const ServiceList = () => {
 
             {!isLoading && !isHaveData && (
               <div style={{ gridColumn: "1 / -1" }}>
-                <NOT_FOUND_ITEMS
-                  icon="bi bi-sticky"
-                  message={LIST_SERVICES_MESSAGE.EMPTY + `${searchValue}`}
-                />
+                <NOT_FOUND_ITEMS icon="bi bi-sticky" message={LIST_SERVICES_MESSAGE.EMPTY + `${searchValue}`} />
               </div>
             )}
 
@@ -203,9 +185,7 @@ const ServiceList = () => {
                   >
                     <ServiceImageContainer>
                       <motion.img
-                        src={
-                          placeholderImages[index % placeholderImages.length]
-                        }
+                        src={placeholderImages[index % placeholderImages.length]}
                         alt={service.name}
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
@@ -221,9 +201,7 @@ const ServiceList = () => {
                         viewport={{ once: true }}
                       >
                         <ServiceTitle>{service.name}</ServiceTitle>
-                        <ServiceDescription>
-                          {service.description}
-                        </ServiceDescription>
+                        <ServiceDescription>{service.description}</ServiceDescription>
                         <ServiceDuration>
                           <strong>Duration:</strong> {service.duration} hours
                         </ServiceDuration>
