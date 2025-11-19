@@ -56,5 +56,9 @@ namespace Application.Services
              var parts = await _orderPartRepository.GetTechnicianPendingParts(query);
              return parts;
         }
+
+        public async Task<PageResultDto<TechnicianPartViewModel>> GetTechnicianRepairedParts(TechnicianPartQueryDto query) {
+            return await _technicianRepository.GetTechnicianRepairedParts(query);
+        }
     }
 }
