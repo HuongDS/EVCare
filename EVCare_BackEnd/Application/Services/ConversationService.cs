@@ -69,8 +69,11 @@ namespace Application.Services
 
             if (staffAccountId != "AI_BOT" && staffAccountId != "0")
             {
-                var staffInfo = await _accountService.GetAccountById(int.Parse(staffAccountId));
-                newConversation.Participants[1].Name = staffInfo.First_Name + staffInfo.Last_Name;
+                //var staffInfo = await _accountService.GetAccountById(int.Parse(staffAccountId));
+                var staffInfo = await _employeeServices.GetEmployeeInformation(int.Parse(employee.EmployeeId));
+                //newConversation.Participants[1].Name = staffInfo.First_Name + " " + staffInfo.Last_Name;
+                newConversation.Participants[1].Name = staffInfo.FullName;
+                newConversation.Participants[1].EmployeeImage = staffInfo.Avatar;
             }
 
             await _conversations.InsertOneAsync(newConversation);
@@ -126,8 +129,12 @@ namespace Application.Services
 
             if (staffId != "AI_BOT" && staffId != "0")
             {
-                var staffInfo = await _accountService.GetAccountById(int.Parse(staffId));
-                newConversation.Participants[1].Name = staffInfo.First_Name + staffInfo.Last_Name;
+                //var staffInfo = await _accountService.GetAccountById(int.Parse(staffId));
+                //newConversation.Participants[1].Name = staffInfo.First_Name + staffInfo.Last_Name;
+
+                var staffInfo = await _employeeServices.GetEmployeeInformation(int.Parse(employee.EmployeeId));
+                newConversation.Participants[1].Name = staffInfo.FullName;
+                newConversation.Participants[1].EmployeeImage = staffInfo.Avatar;
             }
 
             await _conversations.InsertOneAsync(newConversation);
