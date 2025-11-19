@@ -38,6 +38,28 @@ namespace API.Controllers
                 });
             }
         }
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateTechnicianSkill([FromQuery]int techId,TechnicianSkillUpdateModel model)
+        {
+            try
+            {
+                await _technicianSkillService.UpdateTechnicianSkillAsync(model);
+                return Ok(new
+                {
+                    statusCode = StatusCodes.Status200OK,
+                    message = "Technician skill updated successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    statusCode = StatusCodes.Status400BadRequest,
+                    message = ex.Message
+                });
+            }
+        }
 
     }
 }
