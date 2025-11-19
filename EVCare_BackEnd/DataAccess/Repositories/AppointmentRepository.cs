@@ -463,7 +463,6 @@ namespace DataAccess.Repositories
                     Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
                     OrderId = a.OrderId,
                     Parts = a.Order.OrderParts
-                    .Where(op => op.TechnicianId == technicianId)
                     .Select(op => new PartTechnicianViewModel
                     {
                         TechnicianName = op.Technician.Employee.Account.First_Name + " " + op.Technician.Employee.Account.Last_Name,
@@ -476,8 +475,6 @@ namespace DataAccess.Repositories
                         Id = op.PartId,
                         IsReplaced = op.IsReplaced,
                         TechnicianId = op.TechnicianId
-                        
-
                     }).ToList(),
                     Status = a.Order.TechnicianWorkingSessions
                                 .FirstOrDefault(tws => tws.TechnicianId == technicianId).Status,
