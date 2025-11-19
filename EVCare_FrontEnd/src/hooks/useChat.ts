@@ -43,8 +43,5 @@ export function useChat(conversationId?: string) {
   const send = async (text: string, attachments?: Attachment[]) =>
     connectionRef.current?.invoke("SendMessage", conversationId, text, attachments ?? null);
 
-  // const markRead = async (upToMessageId: number) =>
-  //   connectionRef.current?.invoke("MarkAsRead", conversationId, upToMessageId);
-
   return { messages, setMessages, unread, send };
 }
