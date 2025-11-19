@@ -12,5 +12,6 @@ namespace DataAccess.Interfaces
     {
         Task AddTechnicianSkillAsync(IEnumerable<TechnicianSkill> model);
         Task DeleteTechnicianSkillByTechnicianIdAsync(int technicianId);
+        Task SaveChangeAsynce();
     }
 }
