@@ -36,7 +36,7 @@ namespace Application.Services
         private readonly IServiceCenterRepository _serviceCenterRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IOrderDetailLogService _orderDetailLogService;
-
+        private readonly IEmployeeRepository _employeeRepository;
         public OrderService(IOrderRepository orderRepository,
             IAppointmentRepository appointmentRepository,
             IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository, IUnitOfWork unitOfWork
@@ -44,7 +44,8 @@ namespace Application.Services
             , IAppointmentPartConditionRepository appointmentPartConditionRepository,
             IServiceCenterRepository serviceCenterRepository,
             IAccountRepository accountRepository,
-            IOrderDetailLogService orderDetailLogService
+            IOrderDetailLogService orderDetailLogService,
+            IEmployeeRepository employeeRepository
             )
         {
             _orderRepository = orderRepository;
@@ -58,6 +59,7 @@ namespace Application.Services
             _serviceCenterRepository = serviceCenterRepository;
             _accountRepository = accountRepository;
             _orderDetailLogService = orderDetailLogService;  
+            _employeeRepository = employeeRepository;
         }
         public async Task<ResponseDto<OrderResponseDto>> CreateOrderAsync(OrderCreateRequestDto data)
         {
@@ -431,6 +433,14 @@ namespace Application.Services
                 }
                 var listsIdDistinct = model.UpdateParts.Select(x => x.NewTechnicianId).Distinct().ToList();
                 foreach (var techId in listsIdDistinct) { 
+
+                    var employee = await _employeeRepository.GetEmployeeByTechnicianId(techId);
+                    if (employee.Status == DataAccess.Enums.EmployeeStatusEnum.Available) {
+                        employee.Status = DataAccess.Enums.EmployeeStatusEnum.Busy;
+                      
+                    }
+
+
                     await _technicianWorkingSessionRepository.AddTechnician(new TechnicianWorkingSession
                     {
                         OrderId = model.OrderId,
