@@ -19,6 +19,7 @@ export type User = {
   accountId: number;
   email: string;
   role: RoleEnum;
+  techId?: number;
 };
 
 export type AuthState = {
