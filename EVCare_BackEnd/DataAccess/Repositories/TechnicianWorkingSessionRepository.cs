@@ -93,7 +93,7 @@ namespace DataAccess.Repositories
 
         public async Task UpdateStatusWorkingSession(int technician, TechnicianWorkingSessionUpdateModel model)
         {
-            var data = await _dbContext.TechnicianWorkingSessions.Where(x=>x.TechnicianId == technician && x.OrderId == model.OrderId).FirstOrDefaultAsync();
+            var data = await _dbContext.TechnicianWorkingSessions.Where(x=>x.TechnicianId == technician && x.OrderId == model.OrderId && x.EndTime == null).FirstOrDefaultAsync();
             if (data == null)
             {
                 throw new Exception("Source not found");
@@ -109,6 +109,11 @@ namespace DataAccess.Repositories
             }
             await _dbContext.SaveChangesAsync();
 
+
+        }
+
+        public async Task AddTechnician(TechnicianWorkingSession technicianWorkingSession) {
+            await _dbContext.TechnicianWorkingSessions.AddAsync(technicianWorkingSession);
 
         }
     }

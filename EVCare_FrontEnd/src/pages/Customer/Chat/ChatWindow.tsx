@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { Input, Button, Avatar, Spin } from "antd";
 import { useChat } from "../../../hooks/useChat";
 import { SendOutlined, UserOutlined, SmileOutlined, ArrowLeftOutlined, InfoCircleOutlined } from "@ant-design/icons";
@@ -8,9 +8,6 @@ import { RoleEnum } from "../../../models/enums";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../states/store";
 import type { Conversation } from "../../../models/Message/Conversation";
-// import { RoleEnum } from "../../../models/enums";
-// import { useSelector } from "react-redux";
-// import type { RootState } from "../../../states/store";
 
 interface ChatWindowProps {
   conversationId: string;
@@ -37,6 +34,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
   const role = useSelector((state: RootState) => state.auth.user?.role);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const previousScrollHeightRef = useRef<number>(0);
+  const pageSize = 20;
 
   useEffect(() => {
     (async () => {
@@ -44,8 +46,45 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       const data = await getHistory(conversationId);
       setHistory(data);
       setLoading(false);
+      setHasMore(true);
+      setLoading(false);
+
+      setTimeout(() => {
+        endRef.current?.scrollIntoView({ behavior: "auto" });
+      }, 100);
     })();
   }, [conversationId]);
+
+  const handleScroll = async (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight } = e.currentTarget;
+    if (scrollTop === 0 && hasMore && !isFetchingMore && !loading) {
+      setIsFetchingMore(true);
+      previousScrollHeightRef.current = scrollHeight;
+      const currentLength = history.length;
+      try {
+        const moreMessages = await getHistory(conversationId, currentLength, pageSize);
+        if (moreMessages.length < pageSize) {
+          setHasMore(false);
+        }
+        if (moreMessages.length > 0) {
+          setHistory((prev) => [...moreMessages, ...prev]);
+        }
+      } catch (err) {
+        console.error("Failed to load more messages", err);
+      } finally {
+        setIsFetchingMore(false);
+      }
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (!isFetchingMore && messagesContainerRef.current && previousScrollHeightRef.current > 0) {
+      const newScrollHeight = messagesContainerRef.current.scrollHeight;
+      const diff = newScrollHeight - previousScrollHeightRef.current;
+      messagesContainerRef.current.scrollTop = diff;
+      previousScrollHeightRef.current = 0;
+    }
+  }, [history, isFetchingMore]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -102,12 +141,21 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           />
         )}
         <div className="chat-header-content">
-          <Avatar size={40} icon={<UserOutlined />} className="chat-header-avatar" />
+          <Avatar
+            size={40}
+            icon={<UserOutlined />}
+            src={selectedConversation?.participants[1]?.employeeImage}
+            className="chat-header-avatar"
+          />
           <div>
             <h3 className="chat-header-title">
               {role === RoleEnum.STAFF
                 ? `Customer #${selectedConversation?.participants[0]?.name}`
-                : `Staff #${selectedConversation ? selectedConversation.participants[1]?.name : "EVCare Assistant"}`}
+                : `Staff #${
+                    selectedConversation && selectedConversation.participants[1]?.name
+                      ? selectedConversation.participants[1]?.name
+                      : "EVCare Assistant"
+                  }`}
             </h3>
             <p className="chat-header-status" style={{ color: isStaffAvailable ? "#00ad4e" : "#ef4444" }}>
               {isStaffAvailable ? "Active" : "Staff Offline"}
@@ -116,10 +164,15 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
       </div>
 
-      {/* Messages Area */}
       {isStaffAvailable ? (
         <>
-          <div className="chat-messages-area">
+          <div className="chat-messages-area" onScroll={handleScroll} ref={messagesContainerRef}>
+            {isFetchingMore && (
+              <div style={{ textAlign: "center", padding: "10px", color: "#999" }}>
+                <Spin size="small" />
+              </div>
+            )}
+
             {loading ? (
               <div className="chat-loading">
                 <Spin size="large" />
@@ -158,7 +211,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               </>
             )}
           </div>
-          {/* Input Area */}
+
           <div className="chat-input-area">
             <div className="chat-input-container">
               <div className="chat-input-field">

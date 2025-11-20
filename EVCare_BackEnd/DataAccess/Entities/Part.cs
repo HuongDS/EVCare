@@ -25,5 +25,6 @@ namespace DataAccess.Entities
         public ICollection<PartHistory> PartHistories { get; set; }
         public ICollection<ServicePart> ServiceParts { get; set; }
         public ICollection<AppointmentPartCondition> AppointmentPartConditions { get; set; }
+        public ICollection<OrderDetailLog> OrderDetailLogs { get; set; }
     }
 }

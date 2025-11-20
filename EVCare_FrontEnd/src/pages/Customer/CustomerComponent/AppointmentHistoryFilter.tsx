@@ -92,7 +92,9 @@ const OrderHistorySort: React.FC<MyComponentProps> = ({ sortName, onSelectCatego
           $active={selectedCategory === name}
           onClick={() => selectCategory(name)}
         >
-          {name}
+          {name !== "InProgress" && name !== "ReadyForPickup" && name}
+          {name === "InProgress" && "In Progress"}
+          {name === "ReadyForPickup" && "Ready For Pickup"}
         </Category>
       ))}
     </Container>

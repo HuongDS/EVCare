@@ -16,6 +16,7 @@ import { formatDate } from "../../../utils/formatDate";
 import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
 import { getEmployeeById } from "../../../services/adminService";
 import { checkStaffAvailable } from "../../../services/staffService";
+import { MinimalPagination } from "../../../components/Paginations/MinimalPagination";
 
 interface ChatPageProps {
   isWidgetMode?: boolean;
@@ -34,6 +35,10 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
   const [isStaffAvailable, setIsStaffAvailable] = useState(true);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
 
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
   const role = useSelector((state: RootState) => state.auth.user?.role);
@@ -44,8 +49,14 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
     (async () => {
       setView("loading");
       try {
-        const [list, appointments] = await Promise.all([listConversations(), getCustomerAppointment()]);
-        setConversations(list);
+        const [list, appointments] = await Promise.all([
+          listConversations(pageIndex, pageSize),
+          getCustomerAppointment(),
+        ]);
+        setConversations(list.data?.items ?? []);
+        setPageIndex(list.data?.pageIndex ?? 1);
+        setTotalItems(list.data?.totalItems ?? 0);
+        setTotalPages(list.data?.totalPages ?? 1);
         const hasAppt = appointments.data?.filter(
           (a) =>
             a.status !== AppointmentStatusEnum.PENDING &&
@@ -55,7 +66,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
         setHasAppointment((hasAppt && hasAppt.length > 0) || false);
         setAllAppointments(hasAppt || []);
 
-        if (list && list.length > 0) {
+        if (list && list.data?.items?.length && list.data?.items?.length > 0) {
           setView("list");
         } else {
           setView("new_choice");
@@ -65,7 +76,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
         setView("new_choice");
       }
     })();
-  }, []);
+  }, [pageIndex]);
 
   const handleOpenStaffModal = () => {
     setSelectedAppointmentId(0);
@@ -81,17 +92,20 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
     setIsLoading(true);
     try {
       const { conversationId } = await startConsultation(selectedAppointmentId);
-      const newList = await listConversations();
-      const conversation = newList.find((conv) => conv.id === conversationId);
+      const newList = await listConversations(pageIndex, pageSize);
+      const conversation = newList.data?.items?.find((conv) => conv.id === conversationId);
       const staffParticipant = conversation?.participants.find((p) => p.role === RoleEnum.STAFF);
       const staff = await getEmployeeById(Number(staffParticipant?.employeeId) || 0);
       const checkAvailableStaff = await checkStaffAvailable(staff.data?.employeeId || 0);
       setIsStaffAvailable(checkAvailableStaff.data?.statusEnum === EmployeeStatusEnum.Available);
-      setConversations(newList);
+      setConversations(newList.data?.items ?? []);
       setModalOpen(false);
       setSelectedId(conversationId);
       setSelectedConv(conversation || null);
       setView("chat");
+      setPageIndex(newList.data?.pageIndex ?? 1);
+      setTotalItems(newList.data?.totalItems ?? 0);
+      setTotalPages(newList.data?.totalPages ?? 1);
     } catch (error) {
       notification.error({
         message: "Error",
@@ -104,13 +118,16 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
   const handleStartAIChat = async () => {
     try {
       const response = await startChatWithAi();
-      const newList = await listConversations();
-      setConversations(newList);
+      const newList = await listConversations(pageIndex, pageSize);
+      setConversations(newList.data?.items ?? []);
       setModalOpen(false);
       setSelectedId(response.data ?? "");
-      setSelectedConv(newList.find((conv) => conv.id === response.data) || null);
+      setSelectedConv(newList.data?.items?.find((conv) => conv.id === response.data) || null);
       setIsStaffAvailable(true);
       setView("chat");
+      setPageIndex(newList.data?.pageIndex ?? 1);
+      setTotalItems(newList.data?.totalItems ?? 0);
+      setTotalPages(newList.data?.totalPages ?? 1);
     } catch (error) {
       notification.error({
         message: "Error",
@@ -236,6 +253,20 @@ export const ChatPage: React.FC<ChatPageProps> = ({ isWidgetMode = false }) => {
           onSelect={handleSelectConversation}
         />
       </div>
+
+      {totalItems > pageSize && (
+        <div
+          style={{
+            padding: "8px 0",
+            borderTop: "1px solid #f0f0f0",
+            backgroundColor: "#fff",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <MinimalPagination pageIndex={pageIndex} totalPage={totalPages} onPageChange={setPageIndex} />
+        </div>
+      )}
     </div>
   );
 

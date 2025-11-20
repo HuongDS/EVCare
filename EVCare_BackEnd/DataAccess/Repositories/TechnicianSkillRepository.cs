@@ -21,11 +21,18 @@ namespace DataAccess.Repositories
         public async Task AddTechnicianSkillAsync(IEnumerable<TechnicianSkill> model)
         {
             await _dbContext.TechnicianSkills.AddRangeAsync(model);
-            await _dbContext.SaveChangesAsync();
+            
+          
         }
 
-      
+        public async Task DeleteTechnicianSkillByTechnicianIdAsync(int technicianId) {
+            await _dbContext.TechnicianSkills
+                .Where(x => x.TechnicianId == technicianId)
+                .ExecuteDeleteAsync();
+        }
 
-       
+        public async Task SaveChangeAsynce() {
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

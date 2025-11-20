@@ -17,12 +17,14 @@ namespace Application.Services
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
-        public AccountService(IAccountRepository accountRepository, IMapper mapper, IRefreshTokenRepository refreshTokenRepository)
+        public AccountService(IAccountRepository accountRepository, IMapper mapper, IRefreshTokenRepository refreshTokenRepository,IEmployeeRepository employeeRepository)
         {
             _accountRepository = accountRepository;
             _mapper = mapper;
             _refreshTokenRepository = refreshTokenRepository;
+            _employeeRepository = employeeRepository;
         }
 
         public async Task DeleteAccount(int accountId)
@@ -43,7 +45,13 @@ namespace Application.Services
             {
                 throw new Exception(Message.ACCOUNT_HAS_BEEN_DISABLED);
             }
+            var employee = await _employeeRepository.GetEmployeeByAccountId(accountId);
+            
             var data = _mapper.Map<AccountViewModel>(account);
+            if (employee != null) {
+                data.EmployeeId = employee.Id;
+                data.TechId = employee.TechnicianId;
+            }
             return data;
         }
 

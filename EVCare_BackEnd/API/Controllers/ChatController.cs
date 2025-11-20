@@ -6,6 +6,7 @@ using Application.Infrastructures;
 using Application.Interfaces;
 using Application.Services;
 using DataAccess.Dtos.MongoDb_Message;
+using DataAccess.Dtos.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,21 +29,6 @@ namespace API.Controllers
             _chatServices = chatServices;
             _staffRoutingService = staffRoutingService;
         }
-
-        //[HttpPost("conversations/domain")]
-        //[ServiceFilter(typeof(SetAccountIdFilter))]
-        //public async Task<IActionResult> CreateDomain()
-        //{
-        //    var accountId = (int)HttpContext.Items["AccountId"];
-        //    var staffAccountId = await _staffRoutingService.FindAvailableAsync(accountId.ToString());
-        //    var conversation = await _conversationService.CreateOrGetConsultationAsync(accountId.ToString(), staffAccountId);
-        //    return Ok(new ResponseDto<object>
-        //    {
-        //        statusCode = HttpStatus.OK,
-        //        message = Application.Infrastructures.Message.DOMAIN_CREATE_SUCCESS,
-        //        data = conversation.Id
-        //    });
-        //}
 
         [HttpPost("conversations/domain/AI")]
         [ServiceFilter(typeof(SetAccountIdFilter))]
@@ -85,7 +71,7 @@ namespace API.Controllers
         {
             var accountId = HttpContext.Items["AccountId"];
             var (list, totalPages, totalItems) = await _conversationService.ListMineAsync(accountId.ToString(), pageSize, pageIndex);
-            return Ok(list.Select(c => new
+            var items = list.Select(c => new
             {
                 id = c.Id,
                 type = c.Type,
@@ -93,7 +79,20 @@ namespace API.Controllers
                 updatedAt = c.UpdatedAt,
                 unread = c.Unread.TryGetValue(accountId.ToString(), out var x) ? x : 0,
                 participants = c.Participants
-            }));
+            });
+            return Ok(new ResponseDto<PageResultDto<object>>
+            {
+                data = new PageResultDto<object>
+                {
+                    Items = items,
+                    PageIndex = pageIndex,
+                    TotalPages = totalPages,
+                    TotalItems = (int)totalItems,
+                    PageSize = pageSize
+                },
+                message = "Get conversations successfully !",
+                statusCode = HttpStatus.OK,
+            });
         }
 
         [HttpGet("history/{conversationId}")]

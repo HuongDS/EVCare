@@ -42,11 +42,17 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
             <List.Item.Meta
               avatar={
                 <div className="conversation-avatar-wrapper">
-                  <Avatar
-                    size={40}
-                    icon={<UserOutlined />}
-                    className={`conversation-avatar ${isSelected ? "selected" : ""}`}
-                  />
+                  {role === RoleEnum.CUSTOMER && (
+                    <Avatar
+                      size={40}
+                      icon={<UserOutlined />}
+                      src={item?.participants[1]?.employeeImage}
+                      className="chat-header-avatar"
+                    />
+                  )}
+                  {role === RoleEnum.STAFF && (
+                    <Avatar size={40} icon={<UserOutlined />} className="chat-header-avatar" />
+                  )}
                   {unreadCount > 0 && (
                     <div className="conversation-unread-badge">
                       <Badge count={unreadCount} />
@@ -58,10 +64,8 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ conversations, onSelec
                 <div className="conversation-title">
                   <span className={`conversation-name ${isSelected ? "selected" : ""}`}>
                     {role === RoleEnum.STAFF
-                      ? `Customer #${item.participants[0]?.name}`
-                      : `Staff #${
-                          item.participants[1]?.name == null ? "EVCare Assistant" : item.participants[1]?.name
-                        }`}
+                      ? `${item.participants[0]?.name}`
+                      : `${item.participants[1]?.name == null ? "EVCare Assistant" : item.participants[1]?.name}`}
                   </span>
                   <span className="conversation-time">
                     <ClockCircleOutlined />

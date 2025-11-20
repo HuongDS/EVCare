@@ -32,6 +32,7 @@ namespace DataAccess.Repositories
         {
             
             var query = await _dbSet.AsNoTracking().Where(x => x.Id == orderId)
+                
                 .Include(x=>x.OrderParts)
                   .ThenInclude(x=>x.Technician)
                    .ThenInclude(x=>x.Employee)
@@ -41,18 +42,18 @@ namespace DataAccess.Repositories
                 {
                     Id = x.Id,
                     Parts = x.OrderParts.
-                    Select(x => new Dtos.Part.PartTechnicianViewModel
+                    Select(a => new Dtos.Part.PartTechnicianViewModel
                     {
-                        Id = x.PartId,
-                        ImageUrl = x.Part.Image,
-                        Name = x.Part.Name,
-                        Price = x.Price,
-                        Quantity = x.Quantity,
-                        TechnicianId = x.TechnicianId,
-                        TechnicianName = x.Technician.Employee.Account.First_Name+" " +x.Technician.Employee.Account.Last_Name,
-                        ReplacementPrice = x.Part.ReplacementPrice,
-                        Stock = x.Part.Stock,
-                        IsReplaced = x.IsReplaced
+                        Id = a.PartId,
+                        ImageUrl = a.Part.Image,
+                        Name = a.Part.Name,
+                        Price = a.Price,
+                        Quantity = a.Quantity,
+                        TechnicianId = a.TechnicianId,
+                        TechnicianName = a.Technician.Employee.Account.First_Name+" " +a.Technician.Employee.Account.Last_Name,
+                        ReplacementPrice = a.Part.ReplacementPrice,
+                        Stock = a.Part.Stock,
+                        PartStatus = x.Appointment.AppointmentPartConditions.Where(apc=>apc.PartId == a.PartId).Select(b=>b.Level).FirstOrDefault()
                         
                     }),
                     Vat = x.Vat,

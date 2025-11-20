@@ -392,7 +392,7 @@ export const ModalHeader = styled.div`
 export const ModalTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 700;
-  color: #c2410c;
+  color: #00ad4e;
   margin: 0;
   display: flex;
   align-items: center;
@@ -453,8 +453,8 @@ export const ModalButton = styled.button<{ $isConfirm: boolean }>`
   ${({ $isConfirm }) =>
     $isConfirm
       ? `
-    background: #dc2626; color: white;
-    &:hover { background: #b91c1c; }
+    background: #00c853; color: white;
+    &:hover { background: #00ad4e; }
   `
       : `
     background: #fff; color: #374151;
@@ -532,4 +532,66 @@ export const UpdateButton = styled(BaseActionButton)`
     background: #bbf7d0;
     color: #064e3b;
   }
+`;
+
+export const SkillCategoryWrapper = styled.div`
+  margin-bottom: 24px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+export const CategoryHeader = styled.h4`
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 173, 78, 0.1);
+`;
+
+export const SkillGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
+export const SkillSelectButton = styled.button<{ $isSelected: boolean }>`
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: "Outfit", sans-serif;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  ${({ $isSelected }) =>
+    $isSelected
+      ? `
+      background: linear-gradient(135deg, #00ad4e 0%, #00c853 100%);
+      color: white;
+      border: 1px solid transparent;
+      box-shadow: 0 4px 12px rgba(0, 173, 78, 0.3);
+      transform: translateY(-1px);
+    `
+      : `
+      background: rgba(255, 255, 255, 0.6);
+      color: #4b5563;
+      border: 1px solid #d1d5db;
+      
+      &:hover {
+        border-color: #00ad4e;
+        color: #00ad4e;
+        background: white;
+      }
+    `}
+`;
+
+export const CheckIcon = styled.span`
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
 `;

@@ -15,6 +15,7 @@ namespace DataAccess.Entities
         public Appointment Appointment { get; set; }
         public OrderStatusEnum Status { get; set; }
         public DateTime Create_At { get; set; }
+        public ICollection<OrderDetailLog> OrderDetailLogs { get; set; }
 
         public ICollection<OrderPart> OrderParts { get; set; }
         public Invoice? Invoice { get; set; }

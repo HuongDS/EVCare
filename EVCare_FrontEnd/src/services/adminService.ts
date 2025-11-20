@@ -168,3 +168,16 @@ export async function updateTechnician(technicianId: number, expYears: number, k
     throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }
+
+export async function updateTechnicianSkills(data: { technicianId: number; serviceIds: number[] }) {
+  try {
+    const response = await api.put("/api/TechnicianSkill", data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errMsg = error.response?.data.message || error.message;
+      throw new Error(errMsg);
+    }
+    throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+  }
+}
