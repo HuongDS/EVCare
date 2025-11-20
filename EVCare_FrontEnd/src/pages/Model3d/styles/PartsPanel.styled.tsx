@@ -91,6 +91,7 @@ export const Subtitle = styled.p`
 
 export const CategoriesWrapper = styled.div`
   flex: 1;
+  max-height: 630px;
   overflow-y: auto;
   padding: 1rem;
   display: flex;
