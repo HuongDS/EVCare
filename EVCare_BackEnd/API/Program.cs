@@ -110,6 +110,7 @@ builder.Services.AddScoped<IPartHistoryRepository, PartHistoryRepository>();
 builder.Services.AddScoped<IAppointmentPartConditionRepository, AppointmentPartConditonRepository>();
 builder.Services.AddScoped<IVehiclePartCompatibilityRepository, VehiclePartCompatibilityRepository>();
 builder.Services.AddScoped<IServicePartRepository, ServicePartRepository>();
+builder.Services.AddScoped<IOrderDetailLogRepository, OrderDetailLogRepository>();
 
 
 
@@ -148,6 +149,8 @@ builder.Services.AddScoped<IAdminDashboardServices, AdminDashboardServices>();
 builder.Services.AddScoped<IAppointmentPartConditionService, AppointmentPartConditionService>();
 builder.Services.AddScoped<IAiChatServices, AiChatServices>();
 builder.Services.AddScoped<IEmailSender,EmailSender>();
+builder.Services.AddScoped<IOrderDetailLogService, OrderDetailLogService>();
+
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITechnicianSkillService, TechnicianSkillService>();
 builder.Services.AddHttpClient<IAiInsightServices, AiInsightServices>(c =>

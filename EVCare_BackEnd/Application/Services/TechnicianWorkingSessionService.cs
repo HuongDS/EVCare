@@ -24,6 +24,8 @@ namespace Application.Services
         private readonly IAccountRepository _accountRepository;
         private readonly IAppointmentPartConditionRepository _appointmentPartConditionRepository;
         private readonly IOrderPartRepository _orderPartRepository;
+        private readonly IOrderDetailLogService _orderDetailLogService;
+
 
         public TechnicianWorkingSessionService(ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
             , IOrderRepository orderRepository
@@ -33,7 +35,8 @@ namespace Application.Services
             , OnAssignTechnician onAssignTechnician
             , IAccountRepository accountRepository,
              IAppointmentPartConditionRepository appointmentPartConditionRepository,
-            IOrderPartRepository orderPartRepository
+            IOrderPartRepository orderPartRepository,
+            IOrderDetailLogService orderDetailLogService
             ) {
             _orderRepository = orderRepository;
             _appointmentRepository = appointmentRepository;
@@ -44,6 +47,7 @@ namespace Application.Services
             _accountRepository = accountRepository;
             _appointmentPartConditionRepository = appointmentPartConditionRepository;
             _orderPartRepository = orderPartRepository;
+            _orderDetailLogService = orderDetailLogService;
         }
 
         public async Task AddTechnicianToOrder(AssignTechniciansModel model) {
@@ -99,6 +103,8 @@ namespace Application.Services
             }
             await _technicianWorkingSessionRepository.UpdateStatusTechnicinInOrder(technicianId, orderId);
             await _employeeRepository.MarkAvaliableTechnician(technicianId);
+
+          
 
 
             //if (await _technicianWorkingSessionRepository.CheckOrderDone(orderId)) {

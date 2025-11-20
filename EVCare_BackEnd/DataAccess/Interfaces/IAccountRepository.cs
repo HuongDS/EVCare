@@ -14,6 +14,7 @@ namespace DataAccess.Interfaces
         Task<bool> CheckAccountIsBanned(int accountId);
         Task DeleteAccount(int accountId);
         Task<IEnumerable<int>> GetAccountIdByTechnicianIds(IEnumerable<int> technicianIds);
+        Task<Account?> GetAccountByTechId(int techId);
         //Task DeleteAccount(int accountId);
     }
 }
