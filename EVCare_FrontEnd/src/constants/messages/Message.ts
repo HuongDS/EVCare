@@ -37,6 +37,7 @@ export const ERROR_MESSAGE = {
   FAILED_WHEN_UPDATE_SERVICE: "Failed to update service!",
   FAILED_TO_CANCEL_APPOINTMENT: "Failed to cancel appointment",
   FAILED_TO_SCHEDULE_MAINTENANCE: "Failed to schedule maintenance",
+  FAILED_TO_UPDATE_PART_STATUS: "Failed to update part",
 };
 
 export const MSG_TITLE = {
@@ -58,6 +59,7 @@ export const MSG_TITLE = {
   SCHEDULE: "Schedule Maintenance",
   TECH_CONFIRM_ORDER: "Confirm Order",
   TECH_COMPLETED: "Task completed",
+  PART_UPDATE: "Part Updated",
 };
 
 export const SUCCESS_MESSAGE = {
@@ -73,6 +75,7 @@ export const SUCCESS_MESSAGE = {
   SCHEDULE_SUCCESSFULLY: "Schedule maintenance is successful",
   TECHNICIAN_CONFIRM_ORDER: "Order is confirmed successfully by technician",
   TECHNICIAN_COMPLETED: "The task has been completed successfully",
+  PART_UPDATE_SUCCESS: "Part updated successfully",
 };
 
 export const AUTH_FORM_MESSAGE = {

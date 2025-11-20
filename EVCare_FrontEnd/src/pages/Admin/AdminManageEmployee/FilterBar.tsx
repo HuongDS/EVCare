@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { EmployeeStatusEnum, RoleEnum } from "../../../models/enums";
 import { useNavigate } from "react-router";
 
@@ -20,16 +20,33 @@ const FilterBar: React.FC<Props> = ({
   onStatusChange,
 }) => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState(search);
+
+  useEffect(() => {
+    setSearchQuery(search);
+  }, [search]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      onSearchChange(searchQuery);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchQuery, onSearchChange]);
+
   return (
     <div className="filter-bar">
       <input
         className="search-input"
         placeholder="Search by name, email, phone, or CCCD..."
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
       />
 
-      <select className="filter-select" value={roleFilter} onChange={(e) => onRoleChange(e.target.value as RoleEnum)}>
+      <select
+        className="filter-select"
+        value={roleFilter}
+        onChange={(e) => onRoleChange(e.target.value as RoleEnum)}
+      >
         <option value={RoleEnum.STAFF}>Staff</option>
         <option value={RoleEnum.TECHNICIAN}>Technician</option>
       </select>
@@ -45,7 +62,10 @@ const FilterBar: React.FC<Props> = ({
         <option value={EmployeeStatusEnum.OnLeave}>On Leave</option>
       </select>
 
-      <button onClick={() => navigate("/admin/add-employee")} className="add-employee-btn">
+      <button
+        onClick={() => navigate("/admin/add-employee")}
+        className="add-employee-btn"
+      >
         + Add Employee
       </button>
     </div>

@@ -42,7 +42,7 @@ export default function ErrorPage({ onRetry, onGoHome }: Props) {
 }
 
 const PageContainer = styled.div`
-  min-height: 100vh;
+  height: 100%;
   background: #f5f5f5;
   display: flex;
   align-items: center;
