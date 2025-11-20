@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import FilterBar from "../AdminManageEmployee/FilterBar";
 import EmployeeCard from "../AdminManageEmployee/EmployeeCard";
 import BanModal from "../AdminManageEmployee/BanModal";
