@@ -47,6 +47,7 @@ namespace DataAccess
         public DbSet<OrderPart> OrderParts { get; set; }
         public DbSet<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<OrderDetailLog> OrderDetailLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -75,6 +76,7 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new AppointmentPartConditionConfiguration());
             modelBuilder.ApplyConfiguration(new VehiclePartCompatibilityConfiguration());
             modelBuilder.ApplyConfiguration(new ServicePartConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderDetailLogConfiguration());
 
         }
         public async Task<int> SaveChangesAsync()

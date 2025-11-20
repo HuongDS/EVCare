@@ -1,5 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import { AppointmentStatusEnum } from "../../../../models/enums";
+import { motion } from "framer-motion";
 
 const modalFadeIn = keyframes`
   from {
@@ -525,6 +526,22 @@ export const OrderSummary = styled.div`
   gap: 10px;
 `;
 
+export const PriceNote = styled.div`
+  font-size: 0.85rem;
+  color: #6b7280;
+  background-color: #f9fafb;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  font-style: italic;
+
+  strong {
+    color: #374151;
+    font-weight: 600;
+  }
+`;
+
 export const SummaryLine = styled.div`
   display: flex;
   justify-content: space-between;
@@ -546,4 +563,184 @@ export const SummaryLine = styled.div`
     font-weight: 700;
     color: #00ad4e;
   }
+`;
+
+export const ProgressContainer = styled.div`
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 20px;
+`;
+
+export const ProgressLabel = styled.div<{ $color?: string }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+
+  span:first-child {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  span:last-child {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: ${(props) => props.$color || "#00ad4e"};
+  }
+`;
+
+export const ProgressBarBg = styled.div`
+  width: 100%;
+  height: 10px;
+  background-color: #e5e7eb;
+  border-radius: 5px;
+  overflow: hidden;
+`;
+
+export const ProgressBarFill = styled.div`
+  height: 100%;
+  background: linear-gradient(90deg, #00ad4e 0%, #00c853 100%);
+  border-radius: 5px;
+  transition: width 1s ease-in-out;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.2) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0.2) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 20px 20px;
+    animation: move 2s linear infinite;
+  }
+
+  @keyframes move {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 20px 20px;
+    }
+  }
+`;
+
+export const LogToggleBtn = styled.button`
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin-left: auto;
+
+  &:hover {
+    color: #00ad4e;
+  }
+`;
+
+export const LogsWrapper = styled(motion.div)`
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 10px;
+  border: 1px dashed #d1d5db;
+  max-height: 300px;
+  overflow-y: auto;
+`;
+
+export const PartLogGroup = styled.div`
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0px;
+  }
+`;
+
+export const PartLogHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+
+  svg {
+    color: #00ad4e;
+  }
+
+  span {
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 0.95rem;
+  }
+`;
+
+export const TimelineItem = styled.div`
+  position: relative;
+  padding-left: 24px;
+  padding-bottom: 12px;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 6px;
+    bottom: -6px;
+    width: 2px;
+    background-color: #e5e7eb;
+  }
+
+  &:last-child::before {
+    display: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 2px solid #00ad4e;
+    z-index: 1;
+  }
+`;
+
+export const LogMessage = styled.p`
+  margin: 0;
+  font-size: 0.85rem;
+  color: #4b5563;
+  line-height: 1.5;
+`;
+
+export const EmptyLogText = styled.div`
+  text-align: center;
+  padding: 24px;
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
 `;

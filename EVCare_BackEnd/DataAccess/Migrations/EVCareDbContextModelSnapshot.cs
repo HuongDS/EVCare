@@ -497,6 +497,36 @@ namespace DataAccess.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.OrderDetailLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("PartId");
+
+                    b.ToTable("OrderDetailLogs");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.OrderPart", b =>
                 {
                     b.Property<int>("OrderId")
@@ -1613,6 +1643,25 @@ namespace DataAccess.Migrations
                     b.Navigation("Appointment");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.OrderDetailLog", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Order", "Order")
+                        .WithMany("OrderDetailLogs")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccess.Entities.Part", "Part")
+                        .WithMany("OrderDetailLogs")
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Part");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.OrderPart", b =>
                 {
                     b.HasOne("DataAccess.Entities.Order", "Order")
@@ -1845,6 +1894,8 @@ namespace DataAccess.Migrations
                 {
                     b.Navigation("Invoice");
 
+                    b.Navigation("OrderDetailLogs");
+
                     b.Navigation("OrderParts");
 
                     b.Navigation("TechnicianWorkingSessions");
@@ -1853,6 +1904,8 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.Part", b =>
                 {
                     b.Navigation("AppointmentPartConditions");
+
+                    b.Navigation("OrderDetailLogs");
 
                     b.Navigation("OrderParts");
 

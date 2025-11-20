@@ -11,6 +11,7 @@ namespace DataAccess.Interfaces
     public interface ITechnicianSkillRepository
     {
         Task AddTechnicianSkillAsync(IEnumerable<TechnicianSkill> model);
-      
+        Task DeleteTechnicianSkillByTechnicianIdAsync(int technicianId);
+        Task SaveChangeAsynce();
     }
 }

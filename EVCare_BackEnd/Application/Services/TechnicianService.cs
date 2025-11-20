@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces;
 using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Part;
 using DataAccess.Dtos.Technician;
 using DataAccess.Enums;
 using DataAccess.Interfaces;
@@ -14,9 +15,11 @@ namespace Application.Services
     public class TechnicianService : ITechnicianService
     {
         private readonly ITechnicianRepository _technicianRepository;
-        public TechnicianService(ITechnicianRepository technicianRepository)
+        private readonly IOrderPartRepository _orderPartRepository;
+        public TechnicianService(ITechnicianRepository technicianRepository, IOrderPartRepository orderPartRepository   )
         {
             _technicianRepository = technicianRepository;
+            _orderPartRepository = orderPartRepository;
         }
 
         public async Task<TechnicianViewModel> GetTechnicianDetail(int technicianId)
@@ -47,6 +50,15 @@ namespace Application.Services
             await _technicianRepository.UpdateAsync(technician);
             
 
+        }
+
+        public async Task<IEnumerable<PartTechnicianViewModel>> GetTechnicianPendingParts(TechnicianPendingPartModel query) {
+             var parts = await _orderPartRepository.GetTechnicianPendingParts(query);
+             return parts;
+        }
+
+        public async Task<PageResultDto<TechnicianPartViewModel>> GetTechnicianRepairedParts(TechnicianPartQueryDto query) {
+            return await _technicianRepository.GetTechnicianRepairedParts(query);
         }
     }
 }

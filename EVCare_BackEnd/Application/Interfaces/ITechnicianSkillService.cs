@@ -10,5 +10,6 @@ namespace Application.Interfaces
     public interface ITechnicianSkillService
     {
         Task AddTechnicianSkillAsync(TechnicianSkillCreateModel model);
+        Task UpdateTechnicianSkillAsync(TechnicianSkillCreateModel model);
     }
 }

@@ -149,9 +149,12 @@ namespace API.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Staff")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+
         public async Task<IActionResult> UpdateOrder(OrderUpdateModel model) {
             try {
-                await _orderService.UpdateOrderAsync(model);
+                int employeeId = (int)HttpContext.Items["AccountId"];
+                await _orderService.UpdateOrderAsync(model,employeeId);
                 await _onStatusOrderChange.HandleAsync<object>(OrderStatusChangeEventEnum.StaffConfirmed, null, null);
                 return Ok(new ResponseDto<int>
                 {
@@ -232,6 +235,29 @@ namespace API.Controllers
                 {
                     statusCode = HttpStatus.OK,
                     message = Message.ORDER_PARTS_STATUS_UPDATE_SUCCESS,
+                    data = model.OrderId
+                });
+            }
+            catch (Exception ex) {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+
+        }
+
+        [HttpPut("part/technician")]
+        [Authorize(Roles ="Staff")]
+       public async Task<IActionResult> UpdateOrderPartTechnician(OrderPartUpdateTechnicianModel model) {
+            try {
+                await _orderService.UpdateOrderPartTechnicianAsync(model);
+                return Ok(new ResponseDto<int>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.ORDER_PARTS_TECHNICIAN_UPDATE_SUCCESS,
                     data = model.OrderId
                 });
             }

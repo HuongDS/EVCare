@@ -14,11 +14,6 @@ import {
   Title,
   TitleID,
   Wrapper,
-  // TechnicianTable,
-  // TableHeader,
-  // TableRow,
-  // TableCell,
-  // Avatar,
   WaitingMessage,
   PartList,
   PartItem,
@@ -35,6 +30,18 @@ import {
   TableHeader,
   TableCell,
   Avatar,
+  ProgressContainer,
+  ProgressLabel,
+  ProgressBarBg,
+  ProgressBarFill,
+  LogToggleBtn,
+  LogsWrapper,
+  PartLogGroup,
+  PartLogHeader,
+  TimelineItem,
+  LogMessage,
+  EmptyLogText,
+  PriceNote,
 } from "./AppointmentDetail.styled";
 import NameBoxComponent from "../NameBox";
 import type { AppointmentViewDetailModel } from "../../../../models/AppointmentsModel/AppointmentViewDetailModel";
@@ -43,6 +50,13 @@ import type { PartsDetailDto } from "../../../../models/OrderModel/ViewOrderMode
 import { useGetOrderDetail } from "../../../../services/orderServiceApi";
 import { useGetTechniciansByOrderId } from "../../../../services/technicianService";
 import { useEffect, useState } from "react";
+import { AppointmentStatusEnum } from "../../../../models/enums";
+import type { OrderDetailLogs } from "../../../../models/OrderModel/OrderDetailLogs";
+import { useNotification } from "../../../../context/useNotification";
+import { getOrderDetailLogs } from "../../../../services/orderDetailLogsService";
+import { FaChevronDown, FaChevronUp, FaTools } from "react-icons/fa";
+import { AnimatePresence } from "framer-motion";
+import SpinnerComponent from "../../../../components/SpinnerComponent";
 
 interface Props {
   onClose: () => void;
@@ -62,28 +76,67 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
   const { data: order } = useGetOrderDetail(data.orderId);
   const { data: technicians } = useGetTechniciansByOrderId(data.orderId);
   const [processedData, setProcessedData] = useState<PartsDetailDto[]>([]);
+  const progressPercent = order?.data?.percentInprogress ?? 0;
+  const [showLogs, setShowLogs] = useState(false);
+  const [logData, setLogData] = useState<OrderDetailLogs | undefined>(undefined);
+  const notification = useNotification();
+  const [isLoadingLogData, setIsLoadingLogData] = useState(false);
 
   if (!open) return;
 
   useEffect(() => {
-    const tmp = order?.data?.parts.reduce((acc, item) => {
-      const key = item.id;
-      if (!acc[key]) {
-        const { technicianId, ...rest } = item;
-        acc[key] = rest;
-      } else {
-        acc[key].quantity += item.quantity;
-      }
-      return acc;
-    }, {} as any);
-    setProcessedData(tmp ? Object.values(tmp) : []);
+    setProcessedData(order?.data?.parts ?? []);
   }, [order]);
+
+  useEffect(() => {
+    if (!showLogs) return;
+    const fetchDataLogs = async () => {
+      setIsLoadingLogData(true);
+      try {
+        const response = await getOrderDetailLogs({ orderId: data.orderId });
+        setLogData(response.data);
+      } catch (error) {
+        notification.error({
+          message: (error as Error).message,
+        });
+      }
+      setIsLoadingLogData(false);
+    };
+    fetchDataLogs();
+  }, [showLogs]);
 
   const subtotal =
     order?.data?.parts.reduce(
       (acc: number, part: PartsDetailDto) => acc + (part.price + part.replacementPrice) * part.quantity,
       0
     ) ?? 0;
+
+  const getProgressDisplay = (percent: number, isCancel?: boolean) => {
+    if (isCancel) {
+      return {
+        text: "This appointment has been canceled.",
+        color: "#6b7280",
+      };
+    }
+    if (percent === 0) {
+      return {
+        text: "Technician is working...",
+        color: "#6b7280",
+      };
+    }
+    if (percent === 100) {
+      return {
+        text: "Done",
+        color: "#00ad4e",
+      };
+    }
+    return {
+      text: `${percent}%`,
+      color: "#00ad4e",
+    };
+  };
+
+  const progressInfo = getProgressDisplay(progressPercent, data.status === AppointmentStatusEnum.CANCELED);
 
   return (
     <DetailWrapper>
@@ -103,7 +156,64 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
             </Status>
           </Row>
 
+          {order?.data && (
+            <ProgressContainer>
+              <ProgressLabel $color={progressInfo.color}>
+                <span>Progress</span>
+                <span>{progressInfo.text}</span>
+              </ProgressLabel>
+
+              {progressPercent !== 100 && data.status !== AppointmentStatusEnum.CANCELED && (
+                <ProgressBarBg>
+                  <ProgressBarFill style={{ width: `${progressPercent}%` }} />
+                </ProgressBarBg>
+              )}
+
+              <LogToggleBtn onClick={() => setShowLogs(!showLogs)}>
+                {showLogs ? "Hide Activity Logs" : "View Activity Logs"}
+                {showLogs ? <FaChevronUp /> : <FaChevronDown />}
+              </LogToggleBtn>
+
+              {isLoadingLogData && <SpinnerComponent />}
+            </ProgressContainer>
+          )}
+
           <ModalContent>
+            {logData && logData.parts.length > 0 && !isLoadingLogData && (
+              <AnimatePresence>
+                {showLogs && (
+                  <LogsWrapper
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {!isLoadingLogData &&
+                      logData &&
+                      logData.parts.length > 0 &&
+                      logData.parts.map((partLog) => (
+                        <PartLogGroup key={partLog.partId}>
+                          <PartLogHeader>
+                            <FaTools size={14} />
+                            <span>{partLog.partName}</span>
+                          </PartLogHeader>
+
+                          {partLog.message.map((msg, idx) => (
+                            <TimelineItem key={idx}>
+                              <LogMessage>{msg}</LogMessage>
+                            </TimelineItem>
+                          ))}
+                        </PartLogGroup>
+                      ))}
+                  </LogsWrapper>
+                )}
+              </AnimatePresence>
+            )}
+
+            {showLogs && logData && logData.parts.length == 0 && !isLoadingLogData && (
+              <EmptyLogText>Currently, no information has been updated about the appointment.</EmptyLogText>
+            )}
+
             <Section>
               <Title>Information</Title>
               <Row>
@@ -162,6 +272,10 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
                   </PartList>
 
                   <OrderSummary>
+                    <PriceNote>
+                      The cost of each part is calculated by the formula:{" "}
+                      <strong>(Replacement Price + Unit Price) × Quantity</strong>.
+                    </PriceNote>
                     <SummaryLine>
                       <span>Subtotal</span>
                       <span>{formatCurrency(subtotal)}</span>

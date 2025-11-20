@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import FilterBar from "../AdminManageEmployee/FilterBar";
 import EmployeeCard from "../AdminManageEmployee/EmployeeCard";
 import BanModal from "../AdminManageEmployee/BanModal";
@@ -13,12 +13,18 @@ import {
   PageWrapper,
   Title,
 } from "./Admin_ManageEmployee.styled";
-import { banAccount, getAllEmployee } from "../../../services/adminService";
+import {
+  banAccount,
+  getAllEmployee,
+  updateTechnicianSkills,
+} from "../../../services/adminService";
 import { useAlert } from "../../../context/useAlert";
 import { MSG_TITLE } from "../../../constants/messages/Message";
 import { Pagination } from "../../../components/Paginations/Pagination";
 import SpinnerComponent from "../../../components/SpinnerComponent";
 import EditTechnicianModal from "./EditTechnicianModal";
+import UpdateSkillModal from "./UpdateSkillModal";
+import { useNotification } from "../../../context/useNotification";
 
 const Admin_Manage_Employee: React.FC = () => {
   const [employees, setEmployees] = useState<EmployeeViewModel[]>([]);
@@ -41,6 +47,9 @@ const Admin_Manage_Employee: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [employeeToEdit, setEmployeeToEdit] =
     useState<EmployeeViewModel | null>(null);
+  const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const notification = useNotification();
 
   const handleBan = (id: number) => {
     const emp = employees.find((e) => e.accountId === id);
@@ -66,33 +75,25 @@ const Admin_Manage_Employee: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    setPageIndex(1);
-  }, [search, roleFilter, statusFilter]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await getAllEmployee(
-          search,
-          roleFilter,
-          statusFilter,
-          6,
-          pageIndex
-        );
-        setTotalPages(response.data?.totalPages ?? 1);
-        setTotalItems(response.data?.totalItems ?? 0);
-        setEmployees(response.data?.items ?? []);
-      } catch (error) {
-        showAlert("error", MSG_TITLE.FETCH_DATA, (error as Error).message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [pageIndex, search, roleFilter, statusFilter]);
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await getAllEmployee(
+        search,
+        roleFilter,
+        statusFilter,
+        6,
+        pageIndex
+      );
+      setTotalPages(response.data?.totalPages ?? 1);
+      setTotalItems(response.data?.totalItems ?? 0);
+      setEmployees(response.data?.items ?? []);
+    } catch (error) {
+      showAlert("error", MSG_TITLE.FETCH_DATA, (error as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [search, roleFilter, statusFilter, pageIndex]);
 
   const handleOpenEditModal = (emp: EmployeeViewModel) => {
     setEmployeeToEdit(emp);
@@ -102,6 +103,38 @@ const Admin_Manage_Employee: React.FC = () => {
   const handleCloseEditModal = () => {
     setEmployeeToEdit(null);
     setIsEditModalOpen(false);
+  };
+
+  const handleOpenSkillModal = (emp: EmployeeViewModel) => {
+    setEmployeeToEdit(emp);
+    setIsSkillModalOpen(true);
+  };
+
+  const handleEditTechnicianSkills = async (
+    technician: EmployeeViewModel,
+    selectedSkillIds: number[]
+  ) => {
+    if (!technician) return;
+    setIsSubmitting(true);
+    try {
+      if (!technician.technicianId) return;
+      const response = await updateTechnicianSkills({
+        technicianId: technician.technicianId,
+        serviceIds: selectedSkillIds,
+      });
+      setIsSubmitting(false);
+      fetchData();
+      setIsSkillModalOpen(false);
+      notification.success({
+        message: response.message,
+      });
+    } catch (error) {
+      notification.error({
+        message: (error as Error).message,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return isLoading ? (
@@ -139,6 +172,7 @@ const Admin_Manage_Employee: React.FC = () => {
           {employees.length > 0 ? (
             employees.map((e) => (
               <EmployeeCard
+                onUpdateSkill={() => handleOpenSkillModal(e)}
                 onEdit={handleOpenEditModal}
                 key={e.accountId}
                 emp={e}
@@ -170,6 +204,14 @@ const Admin_Manage_Employee: React.FC = () => {
         totalItems={totalItems}
         totalPage={totalPages}
         onPageChange={setPageIndex}
+      />
+
+      <UpdateSkillModal
+        isOpen={isSkillModalOpen}
+        onClose={() => setIsSkillModalOpen(false)}
+        technician={employeeToEdit}
+        handleEditTechnicianSkills={handleEditTechnicianSkills}
+        isSubmitting={isSubmitting}
       />
     </PageWrapper>
   );

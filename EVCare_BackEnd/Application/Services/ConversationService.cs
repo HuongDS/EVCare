@@ -69,8 +69,11 @@ namespace Application.Services
 
             if (staffAccountId != "AI_BOT" && staffAccountId != "0")
             {
-                var staffInfo = await _accountService.GetAccountById(int.Parse(staffAccountId));
-                newConversation.Participants[1].Name = staffInfo.First_Name + staffInfo.Last_Name;
+                //var staffInfo = await _accountService.GetAccountById(int.Parse(staffAccountId));
+                var staffInfo = await _employeeServices.GetEmployeeInformation(int.Parse(employee.EmployeeId));
+                //newConversation.Participants[1].Name = staffInfo.First_Name + " " + staffInfo.Last_Name;
+                newConversation.Participants[1].Name = staffInfo.FullName;
+                newConversation.Participants[1].EmployeeImage = staffInfo.Avatar;
             }
 
             await _conversations.InsertOneAsync(newConversation);
@@ -126,21 +129,24 @@ namespace Application.Services
 
             if (staffId != "AI_BOT" && staffId != "0")
             {
-                var staffInfo = await _accountService.GetAccountById(int.Parse(staffId));
-                newConversation.Participants[1].Name = staffInfo.First_Name + staffInfo.Last_Name;
+                var staffInfo = await _employeeServices.GetEmployeeInformation(int.Parse(employee.EmployeeId));
+                newConversation.Participants[1].Name = staffInfo.FullName;
+                newConversation.Participants[1].EmployeeImage = staffInfo.Avatar;
             }
 
             await _conversations.InsertOneAsync(newConversation);
             return newConversation;
         }
 
-        public async Task<(List<Conversation>, int, int)> ListMineAsync(string accountId, int pageSize, int pageIndex)
+        public async Task<(List<Conversation>, int, long)> ListMineAsync(string accountId, int pageSize, int pageIndex)
         {
             var filter = Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == accountId);
-            var conversations = await _conversations.Find(filter)
+            var totalItems = await _conversations.CountDocumentsAsync(filter);
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var conversations = await _conversations.Find(filter).SortByDescending(c => c.UpdatedAt)
+                .Skip((pageIndex - 1) * pageSize)
+                .Limit(pageSize)
                 .ToListAsync();
-            var totalPages = (int)Math.Ceiling((double)conversations.Count / pageSize);
-            var totalItems = conversations.Count;
             return (conversations, totalPages, totalItems);
         }
 

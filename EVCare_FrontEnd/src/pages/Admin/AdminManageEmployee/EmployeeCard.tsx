@@ -34,6 +34,7 @@ interface Props {
   emp: EmployeeViewModel;
   onBan: (id: number) => void;
   onEdit: (emp: EmployeeViewModel) => void;
+  onUpdateSkill: (v: boolean) => void;
 }
 
 const renderStatus = (status: EmployeeStatusEnum) => {
@@ -58,7 +59,7 @@ const renderStatus = (status: EmployeeStatusEnum) => {
   );
 };
 
-const EmployeeCard: React.FC<Props> = ({ emp, onBan, onEdit }) => {
+const EmployeeCard: React.FC<Props> = ({ emp, onBan, onEdit, onUpdateSkill }) => {
   return (
     <CardWrapper $isBanned={emp.isBanned}>
       <Header>
@@ -131,6 +132,10 @@ const EmployeeCard: React.FC<Props> = ({ emp, onBan, onEdit }) => {
         {!emp.isBanned && (
           <>
             {emp.role === RoleEnum.TECHNICIAN && <UpdateButton onClick={() => onEdit(emp)}>Edit KPI</UpdateButton>}
+            <div style={{ height: "10px", width: "10px" }} />
+            {emp.role === RoleEnum.TECHNICIAN && (
+              <UpdateButton onClick={() => onUpdateSkill(true)}>Edit Skills</UpdateButton>
+            )}
             <div style={{ height: "10px", width: "10px" }} />
             <ActionButton onClick={() => onBan(emp.accountId)}>Ban</ActionButton>
           </>

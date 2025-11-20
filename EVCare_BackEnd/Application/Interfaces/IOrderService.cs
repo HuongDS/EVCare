@@ -21,8 +21,9 @@ namespace Application.Interfaces
         Task<OrderViewModel> GetOrderDetailAsync(int orderId);
         Task<StringBuilder> GetOrderPartViewModelsAsync(int orderId);
         Task<IEnumerable<OrderPartViewModel>> GetOrdersForTechnicianAsync(int technicianId, int orderId);
-        Task UpdateOrderAsync(OrderUpdateModel model);
+        Task UpdateOrderAsync(OrderUpdateModel model,int employeeId);
         Task UpdateOrderPartStatusAsync(OrderPartStatusUpdateModel model, int technicianId);
+        Task UpdateOrderPartTechnicianAsync(OrderPartUpdateTechnicianModel model);
         Task UpdatePartToOrder(OrderPartAddModel model,int technicianId);
         Task<ResponseDto<OrderResponseDto>> UpdateStatusOrderAsync(OrderUpdateStatusDto data);
     }

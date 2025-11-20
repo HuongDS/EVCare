@@ -85,6 +85,9 @@ namespace DataAccess.Repositories
                         Id = x.ServiceId,
                         Name = x.Service.Name
                     }).ToList(),
+                    OrderId = a.OrderId,
+                    OrderStatus = a.Order.Status,
+                    LicensePlate = a.Vehicle.LicensePlate,
                     Status = a.Status,
                     VehicleModel = a.Vehicle.Category.Name,
                     AppointmentImages = a.AppointmentImages.Select(x => x.Image).ToList(),
@@ -361,6 +364,7 @@ namespace DataAccess.Repositories
                     LicensePlate = a.Vehicle.LicensePlate,
                     Note = a.Note,
                     OrderId = a.OrderId,
+                    OrderStatus = a.Order.Status,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     PhoneNumber = a.Customer.Account.Phone,
 
@@ -393,7 +397,6 @@ namespace DataAccess.Repositories
             var orderedAppointments = appointmentIds
                 .Select(id => appointments.FirstOrDefault(a => a.Id == id))
                 .Where(a => a != null)
-    
                 .ToList();
 
 
@@ -432,6 +435,7 @@ namespace DataAccess.Repositories
                 .AsNoTracking()
                 .AsSplitQuery()
                 .Where(a => orderIds.Contains(a.OrderId.Value))
+                .Include(a=>a.AppointmentPartConditions)
                  .Include(a => a.Vehicle)
                     .ThenInclude(v => v.Category)
                 .Include(a => a.Customer)
@@ -462,8 +466,10 @@ namespace DataAccess.Repositories
                     PhoneNumber = a.Customer.Account.Phone,
                     Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
                     OrderId = a.OrderId,
-                    Parts = a.Order.OrderParts.Select(op => new PartTechnicianViewModel
+                    Parts = a.Order.OrderParts
+                    .Select(op => new PartTechnicianViewModel
                     {
+                        TechnicianName = op.Technician.Employee.Account.First_Name + " " + op.Technician.Employee.Account.Last_Name,
                         Name = op.Part.Name,
                         Quantity = op.Quantity,
                         ImageUrl = op.Part.Image,
@@ -471,8 +477,8 @@ namespace DataAccess.Repositories
                         ReplacementPrice = op.ReplacementPrice,
                         Stock = op.Part.Stock,
                         Id = op.PartId,
-                        IsReplaced = op.IsReplaced
-
+                        PartStatus = a.AppointmentPartConditions.Where(apc => apc.PartId == op.PartId).Select(apc => apc.Level).FirstOrDefault(),
+                        TechnicianId = op.TechnicianId
                     }).ToList(),
                     Status = a.Order.TechnicianWorkingSessions
                                 .FirstOrDefault(tws => tws.TechnicianId == technicianId).Status,
@@ -482,6 +488,7 @@ namespace DataAccess.Repositories
 
             var orderedAppointments = orderIds.Select(id=> appointments.FirstOrDefault(a => a.OrderId == id))
                 .Where(a => a != null)
+                .DistinctBy(x=>x.Id)
                 .ToList();
             return new PageResultDto<AppointmentTechnicianViewModel>(orderedAppointments, pagedResult.TotalItems, model.PageSize.Value, model.PageIndex.Value);
 

@@ -10,6 +10,7 @@ import { CustomerServiceOutlined, BellOutlined } from "@ant-design/icons";
 import { listConversations } from "../../../services/chatService";
 import { StaffChatStyleWrapper } from "./StaffChat.styled";
 import type { HistoryMessage } from "../../../models/Message/HistoryMessage";
+import { MinimalPagination } from "../../../components/Paginations/MinimalPagination";
 
 const { Sider, Content } = Layout;
 
@@ -20,20 +21,27 @@ export const StaffChatPage = () => {
   const accountId = useSelector((state: RootState) => state.auth.user?.accountId);
   const [loading, setLoading] = useState(true);
   const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     (async () => {
       setLoading(true);
       try {
-        const list = await listConversations();
-        setConversations(list);
+        const list = await listConversations(pageIndex, pageSize);
+        setConversations(list.data?.items ?? []);
+        setPageIndex(list.data?.pageIndex ?? 1);
+        setTotalItems(list.data?.totalItems ?? 0);
+        setTotalPages(list.data?.totalPages ?? 1);
       } catch (err) {
         console.error("Failed to load conversations", err);
-        message.error("Không thể tải danh sách trò chuyện.");
+        message.error("Can not load list conversation.");
       }
       setLoading(false);
     })();
-  }, []);
+  }, [pageIndex]);
 
   useEffect(() => {
     if (!connection) return;
@@ -90,7 +98,6 @@ export const StaffChatPage = () => {
               </div>
             </div>
 
-            {/* Conversations List */}
             <div className="flex-1 overflow-y-auto">
               {loading ? (
                 <div
@@ -108,6 +115,22 @@ export const StaffChatPage = () => {
                 />
               )}
             </div>
+
+            {totalItems > pageSize && (
+              <div
+                style={{
+                  padding: "10px 5px",
+                  borderTop: "1px solid #f0f0f0",
+                  backgroundColor: "#fff",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <div style={{ transform: "scale(0.85)", transformOrigin: "bottom center" }}>
+                  <MinimalPagination pageIndex={pageIndex} totalPage={totalPages} onPageChange={setPageIndex} />
+                </div>
+              </div>
+            )}
           </div>
         </Sider>
 

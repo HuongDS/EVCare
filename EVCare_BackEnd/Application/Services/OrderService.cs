@@ -34,13 +34,18 @@ namespace Application.Services
         private readonly IAppointmentPartConditionRepository _appointmentPartConditionRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IServiceCenterRepository _serviceCenterRepository;
-
+        private readonly IAccountRepository _accountRepository;
+        private readonly IOrderDetailLogService _orderDetailLogService;
+        private readonly IEmployeeRepository _employeeRepository;
         public OrderService(IOrderRepository orderRepository,
             IAppointmentRepository appointmentRepository,
             IMapper mapper, IOrderPartRepository orderPartRepository, IPartRepository partRepository, IUnitOfWork unitOfWork
             , ITechnicianWorkingSessionRepository technicianWorkingSessionRepository
             , IAppointmentPartConditionRepository appointmentPartConditionRepository,
-            IServiceCenterRepository serviceCenterRepository
+            IServiceCenterRepository serviceCenterRepository,
+            IAccountRepository accountRepository,
+            IOrderDetailLogService orderDetailLogService,
+            IEmployeeRepository employeeRepository
             )
         {
             _orderRepository = orderRepository;
@@ -52,6 +57,9 @@ namespace Application.Services
             _technicianWorkingSessionRepository = technicianWorkingSessionRepository;
             _appointmentPartConditionRepository = appointmentPartConditionRepository;
             _serviceCenterRepository = serviceCenterRepository;
+            _accountRepository = accountRepository;
+            _orderDetailLogService = orderDetailLogService;  
+            _employeeRepository = employeeRepository;
         }
         public async Task<ResponseDto<OrderResponseDto>> CreateOrderAsync(OrderCreateRequestDto data)
         {
@@ -164,7 +172,7 @@ namespace Application.Services
             return await _orderRepository.GetOrderDetailAsync(orderId);
         }
 
-        public async Task UpdateOrderAsync(OrderUpdateModel model)
+        public async Task UpdateOrderAsync(OrderUpdateModel model,int employeeId)
         {
 
             var entity = await _orderRepository.GetByIdAsync(model.Id);
@@ -195,8 +203,9 @@ namespace Application.Services
                 foreach (var part in model.OrderParts)
                 {
                     var originalPart = await _partRepository.GetByIdAsync(part.PartId);
-                    if (originalPart == null) throw new Exception($"Part {part.PartId} not found");
-                    if (part.Quantity > originalPart.Stock) throw new Exception($"Part {part.PartId} doesn't have enough stock");
+                    var partName = originalPart != null ? originalPart.Name : part.PartId.ToString();
+                    if (originalPart == null) throw new Exception($"Part {partName} not found");
+                    if (part.Quantity > originalPart.Stock) throw new Exception($"Part {partName} doesn't have enough stock");
                     originalPart.Stock -= part.Quantity;
                     _partRepository.Update(originalPart);
 
@@ -232,6 +241,14 @@ namespace Application.Services
 
 
             });
+            var employee = await _accountRepository.GetByIdAsync(employeeId);
+            foreach ( var part in model.OrderParts)
+            {
+                var partName = (await _partRepository.GetByIdAsync(part.PartId)).Name;
+
+                var message = $"Part {partName} (Quantity: {part.Quantity}) in Order {model.Id} has been updated by {employee.First_Name} {employee.Last_Name}";
+                await _orderDetailLogService.AddLogByOrderIdAndPartId(model.Id, part.PartId, message);
+            }
 
         }
 
@@ -250,9 +267,11 @@ namespace Application.Services
             }
             var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
             var partsInAppointment = await _appointmentRepository.GetPartIdsInAppointment(appointment.Id);
+
             foreach (var part in model.Parts) {
                 if (!partsInAppointment.Contains(part.Id)) {
-                    throw new Exception($"Part {part.Id} is not in appointment");
+                    var partName = (await _partRepository.GetByIdAsync(part.Id)).Name;
+                    throw new Exception($"Part {partName} is not in appointment");
                 }
             }
 
@@ -271,11 +290,27 @@ namespace Application.Services
                 }
 
                 await _orderPartRepository.RemoveRange(model.OrderId, technicianId);
+                var existingPartIds = await _orderPartRepository.GetPartByOrderId(model.OrderId);
+                foreach (var part in model.Parts)
+                {
+                    if (existingPartIds.Contains(part.Id))
+                    {
+                        throw new Exception($"Part {part.Id} is already in order");
+                    }
+                }
 
                 await AddOrder(model, technicianId);
 
 
             });
+
+            var technician = await _accountRepository.GetAccountByTechId(technicianId);
+            foreach (var part in model.Parts)
+            {
+                var partName = (await _partRepository.GetByIdAsync(part.Id)).Name;
+                var message = $"Technician {technician.First_Name} {technician.Last_Name} updated part {partName} (Quantity: {part.Quantity}) to Order {model.OrderId}.";
+                await _orderDetailLogService.AddLogByOrderIdAndPartId(model.OrderId, part.Id, message);
+            }
 
 
         }
@@ -322,16 +357,35 @@ namespace Application.Services
             }
             var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
             var partsInAppointment = await _appointmentRepository.GetPartIdsInAppointment(appointment.Id);
+            var existingOrderParts = await _orderPartRepository.GetPartByOrderId(model.OrderId);
             foreach (var part in model.Parts)
             {
+                var partName = (await _partRepository.GetByIdAsync(part.Id)).Name;
                 if (!partsInAppointment.Contains(part.Id))
                 {
-                    throw new Exception($"Part {part.Id} is not in appointment");
+                    throw new Exception($"Part {partName} is not in appointment");
+                }
+                if(existingOrderParts.Contains(part.Id))
+                {
+                    throw new Exception($"Part {partName} is already in order");
                 }
             }
 
+         
+            await _unitOfWork.ExecuteInTransactionAsync(async () => {
 
-            await _unitOfWork.ExecuteInTransactionAsync(async () => await AddOrder(model, technicianId));
+                await AddOrder(model, technicianId);
+
+            });
+            var technician = await _accountRepository.GetAccountByTechId(technicianId);
+            foreach (var part in model.Parts)
+            {
+                var partName = (await _partRepository.GetByIdAsync(part.Id)).Name;
+                var message = $"Technician {technician.First_Name} {technician.Last_Name} added part {partName} (Quantity: {part.Quantity}) to Order {model.OrderId}.";
+                await _orderDetailLogService.AddLogByOrderIdAndPartId(model.OrderId, part.Id, message);
+            }
+
+
         }
 
         public async Task<IEnumerable<OrderPartViewModel>> GetOrdersForTechnicianAsync(int technicianId, int orderId)
@@ -357,6 +411,54 @@ namespace Application.Services
                
 
             }
+            var part =  await _partRepository.GetByIdAsync(model.PartId);
+            var technician = await _accountRepository.GetAccountByTechId(technicianId);
+            var message = $"Technician {technician.First_Name} {technician.Last_Name} marked part {part.Name} in Order {model.OrderId} is done.";
+            await _orderDetailLogService.AddLogByOrderIdAndPartId(model.OrderId, model.PartId, message);
+        }
+
+        public async Task UpdateOrderPartTechnicianAsync(OrderPartUpdateTechnicianModel model) {
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                foreach (var orderPart in model.UpdateParts) {
+                    await _orderPartRepository.DeleteAsync(model.OrderId, orderPart.PartId, orderPart.OldTechnicianId);
+                    var newOrderPart = new OrderPart
+                    {
+                        OrderId = model.OrderId,
+                        PartId = orderPart.PartId,
+                        TechnicianId = orderPart.NewTechnicianId,
+                    };
+                    await _orderPartRepository.AddRange(new List<OrderPart> { newOrderPart });
+                   
+                }
+                var listsIdDistinct = model.UpdateParts.Select(x => x.NewTechnicianId).Distinct().ToList();
+                foreach (var techId in listsIdDistinct) { 
+
+                    var employee = await _employeeRepository.GetEmployeeByTechnicianId(techId);
+                    if (employee.Status == DataAccess.Enums.EmployeeStatusEnum.Available) {
+                        employee.Status = DataAccess.Enums.EmployeeStatusEnum.Busy;
+                      
+                    }
+
+
+                    await _technicianWorkingSessionRepository.AddTechnician(new TechnicianWorkingSession
+                    {
+                        OrderId = model.OrderId,
+                        TechnicianId = techId,
+                        StartTime = DateTime.UtcNow.AddHours(7),
+                        Status = TechnicianWorkingSessionEnum.InProgress
+                    });
+                }
+            });
+
+            foreach (var orderPart in model.UpdateParts) {
+                var technician = await _accountRepository.GetAccountByTechId(orderPart.NewTechnicianId);
+                var oldTechnician = await _accountRepository.GetAccountByTechId(orderPart.OldTechnicianId);
+                var part = await _partRepository.GetByIdAsync(orderPart.PartId);
+                var message = $"Part {part.Name} in Order {model.OrderId} reassigned from Technician {oldTechnician.First_Name} {oldTechnician.Last_Name} to Technician {technician.First_Name} {technician.Last_Name}.";
+                await _orderDetailLogService.AddLogByOrderIdAndPartId(model.OrderId, orderPart.PartId, message);
+            }
+
         }
     }
 }
