@@ -256,15 +256,15 @@ export default function Appointment_Reassign({ close, appointmentId }: props) {
   const activeTechs = appointment.technicians.filter(
     (tech) => tech.workingSessionStatus !== "Completed"
   );
-  const onLeave = activeTechs.filter((tech) => tech.status === "OnLeave");
-  const busy = activeTechs.filter((tech) => tech.status === "Busy");
+  // const onLeave = activeTechs.filter((tech) => tech.status === "OnLeave");
+  // const busy = activeTechs.filter((tech) => tech.status === "Busy");
   const techniciansLeave = activeTechs
     .filter((tech) => tech.status === "OnLeave")
     .map((tech) => tech.id);
 
-  const showFinish =
-    onLeave.length > 0 &&
-    (busy.length > 0 || onLeave.length < activeTechs.length);
+  // const showFinish =
+  //   onLeave.length > 0 &&
+  //   (busy.length > 0 || onLeave.length < activeTechs.length);
 
   const handleSubmit = async () => {
     if (techniciansLeave.length > 0) {

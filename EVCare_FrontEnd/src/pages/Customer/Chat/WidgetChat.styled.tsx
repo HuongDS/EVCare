@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const WidgetChatStyleWrapper = styled.div`
-  .chat-widget-trigger {
+  .noti-widget-trigger {
     position: fixed;
     bottom: 24px;
     left: 24px;
@@ -9,7 +9,11 @@ export const WidgetChatStyleWrapper = styled.div`
     height: 60px;
     font-size: 24px;
     z-index: 99999;
-    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
+    background: linear-gradient(
+      90deg,
+      hsla(147, 100%, 34%, 1) 30%,
+      hsla(147, 100%, 31%, 1) 100%
+    );
     border: none;
     box-shadow: 0 8px 20px rgba(46, 212, 44, 0.25);
     transition: all 0.3s ease;
@@ -157,7 +161,11 @@ export const WidgetChatStyleWrapper = styled.div`
   .btn-new-chat-widget {
     width: auto;
     flex-shrink: 0;
-    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
+    background: linear-gradient(
+      90deg,
+      hsla(147, 100%, 34%, 1) 30%,
+      hsla(147, 100%, 31%, 1) 100%
+    );
     border: none;
     font-weight: 600;
     box-shadow: 0 2px 8px rgba(46, 212, 44, 0.08);
@@ -311,7 +319,11 @@ export const WidgetChatStyleWrapper = styled.div`
   }
 
   .message-bubble.own {
-    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
+    background: linear-gradient(
+      90deg,
+      hsla(147, 100%, 34%, 1) 30%,
+      hsla(147, 100%, 31%, 1) 100%
+    );
     color: #ffffff;
     border-bottom-right-radius: 4px;
   }
@@ -378,7 +390,11 @@ export const WidgetChatStyleWrapper = styled.div`
     height: 42px;
     padding: 0 1.5rem;
     border-radius: 12px;
-    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
+    background: linear-gradient(
+      90deg,
+      hsla(147, 100%, 34%, 1) 30%,
+      hsla(147, 100%, 31%, 1) 100%
+    );
     border: none;
     box-shadow: 0 4px 12px rgba(46, 212, 44, 0.08);
     font-weight: 600;
@@ -499,7 +515,11 @@ export const WidgetChatStyleWrapper = styled.div`
   }
 
   .btn-choice-staff {
-    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
+    background: linear-gradient(
+      90deg,
+      hsla(147, 100%, 34%, 1) 30%,
+      hsla(147, 100%, 31%, 1) 100%
+    );
     border: none;
     box-shadow: 0 4px 12px rgba(46, 212, 44, 0.08);
   }
@@ -597,8 +617,9 @@ export const WidgetChatStyleWrapper = styled.div`
 
   .custom-modal-body,
   .custom-modal-body * {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
   }
 
   .custom-modal-body {
@@ -736,7 +757,8 @@ export const WidgetChatStyleWrapper = styled.div`
     text-align: center;
     padding: 2rem;
     background: #f9fafb;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
   }
 
   .chat-offline-message .chat-offline-title {

@@ -1,3 +1,4 @@
+import { Tooltip } from "antd";
 import styled from "styled-components";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "outline";
@@ -10,6 +11,7 @@ type ActionButtonProps = {
   type?: "button" | "submit";
   disabled?: boolean;
   fullWidth?: boolean;
+  tooltipTitle?: string;
 };
 
 const getButtonStyles = (variant: ButtonVariant) => {
@@ -62,7 +64,7 @@ const StyledButton = styled.button<{
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 24px;
+  padding: 6px 12px;
   border: none;
   border-radius: 10px;
   font-family: "Outfit", sans-serif;
@@ -113,6 +115,7 @@ export default function ButtonAction({
   type = "button",
   disabled = false,
   fullWidth = false,
+  tooltipTitle,
 }: ActionButtonProps) {
   return (
     <StyledButton
@@ -122,8 +125,17 @@ export default function ButtonAction({
       type={type}
       disabled={disabled}
     >
-      {icon}
-      {text}
+      {disabled ? (
+        <Tooltip title={tooltipTitle} color="#00ad4e">
+          {icon}
+          {text}
+        </Tooltip>
+      ) : (
+        <>
+          {icon}
+          {text}
+        </>
+      )}
     </StyledButton>
   );
 }
