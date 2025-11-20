@@ -1,5 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import { AppointmentStatusEnum } from "../../../../models/enums";
+import { motion } from "framer-motion";
 
 const modalFadeIn = keyframes`
   from {
@@ -525,6 +526,22 @@ export const OrderSummary = styled.div`
   gap: 10px;
 `;
 
+export const PriceNote = styled.div`
+  font-size: 0.85rem;
+  color: #6b7280;
+  background-color: #f9fafb;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  font-style: italic;
+
+  strong {
+    color: #374151;
+    font-weight: 600;
+  }
+`;
+
 export const SummaryLine = styled.div`
   display: flex;
   justify-content: space-between;
@@ -617,4 +634,113 @@ export const ProgressBarFill = styled.div`
       background-position: 20px 20px;
     }
   }
+`;
+
+export const LogToggleBtn = styled.button`
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin-left: auto;
+
+  &:hover {
+    color: #00ad4e;
+  }
+`;
+
+export const LogsWrapper = styled(motion.div)`
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 10px;
+  border: 1px dashed #d1d5db;
+  max-height: 300px;
+  overflow-y: auto;
+`;
+
+export const PartLogGroup = styled.div`
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0px;
+  }
+`;
+
+export const PartLogHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+
+  svg {
+    color: #00ad4e;
+  }
+
+  span {
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 0.95rem;
+  }
+`;
+
+export const TimelineItem = styled.div`
+  position: relative;
+  padding-left: 24px;
+  padding-bottom: 12px;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 6px;
+    bottom: -6px;
+    width: 2px;
+    background-color: #e5e7eb;
+  }
+
+  &:last-child::before {
+    display: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 2px solid #00ad4e;
+    z-index: 1;
+  }
+`;
+
+export const LogMessage = styled.p`
+  margin: 0;
+  font-size: 0.85rem;
+  color: #4b5563;
+  line-height: 1.5;
+`;
+
+export const EmptyLogText = styled.div`
+  text-align: center;
+  padding: 24px;
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
 `;
