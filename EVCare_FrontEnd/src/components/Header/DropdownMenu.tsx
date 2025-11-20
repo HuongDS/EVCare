@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { StyledWrapper } from "./DropdownMenu.styled";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { User } from "../../models/AuthModel/authModel.ts";
 import { getUser } from "../../token/tokenStore.ts";
 import { RoleEnum } from "../../models/enums";
@@ -12,14 +12,36 @@ interface props {
 const DropdownMenu = ({ handleLogout }: props) => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const popupRef = useRef<HTMLLabelElement>(null);
 
   useEffect(() => {
     setUser(getUser());
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        const input = popupRef.current.querySelector<HTMLInputElement>(
+          'input[type="checkbox"]'
+        );
+        if (input) {
+          input.checked = false;
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <StyledWrapper>
-      <label className="popup">
+      <label className="popup" ref={popupRef}>
         <input type="checkbox" />
         <div tabIndex={0} className="burger">
           <svg

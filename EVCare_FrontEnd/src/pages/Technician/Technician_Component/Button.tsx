@@ -1,8 +1,6 @@
 import { TechnicianWorkingSessionEnum } from "../../../models/enums/TechnicianWorkingSessionEnum";
-import ViewDetailsModal from "./ViewDetailsModal";
 import ButtonAction from "../../../components/Button/ButtonAction";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
-import { useState } from "react";
 import type { PartDamageLevelDetail } from "../../../models/OrderPartModel/AppointmentPartCondition";
 import {
   MSG_TITLE,
@@ -21,6 +19,8 @@ interface ReviewButtonProps {
   setIsOrder: (v: boolean) => void;
   setIsOpenAlert: (v: boolean) => void;
   isUpdating: boolean;
+  setViewDetailModal: (v: boolean) => void;
+  isAnyPartNotDone: boolean;
 }
 
 const ReviewButton: React.FC<ReviewButtonProps> = ({
@@ -30,9 +30,9 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
   setIsOrder,
   setIsOpenAlert,
   isUpdating,
+  setViewDetailModal,
+  isAnyPartNotDone,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   return (
     <>
       {appointment.status === TechnicianWorkingSessionEnum.ADDING_PART && (
@@ -79,7 +79,7 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
           <ButtonAction
             text="View Details"
             variant="outline"
-            action={() => setIsModalOpen(true)}
+            action={() => setViewDetailModal(true)}
           />
         )}
 
@@ -106,16 +106,12 @@ const ReviewButton: React.FC<ReviewButtonProps> = ({
                     SUCCESS_MESSAGE.TECHNICIAN_COMPLETED
                   )
                 }
+                disabled={isAnyPartNotDone}
+                tooltipTitle="You must complete all repairs before finishing the appointment"
               />
             </>
           ))}
       </div>
-
-      <ViewDetailsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        appointment={appointment ?? null}
-      />
     </>
   );
 };

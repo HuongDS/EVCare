@@ -1,8 +1,11 @@
 import React, { useMemo } from "react";
 import { Modal, Spin, Table, Typography } from "antd";
-import { useQueries } from "@tanstack/react-query";
+// import { useQueries } from "@tanstack/react-query";
 import { useGetOrderDetail } from "../../../services/orderServiceApi";
-import { getTechnicianDetail } from "../../../services/technicianDetail";
+// import {
+//   getTechnicianDetail,
+//   useGetTechnicianDetail,
+// } from "../../../services/technicianDetail";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { formatDate } from "../../../utils/formatDate";
 import {
@@ -35,39 +38,12 @@ const ViewDetailsModal: React.FC<Props> = ({
   const { data: orderDetail, isLoading } = useGetOrderDetail(orderId);
   const parts = orderDetail?.data?.parts ?? [];
 
-  const technicianIds = useMemo(() => {
-    if (!parts) return [];
-    return Array.from(
-      new Set(
-        parts.map((p: any) => Number(p.technicianId)).filter((id) => !isNaN(id))
-      )
-    );
-  }, [parts]);
-
-  const techQueries = useQueries({
-    queries: technicianIds.map((id) => ({
-      queryKey: ["technicianDetail", id],
-      queryFn: () => getTechnicianDetail(id),
-      enabled: !!id,
-      staleTime: 5 * 60 * 1000,
-    })),
-  });
-
-  const techMap = useMemo(() => {
-    const map: Record<number, string> = {};
-    techQueries.forEach((q, i) => {
-      if (q.data) map[technicianIds[i]] = q.data.fullName;
-    });
-    return map;
-  }, [techQueries, technicianIds]);
-
-  const isTechLoading = techQueries.some((q) => q.isLoading);
-
   const columns = [
     {
       title: "Part Name",
       dataIndex: "name",
       key: "name",
+      align: "center" as const,
       render: (text: string) => <Text strong>{text}</Text>,
     },
     {
@@ -78,9 +54,19 @@ const ViewDetailsModal: React.FC<Props> = ({
     },
     {
       title: "Technician",
-      dataIndex: "technicianId",
-      key: "technicianId",
-      render: (id: number) => techMap[id] || "—",
+      dataIndex: "technicianName",
+      key: "technicianName",
+      align: "center" as const,
+      render: (technicianName: string) => <Text strong>{technicianName}</Text>,
+    },
+    {
+      title: "Status",
+      dataIndex: "isReplaced",
+      key: "isReplaced",
+      align: "center" as const,
+      render: (isReplaced: string) => (
+        <Text strong>{isReplaced ? "Done" : "Repairing"}</Text>
+      ),
     },
   ];
 
@@ -145,7 +131,7 @@ const ViewDetailsModal: React.FC<Props> = ({
 
             <PartsTableWrapper>
               <SectionTitle>Parts Used</SectionTitle>
-              {isLoading || isTechLoading ? (
+              {isLoading ? (
                 <div className="spinner">
                   <Spin />
                 </div>

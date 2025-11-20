@@ -116,6 +116,25 @@ export const ServiceGrid = styled.div`
   width: 300px;
   overflow-y: auto;
   overflow-x: hidden;
+  padding-right: 5px;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #e4f3eb;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #b1e6c9;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #00ad4e;
+  }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -163,19 +182,24 @@ export const SearchInput = styled.div`
 export const SearchResultsContainer = styled.div`
   max-height: 500px;
   overflow-y: auto;
+  padding-right: 5px;
 
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 3px;
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #e4f3eb;
     border-radius: 10px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #00ad4e;
+    background: #b1e6c9;
     border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #00ad4e;
   }
 `;
 
@@ -473,4 +497,8 @@ export const ServiceTag = styled.div<{ $highlight?: boolean }>`
   font-size: 14px;
   transition: all 0.25s ease;
   cursor: default;
+
+  span {
+    width: 70%;
+  }
 `;

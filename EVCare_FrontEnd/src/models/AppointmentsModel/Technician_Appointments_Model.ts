@@ -24,18 +24,19 @@ export type TechnicianAppointmentsDto = {
   services: string[];
   parts: {
     technicianId: number;
+    technicianName: string;
     id: number;
     name: string;
     quantity: number;
     price: number;
     imageUrl: string;
+    partStatus: string;
   }[];
   status: TechnicianWorkingSessionEnum;
   appointmentImages: string[];
   orderId: number;
 };
 
-//Get technicians for assigning appointment
 export type TechnicianModel<T> = {
   id: number;
   fullName: string;
@@ -50,6 +51,19 @@ export type TechnicianModel<T> = {
   avatar?: string;
 };
 
+export type TechnicianModelPendingPart<T> = {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  expYears: number;
+  status: string;
+  kpiPerDays: number;
+  completedOrders: number;
+  workingSessionStatus: string;
+  parts: T[];
+};
+
 export type GetTechnicianParams = {
   FullName?: string;
   Status?: string;
@@ -58,6 +72,15 @@ export type GetTechnicianParams = {
   PageIndex?: number;
   SortField?: string;
   SortOrder?: string;
+};
+
+export type GetTechncianForPendingPartsParams = {
+  keyWord?: string;
+  partIds?: number[];
+  pageSize?: number;
+  pageIndex?: number;
+  sortField?: string;
+  sortOrder?: string;
 };
 
 export type TechnicianSkills = {

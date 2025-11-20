@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import FilterBar from "../AdminManageEmployee/FilterBar";
 import EmployeeCard from "../AdminManageEmployee/EmployeeCard";
 import BanModal from "../AdminManageEmployee/BanModal";
@@ -13,7 +13,11 @@ import {
   PageWrapper,
   Title,
 } from "./Admin_ManageEmployee.styled";
-import { banAccount, getAllEmployee, updateTechnicianSkills } from "../../../services/adminService";
+import {
+  banAccount,
+  getAllEmployee,
+  updateTechnicianSkills,
+} from "../../../services/adminService";
 import { useAlert } from "../../../context/useAlert";
 import { MSG_TITLE } from "../../../constants/messages/Message";
 import { Pagination } from "../../../components/Paginations/Pagination";
@@ -26,8 +30,13 @@ const Admin_Manage_Employee: React.FC = () => {
   const [employees, setEmployees] = useState<EmployeeViewModel[]>([]);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleEnum>(RoleEnum.STAFF);
-  const [statusFilter, setStatusFilter] = useState<EmployeeStatusEnum>(EmployeeStatusEnum.All);
-  const [banModal, setBanModal] = useState<{ open: boolean; emp?: EmployeeViewModel }>({
+  const [statusFilter, setStatusFilter] = useState<EmployeeStatusEnum>(
+    EmployeeStatusEnum.All
+  );
+  const [banModal, setBanModal] = useState<{
+    open: boolean;
+    emp?: EmployeeViewModel;
+  }>({
     open: false,
   });
   const { showAlert } = useAlert();
@@ -36,7 +45,8 @@ const Admin_Manage_Employee: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [employeeToEdit, setEmployeeToEdit] = useState<EmployeeViewModel | null>(null);
+  const [employeeToEdit, setEmployeeToEdit] =
+    useState<EmployeeViewModel | null>(null);
   const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const notification = useNotification();
@@ -53,7 +63,11 @@ const Admin_Manage_Employee: React.FC = () => {
         await banAccount(banModal.emp?.accountId);
         showAlert("success", MSG_TITLE.BAN_ACCOUNT, "Banned successfully");
         setEmployees((prev) =>
-          prev.map((e) => (e.accountId === banModal.emp?.accountId ? { ...e, isBanned: true } : e))
+          prev.map((e) =>
+            e.accountId === banModal.emp?.accountId
+              ? { ...e, isBanned: true }
+              : e
+          )
         );
       } catch (error) {
         showAlert("error", MSG_TITLE.BAN_ACCOUNT, (error as Error).message);
@@ -64,7 +78,13 @@ const Admin_Manage_Employee: React.FC = () => {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await getAllEmployee(search, roleFilter, statusFilter, 6, pageIndex);
+      const response = await getAllEmployee(
+        search,
+        roleFilter,
+        statusFilter,
+        6,
+        pageIndex
+      );
       setTotalPages(response.data?.totalPages ?? 1);
       setTotalItems(response.data?.totalItems ?? 0);
       setEmployees(response.data?.items ?? []);
@@ -90,7 +110,10 @@ const Admin_Manage_Employee: React.FC = () => {
     setIsSkillModalOpen(true);
   };
 
-  const handleEditTechnicianSkills = async (technician: EmployeeViewModel, selectedSkillIds: number[]) => {
+  const handleEditTechnicianSkills = async (
+    technician: EmployeeViewModel,
+    selectedSkillIds: number[]
+  ) => {
     if (!technician) return;
     setIsSubmitting(true);
     try {
@@ -114,12 +137,16 @@ const Admin_Manage_Employee: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
   return isLoading ? (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", width: "100%" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%",
+        width: "100%",
+      }}
+    >
       <SpinnerComponent />
     </div>
   ) : (
@@ -127,7 +154,9 @@ const Admin_Manage_Employee: React.FC = () => {
       <ContentWrapper>
         <Header>
           <Title>Employee Management</Title>
-          <Instruction>Filter and manage all employees in your system.</Instruction>
+          <Instruction>
+            Filter and manage all employees in your system.
+          </Instruction>
         </Header>
 
         <FilterBar
@@ -163,7 +192,11 @@ const Admin_Manage_Employee: React.FC = () => {
         onConfirm={confirmBan}
       />
 
-      <EditTechnicianModal isOpen={isEditModalOpen} onClose={handleCloseEditModal} employee={employeeToEdit} />
+      <EditTechnicianModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        employee={employeeToEdit}
+      />
 
       <Pagination
         pageIndex={pageIndex}
