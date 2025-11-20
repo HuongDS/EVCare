@@ -244,7 +244,7 @@ namespace Application.Services
             {
                 var partName = (await _partRepository.GetByIdAsync(part.PartId)).Name;
 
-                var message = $"Part {partName} (Quantity: {part.Quantity}) in Order {model.Id} has been updated by {employee.Last_Name} {employee.First_Name}";
+                var message = $"Part {partName} (Quantity: {part.Quantity}) in Order {model.Id} has been updated by {employee.First_Name} {employee.Last_Name}";
                 await _orderDetailLogService.AddLogByOrderIdAndPartId(model.Id, part.PartId, message);
             }
 
