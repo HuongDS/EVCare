@@ -170,7 +170,7 @@ namespace Application.Services
             return await _orderRepository.GetOrderDetailAsync(orderId);
         }
 
-        public async Task UpdateOrderAsync(OrderUpdateModel model)
+        public async Task UpdateOrderAsync(OrderUpdateModel model,int employeeId)
         {
 
             var entity = await _orderRepository.GetByIdAsync(model.Id);
@@ -239,11 +239,12 @@ namespace Application.Services
 
 
             });
-            foreach( var part in model.OrderParts)
+            var employee = await _accountRepository.GetByIdAsync(employeeId);
+            foreach ( var part in model.OrderParts)
             {
                 var partName = (await _partRepository.GetByIdAsync(part.PartId)).Name;
 
-                var message = $"Part {partName} (Quantity: {part.Quantity}) in Order {model.Id} has been updated by customer";
+                var message = $"Part {partName} (Quantity: {part.Quantity}) in Order {model.Id} has been updated by {employee.Last_Name} {employee.First_Name}";
                 await _orderDetailLogService.AddLogByOrderIdAndPartId(model.Id, part.PartId, message);
             }
 
@@ -410,7 +411,7 @@ namespace Application.Services
             }
             var part =  await _partRepository.GetByIdAsync(model.PartId);
             var technician = await _accountRepository.GetAccountByTechId(technicianId);
-            var message = $"Technician {technician.First_Name} {technician.Last_Name} marked part {part.Name} in Order {model.OrderId} as {(model.IsReplaced ? "replaced" : "not replaced")}.";
+            var message = $"Technician {technician.First_Name} {technician.Last_Name} marked part {part.Name} in Order {model.OrderId} is done.";
             await _orderDetailLogService.AddLogByOrderIdAndPartId(model.OrderId, model.PartId, message);
         }
 
@@ -426,6 +427,13 @@ namespace Application.Services
                         TechnicianId = orderPart.NewTechnicianId,
                     };
                     await _orderPartRepository.AddRange(new List<OrderPart> { newOrderPart });
+                    await _technicianWorkingSessionRepository.AddTechnician(new TechnicianWorkingSession {
+                       Status = TechnicianWorkingSessionEnum.InProgress,
+                       OrderId = model.OrderId,
+                       TechnicianId = orderPart.NewTechnicianId,
+                       StartTime = DateTime.UtcNow.AddHours(7)
+
+                    });
                 }
             });
 

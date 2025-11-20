@@ -111,5 +111,10 @@ namespace DataAccess.Repositories
 
 
         }
+
+        public async Task AddTechnician(TechnicianWorkingSession technicianWorkingSession) {
+            await _dbContext.TechnicianWorkingSessions.AddAsync(technicianWorkingSession);
+
+        }
     }
 }
