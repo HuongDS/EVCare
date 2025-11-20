@@ -1,27 +1,13 @@
-import { Modal } from "antd";
 import styled from "styled-components";
 
-export const ModalStyled = styled(Modal)`
-  display: flex;
-  justify-content: center;
-  top: 2%;
-  .ant-modal-content {
-    width: 1000px !important;
-    height: 94vh !important;
-    overflow: hidden;
-  }
-`;
-
 export const PageContainer = styled.div`
-  margin-top: 3%;
   height: 100%;
-  max-height: 85vh;
+  max-height: 92vh;
   background: linear-gradient(
     135deg,
     rgba(0, 116, 56, 0.5) 0%,
     rgba(0, 176, 70, 0.5) 100%
   );
-  border-radius: 20px;
   padding: 24px;
   overflow-y: auto;
   font-family: "Outfit", sans-serif;
@@ -32,7 +18,6 @@ export const PageContainer = styled.div`
 `;
 
 export const ContentWrapper = styled.div`
-  max-width: 1200px;
   margin: 0 auto;
 `;
 
@@ -501,4 +486,92 @@ export const SubmitButton = styled.button`
 export const SpinnerWrapper = styled.div`
   display: flex;
   justify-content: center;
+`;
+
+export const BackButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: white;
+  border: 2px solid #00ad4e;
+  color: #00ad4e;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 5px;
+
+  &:hover {
+    background: #f1f8f4;
+    transform: translateX(-4px);
+  }
+`;
+
+export const ServiceGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  max-height: 300px;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 5px;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #e4f3eb;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #b1e6c9;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #00ad4e;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+`;
+
+export const ServiceTag = styled.div<{ $highlight?: boolean }>`
+  display: grid;
+  grid-template-columns: 0.8fr 0.2fr;
+  align-items: center;
+  padding: 8px 12px;
+  border: 2px solid ${(props) => (props.$highlight ? "#00ad4e" : "#cce8d6")};
+  border-radius: 10px;
+  background-color: ${(props) => (props.$highlight ? "#e8fff0" : "#fbffdb")};
+  color: ${(props) => (props.$highlight ? "#00ad4e" : "orange")};
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.25s ease;
+  cursor: default;
+`;
+
+export const WarningBadge = styled.div`
+  position: absolute;
+  top: 50px;
+  right: 12px;
+  background: #fff7ed;
+  color: #c2410c;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #fed7aa;
+  z-index: 2;
 `;
