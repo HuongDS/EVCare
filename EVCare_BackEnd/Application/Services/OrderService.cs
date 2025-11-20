@@ -427,12 +427,16 @@ namespace Application.Services
                         TechnicianId = orderPart.NewTechnicianId,
                     };
                     await _orderPartRepository.AddRange(new List<OrderPart> { newOrderPart });
-                    await _technicianWorkingSessionRepository.AddTechnician(new TechnicianWorkingSession {
-                       Status = TechnicianWorkingSessionEnum.InProgress,
-                       OrderId = model.OrderId,
-                       TechnicianId = orderPart.NewTechnicianId,
-                       StartTime = DateTime.UtcNow.AddHours(7)
-
+                   
+                }
+                var listsIdDistinct = model.UpdateParts.Select(x => x.NewTechnicianId).Distinct().ToList();
+                foreach (var techId in listsIdDistinct) { 
+                    await _technicianWorkingSessionRepository.AddTechnician(new TechnicianWorkingSession
+                    {
+                        OrderId = model.OrderId,
+                        TechnicianId = techId,
+                        StartTime = DateTime.UtcNow.AddHours(7),
+                        Status = TechnicianWorkingSessionEnum.InProgress
                     });
                 }
             });
