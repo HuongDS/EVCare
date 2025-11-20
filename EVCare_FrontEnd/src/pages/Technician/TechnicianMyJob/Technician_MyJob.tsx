@@ -19,6 +19,8 @@ import { useState } from "react";
 import TechnicianOrder from "../TechnicianOrder/Technician_Order";
 import { useTechnicianHubNewJob } from "../../../hooks/useTechnicianHub";
 import { useNotification } from "../../../context/useNotification";
+import ViewDetailsModal from "../Technician_Component/ViewDetailsModal";
+import Technician_Repairing from "./Technician_Repairing";
 
 const pageVariants = {
   hidden: { opacity: 0 },
@@ -45,6 +47,8 @@ export default function Technician_MyJob() {
   const myJobStatuses = ["Adding Part", "Confirm", "In Progress", "Completed"];
   const [isOrder, setIsOrder] = useState(false);
   const notification = useNotification();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRepairing, setIsRepairing] = useState(false);
 
   useTechnicianHubNewJob<string>(async (type, data) => {
     if (type === "NewJob" && data === "You was assigned new job.") {
@@ -56,13 +60,26 @@ export default function Technician_MyJob() {
     }
   });
 
-  return isOrder ? (
-    <TechnicianOrder
-      appointmentId={data?.data?.items?.at(0)?.id ?? 0}
-      setIsOrder={setIsOrder}
-      orderId={data?.data?.items?.at(0)?.orderId ?? 0}
-    />
-  ) : (
+  if (isOrder) {
+    return (
+      <TechnicianOrder
+        appointmentId={data?.data?.items?.at(0)?.id ?? 0}
+        setIsOrder={setIsOrder}
+        orderId={data?.data?.items?.at(0)?.orderId ?? 0}
+      />
+    );
+  }
+
+  if (isRepairing && data?.data?.items?.at(0)) {
+    return (
+      <Technician_Repairing
+        appointment={data?.data?.items?.at(0)!}
+        setIsRepairing={setIsRepairing}
+        orderId={data?.data?.items?.at(0)?.orderId ?? 0}
+      />
+    );
+  }
+  return (
     <PageWrapper
       key="technician-myjob"
       variants={pageVariants}
@@ -102,6 +119,8 @@ export default function Technician_MyJob() {
                   setIsOrder={setIsOrder}
                   key={item.id}
                   data={item}
+                  setViewDetailModal={setIsModalOpen}
+                  setIsRepairing={setIsRepairing}
                 />
               ))
             ) : (
@@ -118,6 +137,14 @@ export default function Technician_MyJob() {
           onPageChange={setPageIndex}
         />
       </ContentWrapper>
+
+      {isModalOpen && (
+        <ViewDetailsModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          appointment={data?.data?.items?.at(0) ?? null}
+        />
+      )}
     </PageWrapper>
   );
 }
