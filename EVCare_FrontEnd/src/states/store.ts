@@ -3,7 +3,12 @@ import authSlice from "../states/authSlice";
 import uiSlice from "../states/uiSlice";
 import errorSlice from "../states/errorSlice";
 import appointmentsSlice from "../states/appointmentSlice";
-import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux";
+import techSlice from "../states/technicianSlice";
+import {
+  useDispatch,
+  useSelector,
+  type TypedUseSelectorHook,
+} from "react-redux";
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +16,7 @@ export const store = configureStore({
     ui: uiSlice,
     error: errorSlice,
     appointments: appointmentsSlice,
+    tech: techSlice,
   },
 });
 

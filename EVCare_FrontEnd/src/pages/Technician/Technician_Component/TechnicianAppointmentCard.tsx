@@ -32,6 +32,8 @@ type Props = {
     description: string
   ) => void;
   isUpdating: boolean;
+  setViewDetailModal: (v: boolean) => void;
+  setIsRepairing: (v: boolean) => void;
 };
 
 const TechnicianAppointmentCard: React.FC<Props> = ({
@@ -39,7 +41,10 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
   setIsOrder,
   handleUpdateStatus,
   isUpdating,
+  setViewDetailModal,
+  setIsRepairing,
 }) => {
+  const techId = useAppSelector((state) => state.tech.techId);
   const [expandedSections, setExpandedSections] = useState({
     images: false,
     services: false,
@@ -53,6 +58,12 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
+
+  const isAnyPartNotDone = data.parts.some(
+    (part) => part.partStatus !== "Done" && part.technicianId === techId
+  );
+
+  console.log("no done" + isAnyPartNotDone);
 
   return (
     <CardContainer>
@@ -71,6 +82,8 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
             appointmentHasCondition={appointment?.data?.partDamageLevels ?? []}
             setIsOrder={setIsOrder}
             isUpdating={isUpdating}
+            setViewDetailModal={setViewDetailModal}
+            isAnyPartNotDone={isAnyPartNotDone}
           />
         </HeaderRight>
       </CardHeader>
@@ -172,8 +185,26 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
         <PartSection>
           <SectionHeader>
             <SectionTitle>
-              <Package size={18} />
-              Parts Added ({appointment?.data?.partDamageLevels?.length || 0})
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "5px",
+                  alignItems: "center",
+                }}
+              >
+                <Package size={18} />
+                Parts Added ({appointment?.data?.partDamageLevels?.length || 0})
+              </div>
+              <div>
+                {data.status === "InProgress" && (
+                  <ShowButton
+                    onclick={() => setIsRepairing(true)}
+                    text="Repair Continuing"
+                    fontSize="12px"
+                  />
+                )}
+              </div>
             </SectionTitle>
           </SectionHeader>
           <PartsContainer>
@@ -263,3 +294,5 @@ import {
   StatusBadge,
 } from "./Style/TechnicianAppointmentCard.styled";
 import AlertModal from "./AlertModal";
+import ShowButton from "../../../components/Button/ShowButton";
+import { useAppSelector } from "../../../states/store";

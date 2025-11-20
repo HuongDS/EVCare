@@ -39,11 +39,11 @@ export default function Staff_Appoinments() {
     number | null
   >(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [isReassign, setIsReAssign] = useState(false);
   const isOpen3dModel = useAppSelector(
     (state: RootState) => state.ui.model3dOpen
   );
   const [showProgressModal, setShowProgressModal] = useState(false);
-  const [showReassignModal, setShowReassignModal] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [detailAppointment, setDetailAppointment] =
     useState<StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>>();
@@ -105,13 +105,13 @@ export default function Staff_Appoinments() {
     appointment: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>
   ) => {
     setSelectedAppointmentId(appointment.id);
-    setShowReassignModal(true);
+    setIsReAssign(true);
   };
 
   const handleCloseModal = () => {
     setSelectedAppointmentId(null);
     setShowProgressModal(false);
-    setShowReassignModal(false);
+    setIsReAssign(false);
     queryClient.invalidateQueries({
       queryKey: ["Staff Appointments"],
     });
@@ -121,7 +121,7 @@ export default function Staff_Appoinments() {
     return <DayOff />;
   }
 
-  if (isOpen3dModel) {
+  if (isOpen3dModel && selectedAppointmentId) {
     return <Model3dViewer data={selectedAppointmentId || undefined} />;
   }
 
@@ -130,6 +130,15 @@ export default function Staff_Appoinments() {
       <PageTransition $isCreating={isCreating}>
         <CreateAppointment onBack={() => setIsCreating(false)} />
       </PageTransition>
+    );
+  }
+
+  if (isReassign && selectedAppointmentId) {
+    return (
+      <Appointment_Reassign
+        close={handleCloseModal}
+        appointmentId={selectedAppointmentId}
+      />
     );
   }
 
@@ -200,14 +209,6 @@ export default function Staff_Appoinments() {
       {showProgressModal && selectedAppointmentId && (
         <Appoinment_Progress_Modal
           show={showProgressModal}
-          close={handleCloseModal}
-          appointmentId={selectedAppointmentId}
-        />
-      )}
-
-      {showReassignModal && selectedAppointmentId && (
-        <Appointment_Reassign
-          show={showReassignModal}
           close={handleCloseModal}
           appointmentId={selectedAppointmentId}
         />

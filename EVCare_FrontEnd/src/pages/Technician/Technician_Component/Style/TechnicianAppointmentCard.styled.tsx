@@ -174,7 +174,9 @@ export const SectionHeader = styled.div`
 `;
 
 export const SectionTitle = styled.div`
+  width: 100%;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 8px;
   font-size: 14px;
@@ -272,7 +274,7 @@ export const DamageBadge = styled.span<{ $level: DamageLevelStringEnum }>`
       case DamageLevelStringEnum.Critical:
         return "#ffcdd2";
       default:
-        return "#f5f5f5";
+        return "#00ad4e";
     }
   }};
   color: ${(props) => {
@@ -286,7 +288,7 @@ export const DamageBadge = styled.span<{ $level: DamageLevelStringEnum }>`
       case DamageLevelStringEnum.Critical:
         return "#b71c1c";
       default:
-        return "#666";
+        return "#ffffff";
     }
   }};
 `;

@@ -6,10 +6,21 @@ import type {
 import {
   useAssignTechnician,
   useGetAppointmentById,
+  useGetPendingParts,
   useGetTechniciansToday,
+  useReassignTechForPart,
 } from "../../../services/appointmentServiceApi";
 import { useState } from "react";
-import { CheckCircle, CircleX, Mail, Phone, Search, User } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle,
+  CircleX,
+  Mail,
+  Phone,
+  Search,
+  User,
+  AlertTriangle,
+} from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
@@ -17,12 +28,12 @@ import { handleError } from "../../../utils/errorHandler";
 import ErrorPage from "../StaffComponents/Error";
 import ColorSpinner from "../StaffComponents/ColorSpinner";
 import { PiWarning } from "react-icons/pi";
-import { ServiceGrid, ServiceTag } from "./styles/Appointment_Assign.styled";
 import { useFinishTechnicianSession } from "../../../services/TechnicianWorkingSessionApi";
 import { useNotification } from "../../../context/useNotification";
+import PartReassignmentModal from "./PartReassignmentModal";
+import type { PartPendingUpdate } from "../../../models/OrderModel/UpdateOrderModel";
 
 interface props {
-  show: boolean;
   close: () => void;
   appointmentId: number;
 }
@@ -33,11 +44,7 @@ interface AssignedTechnician {
   startedTime: string;
 }
 
-export default function Appointment_Reassign({
-  show,
-  close,
-  appointmentId,
-}: props) {
+export default function Appointment_Reassign({ close, appointmentId }: props) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTechnicians, setSelectedTechnicians] = useState<
     AssignedTechnician[]
@@ -45,6 +52,9 @@ export default function Appointment_Reassign({
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [isPartModalOpen, setIsPartModalOpen] = useState(false);
+  const [selectedTechnicianForParts, setSelectedTechnicianForParts] =
+    useState<TechnicianModel<TechnicianSkills> | null>(null);
   const notification = useNotification();
 
   const {
@@ -53,28 +63,37 @@ export default function Appointment_Reassign({
     error,
     refetch,
   } = useGetAppointmentById(appointmentId);
-  const { mutateAsync: reAssign } = useAssignTechnician();
+  const { mutateAsync: reAssign, isPending: techReassigning } =
+    useAssignTechnician();
+  const { mutateAsync: reassignParts, isPending: partReassigning } =
+    useReassignTechForPart();
   const { data: technicians, isFetching } = useGetTechniciansToday({
     Status: "Available",
   });
-  const { mutateAsync: finishSession, isPending } =
+  const { mutateAsync: finishSession, isPending: finishing } =
     useFinishTechnicianSession();
+
+  const { data: pendingPart } = useGetPendingParts({
+    orderId: appointmentDetail?.data?.orderId || 0,
+    technicianIds:
+      appointmentDetail?.data?.technicians
+        .filter((tech) => tech.status === "OnLeave")
+        .map((tech) => tech.id) || [],
+  });
 
   if (isLoading) {
     return (
-      <ModalStyled open={show} onCancel={close} footer={null}>
-        <ContentWrapper>
-          <div
-            style={{
-              position: "absolute",
-              top: "40%",
-              left: "50%",
-            }}
-          >
-            <ColorSpinner width="5em" height="5em" />
-          </div>
-        </ContentWrapper>
-      </ModalStyled>
+      <ContentWrapper>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+          }}
+        >
+          <ColorSpinner width="6em" height="6em" />
+        </div>
+      </ContentWrapper>
     );
   }
 
@@ -85,21 +104,17 @@ export default function Appointment_Reassign({
       showProgress: true,
     });
     return (
-      <ModalStyled open={show} onCancel={close} footer={null}>
-        <ContentWrapper>
-          <ErrorPage onGoHome={close} onRetry={refetch} />
-        </ContentWrapper>
-      </ModalStyled>
+      <ContentWrapper>
+        <ErrorPage onGoHome={close} onRetry={refetch} />
+      </ContentWrapper>
     );
   }
 
   if (!appointmentDetail?.data) {
     return (
-      <ModalStyled open={show} onCancel={close} footer={null}>
-        <ContentWrapper>
-          <ErrorPage onGoHome={close} onRetry={refetch} />
-        </ContentWrapper>
-      </ModalStyled>
+      <ContentWrapper>
+        <ErrorPage onGoHome={close} onRetry={refetch} />
+      </ContentWrapper>
     );
   }
 
@@ -170,6 +185,21 @@ export default function Appointment_Reassign({
     close();
   };
 
+  const checkAndFinishSession = async (
+    technician?: TechnicianModel<TechnicianSkills>
+  ) => {
+    const isHasPartPending = pendingPart?.data?.find(
+      (part) => part.technicianId === technician?.id
+    );
+
+    if (isHasPartPending) {
+      setSelectedTechnicianForParts(technician!);
+      setIsPartModalOpen(true);
+    } else {
+      await handleFinishSession([technician?.id || 0]);
+    }
+  };
+
   const handleFinishSession = async (techniciansLeave: number[]) => {
     try {
       await finishSession({
@@ -193,24 +223,66 @@ export default function Appointment_Reassign({
     }
   };
 
+  const handlePartReassignmentConfirm = async (
+    reassignments: PartPendingUpdate[]
+  ) => {
+    try {
+      await reassignParts({
+        orderId: appointment.orderId,
+        updateParts: reassignments,
+      });
+
+      notification.success({
+        message: "Parts Reassigned",
+        description: "Parts have been successfully reassigned",
+        showProgress: true,
+      });
+
+      if (selectedTechnicianForParts) {
+        await handleFinishSession([selectedTechnicianForParts.id]);
+      }
+      setIsPartModalOpen(false);
+      setSelectedTechnicianForParts(null);
+    } catch (error) {
+      notification.error({
+        message: "Part Reassignment Failed",
+        description: (error as Error).message || "Failed to reassign parts",
+        showProgress: true,
+      });
+      throw error;
+    }
+  };
+
   const activeTechs = appointment.technicians.filter(
     (tech) => tech.workingSessionStatus !== "Completed"
   );
-  const onLeave = activeTechs.filter((tech) => tech.status === "OnLeave");
-  const busy = activeTechs.filter((tech) => tech.status === "Busy");
+  // const onLeave = activeTechs.filter((tech) => tech.status === "OnLeave");
+  // const busy = activeTechs.filter((tech) => tech.status === "Busy");
   const techniciansLeave = activeTechs
     .filter((tech) => tech.status === "OnLeave")
     .map((tech) => tech.id);
 
-  const showFinish =
-    onLeave.length > 0 &&
-    (busy.length > 0 || onLeave.length < activeTechs.length);
+  // const showFinish =
+  //   onLeave.length > 0 &&
+  //   (busy.length > 0 || onLeave.length < activeTechs.length);
 
   const handleSubmit = async () => {
-    await handleReAssign();
-
     if (techniciansLeave.length > 0) {
-      await handleFinishSession(techniciansLeave);
+      const techsWithIncompleteParts = techniciansLeave.filter((techId) =>
+        pendingPart?.data?.some((t) => t.technicianId === techId)
+      );
+
+      if (techsWithIncompleteParts.length > 0) {
+        notification.warning({
+          message: "Incomplete Parts Detected",
+          description:
+            "Some technicians have unfinished parts. Please reassign them manually.",
+          showProgress: true,
+        });
+      } else {
+        await handleReAssign();
+        await handleFinishSession(techniciansLeave);
+      }
     }
 
     const busy = activeTechs.filter((tech) => tech.status === "Busy");
@@ -231,188 +303,212 @@ export default function Appointment_Reassign({
     );
   };
 
+  const technicianHasParts = (technicianId: number): boolean => {
+    return (
+      pendingPart?.data?.some((t) => t.technicianId === technicianId) || false
+    );
+  };
+
   return (
     <>
-      <ModalStyled open={show} onCancel={close} footer={null}>
-        <PageContainer>
-          <ContentWrapper>
-            <Card>
-              <Header>
-                <h1>Re-Assign Technicians</h1>
-                <p>Manage technicians for appointment #{appointment.id}</p>
-              </Header>
-            </Card>
+      <PageContainer>
+        <ContentWrapper>
+          <BackButton onClick={close}>
+            <ArrowLeft size={20} />
+            Back
+          </BackButton>
+          <Card>
+            <Header>
+              <h1>Re-Assign Technicians</h1>
+              <p>Manage technicians for appointment #{appointment.id}</p>
+            </Header>
+          </Card>
 
-            {appointment.technicians.length > 0 && (
-              <Card>
-                <SectionHeader>
-                  <h2>
-                    Currently Assigned (
-                    {
-                      appointment.technicians.filter(
-                        (tech) => tech.workingSessionStatus !== "Completed"
-                      ).length
-                    }
-                    )
-                  </h2>
-                </SectionHeader>
-
-                <TechnicianGrid>
-                  {appointment.technicians
-                    .filter((tech) => tech.workingSessionStatus !== "Completed")
-                    .map((assignment) => (
-                      <TechnicianCard
-                        key={assignment.id}
-                        technician={assignment}
-                        isPreviouslyAssigned
-                        onFinishSession={() =>
-                          handleFinishSession([assignment.id])
-                        }
-                        showFinish={
-                          showFinish && assignment.status === "OnLeave"
-                        }
-                        isFinishing={isPending}
-                      />
-                    ))}
-                </TechnicianGrid>
-              </Card>
-            )}
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "2fr 1fr",
-                gap: "5px",
-              }}
-            >
-              <Card>
-                <SectionHeader>
-                  <h2>New Assignments ({selectedTechnicians.length})</h2>
-                  {selectedTechnicians.length > 0 && (
-                    <ButtonGroup>
-                      <ClearButton onClick={() => setSelectedTechnicians([])}>
-                        Clear All
-                      </ClearButton>
-                      <SubmitButton onClick={handleSubmit}>
-                        <CheckCircle size={20} />
-                        Confirm Re-Assignment
-                      </SubmitButton>
-                    </ButtonGroup>
-                  )}
-                </SectionHeader>
-
-                {selectedTechnicians.length === 0 ? (
-                  <EmptyState>
-                    <User size={48} />
-                    <p>No new technicians selected</p>
-                    <p>Search below to add technicians</p>
-                  </EmptyState>
-                ) : (
-                  <TechnicianGrid>
-                    {selectedTechnicians.map((assignment) => (
-                      <TechnicianCard
-                        key={assignment.technicianID}
-                        technician={assignment.technician}
-                        onRemove={() =>
-                          handleRemoveTechnician(assignment.technicianID)
-                        }
-                        isSelected
-                      />
-                    ))}
-                  </TechnicianGrid>
-                )}
-              </Card>
-              <Card>
-                <SectionHeader>
-                  <h2>Services ({appointment.services.length})</h2>
-                </SectionHeader>
-                {appointment.services.length === 0 ? (
-                  <EmptyState>
-                    <User size={48} />
-                    <p>No services</p>
-                  </EmptyState>
-                ) : (
-                  <ServiceGrid>
-                    {appointment.services.map((service) => {
-                      const techCount = getTechnicianCountForService(
-                        service.id
-                      );
-                      const isHighlighted = techCount > 0;
-                      return (
-                        <ServiceTag key={service.id} $highlight={isHighlighted}>
-                          {service.name}
-                          {!isHighlighted && (
-                            <Tooltip
-                              title="No technicians have been assigned to this service yet"
-                              color="#00ad4e"
-                            >
-                              <PiWarning color="orange" size={20} />
-                            </Tooltip>
-                          )}
-                          {techCount > 0 && (
-                            <span
-                              style={{
-                                marginLeft: "6px",
-                                color: "#00ad4e",
-                                fontWeight: 600,
-                              }}
-                            >
-                              ({techCount} tech{techCount > 1 ? "s" : ""})
-                            </span>
-                          )}
-                        </ServiceTag>
-                      );
-                    })}
-                  </ServiceGrid>
-                )}
-              </Card>
-            </div>
-
+          {appointment.technicians.length > 0 && (
             <Card>
               <SectionHeader>
-                <h2>Add Technician</h2>
+                <h2>
+                  Currently Assigned (
+                  {
+                    appointment.technicians.filter(
+                      (tech) => tech.workingSessionStatus !== "Completed"
+                    ).length
+                  }
+                  )
+                </h2>
               </SectionHeader>
 
-              <SearchWrapper>
-                <SearchInput>
-                  <Search size={20} />
-                  <input
-                    type="text"
-                    placeholder="Search available technicians..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </SearchInput>
-              </SearchWrapper>
-
-              <SearchResultsContainer>
-                {isFetching ? (
-                  <SpinnerWrapper>
-                    <ColorSpinner width="4em" height="4em" />
-                  </SpinnerWrapper>
-                ) : (
-                  <TechnicianGrid>
-                    {filteredTechnicians.map((technician) => (
-                      <TechnicianCard
-                        key={technician.id}
-                        technician={technician}
-                        onAdd={() => handleAddTechnician(technician)}
-                      />
-                    ))}
-                  </TechnicianGrid>
-                )}
-
-                {filteredTechnicians.length === 0 && (
-                  <EmptyState>
-                    <User size={48} />
-                    <p>No technicians found</p>
-                  </EmptyState>
-                )}
-              </SearchResultsContainer>
+              <TechnicianGrid>
+                {appointment.technicians
+                  .filter((tech) => tech.workingSessionStatus !== "Completed")
+                  .map((assignment) => (
+                    <TechnicianCard
+                      key={assignment.id}
+                      technician={assignment}
+                      isPreviouslyAssigned
+                      onFinishSession={() => checkAndFinishSession(assignment)}
+                      showFinish={assignment.status === "OnLeave"}
+                      isFinishing={finishing}
+                      hasIncompleteParts={technicianHasParts(assignment.id)}
+                    />
+                  ))}
+              </TechnicianGrid>
             </Card>
-          </ContentWrapper>
-        </PageContainer>
-      </ModalStyled>
+          )}
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "2fr 1.1fr",
+              gap: "5px",
+            }}
+          >
+            <Card>
+              <SectionHeader>
+                <h2>New Assignments ({selectedTechnicians.length})</h2>
+                {selectedTechnicians.length > 0 && (
+                  <ButtonGroup>
+                    {techReassigning ? (
+                      <ColorSpinner width="3em" height="3em" />
+                    ) : (
+                      <>
+                        <ClearButton onClick={() => setSelectedTechnicians([])}>
+                          Clear All
+                        </ClearButton>
+                        <SubmitButton onClick={handleSubmit}>
+                          <CheckCircle size={20} />
+                          Confirm Re-Assignment
+                        </SubmitButton>
+                      </>
+                    )}
+                  </ButtonGroup>
+                )}
+              </SectionHeader>
+
+              {selectedTechnicians.length === 0 ? (
+                <EmptyState>
+                  <User size={48} />
+                  <p>No new technicians selected</p>
+                  <p>Search below to add technicians</p>
+                </EmptyState>
+              ) : (
+                <TechnicianGrid>
+                  {selectedTechnicians.map((assignment) => (
+                    <TechnicianCard
+                      key={assignment.technicianID}
+                      technician={assignment.technician}
+                      onRemove={() =>
+                        handleRemoveTechnician(assignment.technicianID)
+                      }
+                      isSelected
+                    />
+                  ))}
+                </TechnicianGrid>
+              )}
+            </Card>
+            <Card>
+              <SectionHeader>
+                <h2>Services ({appointment.services.length})</h2>
+              </SectionHeader>
+              {appointment.services.length === 0 ? (
+                <EmptyState>
+                  <User size={48} />
+                  <p>No services</p>
+                </EmptyState>
+              ) : (
+                <ServiceGrid>
+                  {appointment.services.map((service) => {
+                    const techCount = getTechnicianCountForService(service.id);
+                    const isHighlighted = techCount > 0;
+                    return (
+                      <ServiceTag key={service.id} $highlight={isHighlighted}>
+                        {service.name}
+                        {!isHighlighted && (
+                          <Tooltip
+                            title="No technicians have been assigned to this service yet"
+                            color="#00ad4e"
+                          >
+                            <PiWarning color="orange" size={20} />
+                          </Tooltip>
+                        )}
+                        {techCount > 0 && (
+                          <span
+                            style={{
+                              textAlign: "center",
+                              marginLeft: "6px",
+                              color: "#00ad4e",
+                              fontWeight: 600,
+                            }}
+                          >
+                            ({techCount} tech{techCount > 1 ? "s" : ""})
+                          </span>
+                        )}
+                      </ServiceTag>
+                    );
+                  })}
+                </ServiceGrid>
+              )}
+            </Card>
+          </div>
+
+          <Card>
+            <SectionHeader>
+              <h2>Add Technician</h2>
+            </SectionHeader>
+
+            <SearchWrapper>
+              <SearchInput>
+                <Search size={20} />
+                <input
+                  type="text"
+                  placeholder="Search available technicians..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </SearchInput>
+            </SearchWrapper>
+
+            <SearchResultsContainer>
+              {isFetching ? (
+                <SpinnerWrapper>
+                  <ColorSpinner width="4em" height="4em" />
+                </SpinnerWrapper>
+              ) : (
+                <TechnicianGrid>
+                  {filteredTechnicians.map((technician) => (
+                    <TechnicianCard
+                      key={technician.id}
+                      technician={technician}
+                      onAdd={() => handleAddTechnician(technician)}
+                    />
+                  ))}
+                </TechnicianGrid>
+              )}
+
+              {filteredTechnicians.length === 0 && (
+                <EmptyState>
+                  <User size={48} />
+                  <p>No technicians found</p>
+                </EmptyState>
+              )}
+            </SearchResultsContainer>
+          </Card>
+        </ContentWrapper>
+      </PageContainer>
+
+      {selectedTechnicianForParts && isPartModalOpen && (
+        <PartReassignmentModal
+          onClose={() => {
+            setIsPartModalOpen(false);
+            setSelectedTechnicianForParts(null);
+          }}
+          onConfirm={handlePartReassignmentConfirm}
+          technician={selectedTechnicianForParts}
+          pendingParts={pendingPart?.data}
+          partReassigning={partReassigning}
+        />
+      )}
+
       {isSuccessModalOpen && (
         <SuccessModal
           header="Assign Technician"
@@ -440,6 +536,7 @@ interface TechnicianCardProps {
   isPreviouslyAssigned?: boolean;
   showFinish?: boolean;
   isFinishing?: boolean;
+  hasIncompleteParts?: boolean;
 }
 export const TechnicianCard = ({
   technician,
@@ -450,6 +547,7 @@ export const TechnicianCard = ({
   isSelected = false,
   isPreviouslyAssigned = false,
   isFinishing = false,
+  hasIncompleteParts = false,
 }: TechnicianCardProps) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
   const displayedSkills = showAllSkills
@@ -470,6 +568,15 @@ export const TechnicianCard = ({
       {isPreviouslyAssigned && (
         <PreviousBadge>Currently Assigned</PreviousBadge>
       )}
+
+      {hasIncompleteParts &&
+        isPreviouslyAssigned &&
+        technician.status === "OnLeave" && (
+          <WarningBadge>
+            <AlertTriangle size={14} />
+            Has unfinished parts
+          </WarningBadge>
+        )}
 
       <TechnicianHeader>
         <Avatar
@@ -560,7 +667,9 @@ export const TechnicianCard = ({
         (isFinishing ? (
           <ColorSpinner width="2em" height="2em" />
         ) : (
-          <ActionButton onClick={onFinishSession}>Finish Session</ActionButton>
+          <ActionButton onClick={onFinishSession}>
+            {hasIncompleteParts ? "Reassign Parts & Finish" : "Finish Session"}
+          </ActionButton>
         ))}
     </TechnicianCardWrapper>
   );
@@ -577,7 +686,6 @@ import {
   EmptyState,
   Header,
   InfoItem,
-  ModalStyled,
   PageContainer,
   PreviousBadge,
   RemoveButton,
@@ -598,4 +706,8 @@ import {
   TechnicianInfo,
   TechInfo,
   WorkInfo,
+  BackButton,
+  ServiceGrid,
+  ServiceTag,
+  WarningBadge,
 } from "./styles/Appointment_Reassign.styled";

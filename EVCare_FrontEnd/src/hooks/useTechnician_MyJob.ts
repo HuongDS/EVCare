@@ -71,18 +71,6 @@ export const useTechnician_MyJob = () => {
     }
   };
 
-  // const appointments = useMemo(() => {
-  //   const sourceData = data?.data?.items ?? [];
-
-  //   if (
-  //     activeStatus === TechnicianWorkingSessionEnum.COMPLETED ||
-  //     activeStatus === TechnicianWorkingSessionEnum.CANCELED
-  //   ) {
-  //     return [...sourceData].sort((a, b) => (sortById === "asc" ? a.id - b.id : b.id - a.id));
-  //   }
-  //   return sourceData;
-  // }, [data?.data?.items, sortById, activeStatus]);
-
   const sortName: TechnicianWorkingSessionEnum[] = [
     TechnicianWorkingSessionEnum.ADDING_PART,
     TechnicianWorkingSessionEnum.CONFIRM,

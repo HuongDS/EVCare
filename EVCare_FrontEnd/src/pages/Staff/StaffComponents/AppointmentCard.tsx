@@ -19,6 +19,7 @@ import type {
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { Tooltip } from "antd";
+import { formatPlateNumber } from "../../../utils/formatPlateNumber";
 
 type AppointmentCardProps = {
   data: StaffAppointmentsDto<TechnicianModel<TechnicianSkills>>;
@@ -106,7 +107,7 @@ export default function AppointmentCard({
             </InfoItem>
             <InfoItem>
               <IconLabel>License</IconLabel>
-              <InfoValue>{data.licensePlate}</InfoValue>
+              <InfoValue>{formatPlateNumber(data.licensePlate)}</InfoValue>
             </InfoItem>
           </InfoRow>
         </InfoSection>
@@ -146,15 +147,16 @@ export default function AppointmentCard({
             )
           ) : null}
 
-          {data.status === "InProgress" && (
-            <ActionButton
-              $variant={hasTechnicianOnleave ? "warning" : "secondary"}
-              onClick={onOpenReassign}
-            >
-              {hasTechnicianOnleave && <TriangleAlert size={16} />}
-              Re-Assign
-            </ActionButton>
-          )}
+          {data.status === "InProgress" &&
+            data.orderStatus === "Processing" && (
+              <ActionButton
+                $variant={hasTechnicianOnleave ? "warning" : "secondary"}
+                onClick={onOpenReassign}
+              >
+                {hasTechnicianOnleave && <TriangleAlert size={16} />}
+                Re-Assign
+              </ActionButton>
+            )}
         </ActionsSection>
       </CardBody>
     </CardContainer>

@@ -6,10 +6,22 @@ interface props {
   width?: string;
   height?: string;
   icon?: React.ReactNode;
+  fontSize?: string;
 }
-const ShowButton = ({ onclick, text, width, height, icon }: props) => {
+const ShowButton = ({
+  onclick,
+  text,
+  width,
+  height,
+  icon,
+  fontSize,
+}: props) => {
   return (
-    <StyledWrapper $width={width ?? "auto"} $height={height ?? "auto"}>
+    <StyledWrapper
+      $width={width ?? "auto"}
+      $height={height ?? "auto"}
+      $fontSize={fontSize ?? "auto"}
+    >
       <button
         onClick={onclick}
         style={{ display: "flex", alignItems: "center", gap: "2px" }}
@@ -21,7 +33,11 @@ const ShowButton = ({ onclick, text, width, height, icon }: props) => {
   );
 };
 
-const StyledWrapper = styled.div<{ $width: string; $height: string }>`
+const StyledWrapper = styled.div<{
+  $width: string;
+  $height: string;
+  $fontSize: string;
+}>`
   button {
     border: none;
     color: #00ad4e;
@@ -30,10 +46,10 @@ const StyledWrapper = styled.div<{ $width: string; $height: string }>`
     background-size: 100% auto;
     font-family: "Outfit", sans-serif;
     font-weight: bold;
-    font-size: 17px;
+    font-size: ${(props) => props.$fontSize || "17px"};
     padding: 0.2em 1em;
     width: ${(props) => props.$width || "auto"};
-    height: ${(props) => props.$height || "auto"};
+    height: ${(props) => props.$height || "fit-content"};
   }
 
   button:hover {

@@ -23,3 +23,14 @@ export type UpdateOrderStatusPrams = {
 export type UpdateOrderResponse = {
   orderID: number;
 };
+
+export type AssignTechWithPendingPartPayload = {
+  orderId: number;
+  updateParts: PartPendingUpdate[];
+};
+
+export type PartPendingUpdate = {
+  partId: number;
+  oldTechnicianId: number;
+  newTechnicianId: number;
+};

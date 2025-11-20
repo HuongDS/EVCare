@@ -45,3 +45,27 @@ export type PartInServiceDetail = PartDetail & {
 export type PartInServiceViewModel<T> = {
   items: T[];
 };
+
+export type UpdatePartStatusPayload = {
+  orderId: number;
+  partId: number;
+  isReplaced: boolean;
+};
+
+export type PartPendingDto = {
+  technicianId: number;
+  technicianName: string;
+  id: number;
+  name: string;
+  quantity: number;
+  price: number;
+  replacementPrice: number;
+  stock: number;
+  partStatus: string;
+  imageUrl: string;
+};
+
+export type PartOfTech = {
+  id: number;
+  name: string;
+};
