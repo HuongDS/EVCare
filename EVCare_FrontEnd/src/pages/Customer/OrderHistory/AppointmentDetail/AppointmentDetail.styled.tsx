@@ -526,6 +526,22 @@ export const OrderSummary = styled.div`
   gap: 10px;
 `;
 
+export const PriceNote = styled.div`
+  font-size: 0.85rem;
+  color: #6b7280;
+  background-color: #f9fafb;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  font-style: italic;
+
+  strong {
+    color: #374151;
+    font-weight: 600;
+  }
+`;
+
 export const SummaryLine = styled.div`
   display: flex;
   justify-content: space-between;
@@ -717,4 +733,14 @@ export const LogMessage = styled.p`
   font-size: 0.85rem;
   color: #4b5563;
   line-height: 1.5;
+`;
+
+export const EmptyLogText = styled.div`
+  text-align: center;
+  padding: 24px;
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
 `;

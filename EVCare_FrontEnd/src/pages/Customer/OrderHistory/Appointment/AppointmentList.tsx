@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import OrderHistorySort from "../../CustomerComponent/AppointmentHistoryFilter";
 import { Title } from "./AppointmentList.styled";
-import {
-  getAppointmentById,
-  getCustomerAppointment,
-} from "../../../../services/appointmentServiceApi";
+import { getAppointmentById, getCustomerAppointment } from "../../../../services/appointmentServiceApi";
 import SpinnerComponent from "../../../../components/SpinnerComponent";
 import AppointmentDetail from "../AppointmentDetail/AppointmentDetail";
 import type { AppointmentViewDetailModel } from "../../../../models/AppointmentsModel/AppointmentViewDetailModel";
@@ -15,30 +12,14 @@ import { EmptyState } from "../../../../components/EmptyState";
 import { useAppSelector, type RootState } from "../../../../states/store";
 import Model3dViewer from "../../../Model3d/Model3dViewer";
 export default function OrderList() {
-  const sortBy = useMemo(
-    () => [
-      "Pending",
-      "Confirmed",
-      "InProgress",
-      "ReadyForPickup",
-      "Done",
-      "Canceled",
-    ],
-    []
-  );
-  const [listAppointment, setListAppointment] = useState<
-    AppointmentViewDetailModel[]
-  >([]);
+  const sortBy = useMemo(() => ["Pending", "Confirmed", "InProgress", "ReadyForPickup", "Done", "Canceled"], []);
+  const [listAppointment, setListAppointment] = useState<AppointmentViewDetailModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(sortBy[0]);
-  const [filteredList, setFilteredList] = useState<
-    AppointmentViewDetailModel[]
-  >([]);
+  const [filteredList, setFilteredList] = useState<AppointmentViewDetailModel[]>([]);
   const [selectedAppointment, setSelectedAppointment] = useState(0);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [loadingModalDetail, setLoadingModalDetail] = useState<number | null>(
-    null
-  );
+  const [loadingModalDetail, setLoadingModalDetail] = useState<number | null>(null);
   const [data, setData] = useState<AppointmentViewDetailModel>(Object);
   const [model3dData, setModel3dData] = useState<number>();
   const notification = useNotification();
@@ -86,19 +67,13 @@ export default function OrderList() {
       setIsLoading(true);
       const response = await getCustomerAppointment();
       setListAppointment(response.data?.sort((a, b) => b.id - a.id) ?? []);
-      setFilteredList(
-        response.data
-          ? response.data.filter((a) => a.status === selectedCategory)
-          : []
-      );
+      setFilteredList(response.data ? response.data.filter((a) => a.status === selectedCategory) : []);
       setIsLoading(false);
     };
     fetchData();
   }, [setFilteredList, selectedCategory]);
 
-  const isOpen3dModel = useAppSelector(
-    (state: RootState) => state.ui.model3dOpen
-  );
+  const isOpen3dModel = useAppSelector((state: RootState) => state.ui.model3dOpen);
 
   if (isOpen3dModel) {
     return <Model3dViewer data={model3dData} />;
@@ -113,11 +88,7 @@ export default function OrderList() {
           </div>
         ) : (
           <>
-            <OrderHistorySort
-              sortName={sortBy}
-              onSelectCategory={handleFiltered}
-              selectedCategory={selectedCategory}
-            />
+            <OrderHistorySort sortName={sortBy} onSelectCategory={handleFiltered} selectedCategory={selectedCategory} />
 
             {filteredList.length === 0 ? (
               <EmptyState />

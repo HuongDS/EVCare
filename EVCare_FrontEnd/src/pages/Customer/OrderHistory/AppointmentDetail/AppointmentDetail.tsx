@@ -40,6 +40,8 @@ import {
   PartLogHeader,
   TimelineItem,
   LogMessage,
+  EmptyLogText,
+  PriceNote,
 } from "./AppointmentDetail.styled";
 import NameBoxComponent from "../NameBox";
 import type { AppointmentViewDetailModel } from "../../../../models/AppointmentsModel/AppointmentViewDetailModel";
@@ -178,16 +180,18 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
 
           <ModalContent>
             {logData && logData.parts.length > 0 && !isLoadingLogData && (
-              <>
-                <AnimatePresence>
-                  {showLogs && (
-                    <LogsWrapper
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {logData.parts.map((partLog) => (
+              <AnimatePresence>
+                {showLogs && (
+                  <LogsWrapper
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {!isLoadingLogData &&
+                      logData &&
+                      logData.parts.length > 0 &&
+                      logData.parts.map((partLog) => (
                         <PartLogGroup key={partLog.partId}>
                           <PartLogHeader>
                             <FaTools size={14} />
@@ -201,10 +205,13 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
                           ))}
                         </PartLogGroup>
                       ))}
-                    </LogsWrapper>
-                  )}
-                </AnimatePresence>
-              </>
+                  </LogsWrapper>
+                )}
+              </AnimatePresence>
+            )}
+
+            {showLogs && logData && logData.parts.length == 0 && !isLoadingLogData && (
+              <EmptyLogText>Currently, no information has been updated about the appointment.</EmptyLogText>
             )}
 
             <Section>
@@ -265,6 +272,10 @@ export default function AppointmentDetail({ onClose, open, appointmentId, data }
                   </PartList>
 
                   <OrderSummary>
+                    <PriceNote>
+                      The cost of each part is calculated by the formula:{" "}
+                      <strong>(Replacement Price + Unit Price) × Quantity</strong>.
+                    </PriceNote>
                     <SummaryLine>
                       <span>Subtotal</span>
                       <span>{formatCurrency(subtotal)}</span>
