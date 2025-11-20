@@ -149,9 +149,12 @@ namespace API.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Staff")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+
         public async Task<IActionResult> UpdateOrder(OrderUpdateModel model) {
             try {
-                await _orderService.UpdateOrderAsync(model);
+                int employeeId = (int)HttpContext.Items["AccountId"];
+                await _orderService.UpdateOrderAsync(model,employeeId);
                 await _onStatusOrderChange.HandleAsync<object>(OrderStatusChangeEventEnum.StaffConfirmed, null, null);
                 return Ok(new ResponseDto<int>
                 {
