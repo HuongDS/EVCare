@@ -37,11 +37,11 @@ export const StaffChatPage = () => {
         setTotalPages(list.data?.totalPages ?? 1);
       } catch (err) {
         console.error("Failed to load conversations", err);
-        message.error("Không thể tải danh sách trò chuyện.");
+        message.error("Can not load list conversation.");
       }
       setLoading(false);
     })();
-  }, []);
+  }, [pageIndex]);
 
   useEffect(() => {
     if (!connection) return;

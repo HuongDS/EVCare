@@ -22,7 +22,7 @@ export async function listConversations(pageIndex?: number, pageSize?: number) {
   }
 }
 
-export async function getHistory(conversationId: string, skip = 0, take = 1000) {
+export async function getHistory(conversationId: string, skip = 0, take = 20) {
   const response = await api.get<HistoryMessage[]>(`/api/Chat/history/${conversationId}`, {
     params: {
       skip: skip,
