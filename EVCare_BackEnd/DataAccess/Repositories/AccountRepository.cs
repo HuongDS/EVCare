@@ -40,6 +40,13 @@ namespace DataAccess.Repositories
             return entity;
         }
 
+        public async Task<Account?> GetAccountByTechId(int techId) {
+            var employee = await _dbContext.Employees.FirstOrDefaultAsync(x=>x.TechnicianId == techId);
+            if (employee == null) return null;
+            var account =  await _dbSet.FirstOrDefaultAsync(a => a.Id == employee.AccountId);
+            return account;
+        }
+
         public async Task<IEnumerable<int>> GetAccountIdByTechnicianIds(IEnumerable<int> technicianIds)
         {
             var res = await _dbSet.Include(a => a.Employee).ThenInclude(e => e.Technician)
