@@ -24,13 +24,17 @@ import { store } from "../states/store";
 import { setGlobalError } from "../states/errorSlice";
 import type {
   AssignTechnicianParams,
+  GetTechncianForPendingPartsParams,
   GetTechnicianParams,
   TechnicianModel,
+  TechnicianModelPendingPart,
   TechnicianSkills,
 } from "../models/AppointmentsModel/Technician_Appointments_Model";
 import QueryString from "qs";
 import type { AppointmentStatusEnum } from "../models/enums";
 import type { AppointmentViewDetailModel } from "../models/AppointmentsModel/AppointmentViewDetailModel";
+import type { PartOfTech, PartPendingDto } from "../models/PartModel/PartModel";
+import type { AssignTechWithPendingPartPayload } from "../models/OrderModel/UpdateOrderModel";
 
 export const useGetAllAppointments = (params: GetAppointmentsParams = {}) => {
   return useQuery({
@@ -321,6 +325,89 @@ export const useStaffCreateAppointment = () => {
           payload
         );
         return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg = error.response?.data.message || error.message;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+export const useGetPendingParts = (params: {
+  technicianIds: number[];
+  orderId: number;
+}) => {
+  return useQuery({
+    queryKey: ["PendingParts", params.orderId],
+    queryFn: async () => {
+      try {
+        const response = await api.get<ResponseDto<PartPendingDto[]>>(
+          "/api/Technician/parts/pending",
+          {
+            params,
+            paramsSerializer: (p) =>
+              QueryString.stringify(p, { arrayFormat: "repeat" }),
+          }
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+export const useGetTechnicianForPendingParts = (
+  params: GetTechncianForPendingPartsParams
+) => {
+  return useQuery({
+    queryKey: ["TechnicianForPendingPart", params],
+    queryFn: async () => {
+      try {
+        const response = await api.get<
+          ResponseDto<PageModel<TechnicianModelPendingPart<PartOfTech>>>
+        >("/api/Technician/technician-repaired-parts", {
+          params,
+          paramsSerializer: (p) =>
+            QueryString.stringify(p, { arrayFormat: "repeat" }),
+        });
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        if (axios.isAxiosError(error)) {
+          const errMsg =
+            error.response?.data.message ||
+            error.message ||
+            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          throw new Error(errMsg);
+        }
+        throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
+      }
+    },
+  });
+};
+
+export const useReassignTechForPart = () => {
+  return useMutation({
+    mutationKey: ["ReassignTechWithPart"],
+    mutationFn: async (payload: AssignTechWithPendingPartPayload) => {
+      try {
+        await api.put<ResponseDto<number>>(
+          "/api/Order/part/technician",
+          payload
+        );
       } catch (error) {
         handleError(error);
         if (axios.isAxiosError(error)) {
