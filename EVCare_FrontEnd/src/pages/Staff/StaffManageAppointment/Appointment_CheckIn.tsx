@@ -77,7 +77,6 @@ export default function Appointment_CheckIn({ data, close }: Props) {
       }
       setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_SUCCESS);
       setIsCheckInSuccessOpen(true);
-      await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
     } catch (error) {
       setTitle("Create Order Failed");
       setModalMessage(String(error));
@@ -120,8 +119,12 @@ export default function Appointment_CheckIn({ data, close }: Props) {
     }
   };
 
-  const handleCloseModal = () => {
+  const handleCloseErrorModal = () => {
     setIsErrorModalOpen(false);
+  };
+
+  const handleCloseSuccessModal = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
   };
 
   return (
@@ -242,7 +245,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
         <SuccessModal
           header="Check In"
           message={modalMessage}
-          action={() => setIsCheckInSuccessOpen(false)}
+          action={handleCloseSuccessModal}
         />
       )}
       {isCancelSuccessOpen && (
@@ -256,7 +259,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
         <FailedModal
           header={title}
           message={modalMessage}
-          action={handleCloseModal}
+          action={handleCloseErrorModal}
         />
       )}
       {confirm && (
