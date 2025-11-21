@@ -89,7 +89,6 @@ export const Header = styled.header`
   align-items: center;
   gap: 16px;
   padding-bottom: 24px;
-  // border-bottom: none;
   margin-bottom: 24px;
 `;
 

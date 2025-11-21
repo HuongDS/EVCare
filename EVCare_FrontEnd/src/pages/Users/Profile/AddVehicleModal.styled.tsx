@@ -1,12 +1,10 @@
 import styled, { css, keyframes } from "styled-components";
 
-// ==== ANIMATIONS ====
 const fadeIn = keyframes`
   from { opacity: 0; transform: scale(0.96) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 `;
 
-// ==== OVERLAY ====
 export const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
@@ -18,7 +16,6 @@ export const ModalOverlay = styled.div`
   animation: ${fadeIn} 0.25s ease forwards;
 `;
 
-// ==== CONTENT ====
 export const ModalContent = styled.div`
   position: relative;
   display: flex;
@@ -34,7 +31,6 @@ export const ModalContent = styled.div`
   font-family: "Outfit", sans-serif;
 `;
 
-// ==== TITLE ====
 export const ModalTitle = styled.h2`
   font-size: 24px;
   font-weight: 700;
@@ -43,7 +39,6 @@ export const ModalTitle = styled.h2`
   margin-bottom: 32px;
 `;
 
-// ==== FORM GROUP ====
 export const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
@@ -85,7 +80,6 @@ export const FormGroup = styled.div`
   }
 `;
 
-// ==== BUTTONS ====
 export const ModalButtons = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -112,7 +106,6 @@ const buttonBase = css`
   font-family: inherit;
 `;
 
-// ==== SUBMIT BUTTON ====
 export const SubmitButton = styled.button`
   ${buttonBase};
   background: linear-gradient(135deg, #00ad4e, #00c65e);
@@ -132,7 +125,6 @@ export const SubmitButton = styled.button`
   }
 `;
 
-// ==== CANCEL BUTTON ====
 export const CancelButton = styled.button`
   ${buttonBase};
   background: #fff;
@@ -145,7 +137,6 @@ export const CancelButton = styled.button`
   }
 `;
 
-// ==== IMAGE PREVIEW ====
 export const PreviewImage = styled.img`
   margin-top: 12px;
   width: 200px;

@@ -110,14 +110,14 @@ namespace API.Controllers
             }));
         }
 
-        [HttpPost("read/{conversationId}")]
-        [ServiceFilter(typeof(SetAccountIdFilter))]
-        public async Task<IActionResult> Read(string conversationId, string upToMessageId)
-        {
-            var accountId = HttpContext.Items["AccountId"];
-            await _chatServices.MarkAsReadUpToAsync(conversationId, accountId.ToString(), upToMessageId);
-            await _conversationService.ResetUnreadAsync(conversationId, accountId.ToString());
-            return Ok();
-        }
+        //[HttpPost("read/{conversationId}")]
+        //[ServiceFilter(typeof(SetAccountIdFilter))]
+        //public async Task<IActionResult> Read(string conversationId, string upToMessageId)
+        //{
+        //    var accountId = HttpContext.Items["AccountId"];
+        //    await _chatServices.MarkAsReadUpToAsync(conversationId, accountId.ToString(), upToMessageId);
+        //    await _conversationService.ResetUnreadAsync(conversationId, accountId.ToString());
+        //    return Ok();
+        //}
     }
 }
