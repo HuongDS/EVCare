@@ -435,7 +435,14 @@ namespace Application.Services
 
                     };
                     await _orderPartRepository.AddRange(new List<OrderPart> { newOrderPart });
-                   
+                    var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
+                    var appointmentPartCondition = await _appointmentPartConditionRepository
+                    .GetAppointmentPartConditionsByTechIdAndPartIdAndAppointmentIdAsync(appointment.Id, orderPart.PartId, orderPart.OldTechnicianId);
+                    if (appointmentPartCondition != null) {
+                        appointmentPartCondition.TechicianId = orderPart.NewTechnicianId;
+                        
+                    }
+
                 }
                 var listsIdDistinct = model.UpdateParts.Select(x => x.NewTechnicianId).Distinct().ToList();
                 foreach (var techId in listsIdDistinct) { 
@@ -456,6 +463,8 @@ namespace Application.Services
                         EndTime = null
                     });
                 }
+
+
             });
 
             foreach (var orderPart in model.UpdateParts) {
