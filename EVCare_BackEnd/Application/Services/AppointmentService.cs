@@ -29,6 +29,10 @@ namespace Application.Services
 
             var currentDay = model.Appointment_Date.DayOfWeek;
             var serviceCenter = await _serviceCenterRepository.GetCenterInforAsync();
+            if(model.Appointment_Date < DateTime.UtcNow.AddHours(7))
+            {
+                throw new Exception("Appointment date must be in the future");
+            }
             if (currentDay < serviceCenter.WorkStartDay || currentDay > serviceCenter.WorkEndDay)
             {
                 throw new Exception($"You must book the appointment from {serviceCenter.WorkStartDay} to {serviceCenter.WorkEndDay} ");
@@ -45,7 +49,6 @@ namespace Application.Services
                 throw new Exception("This day is fully booked");
             }
 
-            // neu ma co appointment khong phai complete and cancel thi khong dc tao them
             var check = await _appointmentRepository.CheckInValidVehicleID(model.VehicleId);
             if(check == true)
             {
