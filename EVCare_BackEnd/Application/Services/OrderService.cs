@@ -143,7 +143,7 @@ namespace Application.Services
             };
         }
         public async Task<StringBuilder> GetOrderPartViewModelsAsync(int orderId)
-        {
+        {   
             var orderparts = await _orderPartRepository.GetOrderPartViewModelAsync(orderId);
             var orderPartRows = new StringBuilder();
 
@@ -222,9 +222,10 @@ namespace Application.Services
                   
                 }
                 var newAppointmentParts = new List<AppointmentPartCondition>();
+                
                 foreach (var techId in model.OrderParts)
                 {
-                    var levelEnum = await _appointmentPartConditionRepository.GetAppointmentPartConditionsByTechIdAndOrderIdAsync(techId.PartId, techId.TechnicianId);
+                    var levelEnum = await _appointmentPartConditionRepository.GetAppointmentPartConditionsByTechIdAndOrderIdAsync(appointment.Id,techId.PartId, techId.TechnicianId);
                     newAppointmentParts.Add(new AppointmentPartCondition
                     {
                         AppointmentId = appointment.Id,
