@@ -17,5 +17,6 @@ namespace DataAccess.Interfaces {
         Task RemoveByAppointmentIdAsync(int id);
         Task UpdateAsync(AppointmentPartCondition appoimentPartConditions);
         Task<IEnumerable<AppointmentPartCondition>> GetAppointmentPartConditionsByTechIdAndAppointmentId(int appointmentId, int technicianId);
+        Task DeleteAppointmentPartConditionsByAppointmentIdAndOrderIdAndPartIdAsync(int id, int partId, int oldTechnicianId);
     }
 }
