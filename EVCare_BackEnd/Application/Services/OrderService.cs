@@ -437,12 +437,16 @@ namespace Application.Services
                     };
                     await _orderPartRepository.AddRange(new List<OrderPart> { newOrderPart });
                     var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
-                    var appointmentPartCondition = await _appointmentPartConditionRepository
-                    .GetAppointmentPartConditionsByTechIdAndPartIdAndAppointmentIdAsync(appointment.Id, orderPart.PartId, orderPart.OldTechnicianId);
-                    if (appointmentPartCondition != null) {
-                        appointmentPartCondition.TechicianId = orderPart.NewTechnicianId;
-                        
-                    }
+                    var levelEnum = await _appointmentPartConditionRepository
+                    .GetAppointmentPartConditionsByTechIdAndOrderIdAsync(appointment.Id, orderPart.PartId, orderPart.OldTechnicianId);
+                    await _appointmentPartConditionRepository.DeleteAppointmentPartConditionsByAppointmentIdAndOrderIdAndPartIdAsync(appointment.Id,orderPart.PartId, orderPart.OldTechnicianId);
+                    await _appointmentPartConditionRepository.CreateAppointmentPartConditionAsync(new AppointmentPartCondition
+                    {
+                        AppointmentId = appointment.Id,
+                        PartId = orderPart.PartId,
+                        TechicianId = orderPart.NewTechnicianId,
+                        Level = levelEnum ?? DamageLevelEnum.NotAssessed
+                    });
 
                 }
                 var listsIdDistinct = model.UpdateParts.Select(x => x.NewTechnicianId).Distinct().ToList();

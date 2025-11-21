@@ -88,5 +88,11 @@ namespace DataAccess.Repositories {
                 .Where(apc => apc.AppointmentId == appointmentId && apc.TechicianId == technicianId)
                 .ToListAsync();
         }
+
+        public async Task DeleteAppointmentPartConditionsByAppointmentIdAndOrderIdAndPartIdAsync(int id, int partId, int oldTechnicianId) {
+            await _dbcontext.AppointmentPartConditions
+                .Where(apc => apc.AppointmentId == id && apc.PartId == partId && apc.TechicianId == oldTechnicianId)
+                .ExecuteDeleteAsync();
+        }
     }
 }
