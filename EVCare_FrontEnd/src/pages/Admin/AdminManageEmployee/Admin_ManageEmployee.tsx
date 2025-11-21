@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import FilterBar from "../AdminManageEmployee/FilterBar";
 import EmployeeCard from "../AdminManageEmployee/EmployeeCard";
 import BanModal from "../AdminManageEmployee/BanModal";
@@ -136,6 +136,10 @@ const Admin_Manage_Employee: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return isLoading ? (
     <div

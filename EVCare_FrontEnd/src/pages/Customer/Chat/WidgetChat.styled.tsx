@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const WidgetChatStyleWrapper = styled.div`
-  .noti-widget-trigger {
+  .chat-widget-trigger {
     position: fixed;
     bottom: 24px;
     left: 24px;
