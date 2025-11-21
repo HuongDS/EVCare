@@ -16,6 +16,7 @@ describe("NameAndPhoneNumberSection", () => {
       first_Name: "Unit",
       last_Name: "Test01",
       phone: "0911111111",
+      techId: 1,
     };
     // ACT
     render(<NameAndPhoneNumberSection accountInfor={mockAccountInfor} />);
@@ -39,6 +40,7 @@ describe("NameAndPhoneNumberSection", () => {
       email: "test@example.com",
       first_Name: "Unit",
       last_Name: "Test01",
+      techId: 1,
     };
     // ACT
     render(<NameAndPhoneNumberSection accountInfor={mockAccountInfor} />);
