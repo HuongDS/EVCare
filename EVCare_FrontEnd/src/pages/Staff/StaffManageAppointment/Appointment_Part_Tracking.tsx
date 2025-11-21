@@ -144,6 +144,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
           quantity: part.quantity,
         })),
       };
+
       await updateOrder(newOrderUpdate);
 
       await updateOrderStatus({ orderID: data.orderId, status: "Processing" });

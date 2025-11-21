@@ -32,6 +32,11 @@ import { useFinishTechnicianSession } from "../../../services/TechnicianWorkingS
 import { useNotification } from "../../../context/useNotification";
 import PartReassignmentModal from "./PartReassignmentModal";
 import type { PartPendingUpdate } from "../../../models/OrderModel/UpdateOrderModel";
+import ShareParts from "./SharePartsModal";
+import {
+  EmployeeStatusEnum,
+  TechnicianWorkingSessionEnum,
+} from "../../../models/enums";
 
 interface props {
   close: () => void;
@@ -53,6 +58,7 @@ export default function Appointment_Reassign({ close, appointmentId }: props) {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isPartModalOpen, setIsPartModalOpen] = useState(false);
+  const [isShare, setIsShare] = useState(false);
   const [selectedTechnicianForParts, setSelectedTechnicianForParts] =
     useState<TechnicianModel<TechnicianSkills> | null>(null);
   const notification = useNotification();
@@ -76,9 +82,7 @@ export default function Appointment_Reassign({ close, appointmentId }: props) {
   const { data: pendingPart } = useGetPendingParts({
     orderId: appointmentDetail?.data?.orderId || 0,
     technicianIds:
-      appointmentDetail?.data?.technicians
-        .filter((tech) => tech.status === "OnLeave")
-        .map((tech) => tech.id) || [],
+      appointmentDetail?.data?.technicians.map((tech) => tech.id) || [],
   });
 
   if (isLoading) {
@@ -238,10 +242,15 @@ export default function Appointment_Reassign({ close, appointmentId }: props) {
         showProgress: true,
       });
 
-      if (selectedTechnicianForParts) {
+      if (selectedTechnicianForParts?.status === EmployeeStatusEnum.OnLeave) {
         await handleFinishSession([selectedTechnicianForParts.id]);
       }
+
+      await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
+      await queryClient.invalidateQueries({ queryKey: ["PendingParts"] });
+
       setIsPartModalOpen(false);
+      setIsShare(false);
       setSelectedTechnicianForParts(null);
     } catch (error) {
       notification.error({
@@ -254,17 +263,25 @@ export default function Appointment_Reassign({ close, appointmentId }: props) {
   };
 
   const activeTechs = appointment.technicians.filter(
-    (tech) => tech.workingSessionStatus !== "Completed"
+    (tech) =>
+      tech.workingSessionStatus !== TechnicianWorkingSessionEnum.COMPLETED
   );
-  // const onLeave = activeTechs.filter((tech) => tech.status === "OnLeave");
-  // const busy = activeTechs.filter((tech) => tech.status === "Busy");
+
+  const onLeave = activeTechs.filter(
+    (tech) => tech.status === EmployeeStatusEnum.OnLeave
+  );
+
+  const busy = activeTechs.filter(
+    (tech) => tech.status === EmployeeStatusEnum.Busy
+  );
+
   const techniciansLeave = activeTechs
-    .filter((tech) => tech.status === "OnLeave")
+    .filter((tech) => tech.status === EmployeeStatusEnum.OnLeave)
     .map((tech) => tech.id);
 
-  // const showFinish =
-  //   onLeave.length > 0 &&
-  //   (busy.length > 0 || onLeave.length < activeTechs.length);
+  const showFinish =
+    onLeave.length > 0 &&
+    (busy.length > 0 || onLeave.length === activeTechs.length);
 
   const handleSubmit = async () => {
     if (techniciansLeave.length > 0) {
@@ -291,13 +308,34 @@ export default function Appointment_Reassign({ close, appointmentId }: props) {
     }
   };
 
+  const handleShareParts = (technician?: TechnicianModel<TechnicianSkills>) => {
+    const isTechHasPendingPart = pendingPart?.data?.some(
+      (part) => part.technicianId === technician?.id
+    );
+    if (
+      technician?.status === EmployeeStatusEnum.Busy &&
+      technician.workingSessionStatus !==
+        TechnicianWorkingSessionEnum.COMPLETED &&
+      isTechHasPendingPart
+    ) {
+      setSelectedTechnicianForParts(technician);
+      setIsShare(true);
+    } else {
+      setSelectedTechnicianForParts(null);
+      setIsShare(false);
+    }
+  };
+
   const getTechnicianCountForService = (serviceId: number) => {
     return (
       selectedTechnicians.filter((tech) =>
         tech.technician.skills.some((skill) => skill.id === serviceId)
       ).length +
       appointment.technicians
-        .filter((tech) => tech.workingSessionStatus !== "Completed")
+        .filter(
+          (tech) =>
+            tech.workingSessionStatus !== TechnicianWorkingSessionEnum.COMPLETED
+        )
         .filter((tech) => tech.skills.some((skill) => skill.id === serviceId))
         .length
     );
@@ -347,9 +385,10 @@ export default function Appointment_Reassign({ close, appointmentId }: props) {
                       technician={assignment}
                       isPreviouslyAssigned
                       onFinishSession={() => checkAndFinishSession(assignment)}
-                      showFinish={assignment.status === "OnLeave"}
+                      showFinish={showFinish && assignment.status === "OnLeave"}
                       isFinishing={finishing}
                       hasIncompleteParts={technicianHasParts(assignment.id)}
+                      handleShareParts={() => handleShareParts(assignment)}
                     />
                   ))}
               </TechnicianGrid>
@@ -504,7 +543,24 @@ export default function Appointment_Reassign({ close, appointmentId }: props) {
           }}
           onConfirm={handlePartReassignmentConfirm}
           technician={selectedTechnicianForParts}
-          pendingParts={pendingPart?.data}
+          pendingParts={pendingPart?.data?.filter(
+            (part) => part.technicianId === selectedTechnicianForParts.id
+          )}
+          partReassigning={partReassigning}
+        />
+      )}
+
+      {selectedTechnicianForParts && isShare && (
+        <ShareParts
+          onClose={() => {
+            setIsPartModalOpen(false);
+            setSelectedTechnicianForParts(null);
+          }}
+          onConfirm={handlePartReassignmentConfirm}
+          technician={selectedTechnicianForParts}
+          pendingParts={pendingPart?.data?.filter(
+            (part) => part.technicianId === selectedTechnicianForParts.id
+          )}
           partReassigning={partReassigning}
         />
       )}
@@ -537,6 +593,7 @@ interface TechnicianCardProps {
   showFinish?: boolean;
   isFinishing?: boolean;
   hasIncompleteParts?: boolean;
+  handleShareParts?: () => void;
 }
 export const TechnicianCard = ({
   technician,
@@ -548,11 +605,22 @@ export const TechnicianCard = ({
   isPreviouslyAssigned = false,
   isFinishing = false,
   hasIncompleteParts = false,
+  handleShareParts,
 }: TechnicianCardProps) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
   const displayedSkills = showAllSkills
     ? technician.skills
     : technician.skills.slice(0, 3);
+  const isShare =
+    isPreviouslyAssigned &&
+    technician.status === EmployeeStatusEnum.Busy &&
+    technician.workingSessionStatus !==
+      TechnicianWorkingSessionEnum.COMPLETED &&
+    hasIncompleteParts;
+  const isFinishSession =
+    isPreviouslyAssigned &&
+    showFinish &&
+    technician.status === EmployeeStatusEnum.OnLeave;
 
   return (
     <TechnicianCardWrapper
@@ -654,23 +722,27 @@ export const TechnicianCard = ({
       {onAdd && (
         <ActionButton
           onClick={onAdd}
-          $disabled={technician.status !== "Available"}
-          disabled={technician.status !== "Available"}
+          $disabled={technician.status !== EmployeeStatusEnum.Available}
+          disabled={technician.status !== EmployeeStatusEnum.Available}
         >
           Add Technician
         </ActionButton>
       )}
 
-      {isPreviouslyAssigned &&
-        showFinish &&
-        technician.status === "OnLeave" &&
+      {isFinishSession &&
         (isFinishing ? (
-          <ColorSpinner width="2em" height="2em" />
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <ColorSpinner width="2em" height="2em" />
+          </div>
         ) : (
           <ActionButton onClick={onFinishSession}>
             {hasIncompleteParts ? "Reassign Parts & Finish" : "Finish Session"}
           </ActionButton>
         ))}
+
+      {isShare && (
+        <ActionButton onClick={handleShareParts}>Share Parts</ActionButton>
+      )}
     </TechnicianCardWrapper>
   );
 };

@@ -91,24 +91,12 @@ export default function WaitingAddingPart({ data }: Props) {
         )}
 
         <ProcessSteps>
-          <StepItem $active={true} $completed={true}>
-            <StepIcon>
-              <CheckCircle size={20} />
-            </StepIcon>
-            <StepText>
-              <StepTitle>Diagnosis Complete</StepTitle>
-              <StepDesc>Issue identified</StepDesc>
-            </StepText>
-          </StepItem>
-
-          <StepConnector $active={true} />
-
           <StepItem $active={true} $completed={false}>
             <StepIcon $pulse={true}>
               <Package size={20} />
             </StepIcon>
             <StepText>
-              <StepTitle>Adding Parts</StepTitle>
+              <StepTitle>Diagnosis Complete & Adding Parts</StepTitle>
               <StepDesc>In progress...</StepDesc>
             </StepText>
           </StepItem>
@@ -132,7 +120,6 @@ export default function WaitingAddingPart({ data }: Props) {
           </InfoIcon>
           <InfoText>
             <strong>What's happening?</strong>
-            <br />
             Technicians are reviewing the vehicle and adding necessary parts to
             the order. Once they complete this step, staff will review and
             confirm the parts list.
