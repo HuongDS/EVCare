@@ -143,7 +143,7 @@ namespace Application.Services
             };
         }
         public async Task<StringBuilder> GetOrderPartViewModelsAsync(int orderId)
-        {
+        {   
             var orderparts = await _orderPartRepository.GetOrderPartViewModelAsync(orderId);
             var orderPartRows = new StringBuilder();
 
@@ -222,9 +222,10 @@ namespace Application.Services
                   
                 }
                 var newAppointmentParts = new List<AppointmentPartCondition>();
+                
                 foreach (var techId in model.OrderParts)
                 {
-                    var levelEnum = await _appointmentPartConditionRepository.GetAppointmentPartConditionsByTechIdAndOrderIdAsync(techId.PartId, techId.TechnicianId);
+                    var levelEnum = await _appointmentPartConditionRepository.GetAppointmentPartConditionsByTechIdAndOrderIdAsync(appointment.Id,techId.PartId, techId.TechnicianId);
                     newAppointmentParts.Add(new AppointmentPartCondition
                     {
                         AppointmentId = appointment.Id,
@@ -421,15 +422,32 @@ namespace Application.Services
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 foreach (var orderPart in model.UpdateParts) {
+                    var existingOrderPart = await _orderPartRepository.GetOrderPartByOrderIdAndPartId(model.OrderId, orderPart.PartId, orderPart.OldTechnicianId);
                     await _orderPartRepository.DeleteAsync(model.OrderId, orderPart.PartId, orderPart.OldTechnicianId);
                     var newOrderPart = new OrderPart
                     {
                         OrderId = model.OrderId,
                         PartId = orderPart.PartId,
                         TechnicianId = orderPart.NewTechnicianId,
+                        Quantity = existingOrderPart.Quantity,
+                        Price = existingOrderPart.Price,
+                        ReplacementPrice = existingOrderPart.ReplacementPrice,
+                        IsReplaced = existingOrderPart.IsReplaced
+
                     };
                     await _orderPartRepository.AddRange(new List<OrderPart> { newOrderPart });
-                   
+                    var appointment = await _appointmentRepository.GetByOrderIdAsync(model.OrderId);
+                    var levelEnum = await _appointmentPartConditionRepository
+                    .GetAppointmentPartConditionsByTechIdAndOrderIdAsync(appointment.Id, orderPart.PartId, orderPart.OldTechnicianId);
+                    await _appointmentPartConditionRepository.DeleteAppointmentPartConditionsByAppointmentIdAndOrderIdAndPartIdAsync(appointment.Id,orderPart.PartId, orderPart.OldTechnicianId);
+                    await _appointmentPartConditionRepository.CreateAppointmentPartConditionAsync(new AppointmentPartCondition
+                    {
+                        AppointmentId = appointment.Id,
+                        PartId = orderPart.PartId,
+                        TechicianId = orderPart.NewTechnicianId,
+                        Level = levelEnum ?? DamageLevelEnum.NotAssessed
+                    });
+
                 }
                 var listsIdDistinct = model.UpdateParts.Select(x => x.NewTechnicianId).Distinct().ToList();
                 foreach (var techId in listsIdDistinct) { 
@@ -446,9 +464,12 @@ namespace Application.Services
                         OrderId = model.OrderId,
                         TechnicianId = techId,
                         StartTime = DateTime.UtcNow.AddHours(7),
-                        Status = TechnicianWorkingSessionEnum.InProgress
+                        Status = TechnicianWorkingSessionEnum.InProgress,
+                        EndTime = null
                     });
                 }
+
+
             });
 
             foreach (var orderPart in model.UpdateParts) {

@@ -62,10 +62,10 @@ namespace DataAccess.Repositories {
 
         }
 
-        public async Task<DamageLevelEnum?> GetAppointmentPartConditionsByTechIdAndOrderIdAsync(int partId, int technicianId) {
+        public async Task<DamageLevelEnum?> GetAppointmentPartConditionsByTechIdAndOrderIdAsync(int appointmentId,int partId, int technicianId) {
             
             return await _dbcontext.AppointmentPartConditions
-                .Where(apc => apc.PartId == partId && apc.TechicianId == technicianId)
+                .Where(apc => apc.PartId == partId && apc.TechicianId == technicianId && apc.AppointmentId == appointmentId)
                 .Select(apc => apc.Level)
                 .FirstOrDefaultAsync();
 
@@ -87,6 +87,12 @@ namespace DataAccess.Repositories {
             return await _dbcontext.AppointmentPartConditions
                 .Where(apc => apc.AppointmentId == appointmentId && apc.TechicianId == technicianId)
                 .ToListAsync();
+        }
+
+        public async Task DeleteAppointmentPartConditionsByAppointmentIdAndOrderIdAndPartIdAsync(int id, int partId, int oldTechnicianId) {
+            await _dbcontext.AppointmentPartConditions
+                .Where(apc => apc.AppointmentId == id && apc.PartId == partId && apc.TechicianId == oldTechnicianId)
+                .ExecuteDeleteAsync();
         }
     }
 }
