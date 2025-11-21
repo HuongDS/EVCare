@@ -35,14 +35,15 @@ import {
   AssignmentPill,
   RemoveAssignmentButton,
   AssignmentDetails,
+  KPI,
   TechnicianCardDetail,
   CardLeft,
-  KPI,
 } from "./styles/PartReassignmentModal.styled";
 import type { PartPendingDto } from "../../../models/PartModel/PartModel";
 import { useGetTechnicianForPendingParts } from "../../../services/appointmentServiceApi";
 import type { PartPendingUpdate } from "../../../models/OrderModel/UpdateOrderModel";
 import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
+import { useNotification } from "../../../context/useNotification";
 
 interface PartReassignmentModalProps {
   onClose: () => void;
@@ -53,7 +54,7 @@ interface PartReassignmentModalProps {
   pendingParts?: PartPendingDto[];
 }
 
-export default function PartReassignmentModal({
+export default function ShareParts({
   onClose,
   onConfirm,
   technician,
@@ -63,6 +64,7 @@ export default function PartReassignmentModal({
 }: PartReassignmentModalProps) {
   const [searchTechPart, setSearchTechPart] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const notification = useNotification();
 
   const { data: availableTechnicians, isLoading: isSearching } =
     useGetTechnicianForPendingParts({
@@ -106,29 +108,28 @@ export default function PartReassignmentModal({
     });
   };
 
-  const allPartsReassigned = pendingParts?.every((part) =>
-    reassignments.has(part.id)
-  );
-
   const handleConfirm = async () => {
-    if (!pendingParts || !allPartsReassigned) return;
-
-    const reassignmentData: PartPendingUpdate[] = pendingParts.map((part) => {
-      const newTechId = reassignments.get(part.id);
-      if (!newTechId) throw new Error(`Part ${part.id} is unassigned.`);
-
-      return {
-        partId: part.id,
-        oldTechnicianId: technician.id,
-        newTechnicianId: newTechId,
-      };
-    });
+    const reassignmentData: PartPendingUpdate[] =
+      pendingParts
+        ?.filter((part) => {
+          const newTechId = reassignments.get(part.id);
+          return newTechId && newTechId !== technician.id;
+        })
+        .map((part) => ({
+          partId: part.id,
+          oldTechnicianId: technician.id,
+          newTechnicianId: reassignments.get(part.id)!,
+        })) || [];
 
     try {
-      await onConfirm(reassignmentData);
-      onClose();
+      onConfirm(reassignmentData);
     } catch (error) {
-      console.error("Failed to reassign parts in modal:", error);
+      notification.error({
+        message: "Re-Assign Technician Fail",
+        description:
+          (error as Error).message || "Failed to re-assign technicians",
+        showProgress: true,
+      });
     }
   };
 
@@ -148,10 +149,7 @@ export default function PartReassignmentModal({
     <ModalOverlay onClick={onClose}>
       <ModalContainer onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
-          <ModalTitle>
-            <AlertTriangle size={24} color="#ff9800" />
-            Unfinished Parts Detected
-          </ModalTitle>
+          <ModalTitle>Sharing Parts</ModalTitle>
           <CloseButton onClick={onClose}>
             <X size={24} />
           </CloseButton>

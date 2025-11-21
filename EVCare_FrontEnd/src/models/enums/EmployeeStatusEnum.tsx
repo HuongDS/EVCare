@@ -1,4 +1,3 @@
-//EmployeeStatus
 export enum EmployeeStatusEnum {
   Available = "Available",
   Busy = "Busy",

@@ -7,7 +7,6 @@ import type {
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { useQueryClient } from "@tanstack/react-query";
-import SpinnerComponent from "../../../components/SpinnerComponent";
 import { useState } from "react";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
@@ -77,7 +76,6 @@ export default function Appointment_CheckIn({ data, close }: Props) {
       }
       setModalMessage(APPOINTMENT_MESSAGE.APPOINTMENT_CHECKIN_SUCCESS);
       setIsCheckInSuccessOpen(true);
-      await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
     } catch (error) {
       setTitle("Create Order Failed");
       setModalMessage(String(error));
@@ -120,8 +118,12 @@ export default function Appointment_CheckIn({ data, close }: Props) {
     }
   };
 
-  const handleCloseModal = () => {
+  const handleCloseErrorModal = () => {
     setIsErrorModalOpen(false);
+  };
+
+  const handleCloseSuccessModal = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["AppointmentDetail"] });
   };
 
   return (
@@ -221,7 +223,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
         <ActionButtons>
           {isPending ? (
             <SpinnerWrapper>
-              <SpinnerComponent />
+              <ColorSpinner width="3em" height="3em" />
             </SpinnerWrapper>
           ) : (
             <>
@@ -242,7 +244,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
         <SuccessModal
           header="Check In"
           message={modalMessage}
-          action={() => setIsCheckInSuccessOpen(false)}
+          action={handleCloseSuccessModal}
         />
       )}
       {isCancelSuccessOpen && (
@@ -256,7 +258,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
         <FailedModal
           header={title}
           message={modalMessage}
-          action={handleCloseModal}
+          action={handleCloseErrorModal}
         />
       )}
       {confirm && (
@@ -298,3 +300,4 @@ import {
   VehicleImage,
 } from "./styles/Appointment_CheckIn.styled";
 import { formatPlateNumber } from "../../../utils/formatPlateNumber";
+import ColorSpinner from "../StaffComponents/ColorSpinner";

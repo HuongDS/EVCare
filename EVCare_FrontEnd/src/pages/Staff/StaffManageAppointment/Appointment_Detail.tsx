@@ -213,7 +213,9 @@ export default function Appointment_Detail({
 
           <ActionsCard>
             {isPending ? (
-              <ColorSpinner width="2em" height="2em" />
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <ColorSpinner width="3em" height="3em" />
+              </div>
             ) : (
               <ButtonGroup>
                 <BackButton onClick={() => setIsOpen(false)}>Back</BackButton>
