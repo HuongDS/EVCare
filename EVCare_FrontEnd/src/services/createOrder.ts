@@ -1,4 +1,3 @@
-// createOrder.ts
 import { api } from "../api/api";
 import type {
   ResponseDto,
