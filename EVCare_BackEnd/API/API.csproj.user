@@ -4,6 +4,6 @@
     <ActiveDebugProfile>https</ActiveDebugProfile>
     <Controller_SelectedScaffolderID>ApiControllerEmptyScaffolder</Controller_SelectedScaffolderID>
     <Controller_SelectedScaffolderCategoryPath>root/Common/Api</Controller_SelectedScaffolderCategoryPath>
-    <NameOfLastUsedPublishProfile>D:\TaiLieu_FA25\SWP391\evcare\evcare\EVCare_BackEnd\API\Properties\PublishProfiles\FTPProfile.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\FPT\CN5\SWP\EVCare\EVCare\.github\workflows\main_evcare.yml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

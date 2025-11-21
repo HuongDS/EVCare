@@ -1,0 +1,51 @@
+import { Download } from "lucide-react";
+import styled from "styled-components";
+
+interface DownloadButtonProps {
+  action: () => void;
+  text: string;
+}
+export const DownloadButton = ({ action, text }: DownloadButtonProps) => {
+  return (
+    <PrintButtonWrapper>
+      <ButtonContainer>
+        <Download />
+        <button onClick={action}>{text}</button>
+      </ButtonContainer>
+    </PrintButtonWrapper>
+  );
+};
+
+const PrintButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 10px;
+`;
+
+const ButtonContainer = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  border: none;
+  background: linear-gradient(135deg, #00ad4e 0%, #75e76f 100%);
+  color: white;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Outfit", sans-serif;
+  box-shadow: 0 6px 20px rgba(124, 234, 102, 0.4);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(109, 234, 102, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;

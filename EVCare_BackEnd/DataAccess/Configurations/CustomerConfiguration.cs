@@ -18,14 +18,14 @@ namespace DataAccess.Configuration
                 .WithOne(x => x.Customer)
                 .HasForeignKey<Customer>(x => x.AccountId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+           
             builder.HasData(
                 new Customer
                 {
                     Id = 1,
                     AccountId = 3,
                     Address = "123 Main St, Anytown, USA",
-                    Rank = Enums.CustomerRankEnum.Member
+                    Rank = Enums.CustomerRankEnum.MEMBER
                 }
                 );
 

@@ -7,15 +7,28 @@ interface Props {
 }
 
 function NameAndPhoneNumberComponent({ accountInfor }: Props) {
+  let displayName;
+  let displayPhone = "default";
+
+  if (accountInfor) {
+    displayName = accountInfor.first_Name + " " + accountInfor.last_Name;
+    if (accountInfor.phone) {
+      displayPhone = accountInfor.phone;
+    }
+  } else {
+    displayName = "Customer";
+  }
+
+  /* istanbul ignore next */
   return (
     <>
       <FormGroup>
-        <Label>Name</Label>
-        <Input type="text" disabled defaultValue={accountInfor?.first_Name + " " + accountInfor?.last_Name} />
+        <Label htmlFor="name-input">Name</Label>
+        <Input id="name-input" type="text" disabled defaultValue={displayName} />
       </FormGroup>
       <FormGroup>
-        <Label>Phone Number</Label>
-        <Input type="tel" disabled defaultValue={accountInfor?.phone} />
+        <Label htmlFor="phone-input">Phone Number</Label>
+        <Input id="phone-input" type="tel" disabled defaultValue={displayPhone} />
       </FormGroup>
     </>
   );

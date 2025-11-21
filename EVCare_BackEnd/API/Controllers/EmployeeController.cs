@@ -1,8 +1,14 @@
-﻿using Application.Dtos;
+﻿using API.Filters;
+using Application.DomainEvents;
+using Application.Dtos;
 using Application.Infrastructures;
 using Application.Interfaces;
+using Application.Services;
 using DataAccess.Dtos.Appointment;
+using DataAccess.Dtos.Employees;
 using DataAccess.Dtos.Others;
+using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Technician;
 using DataAccess.Dtos.Technicians;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,18 +18,30 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Staff")]
+    // [Authorize(Roles = "Staff")]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeServices _employeeServices;
         private readonly IAppointmentService _appointmentService;
+        private readonly ITechnicianWorkingSessionService _technicianWorkingSessionService;
+        private readonly OnAssignTechnician _onAssignTechnician;
+        private readonly IAccountService _accountService;
 
-        public EmployeeController(IEmployeeServices employeeServices, IAppointmentService appointmentService)
+        public EmployeeController(
+            IEmployeeServices employeeServices,
+            IAppointmentService appointmentService,
+            ITechnicianWorkingSessionService technicianWorkingSessionService,
+            OnAssignTechnician onAssignTechnician,
+            IAccountService accountService)
         {
             this._employeeServices = employeeServices;
             this._appointmentService = appointmentService;
+            _technicianWorkingSessionService = technicianWorkingSessionService;
+            _onAssignTechnician = onAssignTechnician;
+            _accountService = accountService;
         }
         [HttpGet("check-slots")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> CheckSlotsAsync()
         {
             var (resultUsedSlots, resultTotalSlots) = await _employeeServices.CheckSlotsAsync();
@@ -39,6 +57,7 @@ namespace API.Controllers
             });
         }
         [HttpPost("assign-technician")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> AssignTechnicianToOrder(AssignTechnicianDto data)
         {
             var (usedSlots, totalSlots) = await _employeeServices.CheckSlotsAsync();
@@ -59,7 +78,40 @@ namespace API.Controllers
                 data = null
             });
         }
+
+        [HttpPost("assign-technicians")]
+        [Authorize(Roles = "Staff")]
+
+        public async Task<IActionResult> AssignTechniciansToOrder(AssignTechniciansModel model)
+        {
+            try
+            {
+                await _technicianWorkingSessionService.AddTechnicianToOrder(model);
+                var accountTechIds = await _accountService.GetAccountIdByTechnicianIds(model.TechnicianIds);
+                var accountTechIdStrings = accountTechIds.Select(a => a.ToString());
+                await _onAssignTechnician.HandleAsync(accountTechIdStrings);
+                return Ok(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.CREATED,
+                    message = Message.ADD_TECHNICIAN_SUCCESSFULLY,
+                }
+                );
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message
+                });
+            }
+        }
         [HttpPost("update-appointment-date")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> UpdateAppointmentDate(AppointmentUpdateDateDto data)
         {
             try
@@ -81,6 +133,110 @@ namespace API.Controllers
                     data = null
                 });
             }
+        }
+
+        [HttpGet("get-employee-id")]
+        [Authorize(Roles = "Staff,Technician")]
+        [ServiceFilter(typeof(SetAccountIdFilter))]
+        public async Task<IActionResult> GetEmployeeId()
+        {
+            try
+            {
+                int accountId = (int)HttpContext.Items["AccountId"];
+                var employeeId = await _employeeServices.GetEmployeeIdByAccountId(accountId);
+                return Ok(new ResponseDto<int>
+                {
+                    data = employeeId,
+                    message = "Get employee id sucessfully",
+                    statusCode = HttpStatus.OK
+                });
+
+
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST
+                });
+
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllEmployees([FromQuery] EmployeeQueryDto query)
+        {
+            try
+            {
+                var employees = await _employeeServices.GetAllEmployeesAsync(query);
+                return Ok(new ResponseDto<PageResultDto<EmployeeViewModel>>
+                {
+                    data = employees,
+                    message = Message.EMPLOYEE_GET_SUCCESSFULLY,
+                    statusCode = HttpStatus.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST
+                });
+            }
+        }
+
+        [HttpGet("admin-get-employee-id")]
+        [Authorize(Roles = "Admin, Customer")]
+        public async Task<IActionResult> GetAllEmployees([FromQuery] int employeeId)
+        {
+            try
+            {
+                var employees = await _employeeServices.GetEmployeeInformation(employeeId);
+                return Ok(new ResponseDto<EmployeeViewModel>
+                {
+                    data = employees,
+                    message = Message.EMPLOYEE_GET_SUCCESSFULLY,
+                    statusCode = HttpStatus.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST
+                });
+            }
+        }
+
+        [HttpGet("customer/{employeeId}")]
+        [Authorize]
+        public async Task<IActionResult> GetEmployeeDetails(int employeeId)
+        {
+            try
+            {
+                var employee = await _employeeServices.GetEmployeeDetailsByIdAsync(employeeId);
+                return Ok(new ResponseDto<EmployeeCustomerViewModel>
+                {
+                    data = employee,
+                    message = Message.EMPLOYEE_GET_SUCCESSFULLY,
+                    statusCode = HttpStatus.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST
+                });
+            }
+
+
         }
     }
 }

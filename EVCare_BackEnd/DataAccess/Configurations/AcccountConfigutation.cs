@@ -18,7 +18,7 @@ namespace DataAccess.Configuration
             builder.Property(x => x.Email).IsRequired().HasMaxLength(100);
             builder.Property(x => x.First_Name).IsRequired().HasMaxLength(50);
             builder.Property(x => x.Last_Name).IsRequired().HasMaxLength(50);
-            builder.Property(x => x.Phone).IsRequired().HasMaxLength(11);
+            builder.Property(x => x.Phone).IsRequired(false).HasMaxLength(11);
             builder.Property(x => x.Create_At).HasDefaultValueSql("GETDATE()");
             builder.Property(x => x.Updated_At).HasDefaultValueSql("GETDATE()");
             builder.HasIndex(x => x.Email).IsUnique();
@@ -28,7 +28,7 @@ namespace DataAccess.Configuration
             //       .WithOne(e=>e.Account)
             //       .HasForeignKey<Employee>(e=>e.AccountId)
             //       .OnDelete(DeleteBehavior.Cascade);
-
+            builder.HasIndex(x => new { x.First_Name, x.Last_Name });
 
 
             builder.HasData(

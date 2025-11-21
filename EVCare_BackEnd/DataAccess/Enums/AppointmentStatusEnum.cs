@@ -11,7 +11,9 @@ namespace DataAccess.Enums
         Pending,
         Confirmed,
         CheckedIn,
+        AddingPart,
         InProgress,
+        ReadyForPickup,
         Done,
         Canceled
     }

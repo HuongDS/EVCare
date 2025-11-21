@@ -27,7 +27,7 @@ namespace API.Controllers
             {
                 var data = await _service.GetServicesWithPaginationAsync(model);
 
-                return Ok(new ResponseDto<PageResultDto<ServiceViewModel>>
+                return Ok(new ResponseDto<PageResultDto<ServiceViewDetailModel>>
                 {
                     statusCode = HttpStatus.OK,
                     message = Message.GET_SERVICE_SUCCESSFULLY,
@@ -64,7 +64,8 @@ namespace API.Controllers
                     data = data
                 });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
 
                 return BadRequest(new ResponseDto<object>
@@ -72,15 +73,15 @@ namespace API.Controllers
                     data = null,
                     statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message
-           
+
                 });
-            
+
             }
         }
-        
-        
+
+
         [HttpPost()]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddAService(ServicePostModel model)
         {
             try
@@ -92,14 +93,14 @@ namespace API.Controllers
                     message = Message.ADD_SERVICE_SUCCESSFULLY,
                     data = data
                 });
-                
+
             }
             catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.ADD_SERVICE_FALL,
+                    message = ex.Message,
                     data = null
                 });
             }
@@ -112,7 +113,7 @@ namespace API.Controllers
             try
             {
                 if (serviceId <= 0) throw new Exception();
-                _service.DeleteAService(serviceId);
+                await _service.DeleteAService(serviceId);
                 return Ok(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.NO_CONTENT,
@@ -121,7 +122,8 @@ namespace API.Controllers
                 });
 
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
@@ -133,7 +135,7 @@ namespace API.Controllers
         }
         [HttpPut()]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult>UpdateAService(ServicePutModel model)
+        public async Task<IActionResult> UpdateAService(ServicePutModel model)
         {
             try
             {
@@ -145,12 +147,13 @@ namespace API.Controllers
                     message = Message.UPDATE_SUCCESS
                 });
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<int>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.UPDATE_FAIL,
+                    message = ex.Message,
                     data = model.Id,
                 });
 

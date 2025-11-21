@@ -1,4 +1,4 @@
-import type { ServicesResponseDto } from "../ServicesModel/Customer_Services_Model";
+import type { TechnicianWorkingSessionEnum } from "../enums";
 
 export type ResponseDto<T> = {
   statusCode: number;
@@ -21,7 +21,90 @@ export type TechnicianAppointmentsDto = {
   customerName: string;
   phoneNumber: string;
   licensePlate: string;
-  services: ServicesResponseDto[];
-  parts: string[];
-  status: number;
+  services: string[];
+  parts: {
+    technicianId: number;
+    technicianName: string;
+    id: number;
+    name: string;
+    quantity: number;
+    price: number;
+    imageUrl: string;
+    partStatus: string;
+  }[];
+  status: TechnicianWorkingSessionEnum;
+  appointmentImages: string[];
+  orderId: number;
+};
+
+export type TechnicianModel<T> = {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  expYears: number;
+  status: string;
+  workingSessionStatus: string;
+  kpiPerDays: number;
+  completedOrders: number;
+  skills: T[];
+  avatar?: string;
+};
+
+export type TechnicianModelPendingPart<T> = {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  expYears: number;
+  status: string;
+  kpiPerDays: number;
+  completedOrders: number;
+  workingSessionStatus: string;
+  parts: T[];
+};
+
+export type GetTechnicianParams = {
+  FullName?: string;
+  Status?: string;
+  Skills?: number[];
+  PageSize?: number;
+  PageIndex?: number;
+  SortField?: string;
+  SortOrder?: string;
+};
+
+export type GetTechncianForPendingPartsParams = {
+  keyWord?: string;
+  partIds?: number[];
+  pageSize?: number;
+  pageIndex?: number;
+  sortField?: string;
+  sortOrder?: string;
+};
+
+export type TechnicianSkills = {
+  id: number;
+  name: string;
+};
+
+export type AssignTechnicianParams = {
+  orderId: number;
+  technicianIds: number[];
+  status: string;
+};
+
+export type ServiceViewModel = {
+  serviceId: number;
+  serviceName: string;
+};
+
+export type GetPartsInServicesParams = {
+  serviceIds?: number[];
+  appointmentId?: number;
+  keyWord?: string;
+  pageSize?: number;
+  pageIndex?: number;
+  sortField?: string[];
+  sortOrder?: string[];
 };

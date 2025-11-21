@@ -17,13 +17,20 @@ namespace DataAccess
         public DbSet<VehiclesCategory> VehiclesCategories { get; set; }
         public DbSet<TechnicianSkill> TechnicianSkills { get; set; }
         public DbSet<Account> Accounts { get; set; }
-        public DbSet<TechnicianCategory> TechnicianCategories { get; set; }
+        public DbSet<ServiceCategory> ServiceCategories
+        {
+            get; set;
+        }
+        public DbSet<ServicePart> ServiceParts { get; set; }
+        public DbSet<VehiclePartCompatibility> VehiclePartCompatibilities { get; set; }
+        public DbSet<AppointmentPartCondition> AppointmentPartConditions { get; set; }
+        public DbSet<PartHistory> PartHistories { get; set; }
         public DbSet<Technician> Technicians { get; set; }
-        //public DbSet<ServiceCategory> ServiceCategories { get; set; }
+     
         public DbSet<Service> Services { get; set; }
         public DbSet<PartCategory> PartCategories { get; set; }
         public DbSet<Part> Parts { get; set; }
-        public DbSet<Salary> Salaries { get; set; }
+        
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Appointmentimage> AppointmentImages { get; set; }
@@ -32,13 +39,14 @@ namespace DataAccess
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<AppointmentService> AppointmentServices { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        public DbSet<ReviewEmployee> ReviewEmployees { get; set; }
+        
         public DbSet<Order> Orders { get; set; }
         public DbSet<TechnicianWorkingSession> TechnicianWorkingSessions { get; set; }
         public DbSet<OrderPart> OrderParts { get; set; }
-        public DbSet<Alert> Alerts { get; set; }
+     
         public DbSet<Invoice> Invoices { get; set; }
         DatabaseFacade Database { get; }
+        public DbSet<OrderDetailLog> OrderDetailLogs { get; set; }
         public Task<int> SaveChangesAsync();
     }
 }

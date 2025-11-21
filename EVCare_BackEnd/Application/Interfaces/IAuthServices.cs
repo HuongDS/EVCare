@@ -22,7 +22,8 @@ namespace Application.Interfaces
         Task<AccountResponseDto> RegisterAccountAsync(RegisterRequestDto data);
         Task<ResponseDto<RegisterResponseDto>> RegisterAsync(RegisterRequestDto data);
         Task RegisterCustomerAsync(AccountResponseDto account);
-        Task RegisterEmployeeOrTechnicianAsync(AccountResponseDto account, EmployeeRegisterDto data);
+        Task<int> RegisterEmployeeOrTechnicianAsync(EmployeeRegisterDto data);
+
         Task ResetPassword(ResetPasswordRequestDto data);
         Task<RegisterRequestDto> ValidateInfo(RegisterRequestDto data);
         Task<AccountResponseDto> VerifyRegisterAsync(string email);

@@ -40,14 +40,14 @@ namespace DataAccess.Repositories
             return await _dbSet.Skip((payindex - 1) * payload).Take(payload).ToListAsync();
         }
 
-        public async Task<T> AddAsync(T entity)
+        public virtual async Task<T> AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
             return entity;
         }
 
-        public async Task<T> UpdateAsync(T entity)
+        public virtual async Task<T> UpdateAsync(T entity)
         {
             _dbSet.Update(entity);
             await _dbContext.SaveChangesAsync();
@@ -66,6 +66,10 @@ namespace DataAccess.Repositories
             {
                 throw new Exception($"Entity with id = {id} is not found.");
             }
+        }
+
+        public async Task SaveChangesAsync() {
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

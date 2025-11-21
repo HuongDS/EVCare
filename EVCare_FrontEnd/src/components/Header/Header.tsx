@@ -1,41 +1,61 @@
 import logo from "../../assets/EVCare.png";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; // (NEW) Đã thêm `useState`
 import { Link, useNavigate } from "react-router";
-import Authentication from "../../pages/Shared/Auth/Authentication";
-import { Navbar, Logo, Menu, Buttons, SearchBar } from "./Header.styled";
+import { Navbar, Logo, Menu, Buttons } from "./Header.styled";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../states/store";
-import { Dropdown, DropdownButton } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 import { AiOutlineMenu } from "react-icons/ai";
 import { deleteToken, logout } from "../../services/authService";
 import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
 import { logoutRedux } from "../../states/authSlice";
-import { openLogin } from "../../states/uiSlice";
+import { closeModel3d, openLogin } from "../../states/uiSlice";
 import { handleError } from "../../utils/errorHandler";
+import DropdownMenu from "./DropdownMenu";
+import { stopAdminDashboardConnection } from "../../signalr/adminConnection";
+import { stopStaffDashboardConnection } from "../../signalr/staffConnection";
+import { stopChatConnection } from "../../signalr/chatConnection";
+import { stopTechnicianConnection } from "../../signalr/technicianConnection";
+import { ChristmasTheme } from "../XmasTheme/ChristmasTheme";
+import ThemeToggleRound from "../XmasTheme/ButtonTheme";
 
 export default function Header() {
   // const [showAuth, setShowAuth] = useState(false);
-  const [tongle, setTongle] = useState(false);
+  // const [tongle, setTongle] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const [enabled, setEnabled] = useState(false);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 750);
   const dispatch = useDispatch<AppDispatch>();
+
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 750);
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
-      setTongle(true);
+      // setTongle(true);
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     setShowAuth(false);
-  //   }
-  // }, [isAuthenticated]);
 
   const handleLogout = async () => {
     const response = await logout();
@@ -48,63 +68,88 @@ export default function Header() {
     }
     deleteToken();
     dispatch(logoutRedux());
+    dispatch(closeModel3d());
+    await stopAdminDashboardConnection();
+    await stopStaffDashboardConnection();
+    await stopChatConnection();
+    await stopTechnicianConnection();
     navigate("/");
   };
 
+  const dropdownTitle = <AiOutlineMenu />;
+
+  const onClickService = () => {
+    navigate("/service");
+  };
+
+  const onClickAbout = () => {
+    navigate("/about");
+  };
+
+  const onClickContact = () => {
+    navigate("/contact");
+  };
+
+  const onClickReview = () => {
+    navigate("/review");
+  };
+
+  const mobileMenu: any = isMobile ? (
+    <Buttons>
+      <Dropdown>
+        <Dropdown.Toggle id="dropdown-item-button" variant="light">
+          {dropdownTitle}
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          <Dropdown.Item onClick={onClickService}>Services</Dropdown.Item>
+          <Dropdown.Item onClick={onClickAbout}>About Us</Dropdown.Item>
+          <Dropdown.Item onClick={onClickContact}>Contacts</Dropdown.Item>
+          <Dropdown.Item onClick={onClickReview}>Reviews</Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    </Buttons>
+  ) : null;
+
   return (
-    <Navbar>
+    <Navbar $isScrolled={isScrolled}>
+      {user?.role === "Customer" && <ChristmasTheme enabled={enabled} />}
       <Logo>
         <Link to="/">
           <img src={logo} alt="EVCare logo" />
         </Link>
       </Logo>
 
-      <SearchBar>
-        <input type="text" placeholder="Search service..." />
-        <button>
-          <i className="bi bi-search"></i>
-        </button>
-      </SearchBar>
-
       <Menu>
-        <Link to="/" className="active">
-          Home
-        </Link>
-        <Link to="/service">Service</Link>
+        <Link to="/">Home</Link>
+        <Link to="/service">Services</Link>
         <Link to="/about">About</Link>
+        <Link to="/policy">Policies</Link>
         <Link to="/contact">Contact</Link>
+        <Link to="/review">Reviews</Link>
       </Menu>
       {isAuthenticated ? (
-        <Buttons typeof="submit" onClick={handleLogout}>
-          <button className="btn btn-fill">Log Out</button>
-        </Buttons>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <DropdownMenu handleLogout={handleLogout} />
+          <ThemeToggleRound enabled={enabled} setEnabled={setEnabled} />
+        </div>
       ) : (
         <Buttons>
-          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
+          <button
+            className="btn btn-fill"
+            onClick={() => dispatch(openLogin())}
+          >
             Get Started
           </button>
         </Buttons>
       )}
 
-      {isMobile ? (
-        <Buttons>
-          {tongle && (
-            <DropdownButton id="dropdown-item-button" title={<AiOutlineMenu />}>
-              <Dropdown.Item as="button" onClick={() => navigate("/service")}>
-                Service
-              </Dropdown.Item>
-              <Dropdown.Item as="button" onClick={() => navigate("/about")}>
-                About Us
-              </Dropdown.Item>
-              <Dropdown.Item as="button" onClick={() => navigate("/contact")}>
-                Contact
-              </Dropdown.Item>
-            </DropdownButton>
-          )}
-        </Buttons>
-      ) : undefined}
-
-      <Authentication />
+      {mobileMenu}
     </Navbar>
   );
 }

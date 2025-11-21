@@ -9,7 +9,6 @@ namespace DataAccess.Dtos.Part
     public class PartUpdateModel
     {
         public int Id { get; set; }
-        public string Name { get; set; }
         public int Quantity { get; set; }
     }
 }

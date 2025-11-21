@@ -30,42 +30,52 @@ namespace DataAccess.Repositories
 
         public async Task<OrderViewModel> GetOrderDetailAsync(int orderId)
         {
+            
             var query = await _dbSet.AsNoTracking().Where(x => x.Id == orderId)
-                .Include(x => x.OrderParts).ThenInclude(x => x.Part)
+                
+                .Include(x=>x.OrderParts)
+                  .ThenInclude(x=>x.Technician)
+                   .ThenInclude(x=>x.Employee)
+                    .ThenInclude(x=>x.Account)
+                  .Include(x=>x.Appointment).ThenInclude(x=>x.AppointmentPartConditions)
                 .Select(x => new OrderViewModel
                 {
                     Id = x.Id,
-                    Parts = x.OrderParts.Select(x => new Dtos.Part.PartTechnicianViewModel
+                    Parts = x.OrderParts.
+                    Select(a => new Dtos.Part.PartTechnicianViewModel
                     {
-                        Id = x.PartId,
-                        ImageUrl = x.Part.Image,
-                        Name = x.Part.Name,
-                        Price = x.Price,
-                        Quantity = x.Quantity,
-                        TechnicianId = x.TechnicianId,
+                        Id = a.PartId,
+                        ImageUrl = a.Part.Image,
+                        Name = a.Part.Name,
+                        Price = a.Price,
+                        Quantity = a.Quantity,
+                        TechnicianId = a.TechnicianId,
+                        TechnicianName = a.Technician.Employee.Account.First_Name+" " +a.Technician.Employee.Account.Last_Name,
+                        ReplacementPrice = a.Part.ReplacementPrice,
+                        Stock = a.Part.Stock,
+                        PartStatus = x.Appointment.AppointmentPartConditions.Where(apc=>apc.PartId == a.PartId).Select(b=>b.Level).FirstOrDefault()
+                        
                     }),
-                    Price = x.OrderParts.Sum(x => x.Price * x.Quantity)
+                    Vat = x.Vat,
+                    Price = x.OrderParts.Sum(x => (x.Price + x.ReplacementPrice) * x.Quantity) * (1 + x.Vat / 100m),
+                    PercentInprogress = x.OrderParts.Count() == 0 ? 0 :
+                        (decimal)(x.OrderParts.Where(op => op.IsReplaced).Count() * 100 / x.OrderParts.Count()),
+
                 }).FirstOrDefaultAsync();
+
             return query;
 
         }
 
         public async Task<Order> GetOrderPartsByOrderId(int orderId)
         {
-            return await _dbSet.Include(x => x.OrderParts).FirstOrDefaultAsync(x => x.Id == orderId);
+            return await _dbSet.AsNoTracking().Include(x => x.OrderParts).FirstOrDefaultAsync(x => x.Id == orderId);
 
         }
 
         public async Task RemoveOrderPartsAsync(int orderId)
         {
-            var orderParts = await _dbContext.OrderParts
-                            .Where(op => op.OrderId == orderId)
-                            .ToListAsync();
-            if (orderParts.Any())
-            {
-                _dbContext.OrderParts.RemoveRange(orderParts);
-                //await _dbContext.SaveChangesAsync();
-            }
+            await _dbContext.OrderParts.Where(op => op.OrderId == orderId).ExecuteDeleteAsync();
 
         }
 
@@ -73,5 +83,7 @@ namespace DataAccess.Repositories
         {
             await _dbContext.OrderParts.AddAsync(orderPart);
         }
+
+       
     }
 }

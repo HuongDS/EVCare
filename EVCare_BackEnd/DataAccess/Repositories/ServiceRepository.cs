@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Part;
 using DataAccess.Dtos.Service;
 using DataAccess.Entities;
 using DataAccess.Helpers;
@@ -20,6 +21,12 @@ namespace DataAccess.Repositories
         {
         }
 
+        public async Task DeleteByServiceCategoryIdAsync(int id) {
+            await _dbSet
+                .Where(s => s.ServiceCategoryId == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.Deleted_At, DateTime.UtcNow));
+        }
+
         public async Task<PageResultDto<ServiceViewModel>> GetActiveServiceAndKeywordWithPagination(ServiceQueryDto model)
         {
             if (string.IsNullOrWhiteSpace(model.Keyword))
@@ -28,7 +35,7 @@ namespace DataAccess.Repositories
             }
             var query = _dbSet
                 .AsNoTracking()
-                .Where(s => s.Deleted_At == DateTime.MinValue && s.Name.Contains(model.Keyword))
+                .Where(s => s.Deleted_At == null && s.Name.Contains(model.Keyword))
                 .Select(x=>new ServiceViewModel
                 {
                     Description = x.Description,
@@ -46,26 +53,36 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<Service>> GetAllActiveServices(string keyword)
         {
             return await _dbSet.AsNoTracking() 
-                .Where(s => s.Name.Contains(keyword) && s.Deleted_At==DateTime.MinValue).
+                .Where(s => s.Name.Contains(keyword) && s.Deleted_At==null).
                 ToListAsync();
         }
 
-        public async Task<PageResultDto<ServiceViewModel>> GetServiceAndKeywordWithPagination(ServiceQueryDto model)
+        public async Task<PageResultDto<ServiceViewDetailModel>> GetServiceAndKeywordWithPagination(ServiceQueryDto model)
         {
             var query = _dbSet.AsNoTracking()
-                .Where(s => s.Name.Contains(model.Keyword)).Select(x => new ServiceViewModel
+                .Where(s => s.Name.Contains(model.Keyword))
+                .Include(s=>s.ServiceParts).ThenInclude(sp=>sp.Part)
+                .Select(x => new ServiceViewDetailModel
                 {
                     Description = x.Description,
                     Duration = x.Duration,
                     Id = x.Id,
-                    IsDeleted = false,
+                    IsDeleted = x.Deleted_At!= null,
                     Name = x.Name,
+                    ServiceCategoryId = x.ServiceCategoryId,
+                    Parts = x.ServiceParts
+                   .Select(sp => new PartAdminViewModel
+                    {
+                        Id = sp.PartId,
+                        Name = sp.Part!.Name,
+                        Image = sp.Part.Image,
+                    }).ToList()
                 });
             query = query.ApplySorting(model.SortField, model.SortOrder);
             return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
                  
         }
 
-      
+        
     }
 }

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.Service;
 using DataAccess.Dtos.Technician;
 using DataAccess.Entities;
+using DataAccess.Enums;
 using DataAccess.Helpers;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -27,44 +29,152 @@ namespace DataAccess.Repositories
             return entity;
         }
 
+        public async Task<TechnicianViewModel> GetTechnicianDetai(int technicianId)
+        {
+            return await _dbContext.Technicians.AsNoTracking()
+                .Where(x => x.Id == technicianId)
+                .Include(x => x.Employee).ThenInclude(x => x.Account)
+                .Include(x => x.TechnicianSkills).ThenInclude(x => x.Service)
+                .Include(x => x.TechnicianWorkingSessions)
+                .Select(x => new TechnicianViewModel
+                {
+                    Id = x.Id,
+                    ExpYears = x.ExpYear,
+                    FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
+                    Phone = x.Employee.Account.Phone,
+                    Skills = x.TechnicianSkills.Select(x => new ServiceViewFormModel
+                    {
+                        Id = x.ServiceId,
+                        Name = x.Service.Name
+                    }).ToList(),
+                    Status = (x.TechnicianWorkingSessions.Any(y => y.TechnicianId == x.Id && y.EndTime == null)) ? Enums.EmployeeStatusEnum.Busy
+                    : x.Employee.Status,
+
+                }).FirstOrDefaultAsync();
+        }
+
         public async Task<int> GetTechnicianIdByAccountId(int accountId)
         {
-            var data = await _dbSet.Include(x=>x.Employee).ThenInclude(X=>X.Account)
-                .AsNoTracking().Where(x=>x.Employee.Account.Id == accountId).FirstOrDefaultAsync();
-            if(data == null)
+            var data = await _dbSet.Include(x => x.Employee).ThenInclude(X => X.Account)
+                .AsNoTracking().Where(x => x.Employee.Account.Id == accountId).FirstOrDefaultAsync();
+            if (data == null)
             {
                 throw new Exception("Souce not found");
             }
             return data.Id;
         }
 
+        public async Task<PageResultDto<TechnicianPartViewModel>> GetTechnicianRepairedParts(TechnicianPartQueryDto model) {
+            var query = _dbContext.Technicians.AsNoTracking()
+                .Include(x => x.Employee).ThenInclude(x => x.Account)
+                .Where(x => x.Employee.Account.Deleted_At == DateTime.MinValue && x.Employee.Status == EmployeeStatusEnum.Available);
+            if(model.Keyword != null) {
+                query = query.Where(x => (x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name).ToLower().Contains( model.Keyword.ToLower() ));
+            }
+            
+            query = query.Include(x=>x.TechnicianSkills).ThenInclude(x=>x.Service).ThenInclude(x=>x.ServiceParts).ThenInclude(x=>x.Part);
+            if(model.PartIds != null && model.PartIds.Count() >0 ) {
+                query = query
+                    .Where(x=>x.TechnicianSkills.Any(p=>p.Service.ServiceParts.Any(part=>model.PartIds.Contains(part.PartId))));
+            }
+          var newQuery = query.Select(x=> new TechnicianPartViewModel
+          {
+                Id = x.Id,
+                FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
+                ExpYears = x.ExpYear,
+                Email = x.Employee.Account.Email,
+                Phone = x.Employee.Account.Phone,
+                Parts = x.TechnicianSkills
+                .SelectMany(ts=>ts.Service.ServiceParts)
+                .Select(sp=> new
+                {
+                    Id = sp.PartId,
+                    Name = sp.Part.Name,
+
+                }).
+                Distinct().
+                Select(x=> new Dtos.Part.PartViewFormModel {
+                    Id = x.Id,
+                    Name = x.Name,
+                }),
+
+              Status = x.Employee.Status,
+                KPIPerDays = x.KPIPerDays,
+                CompletedOrders = x.CompletedOrders,
+            });
+            newQuery = newQuery.ApplySorting( model.SortField, model.SortOrder);
+            return await PaginationHelper.PaginationAsync(newQuery, model.PageSize.Value, model.PageIndex.Value);
+             
+        }
+
         public async Task<PageResultDto<TechnicianViewModel>> GetTechniciansAsync(TechnicianQueryDto model)
         {
-            var now = DateTime.Now;
+
             var query = _dbContext.Technicians
                 .Include(x => x.Employee).ThenInclude(x => x.Account)
                 .Include(x => x.TechnicianSkills).ThenInclude(x => x.Service)
                 .Include(x => x.TechnicianWorkingSessions)
                 .AsNoTracking()
+                .Where(x => x.Employee.Account.Deleted_At == DateTime.MinValue)
                 .Select(x => new TechnicianViewModel
                 {
+                    Id = x.Id,
                     FullName = x.Employee.Account.First_Name + " " + x.Employee.Account.Last_Name,
                     ExpYears = x.ExpYear,
+                    Email = x.Employee.Account.Email,
                     Phone = x.Employee.Account.Phone,
-                    Rating = x.Employee.rate,
                     Skills = x.TechnicianSkills.Select(x => new Dtos.Service.ServiceViewFormModel
                     {
                         Id = x.ServiceId,
                         Name = x.Service.Name,
                     }),
-                    Status = (x.TechnicianWorkingSessions.Any(y => y.TechnicianId == x.Id && y.EndTime == null)) ? Enums.EmployeeStatusEnum.Busy
-                    : x.Employee.Status,
+                    Status = x.Employee.Status,
+                    KPIPerDays = x.KPIPerDays,
+                    CompletedOrders = x.CompletedOrders,
+
                 })
-                .Where(x=>x.Status == model.Status);
+                .Where(x => x.Status == model.Status);
             if (model.Skills != null) query = query.Where(x => x.Skills.Any(s => model.Skills.Contains(s.Id)));
-            query = query.ApplySorting(model.SortField,model.SortOrder);
-            
-            return await PaginationHelper.PaginationAsync(query,model.PageSize.Value,model.PageIndex.Value);
+            if (!string.IsNullOrEmpty(model.FullName))
+            {
+                query = query.Where(x => (x.FullName).ToLower().Contains(model.FullName.ToLower()));
+            }
+            query = query.ApplySorting(model.SortField, model.SortOrder);
+
+            return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+        }
+
+        public async Task<IEnumerable<TechnicianCusViewModel>> GetTechniciansByOrderId(int orderId)
+        {
+            var data = await _dbContext.TechnicianWorkingSessions
+                .Where(x => x.OrderId == orderId)
+                .Include(x => x.Technician).ThenInclude(x => x.Employee).ThenInclude(x => x.Account)
+                .Select(x => new TechnicianCusViewModel
+                {
+                    Id = x.Technician.Id,
+                    FullName = x.Technician.Employee.Account.First_Name + " " + x.Technician.Employee.Account.Last_Name,
+                    Avatar = x.Technician.Employee.Avatar,
+                    ExpYears = x.Technician.ExpYear
+                })
+                .ToListAsync();
+            return data;
+        }
+
+        public Task<int> GetTechnicianStatus(EmployeeStatusEnum? status) {
+            var query = _dbContext.Technicians
+                .Include(x => x.Employee)
+                .AsNoTracking()
+                .Where(x => x.Employee.Account.Deleted_At == DateTime.MinValue);
+            if (status.HasValue) {
+
+                query = query.Where(x => x.Employee.Status == status.Value);
+              
+            }
+            return query.CountAsync();
+        }
+
+        public async Task UpdateCompletedOrderAsync() {
+            await _dbContext.Technicians.ExecuteUpdateAsync(s=>s.SetProperty(x=>x.CompletedOrders,0) );
         }
     }
 }

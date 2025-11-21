@@ -12,5 +12,9 @@ namespace DataAccess.Interfaces
         Task<Account?> GetAccountByEmail(string email);
         Task<Account?> GetAccountByPhoneAsync(string phone);
         Task<bool> CheckAccountIsBanned(int accountId);
+        Task DeleteAccount(int accountId);
+        Task<IEnumerable<int>> GetAccountIdByTechnicianIds(IEnumerable<int> technicianIds);
+        Task<Account?> GetAccountByTechId(int techId);
+        //Task DeleteAccount(int accountId);
     }
 }

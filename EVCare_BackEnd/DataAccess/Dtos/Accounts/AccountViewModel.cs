@@ -15,5 +15,7 @@ namespace DataAccess.Dtos.Accounts
         public string? First_Name { get; set; }
         public string? Last_Name { get; set; }
         public string? Phone { get; set; }
+        public int? TechId { get; set; }
+        public int? EmployeeId { get; set; }
     }
 }

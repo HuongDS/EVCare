@@ -3,7 +3,10 @@ export enum AppointmentStatusEnum {
   PENDING = "Pending",
   CONFIRMED = "Confirmed",
   CHECKED_IN = "Checked In",
+  ADDING_PART = "Adding Part",
   IN_PROGRESS = "In Progress",
+  INPROGRESS = "InProgress",
+  READY_FOR_PICKUP = "ReadyForPickup",
   DONE = "Done",
-  CANCELLED = "Cancelled",
+  CANCELED = "Canceled",
 }

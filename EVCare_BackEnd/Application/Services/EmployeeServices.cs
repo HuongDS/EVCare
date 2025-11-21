@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces;
 using AutoMapper;
+using DataAccess.Dtos.Employees;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Dtos.Technicians;
 using DataAccess.Entities;
 using DataAccess.Enums;
@@ -45,6 +47,26 @@ namespace Application.Services
             var appointment = await _appointmentRepository.GetAppointmentByOrderIdAsync(data.orderID);
             appointment.Status = AppointmentStatusEnum.InProgress;
             await _appointmentRepository.UpdateAsync(appointment);
+        }
+
+        public async Task<int> GetEmployeeIdByAccountId(int accountId)
+        {
+            var employee = await _employeeRepository.GetEmployeeByAccountId(accountId);
+            return employee.Id;
+        }
+
+        public async Task<PageResultDto<EmployeeViewModel>> GetAllEmployeesAsync(EmployeeQueryDto query)
+        {
+            return await _employeeRepository.GetAllEmployeesAsync(query);
+        }
+
+        public async Task<EmployeeViewModel> GetEmployeeInformation(int employeeId)
+        {
+            return await _employeeRepository.GetEmployeeInformation(employeeId);
+        }
+
+        public async Task<EmployeeCustomerViewModel> GetEmployeeDetailsByIdAsync(int employeeId) {
+            return await _employeeRepository.GetEmployeeDetailsByIdAsync(employeeId);
         }
     }
 }

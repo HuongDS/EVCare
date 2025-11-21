@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Application.Dtos;
 using DataAccess.Dtos.Applications;
 using DataAccess.Dtos.Appointment;
+using DataAccess.Dtos.AppointmentService;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
@@ -22,7 +23,7 @@ namespace Application.Interfaces
         Task<int> CreateAppointment(AppointmentCreateModel model);
         Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId);
         Task<bool> DeleteAppointment(int appointmentId);
-        Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId);
+        Task<AppointmentViewDetailModel> GetAppointmentById(int appointmentIdId);
         Task<IEnumerable<AppointmentViewModel>> GetAppointmentHistoryByCustomerId(int customerId);
         Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(AppointmentQueryDto model);
         Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex);
@@ -31,5 +32,12 @@ namespace Application.Interfaces
         Task<AppointmentInforToSentDto> GetAppointmentInforToAsync(int appointmentId);
         Task<CenterDailyCapacityModel> GetAppointmentWithCountDaily();
         Task <PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model);
+        Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model);
+        Task<int> CountAppointmentsInMonths(int year, int month);
+        Task<int> CountCustomersInMonths(int year, int month);
+        Task<int> CountAppointmentsInMonthsWithStatus(int year, int month, AppointmentStatusEnum status);
+        Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId);
+        Task<int> CreateAppointmentForStaff(AppointmentCreateModel model, int employeeId);
+        Task<IEnumerable<AppointmentServiceViewModel>> GetAppointmentServices(int appointmentId);
     }
 }

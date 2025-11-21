@@ -7,6 +7,7 @@ using DataAccess.Dtos.BlockedDate;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DataAccess.Repositories
 {
@@ -18,12 +19,36 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<BlockedDateViewModel>> GetBlockedDateFromToday()
         {
-            return await _dbSet.Where(x => x.Date > DateTime.Now)
+            var lists =  await _dbSet.Where(x => x.Date > DateTime.Now)
                 .Select(x=>new BlockedDateViewModel
                 {
-                    DateTime= x.Date,
+                    DateTime= DateOnly.FromDateTime(x.Date),
+                    Reason = x.Reason,
+                    UnavailableType = x.Type,
                 } )
                 .ToListAsync();
+
+            var capacity = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
+            var date = await _dbContext.Appointments
+                .Where(x => x.Appointment_Date > DateTime.Now && x.Status!=Enums.AppointmentStatusEnum.Done && x.Status!=Enums.AppointmentStatusEnum.Canceled)
+                .GroupBy(x => DateOnly.FromDateTime(x.Appointment_Date))
+                .Select(g => new { g.Key, Count = g.Count() })
+                .Where(x => x.Count >= capacity.Capacity)
+                .OrderBy(x => x.Key)
+                .Select(x => new BlockedDateViewModel
+                {
+                    DateTime = x.Key,
+                    Reason = "Too limit capacity",
+                    UnavailableType = Enums.UnavailableType.OverCapacity,
+                }).ToListAsync();
+
+            lists.AddRange(date);
+            return lists.OrderBy(x=>x.DateTime);
+
+        }
+
+        public async Task<CenterUnavailableDays> GetByDate(DateOnly date) {
+            return await _dbSet.FirstOrDefaultAsync(x => date == DateOnly.FromDateTime(x.Date));
         }
     }
 }

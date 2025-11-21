@@ -9,6 +9,8 @@ namespace DataAccess.Enums
     public enum PaymentMethodEnum
     {
         Cash,
-        CreditCard,
+        Vnpay,
+        PayOs,
+
     }
 }

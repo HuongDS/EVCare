@@ -1,146 +1,89 @@
-import styled from "styled-components";
-import carImg from "../../../../assets/VF3.png";
-import { useNavigate } from "react-router";
+// src/Component/HeroSection.tsx
+import React from "react";
 
-const HeroWrapper = styled.section`
-  padding: 20px 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  font-family: "Manrope", sans-serif;
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
+import { type Variants } from "framer-motion";
+import carImage from "../../../../assets/byd-atto3.png";
+import TextType from "../../../../components/TextAnimation/TextType";
+import TrueFocus from "../../../../components/TextAnimation/TextFocus";
+import {
+  HeroWrapper,
+  HeroContentGrid,
+  TextColumn,
+  ImageWrapper,
+  StyledImage,
+  HeroTitle,
+  HeroSubtitle,
+  HeroButton,
+} from "./Style/Hero.styled";
 
-const HeroContent = styled.div`
-  margin-top: 5%;
-  margin-left: 10%;
-  display: flex;
-  flex-direction: column;
-  h1 {
-    margin: 0;
-    font-size: 50px;
-  }
+const contentGridVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
+};
+const textItemVariants: Variants = {
+  hidden: { opacity: 0, x: -50 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeOut" } },
+};
+const imageItemVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { type: "spring", stiffness: 100, damping: 15, delay: 0.1 },
+  },
+};
+const buttonVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", damping: 10, stiffness: 100, delay: 0.5 },
+  },
+};
 
-  span {
-    font-weight: bold;
-    color: #0039a6;
-  }
-
-  p {
-    font-family: "Outfit", sans-serif;
-    font-size: 20px;
-  }
-
-  a {
-    margin-top: 200px;
-    font-size: large;
-    color: #00ad4e;
-  }
-
-  @media (max-width: 768px) {
-    margin: 0;
-    padding: 50px;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    h1 {
-      font-size: 20px;
-    }
-    p {
-      font-size: 18px;
-    }
-  }
-  @media (min-width: 768px) and (max-width: 1200px) {
-    margin: 0;
-    padding: 50px;
-    text-align: justify;
-
-    h1 {
-      font-size: 25px;
-    }
-    p {
-      font-size: 19px;
-    }
-  }
-`;
-
-const HeroImage = styled.div`
-  text-align: center;
-
-  img {
-    width: 95%;
-    @media (max-width: 768px) {
-      width: 80%;
-      height: auto;
-    }
-    @media (min-width: 768px) and (max-width: 1200px) {
-      width: 80%;
-      height: auto;
-    }
-  }
-`;
-
-const CTAButton = styled.button`
-  width: 40%;
-  height: auto;
-  margin-top: 30px;
-  margin-left: 20%;
-  font-family: "Outfit", sans-serif;
-  font-size: 30px;
-  font-weight: 600;
-  color: white;
-  border-radius: 20px;
-  border: 0;
-  background-color: #00ad4e;
-  box-shadow: 5px 5px #ccc;
-
-  &:hover {
-    background-color: #0039a6;
-    transform: translateY(5px) translateX(5px);
-    box-shadow: none;
-  }
-
-  @media (max-width: 768px) {
-    margin: 10px 0 0;
-    padding: 5px 20px;
-    justify-content: center;
-    font-size: 18px;
-    width: fit-content;
-  }
-  @media (min-width: 768px) and (max-width: 1200px) {
-    margin: 16px 0 0;
-    padding: 8px 22px;
-    justify-content: center;
-    font-size: 18px;
-    width: fit-content;
-  }
-`;
-
-const Hero = () => {
-  const navigate = useNavigate();
+const Hero: React.FC = () => {
   return (
     <HeroWrapper>
-      <HeroContent data-aos="fade-right">
-        <h1>
-          Keep Your EV in <span>Top Shape</span> with{" "}
-          <span>Smart Service System</span>
-        </h1>
-
-        <p>
-          Book your service online, track real-time repair progress with ease.
-          Our service center ensures your electric vehicle gets expert care
-          every time.
-        </p>
-
-        <CTAButton onClick={() => navigate("/service")}>
+      <HeroContentGrid
+        variants={contentGridVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <TextColumn variants={textItemVariants}>
+          <HeroTitle>
+            <TextType
+              text={["Keep Your EV in Top Shape"]}
+              typingSpeed={75}
+              showCursor={false}
+              loop={false}
+            />
+          </HeroTitle>
+          <HeroSubtitle>
+            <TrueFocus
+              sentence="Reliable Transparent Tech-driven"
+              blurAmount={4}
+              borderColor="#00ad4e"
+              glowColor="rgba(0, 173, 78, 0.6)"
+            />
+          </HeroSubtitle>
+        </TextColumn>
+        <ImageWrapper variants={imageItemVariants}>
+          <StyledImage
+            src={carImage}
+            alt="EV Car"
+            animate={{ y: ["-8px", "8px"] }}
+            transition={{
+              repeat: Infinity,
+              repeatType: "reverse",
+              duration: 3,
+              ease: "easeInOut",
+            }}
+          />
+        </ImageWrapper>
+        <HeroButton variants={buttonVariants} href="/service">
           Book a Service
-        </CTAButton>
-      </HeroContent>
-
-      <HeroImage data-aos="fade-left">
-        <img src={carImg} alt="EV Car" />
-      </HeroImage>
+        </HeroButton>
+      </HeroContentGrid>
     </HeroWrapper>
   );
 };

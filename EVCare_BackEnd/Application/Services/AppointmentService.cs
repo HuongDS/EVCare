@@ -3,16 +3,17 @@ using Application.Infrastructures;
 using Application.Interfaces;
 using AutoMapper;
 using DataAccess.Dtos.Appointment;
+using DataAccess.Dtos.AppointmentService;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
 using DataAccess.Enums;
 using DataAccess.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.Services
 {
-    public class AppointmentService : IAppointmentService
-    {
+    public class AppointmentService : IAppointmentService {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IServiceCenterRepository _serviceCenterRepository;
         private readonly IMapper _mapper;
@@ -25,8 +26,19 @@ namespace Application.Services
 
         public async Task<int> CreateAppointment(AppointmentCreateModel model)
         {
-            // check số lần đặt của khách hàng
-            // check ngày hôm đó
+
+            var currentDay = model.Appointment_Date.DayOfWeek;
+            var serviceCenter = await _serviceCenterRepository.GetCenterInforAsync();
+            if(model.Appointment_Date < DateTime.UtcNow.AddHours(7))
+            {
+                throw new Exception("Appointment date must be in the future");
+            }
+            if (currentDay < serviceCenter.WorkStartDay || currentDay > serviceCenter.WorkEndDay)
+            {
+                throw new Exception($"You must book the appointment from {serviceCenter.WorkStartDay} to {serviceCenter.WorkEndDay} ");
+            }
+
+
             if ((await CheckCustomerCreate(model.CustomerId)) == false)
             {
                 throw new Exception("You’ve reached your booking limit.");
@@ -36,16 +48,23 @@ namespace Application.Services
             {
                 throw new Exception("This day is fully booked");
             }
+
+            var check = await _appointmentRepository.CheckInValidVehicleID(model.VehicleId);
+            if(check == true)
+            {
+                throw new Exception("This vehicle has an active appointment. Please complete or cancel the existing appointment before creating a new one.");
+            }
             var appointment = _mapper.Map<Appointment>(model);
+            appointment.Status = AppointmentStatusEnum.Pending;
             await _appointmentRepository.AddAsync(appointment);
 
             return appointment.Id;
 
         }
 
-        private async Task<bool> CheckAppointmentsForApointmentDate(DateTime appointment_Date)
+        public virtual async Task<bool> CheckAppointmentsForApointmentDate(DateTime appointment_Date)
         {
-            int cnt = await _appointmentRepository.CountAppointment(appointment_Date);
+            int cnt = await _appointmentRepository.CountAppointment(DateOnly.FromDateTime(appointment_Date));
             int capacity = await _serviceCenterRepository.GetAppactityOfServiceCenter();
             if (cnt > capacity)
             {
@@ -56,18 +75,7 @@ namespace Application.Services
 
         }
 
-        private async Task<bool> CheckAppointmentsToday()
-        {
-            int appointments = await _appointmentRepository.CountAppointmnetToday();
-            int capacity = await _serviceCenterRepository.GetAppactityOfServiceCenter();
-            if (appointments > capacity)
-            {
-                return false;
-
-            }
-            return true;
-        }
-        private async Task<bool> CheckCustomerCreate(int customerId)
+        public virtual async  Task<bool> CheckCustomerCreate(int customerId)
         {
             int appointments = await _appointmentRepository.CountAppointmentsPerDay(customerId);
             int dailyLimit = await _serviceCenterRepository.GetLimitBookingOfServiceCenter();
@@ -82,6 +90,8 @@ namespace Application.Services
         {
             try
             {
+               
+
                 await _appointmentRepository.UpdateAppointmentStatusAsync(data.appointmentID, data.status);
                 return data.appointmentID;
             }
@@ -127,19 +137,14 @@ namespace Application.Services
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
         }
-        public async Task<AppointmentViewDetailModel> GetAppointmentByiD(int appointmentIdId)
+        public async Task<AppointmentViewDetailModel> GetAppointmentById(int appointmentId)
         {
-            try
-            {
-                var result = await _appointmentRepository.GetAppointmentWithDetails(appointmentIdId);
-                if (result == null) throw new Exception("Appointment not found");
-                return result;
+           
+            var result = await _appointmentRepository.GetAppointmentWithDetails(appointmentId);
+            if (result == null) throw new Exception("Appointment not found");
+            return result;
 
-            }
-            catch
-            {
-                throw new Exception("Appointment not found");
-            }
+           
         }
         public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentHistoryByCustomerId(int customerId)
         {
@@ -156,14 +161,14 @@ namespace Application.Services
             }
 
         }
-        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex,string? customerName)
+        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int? payload, int? pageindex, string? customerName)
         {
             try
             {
                 int pageSize = payload ?? 10;
                 int pageIndex = pageindex ?? 1;
                 string customername = customerName ?? "";
-                return await _appointmentRepository.GetAppointmentsWithPagination(pageSize, pageIndex,customername);
+                return await _appointmentRepository.GetAppointmentsWithPagination(pageSize, pageIndex, customername);
 
             }
             catch (Exception e)
@@ -171,18 +176,30 @@ namespace Application.Services
                 throw new Exception("Error retrieving appointments with pagination");
             }
         }
-        public async Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId)
-        {
+        public async Task<bool> UpdateAppointment(AppointmentUpdateModel model, int employeeId) {
             var appointment = await _appointmentRepository.GetByIdAsync(model.AppointmentId);
-            if (appointment == null)
-            {
+
+            if (appointment == null) {
                 throw new Exception("Appointment not found");
             }
+            var utcNow = DateTime.UtcNow;
+            var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            var vnTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vnZone);
+            if (DateOnly.FromDateTime(vnTime) < DateOnly.FromDateTime(appointment.Appointment_Date)) {
+                throw new Exception("Cannot update appointment before appointment date");
+            }
+
+            if (appointment.Status == AppointmentStatusEnum.Done || appointment.Status == AppointmentStatusEnum.Canceled) {
+                throw new Exception("Cannot update status of completed or canceled appointment");
+            }
+           
             _mapper.Map(model, appointment);
-            appointment.EmployeeId = employeeId;
+            if (appointment.Employee == null)
+                appointment.EmployeeId = employeeId;
             await _appointmentRepository.UpdateAsync(appointment);
             return true;
 
+            
         }
         public async Task<ResponseDto<PageResultDto<AppointmentViewDto>>> GetAppointmentInCurrentDay(int pageSize, int pageIndex)
         {
@@ -195,7 +212,7 @@ namespace Application.Services
                 PageIndex = data.PageIndex,
                 PageSize = data.PageSize,
                 TotalItems = data.TotalItems,
-                TotalPages = data.TotalPages    
+                TotalPages = data.TotalPages
             };
             return new ResponseDto<PageResultDto<AppointmentViewDto>>
             {
@@ -263,7 +280,46 @@ namespace Application.Services
 
         public async Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentByTechnicianId(int technicianId, AppointmentTechnicianQueryDto model)
         {
-            return await _appointmentRepository.GetAppointmentTechnicianViewModelByTechnicianId(technicianId,model);
+            return await _appointmentRepository.GetAppointmentTechnicianViewModelByTechnicianId(technicianId, model);
+        }
+        public async Task<int> CountAppointmentsInMonths(int year, int month)
+        {
+            return await _appointmentRepository.CountAppointmentsInMonth(year, month);
+        }
+        public async Task<int> CountCustomersInMonths(int year, int month)
+        {
+            return await _appointmentRepository.CountCustomersInMonth(year, month);
+        }
+        public async Task<int> CountAppointmentsInMonthsWithStatus(int year, int month, AppointmentStatusEnum status)
+        {
+            return await _appointmentRepository.CountAppointmentsInMonthWithStatus(year, month, status);
+        }
+
+        public async Task<PageResultDto<AppointmentInProgressUnderstaffedViewModel>> GetUnderstaffedInProgressAsync(AppointmentQueryDto model)
+        {
+           return await _appointmentRepository.GetUnderstaffedInProgressAsync(model);
+        }
+
+        public async Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId) {
+            return await _appointmentRepository.GetVehicleByAppointmentId(appointmentId);
+        }
+
+        public async Task<int> CreateAppointmentForStaff(AppointmentCreateModel model, int employeeId) {
+            
+            var entity = _mapper.Map<Appointment>(model);
+            entity.Status = AppointmentStatusEnum.CheckedIn;
+            entity.EmployeeId = employeeId;
+            entity.CustomerId = model.CustomerId;
+
+            return (await _appointmentRepository.AddAsync(entity)).Id;
+        }
+
+        public async Task<IEnumerable<AppointmentServiceViewModel>> GetAppointmentServices(int appointmentId) {
+            var appointment = await _appointmentRepository.GetByIdAsync(appointmentId);
+            if (appointment == null) {
+                throw new Exception("Appointment not found");
+            }
+            return await _appointmentRepository.GetAppointmentServices(appointmentId);
         }
     }
 }

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Dtos.Applications;
+using DataAccess.Dtos.Pagination;
 using DataAccess.Entities;
+using DataAccess.Helpers;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,16 +17,83 @@ namespace DataAccess.Repositories
         public ApplicationRepository(EVCareDbContext dbContext) : base(dbContext)
         {
         }
+
+        public async Task<PageResultDto<ApplicationAdminViewDto>> GetAllApplicationsAsync(ApplicationQueryDto model)
+        {
+            var query = _dbContext.Applications.AsNoTracking()
+                .Select(a => new ApplicationAdminViewDto
+                {
+                    Id = a.Id,
+                    CreatedAt = a.Create_At,
+                    DateOff = a.DateOff,
+                    EmployeeName = a.Employee.Account.First_Name + " " + a.Employee.Account.Last_Name,
+                    Reason = a.Reason,
+                    Status = a.Status,
+                    Note = a.Note,
+                    EmployeeId = a.EmployeeId
+
+                })
+                .Where(x => DateOnly.FromDateTime(x.DateOff) >= model.FromDate && DateOnly.FromDateTime(x.DateOff) <= model.ToDate);
+
+            if (model.Status.HasValue) query = query.Where(a => a.Status == model.Status);
+            if (!string.IsNullOrEmpty(model.Keyword))
+            {
+                query = query.Where(a => a.EmployeeName.Contains(model.Keyword));
+            }
+
+            query = query.ApplySorting(model.SortField, model.SortOrder);
+            return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+
+        }
+
         public async Task<bool> GetApplicationByEmployeeIDAndDateOffAsync(int employeeId, DateTime dateOff)
         {
             var application = await _dbSet.FirstOrDefaultAsync(a => a.EmployeeId == employeeId && a.DateOff.Date == dateOff.Date);
             return application == null;
         }
 
+        public async Task<PageResultDto<ApplicationViewDto>> GetApplicationByEmployeeIdAsync(ApplicationQueryDto model, int employeeId)
+        {
+            var query = _dbContext.Applications.AsNoTracking()
+                .Where(a => a.EmployeeId == employeeId)
+                .Select(a => new ApplicationViewDto
+                {
+                    createdAt = a.Create_At,
+                    dateOff = a.DateOff,
+                    Status = a.Status,
+                    note = a.Note,
+                    reason = a.Reason,
+                });
+            if (model.Status.HasValue)
+            {
+                query = query.Where(a => a.Status == model.Status);
+            }
+           query = query.ApplySorting(model.SortField, model.SortOrder);
+            return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
+
+        }
+
         public async Task<IEnumerable<DataAccess.Entities.Application>> GetApplicationsToday()
         {
+            var tzVn = TimeZoneInfo.FindSystemTimeZoneById(
+                         OperatingSystem.IsWindows() ? "SE Asia Standard Time" : "Asia/Ho_Chi_Minh");
+
+            var utcNow = DateTime.UtcNow;
+            var vnNow = TimeZoneInfo.ConvertTimeFromUtc(utcNow, tzVn);
+            var todayVn = DateOnly.FromDateTime(vnNow);
+
             return await _dbSet
-                .Where(x => DateOnly.FromDateTime(x.DateOff) == DateOnly.FromDateTime(DateTime.Now) && x.IsApproved == true)
+                .Where(x =>
+                    DateOnly.FromDateTime(x.DateOff) == todayVn &&
+                    x.Status == Enums.ApplicationStatusEnum.Approved)
+                .ToListAsync();
+        }
+
+        public async Task<List<DateOnly>> GetDateoff(int employeeId)
+        {
+            return await _dbContext.Applications.AsNoTracking()
+                .Where(a => a.EmployeeId == employeeId && DateTime.Now <= a.DateOff)
+                .Select(a => DateOnly.FromDateTime(a.DateOff))
                 .ToListAsync();
         }
     }

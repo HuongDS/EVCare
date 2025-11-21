@@ -19,6 +19,7 @@ export type User = {
   accountId: number;
   email: string;
   role: RoleEnum;
+  techId?: number;
 };
 
 export type AuthState = {
@@ -41,8 +42,13 @@ export type RegisterRequestDto = {
   phone: string;
 };
 
+export type VerifyOtpSignUp = {
+  email: string;
+  otp: string;
+};
 export type VerifyOTPDto = {
   email: string;
+  newPassword: string;
   otp: string;
 };
 

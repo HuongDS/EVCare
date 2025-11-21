@@ -15,5 +15,14 @@ namespace DataAccess.Interfaces
         Task UpdateStockPartAsync(int partID, int quantity);
         Task<bool> CheckExist(int partId);
         void Update(Part part);
+        Task<Dictionary<int, Part>> GetPartWithIDs(List<int> partIds);
+        Task DeleteByCategoryId(int id);
+        Task <IEnumerable<Part>> GetAllWithCategory();
+        Task<IEnumerable<int>> GetPartIdsByCategoryId(int id);
+        Task<Part> GetByNameAsync(string name);
+        Task<decimal> GetTotalPriceOfParts();
+        Task<IEnumerable<PartViewModel>> GetLowStockParts();
+        Task<PageResultDto<PartViewModel>> GetPartsForService(PartForServiceQueryDto model);
+        Task<PageResultDto<PartViewModel>> GetPartsForAppointmentId(PartForServiceQueryDto model);
     }
 }

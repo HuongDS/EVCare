@@ -34,11 +34,18 @@ namespace Application.Infrastructures
         public const string PASSWORD_MISMATCH = "Password and Confirm Password do not match.";
         public const string PASSWORD_RESET_SUCCESS = "Password reset successfully.";
         public const string GET_ACCOUNT_SUCCESS = "Get Acccount successfully";
+        public const string UPDATE_ACCOUNT_SUCCESS = "Update Account successfully";
+        public const string PHONE_EXISTS = "Phone number already exists.";
+        public const string EMAIL_EXISTS = "Email already exists.";
+        public const string OLD_PASSWORD_INCORRECT = "Old password is incorrect.";
+        public const string VERIFY_PASSWORD_SUCCESS = "Password verified successfully.";
+        public const string CHANGE_PASSWORD_SUCCESS = "Password changed successfully.";
 
         // Parttern
         public const string WEAK_PASSWORD = "Password is too weak. It must be at least 8 characters, at least 1 letter, 1 number and 1 special character.";
         public const string INVALID_EMAIL = "Email is not valid.";
         public const string INVALID_PHONE = "Phone number is not valid.";
+        public const string THIS_FIELD_IS_REQUIRED = "This field is required.";
 
         // Appointment
         public const string APPOINTMENT_NOT_FOUND = "Appointment not found.";
@@ -50,7 +57,7 @@ namespace Application.Infrastructures
         public const string APPOINTMENT_CONFIRMED_SUCCESS = "Appointment confirmed successfully.";
         public const string APPOINTMENT_CANNOT_BE_CANCELED = "Appointment cannot be canceled. Please check the appointment details.";
         public const string APPOINTMENT_GET_SUCCESS = "Appointment get successfully";
-
+        public const string APPOINTMENT_CANCEL_SUCCESS = "Appointment cancel successfully";
 
         // Order 
         public const string ORDER_NOT_FOUND = "Order not found.";
@@ -60,6 +67,7 @@ namespace Application.Infrastructures
 
         // OrderParts
         public const string ORDER_PARTS_ADDED_SUCCESS = "Parts added to order successfully.";
+        public const string ORDER_PARTS_UPDATE_SUCCESS = "Parts update to order successfully.";
 
         // Parts
         public const string PART_NOT_FOUND = "Part not found.";
@@ -95,15 +103,100 @@ namespace Application.Infrastructures
 
         //Vehicle
         public const string VEHICLE_UPDATE_SUCCESSFULLY = "Update vehicle successfully";
+        public const string VEHICLE_EXISTS = "Vehicle already exists.";
+        public const string VEHICLE_NOT_FOUND = "Vehicle not found.";
+        public const string VEHICLE_DELETE_SUCCESSFULLY = "Delete vehicle successfully";
 
         //Part
         public const string PART_GET_SUCCESSFULLY = "Get parts successfully";
+        //Part category
+        public const string PART_Category_GET_SUCCESSFULLY = "Get part categories successfully";
 
         //Customer
         public const string CUSTOMER_GET_SUCCESSFULLY = "Get customer successfully";
 
         //Technician
-
         public const string GET_TECHNICIAN_SUCCESSFULLY = "Get technician successfully";
+        public const string UPDATE_SUCCESSFULLY = "Update successfully";
+
+        //AI
+        public const string GET_AI_SUCCESSFULLY = "Get AI successfully";
+        public static string ADD_TECHNICIAN_SUCCESSFULLY = "Add technician successfully";
+
+        // Invoice
+        public const string INVOICE_CREATED_SUCCESS = "Invoice created successfully.";
+        public const string INVOICE_GET_SUCCESS = "Invoice get successfully.";
+        public const string INVOICE_PAYMENT_SUCCESS = "Invoice payment processed successfully.";
+        public const string GET_REVENUE_SUCCESS = "Get revenue successfully.";
+        public const string GET_RECENT_INVOICES_SUCCESS = "Get recent invoices successfully.";
+
+        public static string APPLICATION_GET_SUCCESS = "Application get successfully";
+
+        public static string CUSTOMERS_GET_SUCCESSFULLY = "Get customers successfully";
+
+        public static string DELETE_ACCOUNT_SUCCESS = "Delete Account successfully";
+
+        public static string? ACCOUNT_HAS_BEEN_DISABLED = "Account has been banned.";
+
+        public static string EMPLOYEE_GET_SUCCESSFULLY = "Get employee successfully";
+
+        public static string PART_CREATE_SUCCESSFULLY = "Create part successfully";
+
+        public static string PART_UPDATE_SUCCESSFULLY = "Update part successfully";
+
+
+        // Staff
+        public static string NOT_FOUND_STAFF_SASTISFY = "Not found staff satisfy the requirement.";
+
+        // Chat
+        public static string CHAT_MESSAGE_SENT_SUCCESSFULLY = "Chat message sent successfully.";
+        public static string DOMAIN_CREATE_SUCCESS = "Domain created successfully";
+
+        public static string PART_DELETE_SUCCESSFULLY = "Delete part successfully";
+
+        public static string PART_Category_CREATE_SUCCESSFULLY = "Create part category successfully";
+
+        public static string PART_Category_DELETE_SUCCESSFULLY = "Delete part category successfully";
+
+        public static string TECHNICIAN_CATEGORY_GET_SUCCESSFULLY = "Get technician categories successfully";
+
+        public static string APPLICATION_UPDATE_SUCCESS = "Application updated successfully";
+
+        public static string VEHICLE_GET_SUCCESS  = "Get vehicle successfully";
+
+        public static string UNBANNED_ACCOUNT_SUCCESS  = "Unbanned account successfully";
+
+        public static string VEHICLE_CATEGORY_CREATE_SUCCESSFULLY  = "Create vehicle category successfully";
+
+        public static string VEHICLE_CATEGORY_UPDATE_SUCCESSFULLY = "Update vehicle category successfully";
+
+        public static string PART_Category_UPDATE_SUCCESSFULLY = "Update part category successfully";
+
+        public static string VEHICLE_CATEGORY_DELETE_SUCCESSFULLY  = "Delete vehicle category successfully";
+
+        public static string VEHICLE_CATEGORY_UNBANNED_SUCCESSFULLY = "Unbanned vehicle category successfully";
+
+        public static string SERVICE_CATEGORY_CREATE_SUCCESSFULLY  = "Create service category successfully";
+
+        public static string SERVICE_CATEGORY_UPDATE_SUCCESSFULLY = "Update service category successfully";
+
+        public static string SERVICE_CATEGORY_DELETE_SUCCESSFULLY = "Delete service category successfully";
+
+        public static string DASHBOARD_SUMMARY_GET_SUCCESSFULLY = "Get dashboard summary successfully";
+        public static string DASHBOARD_SUMMARY_GET_SERVICE_SUCCESSFULLY  = "Get dashboard service summary successfully";
+
+        public static string DASHBOARD_SUMMARY_GET_PART_SUCCESSFULLY = "Get dashboard part summary successfully";
+
+        public static string DASHBOARD_PART_HISTORY_GET_SUCCESSFULLY  = "Get dashboard part history successfully";
+
+        public static string ORDER_PARTS_GET_SUCCESS  = "Get order parts successfully";
+
+        public static string GET_ACCOUNT_ID_SUCCESS  = "Get account id successfully";
+
+        public static string GET_INVOICE_DETAIL_SUCCESSFULLY = "Get Invoice detail successfully";
+
+        public static string ORDER_PARTS_STATUS_UPDATE_SUCCESS  = "Order parts status updated successfully";
+
+        public static string ORDER_PARTS_TECHNICIAN_UPDATE_SUCCESS  = "Order parts technician updated successfully";
     }
 }

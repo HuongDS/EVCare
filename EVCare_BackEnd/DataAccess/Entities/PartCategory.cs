@@ -16,5 +16,6 @@ namespace DataAccess.Entities
         public DateTime Updated_At { get; set; }
         public DateTime Deleted_At { get; set; }
         public ICollection<Part> Parts { get; set; }
+        public ICollection<VehiclePartCompatibility>? VehiclePartCompatibilities { get; set; }
     }
 }

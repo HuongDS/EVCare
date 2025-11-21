@@ -17,6 +17,8 @@ namespace DataAccess.Entities
         public int TechnicianId { get; set; }
         public Technician Technician { get; set; }
         public decimal Price { get; set; }
+        public decimal ReplacementPrice { get; set; }
+        public bool IsReplaced { get; set; }
 
     }
 }

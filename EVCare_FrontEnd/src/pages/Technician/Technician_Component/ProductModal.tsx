@@ -1,87 +1,134 @@
-import styled from "styled-components";
+import { useState, useEffect } from "react";
+import { Modal, Fade, Backdrop } from "@mui/material";
+import { NumberField } from "@base-ui-components/react/number-field";
+import ImageSkeleton from "./ImageSkeleton";
+import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
 
-const CardContainer = styled.div`
-  font-family: "Outfit", sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-sizing: border-box;
-  width: 300px;
-  height: auto;
-  background: rgba(255, 255, 255, 1);
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-`;
+import {
+  CardContainer,
+  ProductName,
+  Info,
+  TopRow,
+  PriceQuantity,
+  QuantityControl,
+  StyledBox,
+  StyledIconButton,
+  QuantityInput,
+} from "./Style/ProductModal.styled";
 
-const Image = styled.div`
-  width: 100%;
-  height: 200px;
-  background-color: #f0f0f0;
-  border-radius: 10px;
-  margin-bottom: 15px;
-`;
+import ButtonAction from "../../../components/Button/ButtonAction";
 
-const Content = styled.div``;
+interface ProductModalProps {
+  open: boolean;
+  onClose: () => void;
+  part: OrderPartsResponseDto | null;
+  onAddToCart?: (part: OrderPartsResponseDto, quantity: number) => void;
+}
 
-const ProductName = styled.div`
-  font-size: 1.5em;
-  font-weight: bold;
-  margin-bottom: 10px;
-`;
+export default function ProductModal({
+  open,
+  onClose,
+  part,
+  onAddToCart,
+}: ProductModalProps) {
+  const [quantity, setQuantity] = useState(1);
 
-const Descriptions = styled.div`
-  font-size: 1em;
-  color: #555;
-  margin-bottom: 15px;
-`;
+  useEffect(() => {
+    if (open) setQuantity(1);
+  }, [open]);
 
-const Info = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
+  const handleIncrease = () => {
+    if (quantity < (part?.quantity ?? 1)) setQuantity((prev) => prev + 1);
+  };
 
-const Button = styled.button`
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.3s;
+  const handleDecrease = () => {
+    if (quantity > 1) setQuantity((prev) => prev - 1);
+  };
 
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
+  const handleChange = (value: number | null) => {
+    if (!part) return;
+    const safeValue = value ?? 1;
+    if (safeValue < 1) setQuantity(1);
+    else if (safeValue > part.quantity) setQuantity(part.quantity);
+    else setQuantity(safeValue);
+  };
 
-const ProductModal = ({
-  isOpen,
-  onAnimationEnd,
-}: {
-  isOpen: boolean;
-  onAnimationEnd: () => void;
-}) => {
-  const price = 20000;
+  const handleAdd = () => {
+    if (part) {
+      onAddToCart?.(part, quantity);
+      onClose();
+    }
+  };
+
   return (
-    <CardContainer
-      style={{ display: isOpen ? "block" : "none" }}
-      onAnimationEnd={onAnimationEnd}
+    <Modal
+      open={open}
+      onClose={onClose}
+      closeAfterTransition
+      slots={{ backdrop: Backdrop }}
+      slotProps={{ backdrop: { timeout: 400 } }}
     >
-      <Image />
-      <Content>
-        <ProductName>Tên sản phẩm</ProductName>
-        <Descriptions>Đây là mô tả sản phẩm.</Descriptions>
-        <Info>
-          <div>Số lượng: 30</div>
-          <div>{price.toLocaleString("vi-VN")} VNĐ</div>
-          <Button>Thêm vào giỏ</Button>
-        </Info>
-      </Content>
-    </CardContainer>
-  );
-};
+      <Fade in={open} timeout={400}>
+        <StyledBox>
+          <CardContainer>
+            <ImageSkeleton
+              src={
+                part?.imageUrl ||
+                "https://placehold.co/300x180/png?text=No+Image"
+              }
+              alt={part?.name || "Product"}
+              height={180}
+            />
 
-export default ProductModal;
+            <ProductName variant="h6">
+              {part?.name || "Product Name"}
+            </ProductName>
+
+            <Info>
+              <TopRow>
+                <PriceQuantity>
+                  <span>{(part?.price ?? 0).toLocaleString("vi-VN")} VNĐ</span>
+                  <span>Stock: {part?.quantity ?? 0}</span>
+                </PriceQuantity>
+
+                <ButtonAction
+                  text="Add To Cart"
+                  variant="secondary"
+                  action={handleAdd}
+                />
+              </TopRow>
+
+              <QuantityControl>
+                <StyledIconButton
+                  size="small"
+                  onClick={handleDecrease}
+                  disabled={quantity <= 1}
+                >
+                  –
+                </StyledIconButton>
+
+                <NumberField.Root
+                  min={1}
+                  max={part?.quantity ?? 1}
+                  value={quantity}
+                  onValueChange={(value) => handleChange(value)}
+                  className="number-field"
+                >
+                  <QuantityInput as={NumberField.Input} />
+                </NumberField.Root>
+
+                <StyledIconButton
+                  size="small"
+                  onClick={handleIncrease}
+                  disabled={quantity >= (part?.quantity ?? 1)}
+                >
+                  +
+                </StyledIconButton>
+              </QuantityControl>
+            </Info>
+          </CardContainer>
+        </StyledBox>
+      </Fade>
+    </Modal>
+  );
+}

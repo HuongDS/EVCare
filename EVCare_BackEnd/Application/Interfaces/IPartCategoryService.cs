@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DataAccess.Dtos.Pagination;
+using DataAccess.Dtos.PartCategory;
+using DataAccess.Interfaces;
+
+namespace Application.Interfaces
+{
+    public interface IPartCategoryService
+    {
+        Task<int> CreateCategory(PartCategoryCreateModel model);
+        Task DeleteCategory(int id, int accountId);
+        public Task<PageResultDto<PartCategoryViewModel>> GetCategories(CategoryQueryDto model);
+        Task RestoreCategory(int id, int accountId);
+        Task<int> UpdateCategory(PartCategoryCreateModel model, int id);
+    }
+}

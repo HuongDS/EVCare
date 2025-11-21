@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DataAccess.Interfaces {
+    public interface IServicePartRepository {
+        Task AddRangeAsync(int serviceId, IEnumerable<int> partIds);
+        Task DeleteByPartIdAsync(int id);
+        Task DeleteByServiceIdAsync(int serviceId);
+
+    }
+}

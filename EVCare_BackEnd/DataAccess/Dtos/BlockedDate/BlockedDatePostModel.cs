@@ -9,7 +9,7 @@ namespace DataAccess.Dtos.BlockedDate
 {
     public class BlockedDatePostModel
     {
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
         public string Reason { get; set; }
         public UnavailableType UnavailableType { get; set; }
     }

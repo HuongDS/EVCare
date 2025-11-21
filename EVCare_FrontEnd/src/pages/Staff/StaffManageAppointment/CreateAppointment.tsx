@@ -1,0 +1,602 @@
+import { useCallback, useEffect, useState } from "react";
+import {
+  Search,
+  ArrowLeft,
+  User,
+  Car,
+  Calendar,
+  Upload,
+  CheckCircle,
+  Phone,
+  Mail,
+  FileText,
+  UserPlus,
+} from "lucide-react";
+import logo from "../../../assets/EVCare.png";
+import {
+  Select,
+  DatePicker,
+  Upload as AntUpload,
+  message,
+  notification,
+} from "antd";
+import type { UploadFile } from "antd";
+import {
+  useGetAllCustomer,
+  useUploadAppointmentImage,
+} from "../../../services/staffService";
+import { useGetAllServices } from "../../../services/servicesApi";
+import { useStaffCreateAppointment } from "../../../services/appointmentServiceApi";
+import {
+  APPOINTMENT_MESSAGE,
+  MSG_TITLE,
+} from "../../../constants/messages/Message";
+import SuccessModal from "../../../components/StatusModal/SuccessModal";
+import FailedModal from "../../../components/StatusModal/FailModal";
+import type { FullCustomerInfor } from "../../../models/CustomerModels/FullCustomerInfor";
+import { useCreateNewOrder } from "../../../services/orderServiceApi";
+import type { Dayjs } from "dayjs";
+import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
+import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
+import type { BlockedDateViewModel } from "../../../models/BlockedDate/BlockedDateViewModel";
+import {
+  getBlockedDate,
+  getCenterInformation,
+} from "../../../services/serviceCenterService";
+import dayjs from "dayjs";
+
+interface Props {
+  onBack: () => void;
+}
+
+export default function CreateAppointmentPage({ onBack }: Props) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [selectedCustomer, setSelectedCustomer] =
+    useState<FullCustomerInfor | null>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
+  const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const [startTime, setStartTime] = useState<Dayjs | null>(null);
+  const [endTime, setEndTime] = useState<Dayjs | null>(null);
+  const [appointmentDate, setAppointmentDate] = useState<Dayjs>();
+  const [note, setNote] = useState("");
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [isError, setIsError] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [listBlockedDays, setListBlockedDays] = useState<
+    BlockedDateViewModel[]
+  >([]);
+
+  const { data: customers, isLoading } = useGetAllCustomer({
+    ...((debouncedQuery !== "" && { keyword: debouncedQuery }) || {}),
+  });
+  const { data: services } = useGetAllServices({});
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  const handleCustomerSelect = (customer: FullCustomerInfor) => {
+    if (customer.banned) {
+      message.error("This customer is banned and cannot book appointments");
+      return;
+    }
+    setSelectedCustomer(customer);
+    setSelectedVehicle(null);
+    setSearchQuery("");
+  };
+
+  const {
+    mutateAsync: staffCreateAppointment,
+    isPending: appointmentCreating,
+  } = useStaffCreateAppointment();
+  const { mutateAsync: createOrder, isPending: orderCreating } =
+    useCreateNewOrder();
+  const { mutateAsync: uploadImages, isPending: uploading } =
+    useUploadAppointmentImage();
+
+  const handleUploadImages = async () => {
+    try {
+      const formData = new FormData();
+      fileList.forEach((file) => {
+        if (file.originFileObj) {
+          formData.append("files", file.originFileObj as Blob);
+        }
+      });
+
+      const Images = await uploadImages(formData);
+      return Images;
+    } catch (error) {
+      return { data: [] };
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (
+      !selectedCustomer ||
+      !selectedVehicle ||
+      selectedServices.length === 0 ||
+      !appointmentDate
+    ) {
+      message.error("Please fill in all required fields");
+      return;
+    }
+
+    try {
+      const Images = await handleUploadImages();
+
+      const appointmentData = {
+        customerId: selectedCustomer.customerId,
+        vehicleId: selectedVehicle,
+        note: note || "",
+        appointment_Date: appointmentDate.add(7, "hour").toISOString(),
+        imagesUrls: Images?.data?.map((image) => image.url || "") || [],
+        serviceIds: selectedServices,
+      };
+
+      const response = await staffCreateAppointment(appointmentData);
+
+      if (response) {
+        const createNewOrderParams = {
+          appointmentID: response.appointmentId || 0,
+          created_At: new Date().toISOString(),
+        };
+        await createOrder(createNewOrderParams);
+      }
+      setModalMessage(APPOINTMENT_MESSAGE.CREATE_APPOINTMENT_SUCCESS);
+      setIsSuccess(true);
+    } catch (error) {
+      setModalMessage((error as Error).message);
+      setIsError(true);
+    }
+  };
+
+  const selectedVehicleData = selectedCustomer?.vehicles.find(
+    (v) => v.id === selectedVehicle
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response01 = await getCenterInformation();
+        setStartTime(
+          response01.data?.openTime
+            ? dayjs(response01.data.openTime, "HH:mm:ss")
+            : null
+        );
+        setEndTime(
+          response01.data?.closeTime
+            ? dayjs(response01.data.closeTime, "HH:mm:ss")
+            : null
+        );
+
+        const response02 = await getBlockedDate();
+        setListBlockedDays(response02.data ?? []);
+      } catch (error) {
+        notification.error({
+          message: "Error",
+          description: "Failed to fetch data",
+          showProgress: true,
+        });
+      }
+    };
+    fetchData();
+  }, []);
+
+  const disableDate = useCallback(
+    (current: Dayjs) => {
+      if (!current) return false;
+      const isPast = current.isBefore(dayjs().startOf("day"));
+      const isBlocked = listBlockedDays.some((d) =>
+        current.isSame(dayjs(d.dateTime, "YYYY-MM-DD"), "day")
+      );
+      return isPast || isBlocked;
+    },
+    [listBlockedDays]
+  );
+
+  const disableTime = useCallback(
+    (current: Dayjs) => {
+      void current;
+      const now = dayjs();
+      const cutoff = now.add(1, "hour");
+      const isToday = current.isSame(now, "day");
+      return {
+        disabledHours: () => {
+          const hours = [];
+
+          for (let h = 0; h < 24; h++) {
+            if (h < (startTime?.hour() ?? 0) || h > (endTime?.hour() ?? 0)) {
+              hours.push(h);
+            }
+          }
+
+          if (isToday) {
+            for (let h = 0; h < now.hour(); h++) {
+              if (!hours.includes(h)) hours.push(h);
+            }
+          }
+
+          return hours;
+        },
+        disabledMinutes: (selectedHour?: number) => {
+          const disabled: number[] = [];
+          if (selectedHour == null) return [];
+
+          if (isToday) {
+            if (selectedHour === cutoff.hour()) {
+              for (let m = 0; m < cutoff.minute(); m++) disabled.push(m);
+            }
+            if (selectedHour < cutoff.hour()) {
+              return Array.from({ length: 60 }, (_, i) => i);
+            }
+          }
+
+          if (selectedHour === startTime?.hour()) {
+            for (let m = 0; m < startTime?.minute(); m++) disabled.push(m);
+            return disabled;
+          }
+
+          if (selectedHour === endTime?.hour()) {
+            for (let m = 0; m < 60; m++) disabled.push(m);
+            return disabled;
+          }
+          return disabled;
+        },
+        disabledSeconds: () => {
+          return [];
+        },
+      };
+    },
+    [startTime, endTime, appointmentDate]
+  );
+
+  return (
+    <PageContainer>
+      <Header>
+        <BackButton onClick={onBack}>
+          <ArrowLeft size={20} />
+          Back
+        </BackButton>
+        <HeaderText>
+          <h1>Create New Appointment</h1>
+          <p>Search for customer and schedule a service appointment</p>
+        </HeaderText>
+      </Header>
+
+      <ContentWrapper>
+        <LeftPanel>
+          <Card>
+            <CardTitle>
+              <User size={20} />
+              Search Customer
+            </CardTitle>
+
+            <SearchBox>
+              <Search size={20} />
+              <SearchInput
+                placeholder="Search by name, phone, or email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </SearchBox>
+
+            {!selectedCustomer && (customers?.data?.items.length ?? 0) > 0 ? (
+              <CustomerResults>
+                {customers?.data?.items.slice(0, 5).map((customer) => (
+                  <CustomerCard
+                    key={customer.accountId}
+                    onClick={() => handleCustomerSelect(customer)}
+                    $banned={customer.banned}
+                  >
+                    <CustomerInfo>
+                      <CustomerName>
+                        {customer.customerName}
+                        {customer.banned && <BannedTag>Banned</BannedTag>}
+                      </CustomerName>
+                      <CustomerDetails>
+                        <DetailItem>
+                          <Phone size={12} />
+                          {customer.phoneNumber}
+                        </DetailItem>
+                        <DetailItem>
+                          <Mail size={12} />
+                          {customer.email}
+                        </DetailItem>
+                      </CustomerDetails>
+                    </CustomerInfo>
+                    <VehicleCount>
+                      {
+                        customer.vehicles.filter((veh) => veh.cateId !== 0)
+                          .length
+                      }
+                      {""} vehicles
+                    </VehicleCount>
+                  </CustomerCard>
+                ))}
+              </CustomerResults>
+            ) : (
+              selectedCustomer === null &&
+              (isLoading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    padding: "20px",
+                  }}
+                >
+                  <ColorSpinner width="4em" height="4em" />
+                </div>
+              ) : (
+                <NOT_FOUND_ITEMS
+                  icon={<UserPlus size={40} />}
+                  message={`No customer is found by ${debouncedQuery}`}
+                  height="175px"
+                />
+              ))
+            )}
+
+            {selectedCustomer && (
+              <SelectedCustomer>
+                <SelectedLabel>Selected Customer</SelectedLabel>
+                <SelectedInfo>
+                  <div>
+                    <strong>{selectedCustomer.customerName}</strong>
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        color: "#666",
+                        marginTop: "4px",
+                      }}
+                    >
+                      {selectedCustomer.phoneNumber} • {selectedCustomer.email}
+                    </div>
+                  </div>
+                  <RemoveButton onClick={() => setSelectedCustomer(null)}>
+                    Change
+                  </RemoveButton>
+                </SelectedInfo>
+              </SelectedCustomer>
+            )}
+          </Card>
+
+          {selectedCustomer && selectedCustomer.vehicles.length > 0 && (
+            <Card>
+              <CardTitle>
+                <Car size={20} />
+                Select Vehicle
+              </CardTitle>
+
+              <VehicleList>
+                {selectedCustomer.vehicles
+                  .filter((veh) => veh.cateId !== 0)
+                  .map((vehicle) => (
+                    <VehicleCard
+                      key={vehicle.id}
+                      onClick={() => setSelectedVehicle(vehicle.id)}
+                      $selected={selectedVehicle === vehicle.id}
+                    >
+                      <VehicleImage
+                        src={vehicle.image || logo}
+                        alt={vehicle.licensePlate}
+                      />
+                      <VehicleInfo>
+                        <VehicleCategory>
+                          {vehicle.categoryName}
+                        </VehicleCategory>
+                        <VehiclePlate>{vehicle.licensePlate}</VehiclePlate>
+                      </VehicleInfo>
+                      {selectedVehicle === vehicle.id && (
+                        <SelectedBadge>
+                          <CheckCircle size={16} />
+                        </SelectedBadge>
+                      )}
+                    </VehicleCard>
+                  ))}
+              </VehicleList>
+            </Card>
+          )}
+        </LeftPanel>
+
+        <RightPanel>
+          <Card>
+            <CardTitle>
+              <Calendar size={20} />
+              Appointment Details
+            </CardTitle>
+
+            {!selectedCustomer && (
+              <EmptyState>
+                <User size={48} opacity={0.3} />
+                <p>Please select a customer first</p>
+              </EmptyState>
+            )}
+
+            {selectedCustomer && !selectedVehicle && (
+              <EmptyState>
+                <Car size={48} opacity={0.3} />
+                <p>Please select a vehicle</p>
+              </EmptyState>
+            )}
+
+            {selectedCustomer && selectedVehicle && (
+              <>
+                <SummaryBox>
+                  <SummaryRow>
+                    <SummaryLabel>Customer:</SummaryLabel>
+                    <SummaryValue>{selectedCustomer.customerName}</SummaryValue>
+                  </SummaryRow>
+                  <SummaryRow>
+                    <SummaryLabel>Vehicle:</SummaryLabel>
+                    <SummaryValue>
+                      {selectedVehicleData?.categoryName} -{" "}
+                      {selectedVehicleData?.licensePlate}
+                    </SummaryValue>
+                  </SummaryRow>
+                </SummaryBox>
+
+                <FormSection>
+                  <FormItem>
+                    <FormLabel>
+                      <Calendar size={14} />
+                      Appointment Date & Time<Required>*</Required>
+                    </FormLabel>
+                    <DatePicker
+                      format="DD/MM/YYYY HH:mm"
+                      showTime={{ format: "HH:mm" }}
+                      value={appointmentDate}
+                      onChange={(value) => setAppointmentDate(value)}
+                      disabledDate={disableDate}
+                      disabledTime={disableTime}
+                    />
+                  </FormItem>
+
+                  <FormItem>
+                    <FormLabel>
+                      <FileText size={14} />
+                      Services<Required>*</Required>
+                    </FormLabel>
+                    <Select
+                      mode="multiple"
+                      placeholder="Select services"
+                      style={{ width: "100%" }}
+                      size="large"
+                      value={selectedServices}
+                      onChange={setSelectedServices}
+                      showSearch
+                      optionFilterProp="label"
+                      filterOption={(input, option) =>
+                        (option?.label ?? "")
+                          .toString()
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                      options={services?.data?.items?.map((service) => ({
+                        label: service.name,
+                        value: service.id,
+                      }))}
+                    />
+                  </FormItem>
+
+                  <FormItem>
+                    <FormLabel>
+                      <FileText size={14} />
+                      Customer Note (Optional)
+                    </FormLabel>
+                    <TextArea
+                      placeholder="Enter any special instructions or notes..."
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      rows={4}
+                    />
+                  </FormItem>
+
+                  <FormItem>
+                    <FormLabel>
+                      <Upload size={14} />
+                      Vehicle Images (Optional)
+                    </FormLabel>
+                    <AntUpload
+                      listType="picture-card"
+                      fileList={fileList}
+                      onChange={({ fileList }) => setFileList(fileList)}
+                      beforeUpload={() => false}
+                      maxCount={5}
+                    >
+                      <UploadButton>
+                        <Upload size={20} />
+                        <div>Upload</div>
+                      </UploadButton>
+                    </AntUpload>
+                  </FormItem>
+                </FormSection>
+
+                {appointmentCreating || orderCreating || uploading ? (
+                  <TextWaitingEffect
+                    text="Waiting for processing"
+                    fontSize="20px"
+                  />
+                ) : (
+                  <ActionButtons>
+                    <CancelButton onClick={onBack}>Cancel</CancelButton>
+                    <SubmitButton onClick={handleSubmit}>
+                      <CheckCircle size={20} />
+                      Create Appointment
+                    </SubmitButton>
+                  </ActionButtons>
+                )}
+              </>
+            )}
+          </Card>
+        </RightPanel>
+        {isSuccess && (
+          <SuccessModal
+            header={MSG_TITLE.CREATE_APPOINTMENT}
+            message={modalMessage}
+            action={onBack}
+          />
+        )}
+        {isError && (
+          <FailedModal
+            header={MSG_TITLE.CREATE_APPOINTMENT + " Failed"}
+            message={modalMessage}
+            action={() => setIsError(false)}
+          />
+        )}
+      </ContentWrapper>
+    </PageContainer>
+  );
+}
+
+import {
+  ActionButtons,
+  BackButton,
+  BannedTag,
+  CancelButton,
+  Card,
+  CardTitle,
+  ContentWrapper,
+  CustomerCard,
+  CustomerDetails,
+  CustomerInfo,
+  CustomerName,
+  CustomerResults,
+  DetailItem,
+  EmptyState,
+  FormItem,
+  FormLabel,
+  FormSection,
+  Header,
+  HeaderText,
+  LeftPanel,
+  PageContainer,
+  RemoveButton,
+  Required,
+  RightPanel,
+  SearchBox,
+  SearchInput,
+  SelectedBadge,
+  SelectedCustomer,
+  SelectedInfo,
+  SelectedLabel,
+  SubmitButton,
+  SummaryBox,
+  SummaryLabel,
+  SummaryRow,
+  SummaryValue,
+  TextArea,
+  UploadButton,
+  VehicleCard,
+  VehicleCategory,
+  VehicleCount,
+  VehicleImage,
+  VehicleInfo,
+  VehicleList,
+  VehiclePlate,
+} from "./styles/CreateAppointment.styled";
+import ColorSpinner from "../StaffComponents/ColorSpinner";

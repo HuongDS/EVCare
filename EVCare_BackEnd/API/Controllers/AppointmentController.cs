@@ -14,6 +14,8 @@ using Application.Services;
 using Newtonsoft.Json.Linq;
 using DataAccess.Dtos.CenterCare;
 using DataAccess.Dtos.Pagination;
+using Application.DomainEvents;
+using DataAccess.Dtos.AppointmentService;
 
 
 namespace API.Controllers
@@ -26,26 +28,31 @@ namespace API.Controllers
         private readonly IAppointmentService _appointmentService;
         private readonly INotificationServices _notificationServices;
         private readonly ITokenServices _tokenServices;
-        private readonly IAlertServices _alertServices;
+        private readonly OnAppointmentConfirmHandler _onAppointmentConfirmHandler;
 
         public AppointmentController(IAppointmentService appointmentService, INotificationServices notificationServices,
-            ITokenServices tokenServices, IAlertServices alertServices)
+            ITokenServices tokenServices,
+            OnAppointmentConfirmHandler onAppointmentConfirmHandler)
         {
             _appointmentService = appointmentService;
             _notificationServices = notificationServices;
             _tokenServices = tokenServices;
-            _alertServices = alertServices;
+
+            _onAppointmentConfirmHandler = onAppointmentConfirmHandler;
         }
         [Authorize(Roles = "Staff")]
         [HttpPost("staff")]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
+        [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
         public async Task<IActionResult> CreateAppointment(AppointmentCreateModel model)
         {
             try
             {
-                var appointmentId = await _appointmentService.CreateAppointment(model);
+                int employeeId = (int)HttpContext.Items["EmployeeId"];
+                var appointmentId = await _appointmentService.CreateAppointmentForStaff(model, employeeId);
                 return Ok(new
                 {
-                    StatusCode = HttpStatus.OK,
+                    StatusCode = HttpStatus.CREATED,
                     Message = Message.APPOINTMENT_CREATED_SUCCESS,
                     AppointmentId = appointmentId
                 });
@@ -166,12 +173,12 @@ namespace API.Controllers
 
                 };
                 var appointmentId = await _appointmentService.CreateAppointment(newModel);
-                var appointmentDetails = await _appointmentService.GetAppointmentByiD(appointmentId);
+                var appointmentDetails = await _appointmentService.GetAppointmentById(appointmentId);
                 await _notificationServices.SendAppointmentInforAsync(appointmentDetails);
                 return Ok(new
                 {
-                    StatusCode = 200,
-                    Message = "Appointment created successfully",
+                    StatusCode = HttpStatus.CREATED,
+                    Message = Message.APPOINTMENT_CREATED_SUCCESS,
                     AppointmentId = appointmentId
                 });
 
@@ -180,7 +187,7 @@ namespace API.Controllers
             {
                 return BadRequest(new
                 {
-                    StatusCode = 400,
+                    StatusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                 });
             }
@@ -189,6 +196,7 @@ namespace API.Controllers
         [Authorize(Roles = "Staff")]
         [HttpPut("staff")]
         [ServiceFilter(typeof(SetEmployeeIdFilter))]
+        [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
         public async Task<IActionResult> UpdateAppointment(AppointmentUpdateModel model)
         {
             try
@@ -197,8 +205,8 @@ namespace API.Controllers
                 var result = await _appointmentService.UpdateAppointment(model, employeeId);
                 return Ok(new ResponseDto<bool>
                 {
-                    statusCode = 200,
-                    message = "Appointment updated successfully",
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_UPDATED_SUCCESS,
                     data = result
                 });
 
@@ -207,7 +215,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = 400,
+                    statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                     data = null
                 });
@@ -217,8 +225,8 @@ namespace API.Controllers
 
         [Authorize(Roles = "Staff")]
         [HttpDelete("{appointmentId}")]
-        [ServiceFilter(typeof(SetCustomerIdFilter))]
-        [ServiceFilter(typeof(AppointmentOwnershipFilter))]
+        [ServiceFilter(typeof(SetEmployeeIdFilter))]
+        [ServiceFilter(typeof(AuthorizeEmployeeIsAbsent))]
         public async Task<IActionResult> DeleteAppointment(int appointmentId)
         {
             try
@@ -226,8 +234,8 @@ namespace API.Controllers
                 var result = await _appointmentService.DeleteAppointment(appointmentId);
                 return Ok(new ResponseDto<bool>
                 {
-                    statusCode = 200,
-                    message = "Appointment canceled successfully",
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_CANCEL_SUCCESS,
                     data = result
                 });
             }
@@ -235,7 +243,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = 400,
+                    statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                     data = null
                 });
@@ -250,21 +258,21 @@ namespace API.Controllers
         {
             try
             {
-                // This is a placeholder for actual implementation
-                var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
+
+                var appointment = await _appointmentService.GetAppointmentById(appointmentId);
 
                 return Ok(new ResponseDto<AppointmentViewDetailModel>
                 {
-                    statusCode = 200,
-                    message = "Appointments retrieved successfully",
-                    data = appointment // Replace null with actual appointments data
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = appointment
                 });
             }
             catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = 400,
+                    statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
                     data = null
                 });
@@ -283,8 +291,8 @@ namespace API.Controllers
                 var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
                 {
-                    statusCode = 200,
-                    message = "Appointments retrieved successfully",
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
                     data = appointments
                 });
             }
@@ -292,7 +300,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ResponseDto<object>
                 {
-                    statusCode = 400,
+                    statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
 
                 });
@@ -309,8 +317,8 @@ namespace API.Controllers
                 var appointments = await _appointmentService.GetAppointmentHistoryByCustomerId(customerId);
                 return Ok(new ResponseDto<IEnumerable<AppointmentViewModel>>
                 {
-                    statusCode = 200,
-                    message = "Appointments retrieved successfully",
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
                     data = appointments
                 });
             }
@@ -326,11 +334,11 @@ namespace API.Controllers
 
         [HttpGet("appointments/paged")]
         [Authorize(Roles = "Staff")]
-        public async Task<IActionResult> GetAppointmentsWithPagination([FromQuery]AppointmentQueryDto model)
+        public async Task<IActionResult> GetAppointmentsWithPagination([FromQuery] AppointmentQueryDto model)
         {
             try
             {
-                
+
                 var appointments = await _appointmentService.GetAppointmentsWithPagination(model);
                 return Ok(new ResponseDto<PageResultDto<AppointmentViewModel>>
                 {
@@ -356,45 +364,27 @@ namespace API.Controllers
             var payload = _tokenServices.Validate(token);
             if (!payload.Item1 || payload.Item4 != "confirm")
             {
-                return BadRequest(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.INVALID_TOKEN,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
 
             var appointmentId = payload.Item3;
-            var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
+            var appointment = await _appointmentService.GetAppointmentById(appointmentId);
             if (appointment == null)
             {
-                return NotFound(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.NOT_FOUND,
-                    message = Message.APPOINTMENT_NOT_FOUND,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
             if (appointment.Status != AppointmentStatusEnum.Pending)
             {
-                return BadRequest(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.APPOINTMENT_CANNOT_BE_CONFIRMED,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
             var res = await _appointmentService.UpdateAppointmentStatus(new AppointmentUpdateDto
             {
                 appointmentID = appointmentId,
                 status = AppointmentStatusEnum.Confirmed
             });
-            await _alertServices.AddConfirmAlertAsync(new DataAccess.Dtos.Alerts.AlertCreateDto
-            {
-                appointmentId = appointmentId,
-                message = $"New appointment on {appointment.AppointmentDate.ToString("dd/mm/yyyy")} has been confirmed."
-            });
-            return Ok(res);
+            await _onAppointmentConfirmHandler.HandleAsync();
+
+            return Redirect("https://ev-care.netlify.app/ThankYou");
         }
 
         [HttpGet("customer-cancel-appointment")]
@@ -404,45 +394,27 @@ namespace API.Controllers
             var payload = _tokenServices.Validate(token);
             if (!payload.Item1 || payload.Item4 != "cancel")
             {
-                return BadRequest(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.INVALID_TOKEN,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
 
             var appointmentId = payload.Item3;
-            var appointment = await _appointmentService.GetAppointmentByiD(appointmentId);
+            var appointment = await _appointmentService.GetAppointmentById(appointmentId);
             if (appointment == null)
             {
-                return NotFound(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.NOT_FOUND,
-                    message = Message.APPOINTMENT_NOT_FOUND,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
             if (appointment.Status != AppointmentStatusEnum.Pending)
             {
-                return BadRequest(new ResponseDto<object>
-                {
-                    statusCode = HttpStatus.BAD_REQUEST,
-                    message = Message.APPOINTMENT_CANNOT_BE_CANCELED,
-                    data = null
-                });
+                return Redirect("https://ev-care.netlify.app/NotFound");
             }
             var res = await _appointmentService.UpdateAppointmentStatus(new AppointmentUpdateDto
             {
                 appointmentID = appointmentId,
                 status = AppointmentStatusEnum.Canceled
             });
-            await _alertServices.AddConfirmAlertAsync(new DataAccess.Dtos.Alerts.AlertCreateDto
-            {
-                appointmentId = appointmentId,
-                message = $"New appointment on {appointment.AppointmentDate.ToString("dd/mm/yyyy")} has been canceled."
-            });
-            return Ok(res);
+            await _onAppointmentConfirmHandler.HandleAsync();
+
+            return Redirect("https://ev-care.netlify.app/Cancel");
         }
 
         [HttpGet("daily-count")]
@@ -472,9 +444,33 @@ namespace API.Controllers
 
             }
         }
+        [HttpGet("appointment-services")]
+        [Authorize(Roles = "Staff, Technician, Admin")]
+        public async Task<IActionResult> GetAppointmentServices([FromQuery] int appointmentId)
+        {
+            try
+            {
+                var services = await _appointmentService.GetAppointmentServices(appointmentId);
+                return Ok(new ResponseDto<IEnumerable<AppointmentServiceViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = services
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = null
+                });
+            }
+        }
 
         [HttpGet("get-appointment-technician")]
-        [Authorize(Roles ="Technician")]
+        [Authorize(Roles = "Technician")]
         [ServiceFilter(typeof(SetTechnicianIdFilter))]
         public async Task<IActionResult> GetAppointmentByTechnician([FromQuery] AppointmentTechnicianQueryDto model)
         {
@@ -488,13 +484,101 @@ namespace API.Controllers
                     message = Message.APPOINTMENT_GET_SUCCESS,
                     data = data
                 });
-                
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
                     message = ex.Message,
                     statusCode = HttpStatus.BAD_REQUEST,
+                    data = null
+                });
+            }
+        }
+
+
+        [HttpGet("in-progress-understaffed")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> GetUnderstaffedInProgressAsync([FromQuery] AppointmentQueryDto model)
+        {
+            try
+            {
+                var data = await _appointmentService.GetUnderstaffedInProgressAsync(model);
+                return Ok(new ResponseDto<PageResultDto<AppointmentInProgressUnderstaffedViewModel>>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.APPOINTMENT_GET_SUCCESS,
+                    data = data
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    message = ex.Message,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    data = null
+                });
+            }
+        }
+
+        [HttpGet("count-appointments-in-month/{year}/{month}")]
+        [Authorize(Roles = "Admin, Staff")]
+        public async Task<IActionResult> CountAppointmentsInMonth(int year, int month)
+        {
+            return Ok(new ResponseDto<int>
+            {
+                statusCode = HttpStatus.OK,
+                message = Message.APPOINTMENT_GET_SUCCESS,
+                data = await _appointmentService.CountAppointmentsInMonths(year, month)
+            });
+        }
+        [HttpGet("count-customers-in-month/{year}/{month}")]
+        [Authorize(Roles = "Admin, Staff")]
+        public async Task<IActionResult> CountCustomersInMonth(int year, int month)
+        {
+            var result = await _appointmentService.CountCustomersInMonths(year, month);
+            return Ok(new ResponseDto<int>
+            {
+                statusCode = HttpStatus.OK,
+                message = Message.APPOINTMENT_GET_SUCCESS,
+                data = result
+            });
+        }
+        [HttpGet("count-appointments-with-status-in-month/{year}/{month}")]
+        [Authorize(Roles = "Admin, Staff")]
+        public async Task<IActionResult> CountAppointmentsInMonthWithStatus(int year, int month, AppointmentStatusEnum status)
+        {
+            return Ok(new ResponseDto<int>
+            {
+                statusCode = HttpStatus.OK,
+                message = Message.APPOINTMENT_GET_SUCCESS,
+                data = await _appointmentService.CountAppointmentsInMonthsWithStatus(year, month, status)
+            });
+
+        }
+        [HttpGet("vehicle-category/{appointmentId}")]
+        [Authorize]
+        [ServiceFilter(typeof(SetCustomerIdFilter))]
+        [ServiceFilter(typeof(AppointmentAuthorizationFilter))]
+        public async Task<IActionResult> GetVehicleCategoryByAppointmentId(int appointmentId)
+        {
+            try
+            {
+                var vehicle = await _appointmentService.GetVehicleByAppointmentId(appointmentId);
+                return Ok(new ResponseDto<AppointmentVehicleViewModel>
+                {
+                    statusCode = HttpStatus.OK,
+                    message = Message.VEHICLE_GET_SUCCESS,
+                    data = vehicle
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseDto<object>
+                {
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
                     data = null
                 });
             }
