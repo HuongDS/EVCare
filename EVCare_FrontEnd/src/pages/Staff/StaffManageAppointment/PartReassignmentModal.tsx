@@ -35,6 +35,9 @@ import {
   AssignmentPill,
   RemoveAssignmentButton,
   AssignmentDetails,
+  TechnicianCardDetail,
+  CardLeft,
+  KPI,
 } from "./styles/PartReassignmentModal.styled";
 import type { PartPendingDto } from "../../../models/PartModel/PartModel";
 import { useGetTechnicianForPendingParts } from "../../../services/appointmentServiceApi";
@@ -120,8 +123,9 @@ export default function PartReassignmentModal({
         newTechnicianId: newTechId,
       };
     });
+
     try {
-      onConfirm(reassignmentData);
+      await onConfirm(reassignmentData);
       onClose();
     } catch (error) {
       console.error("Failed to reassign parts in modal:", error);
@@ -272,32 +276,40 @@ export default function PartReassignmentModal({
                               <TechSearchResult>
                                 {availableTechnicians?.data?.items?.map(
                                   (tech) => (
-                                    <div
+                                    <TechnicianCardDetail
                                       key={tech.id}
                                       onClick={() =>
                                         handleSelectTechnician(partId, tech.id)
                                       }
                                     >
-                                      <TechAvatar
-                                        src={getAvatarUrl(
-                                          tech.fullName,
-                                          tech.status
-                                        )}
-                                        alt="Tech Avatar"
-                                      />
-                                      <TechDetails>
-                                        <TechName $selected={true}>
-                                          {tech.fullName}
-                                        </TechName>
-                                        <TechStatus $statusColor={statusColor}>
-                                          <CheckCircle
-                                            size={12}
-                                            style={{ marginRight: "4px" }}
-                                          />
-                                          {tech.status}
-                                        </TechStatus>
-                                      </TechDetails>
-                                    </div>
+                                      <CardLeft>
+                                        <TechAvatar
+                                          src={getAvatarUrl(
+                                            tech.fullName,
+                                            tech.status
+                                          )}
+                                          alt="Tech Avatar"
+                                        />
+                                        <TechDetails>
+                                          <TechName $selected={true}>
+                                            {tech.fullName}
+                                          </TechName>
+                                          <TechStatus
+                                            $statusColor={statusColor}
+                                          >
+                                            <CheckCircle
+                                              size={12}
+                                              style={{ marginRight: "4px" }}
+                                            />
+                                            {tech.status}
+                                          </TechStatus>
+                                        </TechDetails>
+                                      </CardLeft>
+
+                                      <KPI $selected={true}>
+                                        KPI: {tech.kpiPerDays}
+                                      </KPI>
+                                    </TechnicianCardDetail>
                                   )
                                 )}
 
