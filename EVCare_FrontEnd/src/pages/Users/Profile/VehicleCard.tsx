@@ -1,8 +1,12 @@
-import { MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
+import {
+  MSG_TITLE,
+  SUCCESS_MESSAGE,
+} from "../../../constants/messages/Message";
 import type { VehicleViewDto } from "../../../models/VehicleModels/vehicleViewDto";
 import { useNotification } from "../../../context/useNotification";
 import DeleteConfirmationModal from "../../Admin/AdminService&Parts/DeleteConfirmModal";
 import { useState } from "react";
+import { formatPlateNumber } from "../../../utils/formatPlateNumber";
 
 export default function VehicleCard({
   vehicle,
@@ -35,10 +39,16 @@ export default function VehicleCard({
   return (
     <>
       <div className="vehicle-card">
-        <img src={vehicle.image} alt={vehicle.categoryName} className="vehicle-image" />
+        <img
+          src={vehicle.image}
+          alt={vehicle.categoryName}
+          className="vehicle-image"
+        />
         <div className="vehicle-info">
           <div className="vehicle-model">{vehicle.categoryName}</div>
-          <div className="vehicle-plate">{vehicle.licensePlate}</div>
+          <div className="vehicle-plate">
+            {formatPlateNumber(vehicle.licensePlate)}
+          </div>
         </div>
         <button className="delete-vehicle-btn" onClick={handleDeleteClick}>
           Delete Vehicle

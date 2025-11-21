@@ -257,6 +257,8 @@ export const StatusBadge = styled.span<{ $status: string }>`
         return "#ffebee";
       case "critical":
         return "#ffcdd2";
+      case "done":
+        return "#acf6ba";
       default:
         return "#f5f5f5";
     }
@@ -271,6 +273,8 @@ export const StatusBadge = styled.span<{ $status: string }>`
         return "#d32f2f";
       case "critical":
         return "#b71c1c";
+      case "done":
+        return "#00ad4e";
       default:
         return "#666";
     }

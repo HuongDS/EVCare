@@ -179,7 +179,7 @@ export const Buttons = styled.div`
     font-family: "Outfit", sans-serif;
     font-weight: 600;
     font-size: 1rem;
-    color: #2d3748; /
+    color: #2d3748;
     padding: 12px 20px;
     border-radius: 12px;
     margin-bottom: 2px;
@@ -187,9 +187,9 @@ export const Buttons = styled.div`
 
     &:hover,
     &:focus {
-      color: #00ad4e; 
-      background-color: #e6f7ee; 
-      transform: scale(1.03); 
+      color: #00ad4e;
+      background-color: #e6f7ee;
+      transform: scale(1.03);
     }
 
     &:active {

@@ -296,6 +296,7 @@ export const StepConnector = styled.div<{ $active: boolean }>`
 
 export const InfoBox = styled.div`
   display: flex;
+  align-items: center;
   gap: 16px;
   padding: 20px;
   background: #fff3e0;
