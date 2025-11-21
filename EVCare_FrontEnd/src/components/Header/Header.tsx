@@ -9,7 +9,7 @@ import { AiOutlineMenu } from "react-icons/ai";
 import { deleteToken, logout } from "../../services/authService";
 import HTTP_STATUS from "../../constants/Code/HttpStatusCode";
 import { logoutRedux } from "../../states/authSlice";
-import { openLogin } from "../../states/uiSlice";
+import { closeModel3d, openLogin } from "../../states/uiSlice";
 import { handleError } from "../../utils/errorHandler";
 import DropdownMenu from "./DropdownMenu";
 import { stopAdminDashboardConnection } from "../../signalr/adminConnection";
@@ -68,6 +68,7 @@ export default function Header() {
     }
     deleteToken();
     dispatch(logoutRedux());
+    dispatch(closeModel3d());
     await stopAdminDashboardConnection();
     await stopStaffDashboardConnection();
     await stopChatConnection();
