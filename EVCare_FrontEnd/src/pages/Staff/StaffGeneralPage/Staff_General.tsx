@@ -49,8 +49,6 @@ const StaffDashboard: React.FC = () => {
       (app) => app.status === "Done"
     ).length;
     const totalAppointments = appointments?.data?.items?.length;
-    console.log(completedAppointment);
-    console.log(totalAppointments);
 
     setCompletedAppointment(completedAppointment ?? 0);
     setTotal(totalAppointments ?? 0);
@@ -72,7 +70,7 @@ const StaffDashboard: React.FC = () => {
               <ProfileHeader>
                 <StyledAvatar
                   size={60}
-                  src={`https://ui-avatars.com/api/?name=${staffInfo.data?.last_Name}&background=667eea&color=fff&bold=true`}
+                  src={`https://ui-avatars.com/api/?name=${staffInfo.data?.first_Name}&background=667eea&color=fff&bold=true`}
                   alt="Avatar"
                 />
                 <Title

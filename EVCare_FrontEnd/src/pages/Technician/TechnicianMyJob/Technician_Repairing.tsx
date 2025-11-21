@@ -31,8 +31,9 @@ export default function Technician_Repairing({
   setIsRepairing,
   orderId,
 }: Props) {
+  const [loadingPartId, setLoadingPartId] = useState<number | null>(null);
   const techId = useAppSelector((state) => state.tech.techId);
-  const { mutateAsync: updatePartStatus, isPending } = useUpdatePartStatus();
+  const { mutateAsync: updatePartStatus } = useUpdatePartStatus();
   const notification = useNotification();
   const queryClient = useQueryClient();
 
@@ -55,6 +56,7 @@ export default function Technician_Repairing({
     partId: number,
     isReplaced: boolean
   ) => {
+    setLoadingPartId(partId);
     try {
       await updatePartStatus({
         orderId: orderId,
@@ -82,6 +84,8 @@ export default function Technician_Repairing({
           ERROR_MESSAGE.FAILED_TO_UPDATE_PART_STATUS,
         showProgress: true,
       });
+    } finally {
+      setLoadingPartId(null);
     }
   };
 
@@ -156,9 +160,9 @@ export default function Technician_Repairing({
                       <CheckCircle size={20} />
                       Completed
                     </CompletedBadge>
-                  ) : isPending ? (
+                  ) : loadingPartId === part.id ? (
                     <div style={{ display: "flex", justifyContent: "center" }}>
-                      <ColorSpinner width="2em" height="2em" />
+                      <ColorSpinner key={part.id} width="2em" height="2em" />
                     </div>
                   ) : (
                     <ActionButton

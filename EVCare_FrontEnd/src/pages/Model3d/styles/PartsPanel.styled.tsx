@@ -91,13 +91,14 @@ export const Subtitle = styled.p`
 
 export const CategoriesWrapper = styled.div`
   flex: 1;
-  max-height: 630px;
+  max-height: 600px;
   overflow-y: auto;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   height: fit-content;
+  padding-bottom: 200px;
 
   &::-webkit-scrollbar {
     width: 8px;

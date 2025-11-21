@@ -60,7 +60,11 @@ export const ModalHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 24px 28px;
-  background: linear-gradient(135deg, #00ad4e 0%, #00c957 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(59, 246, 149, 0.5) 0%,
+    rgba(44, 226, 117, 0.5) 100%
+  );
   color: white;
 
   @media (max-width: 768px) {
@@ -71,7 +75,7 @@ export const ModalHeader = styled.div`
 export const ModalTitle = styled.h2`
   font-size: 20px;
   font-weight: 700;
-  color: white;
+  color: #00ad4e;
   margin: 0;
   display: flex;
   align-items: center;
@@ -427,6 +431,18 @@ export const RemoveAssignmentButton = styled.button`
   }
 `;
 
+export const TechnicianCardDetail = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const CardLeft = styled.div`
+  width: 60%;
+  display: flex;
+  align-items: center;
+  gap: 3%;
+`;
+
 export const TechAvatar = styled.img`
   width: 36px;
   height: 36px;
@@ -447,6 +463,13 @@ export const TechName = styled.span<{ $selected: boolean }>`
   font-size: 14px;
   font-weight: 600;
   color: #1a1a1a;
+  letter-spacing: -0.2px;
+`;
+
+export const KPI = styled.span<{ $selected: boolean }>`
+  font-size: 14px;
+  font-weight: 600;
+  color: #00ad4e;
   letter-spacing: -0.2px;
 `;
 
