@@ -65,7 +65,7 @@ namespace DataAccess.Repositories {
         public async Task<DamageLevelEnum?> GetAppointmentPartConditionsByTechIdAndOrderIdAsync(int appointmentId,int partId, int technicianId) {
             
             return await _dbcontext.AppointmentPartConditions
-                .Where(apc => apc.PartId == partId && apc.TechicianId == technicianId)
+                .Where(apc => apc.PartId == partId && apc.TechicianId == technicianId && apc.AppointmentId == appointmentId)
                 .Select(apc => apc.Level)
                 .FirstOrDefaultAsync();
 
