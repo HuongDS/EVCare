@@ -7,7 +7,6 @@ import type {
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { useQueryClient } from "@tanstack/react-query";
-import SpinnerComponent from "../../../components/SpinnerComponent";
 import { useState } from "react";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
@@ -224,7 +223,7 @@ export default function Appointment_CheckIn({ data, close }: Props) {
         <ActionButtons>
           {isPending ? (
             <SpinnerWrapper>
-              <SpinnerComponent />
+              <ColorSpinner width="3em" height="3em" />
             </SpinnerWrapper>
           ) : (
             <>
@@ -301,3 +300,4 @@ import {
   VehicleImage,
 } from "./styles/Appointment_CheckIn.styled";
 import { formatPlateNumber } from "../../../utils/formatPlateNumber";
+import ColorSpinner from "../StaffComponents/ColorSpinner";
