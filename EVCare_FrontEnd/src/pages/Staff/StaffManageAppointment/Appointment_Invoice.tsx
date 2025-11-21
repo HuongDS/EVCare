@@ -20,7 +20,6 @@ import type {
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { useGetOrderDetail } from "../../../services/orderServiceApi";
 import { DownloadButton } from "../../../components/Button/DownloadButton";
-import SpinnerComponent from "../../../components/SpinnerComponent";
 import ShowButton from "../../../components/Button/ShowButton";
 import { useState } from "react";
 
@@ -31,9 +30,7 @@ type InvoicePageProps = {
 export const InvoicePage = ({ data }: InvoicePageProps) => {
   const [showDetail, setShowDetail] = useState(false);
   const { data: orderDetail } = useGetOrderDetail(data.orderId);
-  const { data: invoice, isFetching } = useGetInvoice(
-    orderDetail?.data?.id ?? 0
-  );
+  const { data: invoice } = useGetInvoice(orderDetail?.data?.id ?? 0);
 
   const mergeOrder =
     orderDetail?.data?.parts.reduce((acc, part) => {
@@ -77,9 +74,9 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
   return (
     <PageContainer>
       <InvoiceWrapper>
-        {isLoading && isFetching ? (
+        {isLoading ? (
           <SpinStyled>
-            <SpinnerComponent />
+            <TextWaitingEffect text="Waiting For Downloading" fontSize="20px" />
           </SpinStyled>
         ) : (
           <div
@@ -315,3 +312,4 @@ import {
   SpinStyled,
 } from "./styles/Appointment_Invoice.styled";
 import { Tooltip } from "antd";
+import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
