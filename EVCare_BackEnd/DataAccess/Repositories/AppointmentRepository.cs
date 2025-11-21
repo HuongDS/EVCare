@@ -173,7 +173,9 @@ namespace DataAccess.Repositories
                             Name = ts.Service.Name
                         }).ToList(),
                         Email = tws.Technician.Employee.Account.Email,
-                        WorkingSessionStatus = tws.Status
+                        WorkingSessionStatus = tws.Status,
+                        KPIPerDays = tws.Technician.KPIPerDays,
+                        CompletedOrders = tws.Technician.CompletedOrders
                     }).ToList() : new List<TechnicianViewModel>()
                 })
                 .FirstOrDefaultAsync();
