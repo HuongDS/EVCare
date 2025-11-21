@@ -77,9 +77,9 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
   return (
     <PageContainer>
       <InvoiceWrapper>
-        {isLoading && isFetching ? (
+        {isLoading ? (
           <SpinStyled>
-            <SpinnerComponent />
+            <TextWaitingEffect text="Waiting For Downloading" fontSize="20px" />
           </SpinStyled>
         ) : (
           <div
@@ -315,3 +315,4 @@ import {
   SpinStyled,
 } from "./styles/Appointment_Invoice.styled";
 import { Tooltip } from "antd";
+import TextWaitingEffect from "../StaffComponents/TextWaitingEffect";
