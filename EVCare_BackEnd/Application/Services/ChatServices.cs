@@ -82,11 +82,11 @@ namespace Application.Services
                 .ToListAsync();
         }
 
-        public async Task MarkAsReadUpToAsync(string conversationId, string readerId, string upToMessageId)
-        {
-            var update = Builders<Conversation>.Update.Set($"Unread.{readerId}", 0);
-            await _conv.UpdateOneAsync(c => c.Id == conversationId, update);
-        }
+        //public async Task MarkAsReadUpToAsync(string conversationId, string readerId, string upToMessageId)
+        //{
+        //    var update = Builders<Conversation>.Update.Set($"Unread.{readerId}", 0);
+        //    await _conv.UpdateOneAsync(c => c.Id == conversationId, update);
+        //}
 
         public async Task<Conversation?> GetConversationAsync(string convId)
         {
