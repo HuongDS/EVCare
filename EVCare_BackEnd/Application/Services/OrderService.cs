@@ -296,7 +296,8 @@ namespace Application.Services
                 {
                     if (existingPartIds.Contains(part.Id))
                     {
-                        throw new Exception($"Part {part.Id} is already in order");
+                        var partName = (await _partRepository.GetByIdAsync(part.Id)).Name;
+                        throw new Exception($"Part {partName} is already in order");
                     }
                 }
 
