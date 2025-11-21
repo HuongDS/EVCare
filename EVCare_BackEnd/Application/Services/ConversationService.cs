@@ -69,9 +69,7 @@ namespace Application.Services
 
             if (staffAccountId != "AI_BOT" && staffAccountId != "0")
             {
-                //var staffInfo = await _accountService.GetAccountById(int.Parse(staffAccountId));
                 var staffInfo = await _employeeServices.GetEmployeeInformation(int.Parse(employee.EmployeeId));
-                //newConversation.Participants[1].Name = staffInfo.First_Name + " " + staffInfo.Last_Name;
                 newConversation.Participants[1].Name = staffInfo.FullName;
                 newConversation.Participants[1].EmployeeImage = staffInfo.Avatar;
             }
@@ -150,26 +148,26 @@ namespace Application.Services
             return (conversations, totalPages, totalItems);
         }
 
-        public async Task ResetUnreadAsync(string conversationId, string accountId)
-        {
-            var update = Builders<Conversation>.Update.Set($"Unread.{accountId}", 0);
-            await _conversations.UpdateOneAsync(c => c.Id == conversationId, update);
-        }
+        //public async Task ResetUnreadAsync(string conversationId, string accountId)
+        //{
+        //    var update = Builders<Conversation>.Update.Set($"Unread.{accountId}", 0);
+        //    await _conversations.UpdateOneAsync(c => c.Id == conversationId, update);
+        //}
 
-        public async Task<Dictionary<int, int>> GetUnreadSummaryAsync(string accountId)
-        {
-            var filter = Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == accountId);
-            var projects = Builders<Conversation>.Projection.Include(c => c.Id).Include(c => c.Unread);
-            var items = await _conversations.Find(filter).Project<Conversation>(projects).ToListAsync();
+        //public async Task<Dictionary<int, int>> GetUnreadSummaryAsync(string accountId)
+        //{
+        //    var filter = Builders<Conversation>.Filter.ElemMatch(c => c.Participants, p => p.AccountId == accountId);
+        //    var projects = Builders<Conversation>.Projection.Include(c => c.Id).Include(c => c.Unread);
+        //    var items = await _conversations.Find(filter).Project<Conversation>(projects).ToListAsync();
 
-            var res = new Dictionary<int, int>();
-            foreach (var c in items)
-            {
-                if (c.Unread.TryGetValue(accountId.ToString(), out var cnt))
-                    res[int.Parse(c.Id)] = cnt;
-            }
-            return res;
-        }
+        //    var res = new Dictionary<int, int>();
+        //    foreach (var c in items)
+        //    {
+        //        if (c.Unread.TryGetValue(accountId.ToString(), out var cnt))
+        //            res[int.Parse(c.Id)] = cnt;
+        //    }
+        //    return res;
+        //}
 
         public async Task<string> GetCounterpartAsync(string conversationId, string accountId)
         {
