@@ -1,11 +1,6 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Modal, Spin, Table, Typography } from "antd";
-// import { useQueries } from "@tanstack/react-query";
 import { useGetOrderDetail } from "../../../services/orderServiceApi";
-// import {
-//   getTechnicianDetail,
-//   useGetTechnicianDetail,
-// } from "../../../services/technicianDetail";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { formatDate } from "../../../utils/formatDate";
 import {
@@ -29,11 +24,7 @@ interface Props {
   appointment: TechnicianAppointmentsDto | null;
 }
 
-const ViewDetailsModal: React.FC<Props> = ({
-  isOpen,
-  onClose,
-  appointment,
-}) => {
+const ViewDetailsModal: React.FC<Props> = ({ isOpen, onClose, appointment }) => {
   const orderId = appointment?.orderId ?? 0;
   const { data: orderDetail, isLoading } = useGetOrderDetail(orderId);
   const parts = orderDetail?.data?.parts ?? [];
@@ -64,21 +55,12 @@ const ViewDetailsModal: React.FC<Props> = ({
       dataIndex: "isReplaced",
       key: "isReplaced",
       align: "center" as const,
-      render: (isReplaced: string) => (
-        <Text strong>{isReplaced ? "Done" : "Repairing"}</Text>
-      ),
+      render: (isReplaced: string) => <Text strong>{isReplaced ? "Done" : "Repairing"}</Text>,
     },
   ];
 
   return (
-    <Modal
-      open={isOpen}
-      onCancel={onClose}
-      footer={null}
-      width={900}
-      centered
-      closable
-    >
+    <Modal open={isOpen} onCancel={onClose} footer={null} width={900} centered closable>
       <ModalContainer>
         <Header>
           <h2>Appointment Details</h2>
@@ -90,28 +72,22 @@ const ViewDetailsModal: React.FC<Props> = ({
               <InfoColumn>
                 <SectionTitle>Customer Information</SectionTitle>
                 <InfoItem>
-                  <span className="label">Appointment ID:</span> #
-                  {appointment.id}
+                  <span className="label">Appointment ID:</span> #{appointment.id}
                 </InfoItem>
                 <InfoItem>
-                  <span className="label">Customer:</span>{" "}
-                  {appointment.customerName}
+                  <span className="label">Customer:</span> {appointment.customerName}
                 </InfoItem>
                 <InfoItem>
-                  <span className="label">Vehicle:</span>{" "}
-                  {appointment.vehicleModel}
+                  <span className="label">Vehicle:</span> {appointment.vehicleModel}
                 </InfoItem>
                 <InfoItem>
-                  <span className="label">License Plate:</span>{" "}
-                  {appointment.licensePlate}
+                  <span className="label">License Plate:</span> {appointment.licensePlate}
                 </InfoItem>
                 <InfoItem>
-                  <span className="label">Phone:</span>{" "}
-                  {appointment.phoneNumber ?? "—"}
+                  <span className="label">Phone:</span> {appointment.phoneNumber ?? "—"}
                 </InfoItem>
                 <InfoItem>
-                  <span className="label">Date:</span>{" "}
-                  {formatDate(appointment.appointmentDate)}
+                  <span className="label">Date:</span> {formatDate(appointment.appointmentDate)}
                 </InfoItem>
               </InfoColumn>
 
