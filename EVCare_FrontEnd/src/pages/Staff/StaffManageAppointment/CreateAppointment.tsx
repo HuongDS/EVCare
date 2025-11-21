@@ -205,21 +205,32 @@ export default function CreateAppointmentPage({ onBack }: Props) {
       void current;
       const now = dayjs();
       const cutoff = now.add(1, "hour");
+      const isToday = current.isSame(now, "day");
       return {
         disabledHours: () => {
-          const hours = Array.from({ length: 24 }, (_, i) => i).filter(
-            (h) => h > (endTime?.hour() ?? 0) || h < (startTime?.hour() ?? 0)
-          );
+          const hours = [];
+
+          for (let h = 0; h < 24; h++) {
+            if (h < (startTime?.hour() ?? 0) || h > (endTime?.hour() ?? 0)) {
+              hours.push(h);
+            }
+          }
+
+          if (isToday) {
+            for (let h = 0; h < now.hour(); h++) {
+              if (!hours.includes(h)) hours.push(h);
+            }
+          }
+
           return hours;
         },
         disabledMinutes: (selectedHour?: number) => {
           const disabled: number[] = [];
           if (selectedHour == null) return [];
 
-          if (appointmentDate && appointmentDate.isSame(now, "day")) {
+          if (isToday) {
             if (selectedHour === cutoff.hour()) {
               for (let m = 0; m < cutoff.minute(); m++) disabled.push(m);
-              return disabled;
             }
             if (selectedHour < cutoff.hour()) {
               return Array.from({ length: 60 }, (_, i) => i);
