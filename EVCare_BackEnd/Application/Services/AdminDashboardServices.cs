@@ -53,11 +53,9 @@ namespace Application.Services
 
         public async Task<PerformanceDto> GetPerformanceAsync(DateTime from, DateTime to)
         {
-            // Example: aggregate revenue per day
             var rangeDays = Enumerable.Range(0, (to.Date - from.Date).Days + 1)
             .Select(d => from.Date.AddDays(d))
             .ToList();
-
 
             var revThis = await _dbContext.Invoices
             .Where(i => i.Status == PaymentStatusEnum.Completed && i.Updated_At >= from && i.Updated_At <= to)
@@ -65,8 +63,6 @@ namespace Application.Services
             .Select(g => new { Date = g.Key, Sum = g.Sum(x => x.Total_Price) })
             .ToListAsync();
 
-
-            // Last month range for comparison
             var lastFrom = from > DateTime.MinValue.AddMonths(1) ? from.AddMonths(-1) : from;
             var lastTo = to > DateTime.MinValue.AddMonths(1) ? to.AddMonths(-1) : to;
             var revLast = await _dbContext.Invoices
