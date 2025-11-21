@@ -11,7 +11,7 @@ namespace Application.Interfaces
     {
         Task<Conversation?> GetConversationAsync(string convId);
         Task<List<Message>> GetHistoryAsync(string conversationId, int skip, int take);
-        Task MarkAsReadUpToAsync(string conversationId, string readerId, string upToMessageId);
+        //Task MarkAsReadUpToAsync(string conversationId, string readerId, string upToMessageId);
         Task<Message> SaveMessageAsync(string conversationId, string senderId, string text, List<Attachment> atts);
     }
 }
