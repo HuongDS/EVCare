@@ -50,6 +50,7 @@ const mockAccountInfor: ResponseDto<AccountViewModel> = {
     first_Name: "Unit",
     last_Name: "Test01",
     phone: "0911111111",
+    techId: 1,
   },
 };
 
