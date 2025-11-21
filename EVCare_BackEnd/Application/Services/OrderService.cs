@@ -421,12 +421,18 @@ namespace Application.Services
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 foreach (var orderPart in model.UpdateParts) {
+                    var existingOrderPart = await _orderPartRepository.GetOrderPartByOrderIdAndPartId(model.OrderId, orderPart.PartId, orderPart.OldTechnicianId);
                     await _orderPartRepository.DeleteAsync(model.OrderId, orderPart.PartId, orderPart.OldTechnicianId);
                     var newOrderPart = new OrderPart
                     {
                         OrderId = model.OrderId,
                         PartId = orderPart.PartId,
                         TechnicianId = orderPart.NewTechnicianId,
+                        Quantity = existingOrderPart.Quantity,
+                        Price = existingOrderPart.Price,
+                        ReplacementPrice = existingOrderPart.ReplacementPrice,
+                        IsReplaced = existingOrderPart.IsReplaced
+
                     };
                     await _orderPartRepository.AddRange(new List<OrderPart> { newOrderPart });
                    
@@ -446,7 +452,8 @@ namespace Application.Services
                         OrderId = model.OrderId,
                         TechnicianId = techId,
                         StartTime = DateTime.UtcNow.AddHours(7),
-                        Status = TechnicianWorkingSessionEnum.InProgress
+                        Status = TechnicianWorkingSessionEnum.InProgress,
+                        EndTime = null
                     });
                 }
             });
