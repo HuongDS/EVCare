@@ -341,16 +341,16 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
 
           <SummaryRow>
             <span>Subtotal</span>
-            <span>{subtotal.toLocaleString()}₫</span>
+            <span>{formatCurrency(subtotal)}</span>
           </SummaryRow>
           <SummaryRow>
             <span>VAT ({order?.data?.vat}%)</span>
-            <span>{vatAmount.toLocaleString()}₫</span>
+            <span>{formatCurrency(vatAmount)}</span>
           </SummaryRow>
           <Divider />
           <TotalRow>
             <span>Total Amount</span>
-            <span>{calculateTotal().toLocaleString()}₫</span>
+            <span>{formatCurrency(calculateTotal())}</span>
           </TotalRow>
           {orderPending || statusPending ? (
             <TextWaitingEffect text="Waiting for processing" fontSize="25px" />

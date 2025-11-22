@@ -17,7 +17,7 @@ export const useTechnician_MyJob = () => {
     TechnicianWorkingSessionEnum.ADDING_PART;
   const [activeStatus, setActiveStatus] = useState<string>(savedStatus);
 
-  const { data, isLoading } = useGetTechnicianAppointments({
+  const { data, isLoading, isFetching } = useGetTechnicianAppointments({
     Status: String(activeStatus),
     PageSize: pageSize,
     PageIndex: pageIndex,
@@ -86,6 +86,7 @@ export const useTechnician_MyJob = () => {
     appointments: data?.data?.items ?? [],
     isLoading: isLoading,
     isUpdating,
+    isFetching,
     sortById,
     pageSize,
     setActiveStatus,

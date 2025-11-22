@@ -43,6 +43,7 @@ export default function Technician_MyJob() {
     setActiveStatus,
     setPageIndex,
     handleUpdateStatus,
+    isFetching,
   } = useTechnician_MyJob();
   const myJobStatuses = ["Adding Part", "Confirm", "In Progress", "Completed"];
   const [isOrder, setIsOrder] = useState(false);
@@ -109,7 +110,7 @@ export default function Technician_MyJob() {
 
         <AppointmentList layout transition={{ duration: 0.3 }}>
           <AnimatePresence>
-            {isLoading ? (
+            {isLoading && isFetching ? (
               <SpinnerComponent />
             ) : appointments.length > 0 ? (
               appointments.map((item: any) => (
