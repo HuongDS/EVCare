@@ -176,8 +176,7 @@ export const StatusBadge = styled.span<{ $isBanned: boolean }>`
   font-weight: 700;
   text-transform: capitalize;
   color: ${({ $isBanned }) => ($isBanned ? "#6b7280" : "#065f46")};
-  background-color: ${({ $isBanned }) =>
-    $isBanned ? "#f3f4f6" : "rgba(0, 173, 78, 0.15)"};
+  background-color: ${({ $isBanned }) => ($isBanned ? "#f3f4f6" : "rgba(0, 173, 78, 0.15)")};
 `;
 
 export const ActionGroup = styled.div`
@@ -238,7 +237,6 @@ export const ExpandableRow = styled(Tr)`
   &:hover {
     background-color: transparent;
   }
-  /* Xóa viền cho đẹp */
   & > td {
     border: none;
     padding: 0;

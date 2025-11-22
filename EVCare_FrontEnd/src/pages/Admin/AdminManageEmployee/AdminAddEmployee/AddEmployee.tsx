@@ -6,10 +6,7 @@ import FormActions from "../AdminAddEmployee/FormActions";
 import { RoleEnum } from "../../../../models/enums";
 import type { EmployeeRegisterDto } from "../../../../models/Employee/EmployeeRegisterDto";
 import { useAlert } from "../../../../context/useAlert";
-import {
-  ERROR_MESSAGE,
-  MSG_TITLE,
-} from "../../../../constants/messages/Message";
+import { ERROR_MESSAGE, MSG_TITLE } from "../../../../constants/messages/Message";
 import { addEmployee } from "../../../../services/adminService";
 import type { RegisterRequestDto } from "../../../../models/AuthModel/authModel";
 import { AdminAddEmployeeWrapper } from "./AdminAddEmployee.styled";
@@ -36,18 +33,14 @@ const AddEmployee: React.FC = () => {
   const [email, setEmail] = useState("");
   const [expYear, setExpYear] = useState(0);
   const [selectedSkills, setSelectedSkills] = useState<EmployeeSkill[]>([]);
-  const [skillGroups, setSkillGroups] = useState<
-    EmployeeSkillCategoryViewModel[]
-  >([]);
+  const [skillGroups, setSkillGroups] = useState<EmployeeSkillCategoryViewModel[]>([]);
   const notification = useNotification();
   const [isLoading, setIsLoading] = useState(false);
   const [searchSkills, setSearchSkills] = useState("");
   const [addImage, setAddImage] = useState("");
   const [technicianId, setTechnicianId] = useState(0);
   const [isSubmit, setIsSubmit] = useState(false);
-  const [searchedSkillList, setSearchSkillList] = useState<
-    EmployeeSkillCategoryViewModel[]
-  >([]);
+  const [searchedSkillList, setSearchSkillList] = useState<EmployeeSkillCategoryViewModel[]>([]);
 
   const handleSubmit = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -56,22 +49,15 @@ const AddEmployee: React.FC = () => {
       if (firstName == null || lastName == null) {
         throw new Error(ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
       } else if (firstName.trim().length == 0 || lastName.trim().length == 0) {
-        throw new Error(
-          "firstName and lastName" + ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED
-        );
+        throw new Error("firstName and lastName" + ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
       } else if (!EMAIL_REGEX.test(email)) {
         throw new Error(ERROR_MESSAGE.INVALID_EMAIL);
-      } else if (
-        !PASSWORD_REGEX.test(password) ||
-        !PASSWORD_REGEX.test(confirmPassword)
-      ) {
+      } else if (!PASSWORD_REGEX.test(password) || !PASSWORD_REGEX.test(confirmPassword)) {
         throw new Error(ERROR_MESSAGE.INVALID_PASSWORD);
       } else if (!PHONE_NUMBER_REGEX.test(phone)) {
         throw new Error(ERROR_MESSAGE.INVALID_PHONE);
       } else if (password !== confirmPassword) {
-        throw new Error(
-          ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME
-        );
+        throw new Error(ERROR_MESSAGE.PASSWORD_AND_CONFIRM_PASSWORD_MUST_BE_SAME);
       } else if (CCCD == null || CCCD.length == 0) {
         throw new Error("CCCD" + ERROR_MESSAGE.THIS_FIELD_IS_REQUIRED);
       }
@@ -132,9 +118,7 @@ const AddEmployee: React.FC = () => {
   };
 
   const handleSelectSkill = (skill: EmployeeSkill) => {
-    setSelectedSkills((prev) =>
-      prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
-    );
+    setSelectedSkills((prev) => (prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]));
   };
 
   useEffect(() => {
@@ -166,9 +150,7 @@ const AddEmployee: React.FC = () => {
     }
     const filteredList = skillGroups.map((group) => {
       const filteredServices = group.services.filter((service) =>
-        service.name
-          .toLocaleLowerCase()
-          .includes(searchSkills.toLocaleLowerCase().trim())
+        service.name.toLocaleLowerCase().includes(searchSkills.toLocaleLowerCase().trim())
       );
       return {
         ...group,
@@ -195,11 +177,7 @@ const AddEmployee: React.FC = () => {
         <div className="main-content">
           <div className="form-container">
             <form>
-              {/* <form onSubmit={handleSubmit}> */}
-              <RoleSelector
-                selectedRole={selectedRole}
-                setSelectedRole={setSelectedRole}
-              />
+              <RoleSelector selectedRole={selectedRole} setSelectedRole={setSelectedRole} />
 
               <BasicInfoForm
                 firstName={firstName}
@@ -231,11 +209,7 @@ const AddEmployee: React.FC = () => {
                 setSearchSkills={setSearchSkills}
               />
 
-              <FormActions
-                isSubmit={isSubmit}
-                onSubmit={handleSubmit}
-                onCancel={() => window.history.back()}
-              />
+              <FormActions isSubmit={isSubmit} onSubmit={handleSubmit} onCancel={() => window.history.back()} />
             </form>
           </div>
         </div>

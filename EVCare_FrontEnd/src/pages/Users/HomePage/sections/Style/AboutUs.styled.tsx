@@ -68,7 +68,7 @@ export const StatsBox = styled(motion.div)`
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 3rem;
-  width: 100%; /* SỬA TỪ 150% THÀNH 100% */
+  width: 100%;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   @media (max-width: 768px) {

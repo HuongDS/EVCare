@@ -7,12 +7,7 @@ interface props {
 const ColorSpinner = ({ width, height }: props) => {
   return (
     <StyledWrapper>
-      <svg
-        viewBox="0 0 240 240"
-        height={150}
-        width={150}
-        style={{ width: width, height: height }}
-      >
+      <svg viewBox="0 0 240 240" height={150} width={150} style={{ width: width, height: height }}>
         <circle
           strokeLinecap="round"
           strokeDashoffset={-330}
@@ -93,7 +88,6 @@ const StyledWrapper = styled.div`
     stroke: #2cf425;
   }
 
-  /* Animations */
   @keyframes ringA {
     from,
     4% {

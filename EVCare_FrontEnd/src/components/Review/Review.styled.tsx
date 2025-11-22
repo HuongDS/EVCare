@@ -244,21 +244,17 @@ export const SubmitButton = styled.button`
   background: linear-gradient(135deg, #00c656 0%, ${EVCareGreen} 100%);
   color: #fff;
   border: none;
-  padding: 0.875rem 1.5rem; /* Giảm padding 1 chút */
-  border-radius: 8px; /* Giảm bo góc 1 chút */
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
   font-family: "Outfit", sans-serif;
   font-weight: 600;
-  font-size: 1rem; /* Giảm font size 1 chút */
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 173, 78, 0.25);
 
   &:hover:not(:disabled) {
-    background: linear-gradient(
-      135deg,
-      ${lighten(0.05, EVCareGreen)} 0%,
-      ${EVCareGreen} 100%
-    );
+    background: linear-gradient(135deg, ${lighten(0.05, EVCareGreen)} 0%, ${EVCareGreen} 100%);
     box-shadow: 0 6px 20px rgba(0, 173, 78, 0.4);
     transform: translateY(-2px);
   }

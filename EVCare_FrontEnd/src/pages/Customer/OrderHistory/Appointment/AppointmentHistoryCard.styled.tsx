@@ -34,15 +34,15 @@ export const Container = styled.div`
 
 export const IDWrapper = styled.div`
   h5 {
-    font-weight: 600; /* Đậm vừa */
+    font-weight: 600;
     font-size: 15px;
     color: #555e68;
     margin-bottom: 12px;
 
     span {
-      color: #00ad4e; /* Màu chủ đạo */
+      color: #00ad4e;
       font-weight: 700;
-      background-color: #e6f7ee; /* Nền xanh lá rất nhạt */
+      background-color: #e6f7ee;
       padding: 3px 10px;
       border-radius: 6px;
       margin-left: 4px;
@@ -54,17 +54,16 @@ export const GeneralStyled = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* Bỏ background-color: #f1f1f1; */
-  padding: 12px 0; /* Chỉ cần padding trên dưới */
-  border-top: 1px solid #f0f2f5; /* Đường kẻ mờ */
-  border-bottom: 1px solid #f0f2f5; /* Đường kẻ mờ */
+  padding: 12px 0;
+  border-top: 1px solid #f0f2f5;
+  border-bottom: 1px solid #f0f2f5;
   margin-bottom: 16px;
 
   h5 {
     margin: 0;
     font-weight: 600;
-    font-size: 1.1rem; /* Cho tên xe to rõ */
-    color: #1a202c; /* Màu text chính */
+    font-size: 1.1rem;
+    color: #1a202c;
   }
   @media (max-width: 889px) {
     h5 {
@@ -76,26 +75,23 @@ export const GeneralStyled = styled.div`
 export const DateStyled = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px; /* Dùng 'gap' thay cho width cố định */
+  gap: 16px;
 
   h5 {
     margin: 0;
     font-weight: 500;
     font-size: 0.95rem;
-    color: #4a5568; /* Màu text phụ */
+    color: #4a5568;
 
     span {
-      color: #00ad4e; /* Giữ màu chủ đạo */
+      color: #00ad4e;
       font-weight: 600;
     }
   }
 
-  /* Giữ nguyên media query của bạn, rất tốt! */
   @media (min-width: 768px) and (max-width: 1430px) {
-    /* width: 50%; (Không cần nữa vì đã dùng gap) */
   }
   @media (max-width: 889px) {
-    /* width: 50%; (Không cần nữa) */
     h5 {
       font-size: 15px;
     }
@@ -110,7 +106,7 @@ export const ImageWrapper = styled.div`
     width: 200px;
     height: 150px;
     object-fit: cover;
-    border-radius: 12px; /* Đồng bộ bo góc */
+    border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
     transition: transform 0.3s ease;
   }
