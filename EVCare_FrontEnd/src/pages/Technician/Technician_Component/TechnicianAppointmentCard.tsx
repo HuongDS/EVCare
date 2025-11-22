@@ -51,9 +51,11 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
   });
   const [isAlert, setIsAlert] = useState(false);
 
-  const { data: appointment, isLoading } = useGetAppointmentPartCondition(
-    data.id
-  );
+  const {
+    data: appointment,
+    isLoading,
+    isFetching,
+  } = useGetAppointmentPartCondition(data.id);
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -208,7 +210,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
             </SectionTitle>
           </SectionHeader>
           <PartsContainer>
-            {isLoading ? (
+            {isLoading && isFetching ? (
               <SpinnerComponent />
             ) : (appointment?.data?.partDamageLevels?.length || 0) > 0 ? (
               <PartsTable>
