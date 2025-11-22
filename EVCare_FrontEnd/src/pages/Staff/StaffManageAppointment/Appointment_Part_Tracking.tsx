@@ -49,6 +49,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
     dispatch(closeModel3d());
   }, [location.pathname, dispatch]);
 
+  //gọi hàm để lấy order detail
   const { data: order, isSuccess } = useGetOrderDetail(data.orderId);
   const { data: appointments } = useGetAllAppointments({
     pageSize: 20,
@@ -57,7 +58,6 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
   });
 
   const appointment = appointments?.data?.items?.find((appointment) => appointment.id === data.id);
-
   const workingTechnicians = data.technicians || [];
 
   useEffect(() => {
@@ -213,11 +213,11 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
                   <PriceRow>
                     <PriceItem>
                       <Label>Unit:</Label>
-                      <TotalValue>{formatCurrency(part.price)}₫</TotalValue>
+                      <TotalValue>{formatCurrency(part.price)}</TotalValue>
                     </PriceItem>
                     <PriceItem>
                       <Label>Replace:</Label>
-                      <TotalValue>{formatCurrency(part.replacementPrice)}₫</TotalValue>
+                      <TotalValue>{formatCurrency(part.replacementPrice)}</TotalValue>
                     </PriceItem>
                   </PriceRow>
                 </PartInfo>
@@ -281,7 +281,7 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
 
                 <PartTotal>
                   <TotalLabel>Total</TotalLabel>
-                  <TotalValue>{((part.price + part.replacementPrice) * part.quantity).toLocaleString()}₫</TotalValue>
+                  <TotalValue>{formatCurrency((part.price + part.replacementPrice) * part.quantity)}</TotalValue>
                 </PartTotal>
               </PartRight>
             </PartCard>
@@ -293,16 +293,16 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
 
           <SummaryRow>
             <span>Subtotal</span>
-            <span>{subtotal.toLocaleString()}₫</span>
+            <span>{formatCurrency(subtotal)}</span>
           </SummaryRow>
           <SummaryRow>
             <span>VAT ({order?.data?.vat}%)</span>
-            <span>{vatAmount.toLocaleString()}₫</span>
+            <span>{formatCurrency(vatAmount)}</span>
           </SummaryRow>
           <Divider />
           <TotalRow>
             <span>Total Amount</span>
-            <span>{calculateTotal().toLocaleString()}₫</span>
+            <span>{formatCurrency(calculateTotal())}</span>
           </TotalRow>
           {orderPending || statusPending ? (
             <TextWaitingEffect text="Waiting for processing" fontSize="25px" />
