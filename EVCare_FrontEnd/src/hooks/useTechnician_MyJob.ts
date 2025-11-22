@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TechnicianWorkingSessionEnum } from "../models/enums/TechnicianWorkingSessionEnum";
 import { useGetTechnicianAppointments } from "../services/appointmentTechnicianApi";
 import { useUpdateTechnicianWorkingSession } from "../services/TechnicianWorkingSessionApi";
@@ -22,14 +22,9 @@ export const useTechnician_MyJob = () => {
     SortOrder: "desc",
   });
 
-  const { mutateAsync: updateWorkingSession, isPending: isUpdating } =
-    useUpdateTechnicianWorkingSession();
+  const { mutateAsync: updateWorkingSession, isPending: isUpdating } = useUpdateTechnicianWorkingSession();
 
-  const handleUpdateStatus = async (
-    status: TechnicianWorkingSessionEnum,
-    message: string,
-    description: string
-  ) => {
+  const handleUpdateStatus = async (status: TechnicianWorkingSessionEnum, message: string, description: string) => {
     try {
       await updateWorkingSession({
         orderId: data?.data?.items?.at(0)?.orderId ?? 0,

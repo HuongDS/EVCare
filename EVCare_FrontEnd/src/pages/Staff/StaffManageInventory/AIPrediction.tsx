@@ -1,28 +1,10 @@
 import { useState } from "react";
-import {
-  Table,
-  Tag,
-  Statistic,
-  Row,
-  Col,
-  Popover,
-  Typography,
-  message as antMessage,
-} from "antd";
-import {
-  Search,
-  AlertCircle,
-  Package,
-  TrendingUp,
-  ShoppingCart,
-  Calendar,
-  Send,
-} from "lucide-react";
+import { Table, Tag, Statistic, Row, Col, Popover, Typography, message as antMessage } from "antd";
+import { Search, AlertCircle, Package, TrendingUp, ShoppingCart, Calendar, Send } from "lucide-react";
 import { useGetPredictedParts } from "../../../services/staffService";
 import type { AIPredictionItems } from "../../../models/Inventory/InventoryModel";
 import ColorSpinner from "../StaffComponents/ColorSpinner";
 import BackButton from "../../../components/Button/BackButton";
-import ShowButton from "../../../components/Button/ShowButton";
 import UpdatePartModal from "./UpdatePartModal";
 
 const { Title, Paragraph, Text } = Typography;
@@ -33,9 +15,7 @@ interface Props {
 
 export default function StockPredictionTable({ onBack }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | "need" | "safe">(
-    "all"
-  );
+  const [filterStatus, setFilterStatus] = useState<"all" | "need" | "safe">("all");
   const [leadDate, setLeadDate] = useState<number>();
   const [predictionDate, setPredictionDate] = useState<number>();
   const [isOpen, setIsOpen] = useState(false);
@@ -54,28 +34,16 @@ export default function StockPredictionTable({ onBack }: Props) {
 
   const filteredData =
     predictedParts?.data?.items.filter((item) => {
-      const matchSearch = item.partName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
+      const matchSearch = item.partName.toLowerCase().includes(searchQuery.toLowerCase());
       const matchStatus =
-        filterStatus === "all"
-          ? true
-          : filterStatus === "need"
-          ? item.needQuantity > 0
-          : item.needQuantity === 0;
+        filterStatus === "all" ? true : filterStatus === "need" ? item.needQuantity > 0 : item.needQuantity === 0;
 
       return matchSearch && matchStatus;
     }) || [];
 
   const totalParts = predictedParts?.data?.totalItems || 0;
-  const partsNeedingRestock =
-    predictedParts?.data?.items.filter((item) => item.needQuantity > 0)
-      .length || 0;
-  const totalQuantityNeeded =
-    predictedParts?.data?.items.reduce(
-      (sum, item) => sum + item.needQuantity,
-      0
-    ) || 0;
+  const partsNeedingRestock = predictedParts?.data?.items.filter((item) => item.needQuantity > 0).length || 0;
+  const totalQuantityNeeded = predictedParts?.data?.items.reduce((sum, item) => sum + item.needQuantity, 0) || 0;
   return (
     <PageContainer>
       <ContentWrapper>
@@ -85,15 +53,10 @@ export default function StockPredictionTable({ onBack }: Props) {
           </div>
 
           <HeaderText>
-            <Title
-              level={2}
-              style={{ margin: 0, color: "#00ad4e", fontFamily: "Outfit" }}
-            >
+            <Title level={2} style={{ margin: 0, color: "#00ad4e", fontFamily: "Outfit" }}>
               AI Stock Prediction
             </Title>
-            <Paragraph
-              style={{ margin: 0, color: "#666", fontFamily: "Outfit" }}
-            >
+            <Paragraph style={{ margin: 0, color: "#666", fontFamily: "Outfit" }}>
               AI-powered inventory forecasting and recommendations
             </Paragraph>
           </HeaderText>
@@ -118,9 +81,7 @@ export default function StockPredictionTable({ onBack }: Props) {
                 {isFetching ? "Predicting..." : "Predict"}
               </PredictButton>
             </ForecastControls>
-            <ForecastHint style={{ fontFamily: "Outfit" }}>
-              Enter number of days to forecast (1-365)
-            </ForecastHint>
+            <ForecastHint style={{ fontFamily: "Outfit" }}>Enter number of days to forecast (1-365)</ForecastHint>
           </ForecastCard>
         </ForecastSection>
 
@@ -201,29 +162,20 @@ export default function StockPredictionTable({ onBack }: Props) {
               </FilterSection>
 
               <TableCard>
-                <Table
-                  dataSource={filteredData}
-                  rowKey="partId"
-                  loading={isFetching}
-                  scroll={{ x: 1000 }}
-                >
+                <Table dataSource={filteredData} rowKey="partId" loading={isFetching} scroll={{ x: 1000 }}>
                   <Table.Column
                     title="Part ID"
                     dataIndex="partId"
                     key="partId"
                     width={100}
-                    sorter={(a: AIPredictionItems, b: AIPredictionItems) =>
-                      a.partId - b.partId
-                    }
+                    sorter={(a: AIPredictionItems, b: AIPredictionItems) => a.partId - b.partId}
                   />
 
                   <Table.Column
                     title="Part Name"
                     dataIndex="partName"
                     key="partName"
-                    sorter={(a: AIPredictionItems, b: AIPredictionItems) =>
-                      a.partName.localeCompare(b.partName)
-                    }
+                    sorter={(a: AIPredictionItems, b: AIPredictionItems) => a.partName.localeCompare(b.partName)}
                     render={(text: string) => <PartName>{text}</PartName>}
                     width={140}
                   />
@@ -234,9 +186,7 @@ export default function StockPredictionTable({ onBack }: Props) {
                     key="minStock"
                     width={120}
                     align="center"
-                    sorter={(a: AIPredictionItems, b: AIPredictionItems) =>
-                      a.minStock - b.minStock
-                    }
+                    sorter={(a: AIPredictionItems, b: AIPredictionItems) => a.minStock - b.minStock}
                   />
 
                   <Table.Column
@@ -245,14 +195,8 @@ export default function StockPredictionTable({ onBack }: Props) {
                     key="needQuantity"
                     width={140}
                     align="center"
-                    sorter={(a: AIPredictionItems, b: AIPredictionItems) =>
-                      a.needQuantity - b.needQuantity
-                    }
-                    render={(quantity: number) => (
-                      <QuantityText $needRefill={quantity > 0}>
-                        {quantity}
-                      </QuantityText>
-                    )}
+                    sorter={(a: AIPredictionItems, b: AIPredictionItems) => a.needQuantity - b.needQuantity}
+                    render={(quantity: number) => <QuantityText $needRefill={quantity > 0}>{quantity}</QuantityText>}
                   />
 
                   <Table.Column
@@ -265,16 +209,10 @@ export default function StockPredictionTable({ onBack }: Props) {
                       { text: "Safe", value: "safe" },
                     ]}
                     onFilter={(value, record: AIPredictionItems) =>
-                      value === "need"
-                        ? record.needQuantity > 0
-                        : record.needQuantity === 0
+                      value === "need" ? record.needQuantity > 0 : record.needQuantity === 0
                     }
                     render={(_, record: AIPredictionItems) =>
-                      record.needQuantity > 0 ? (
-                        <Tag color="error">Need Refill</Tag>
-                      ) : (
-                        <Tag color="success">Safe</Tag>
-                      )
+                      record.needQuantity > 0 ? <Tag color="error">Need Refill</Tag> : <Tag color="success">Safe</Tag>
                     }
                   />
 
@@ -304,9 +242,7 @@ export default function StockPredictionTable({ onBack }: Props) {
         {!predictedParts?.data && !isFetching && (
           <EmptyState>
             <TrendingUp size={64} opacity={0.3} />
-            <EmptyText>
-              Enter forecast days and click Predict to see AI predictions
-            </EmptyText>
+            <EmptyText>Enter forecast days and click Predict to see AI predictions</EmptyText>
           </EmptyState>
         )}
       </ContentWrapper>
