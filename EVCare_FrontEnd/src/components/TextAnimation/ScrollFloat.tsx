@@ -18,7 +18,6 @@ interface ScrollFloatProps {
   stagger?: number;
 }
 
-// Styled Components
 const ScrollFloatContainer = styled.div`
   overflow: hidden;
 `;
@@ -50,21 +49,14 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
 
   const splitText = useMemo(() => {
     const text = typeof children === "string" ? children : "";
-    return text
-      .split("")
-      .map((char, index) => (
-        <Char key={index}>{char === " " ? "\u00A0" : char}</Char>
-      ));
+    return text.split("").map((char, index) => <Char key={index}>{char === " " ? "\u00A0" : char}</Char>);
   }, [children]);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    const scroller =
-      scrollContainerRef && scrollContainerRef.current
-        ? scrollContainerRef.current
-        : window;
+    const scroller = scrollContainerRef && scrollContainerRef.current ? scrollContainerRef.current : window;
 
     const charElements = el.querySelectorAll(".char, span");
 
@@ -95,14 +87,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
         },
       }
     );
-  }, [
-    scrollContainerRef,
-    animationDuration,
-    ease,
-    scrollStart,
-    scrollEnd,
-    stagger,
-  ]);
+  }, [scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger]);
 
   return (
     <ScrollFloatContainer ref={containerRef} className={containerClassName}>

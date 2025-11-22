@@ -20,7 +20,7 @@ const PerformanceChart: React.FC = () => {
       fromDate.setDate(fromDate.getDate() - 7);
     }
 
-    const toStr = toDate.toLocaleString("sv-SE"); // nearest to ISO8601
+    const toStr = toDate.toLocaleString("sv-SE");
     const fromStr = fromDate.toLocaleString("sv-SE");
 
     try {

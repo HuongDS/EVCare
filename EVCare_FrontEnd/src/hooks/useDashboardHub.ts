@@ -1,7 +1,5 @@
 import { useEffect, useRef } from "react";
-// import type { DashboardUpdateDto } from "../models/Dashboard/dashBoardUpdateDto";
 import { getAdminDashboardConnection } from "../signalr/adminConnection";
-// import { getAccessToken } from "../token/tokenStore";
 import * as signalR from "@microsoft/signalr";
 
 type DashboardPayload<T> = {

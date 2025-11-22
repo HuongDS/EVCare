@@ -1,5 +1,3 @@
-//ApplicationModels.ts
-
 import type { ApplicationStatusEnum } from "../enums/ApplicationStatusEnum";
 
 export type ResponseDto<T> = {

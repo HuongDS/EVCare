@@ -1,5 +1,4 @@
 import React from "react";
-// 1. Import style mới
 import { SearchContainer, SearchInput, SearchIcon } from "./Admin_Customer_Vehicle.styled";
 import { FaSearch } from "react-icons/fa";
 

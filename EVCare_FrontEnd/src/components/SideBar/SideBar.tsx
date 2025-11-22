@@ -1,4 +1,3 @@
-// SideBar.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import type { MenuProps } from "antd";

@@ -7,7 +7,6 @@ interface props {
   height?: string;
 }
 
-//dùng để hiện thông báo khi không có item nào match với searchValue
 export const NOT_FOUND_ITEMS = ({ icon, message, height }: props) => {
   return (
     <Wrrapper style={{ height: height }}>

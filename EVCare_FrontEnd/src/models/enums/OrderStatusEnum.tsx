@@ -1,4 +1,3 @@
-//OrderStatusEnum
 export enum OrderStatusEnum {
   PENDING = "Pending",
   PROCESSING = "Processing",

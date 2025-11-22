@@ -4,8 +4,6 @@ import { notification } from "antd";
 import { NotificationProvider } from "../NotificationProvider";
 import { useNotification } from "../useNotification";
 
-// --- Mocks ---
-
 const mockApi = {
   success: vi.fn(),
   error: vi.fn(),
@@ -32,22 +30,13 @@ const mockedAntdUseNotification = vi.mocked(notification.useNotification);
 const TestConsumer = () => {
   const api = useNotification();
 
-  return (
-    <button onClick={() => api.success({ message: "Test Message" })}>
-      Call Success
-    </button>
-  );
+  return <button onClick={() => api.success({ message: "Test Message" })}>Call Success</button>;
 };
-
-// --- Tests ---
 
 describe("Notification Context & Provider", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockedAntdUseNotification.mockReturnValue([
-      mockApi,
-      mockContextHolder,
-    ] as any);
+    mockedAntdUseNotification.mockReturnValue([mockApi, mockContextHolder] as any);
   });
 
   it("TC01 [Provider]: should render children components", () => {
@@ -90,16 +79,12 @@ describe("Notification Context & Provider", () => {
   });
 
   it("TC05 [Hook]: should throw error if useNotification is used outside of Provider", () => {
-    const consoleErrorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const renderFailingHook = () => {
       renderHook(() => useNotification());
     };
-    expect(renderFailingHook).toThrow(
-      "useNotification must be used within a NotificationProvider"
-    );
+    expect(renderFailingHook).toThrow("useNotification must be used within a NotificationProvider");
 
     consoleErrorSpy.mockRestore();
   });

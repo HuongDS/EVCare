@@ -1,4 +1,3 @@
-// src/pages/admin/LeaveManagementPage.tsx
 import React, { useEffect, useState } from "react";
 import type { ApplicationAdminViewDto } from "../../../models/ApplicationModel/ApplicationAdminViewDto";
 import { ApplicationStatusEnum } from "../../../models/enums/ApplicationStatusEnum";

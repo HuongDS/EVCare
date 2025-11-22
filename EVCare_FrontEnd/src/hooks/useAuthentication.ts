@@ -1,32 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
-import {
-  AUTH_FORM_MESSAGE,
-  ERROR_MESSAGE,
-  FORM_MESSAGES,
-  MSG_TITLE,
-} from "../constants/messages/Message";
+import { AUTH_FORM_MESSAGE, ERROR_MESSAGE, FORM_MESSAGES, MSG_TITLE } from "../constants/messages/Message";
 import { handleError } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/Code/HttpStatusCode";
 import { EMAIL_REGEX } from "../constants/regexs/EmailRegex";
-import {
-  closeLogin,
-  consumeAction,
-  openAppointmentForm,
-} from "../states/uiSlice";
-import {
-  login,
-  register,
-  resetPassword,
-  saveTokens,
-  sendOtp,
-  verifyOtp,
-} from "../services/authService";
-import type {
-  LoginRequestDto,
-  RegisterRequestDto,
-  VerifyOTPDto,
-  VerifyOtpSignUp,
-} from "../models/AuthModel/authModel";
+import { closeLogin, consumeAction, openAppointmentForm } from "../states/uiSlice";
+import { login, register, resetPassword, saveTokens, sendOtp, verifyOtp } from "../services/authService";
+import type { LoginRequestDto, RegisterRequestDto, VerifyOTPDto, VerifyOtpSignUp } from "../models/AuthModel/authModel";
 import { PASSWORD_REGEX } from "../constants/regexs/PasswordRegex";
 import { LENGTH } from "../constants/Code/Constants";
 import { OTP_REGEX } from "../constants/regexs/OTPRegex";
@@ -48,10 +27,9 @@ type FormDataResetPassword = {
 };
 
 export const useAuthentication = () => {
-  const [isSignUp, setIsSignUp] = useState(false); // true: signUp | false : login
-  const [isOTP, setIsOTP] = useState(false); // true: verify Otp
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [isOTP, setIsOTP] = useState(false);
 
-  // Form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -63,20 +41,14 @@ export const useAuthentication = () => {
   const [isReset, setIsReset] = useState(false);
   const [otp, setOtp] = useState<string[]>(Array(LENGTH.OTP_LENGTH).fill(""));
 
-  // Redux
   const dispatch = useDispatch<AppDispatch>();
   const pending = useSelector((state: RootState) => state.ui.actionAfterLogin);
-  const loginFormOpen = useSelector(
-    (state: RootState) => state.ui.loginFormOpen
-  );
+  const loginFormOpen = useSelector((state: RootState) => state.ui.loginFormOpen);
 
-  // Navigate
   const navigate = useNavigate();
 
-  // notification
   const notification = useNotification();
 
-  // login
   const handleLogin = useCallback(async () => {
     setIsLoading(true);
     const loginData: LoginRequestDto = {
@@ -107,7 +79,6 @@ export const useAuthentication = () => {
         showProgress: true,
       });
 
-      // Author
       switch (user.role) {
         case RoleEnum.ADMIN:
           navigate("/admin/general");
@@ -129,7 +100,6 @@ export const useAuthentication = () => {
       }
       dispatch(consumeAction());
       setIsLoading(false);
-      // alert(response.message);
     } catch (err) {
       notification.error({
         message: MSG_TITLE.LOGIN,
@@ -142,12 +112,7 @@ export const useAuthentication = () => {
   }, [email, password, pending, dispatch, navigate, notification]);
 
   const handleSignUp = useCallback(async () => {
-    if (
-      firstName == null ||
-      lastName == null ||
-      firstName.length === 0 ||
-      lastName.length === 0
-    ) {
+    if (firstName == null || lastName == null || firstName.length === 0 || lastName.length === 0) {
       notification.warning({
         message: "Error",
         description: FORM_MESSAGES.NAME,
@@ -176,10 +141,7 @@ export const useAuthentication = () => {
         duration: 3,
       });
       return;
-    } else if (
-      !PASSWORD_REGEX.test(password) ||
-      !PASSWORD_REGEX.test(confirm)
-    ) {
+    } else if (!PASSWORD_REGEX.test(password) || !PASSWORD_REGEX.test(confirm)) {
       notification.warning({
         message: "Error",
         description: ERROR_MESSAGE.INVALID_PASSWORD,
@@ -302,8 +264,6 @@ export const useAuthentication = () => {
       const response = await sendOtp(email);
       if (response.statusCode === HTTP_STATUS.OK) {
         notification.success({ message: response.message });
-        // setIsOTP(true);
-        // setIsForgot(false);
       }
     } catch (error) {
       notification.error({
@@ -318,7 +278,6 @@ export const useAuthentication = () => {
     }
   }, [email, notification]);
 
-  // header text
   const headerText = useMemo(() => {
     if (isOTP) return "";
     if (isSignUp) return AUTH_FORM_MESSAGE.REGISTER;
@@ -353,16 +312,7 @@ export const useAuthentication = () => {
       });
       setIsLoading(false);
     }
-  }, [
-    otp,
-    email,
-    setIsLoading,
-    setIsOTP,
-    notification,
-    verifyOtp,
-    LENGTH.OTP_LENGTH,
-    OTP_REGEX,
-  ]);
+  }, [otp, email, setIsLoading, setIsOTP, notification, verifyOtp, LENGTH.OTP_LENGTH, OTP_REGEX]);
 
   return {
     isSignUp,
