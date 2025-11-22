@@ -1,4 +1,3 @@
-// src/Component/MaintenanceBanner.tsx
 import { useEffect } from "react";
 
 import { useAnimation, type Variants } from "framer-motion";
@@ -51,16 +50,9 @@ export default function MaintenanceBanner() {
   return (
     <BannerWrapper>
       <GridPattern />
-      <ContentContainer
-        ref={ref}
-        initial="hidden"
-        animate={controls}
-        variants={containerVariants}
-      >
+      <ContentContainer ref={ref} initial="hidden" animate={controls} variants={containerVariants}>
         <BannerTitle variants={itemVariants}>
-          Smart for EV Service Centers{" "}
-          <HighlightText>Maintenance Management</HighlightText> for Your EV
-          Fleet
+          Smart for EV Service Centers <HighlightText>Maintenance Management</HighlightText> for Your EV Fleet
         </BannerTitle>
       </ContentContainer>
 

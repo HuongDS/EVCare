@@ -1,23 +1,12 @@
 import React, { useState } from "react";
-import {
-  Calendar,
-  Car,
-  Phone,
-  User,
-  FileText,
-  CheckCircle,
-} from "lucide-react";
+import { Calendar, Car, Phone, User, FileText, CheckCircle } from "lucide-react";
 import type { AppointmentDetailModel } from "../../../models/AppointmentsModel/Staff_Appointments_Model";
 import type {
   TechnicianModel,
   TechnicianSkills,
 } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
 import { useEnterRemindSchedule } from "../../../services/appointmentServiceApi";
-import {
-  ERROR_MESSAGE,
-  MSG_TITLE,
-  SUCCESS_MESSAGE,
-} from "../../../constants/messages/Message";
+import { ERROR_MESSAGE, MSG_TITLE, SUCCESS_MESSAGE } from "../../../constants/messages/Message";
 import SuccessModal from "../../../components/StatusModal/SuccessModal";
 import FailedModal from "../../../components/StatusModal/FailModal";
 import { useQueryClient } from "@tanstack/react-query";
@@ -36,9 +25,7 @@ export default function NextMaintenance({ data }: NextMaintenanceProps) {
   const [message, setMessage] = useState("");
   const queryClient = useQueryClient();
 
-  //handle submit schedule
-  const { mutateAsync: enterRemindSchedule, isPending } =
-    useEnterRemindSchedule();
+  const { mutateAsync: enterRemindSchedule, isPending } = useEnterRemindSchedule();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -143,9 +130,7 @@ export default function NextMaintenance({ data }: NextMaintenanceProps) {
                   </IconWrapper>
                   <InfoContent>
                     <InfoLabel>Appointment Date</InfoLabel>
-                    <InfoValue>
-                      {formatDate(data.appointmentDate.toString())}
-                    </InfoValue>
+                    <InfoValue>{formatDate(data.appointmentDate.toString())}</InfoValue>
                   </InfoContent>
                 </InfoRow>
 
@@ -209,10 +194,7 @@ export default function NextMaintenance({ data }: NextMaintenanceProps) {
                       setReminderMonths(value === "" ? "" : Number(value));
                     }}
                     onBlur={() => {
-                      if (
-                        reminderMonths === "" ||
-                        isNaN(Number(reminderMonths))
-                      ) {
+                      if (reminderMonths === "" || isNaN(Number(reminderMonths))) {
                         setReminderMonths(0);
                       }
                     }}
@@ -228,8 +210,7 @@ export default function NextMaintenance({ data }: NextMaintenanceProps) {
                 <PreviewDate>
                   {new Date(
                     new Date(data.appointmentDate.toString()).setMonth(
-                      new Date(data.appointmentDate.toString()).getMonth() +
-                        Number(reminderMonths)
+                      new Date(data.appointmentDate.toString()).getMonth() + Number(reminderMonths)
                     )
                   ).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -253,20 +234,8 @@ export default function NextMaintenance({ data }: NextMaintenanceProps) {
           </FormSection>
         </MainContent>
       </ContentWrapper>
-      {isSuccess && (
-        <SuccessModal
-          header={MSG_TITLE.SCHEDULE}
-          message={message}
-          action={handleCloseModal}
-        />
-      )}
-      {isError && (
-        <FailedModal
-          header={MSG_TITLE.SCHEDULE}
-          message={message}
-          action={() => setIsError(false)}
-        />
-      )}
+      {isSuccess && <SuccessModal header={MSG_TITLE.SCHEDULE} message={message} action={handleCloseModal} />}
+      {isError && <FailedModal header={MSG_TITLE.SCHEDULE} message={message} action={() => setIsError(false)} />}
     </PageContainer>
   );
 }

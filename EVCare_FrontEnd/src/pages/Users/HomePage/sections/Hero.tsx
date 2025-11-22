@@ -1,4 +1,3 @@
-// src/Component/HeroSection.tsx
 import React from "react";
 
 import { type Variants } from "framer-motion";
@@ -44,19 +43,10 @@ const buttonVariants: Variants = {
 const Hero: React.FC = () => {
   return (
     <HeroWrapper>
-      <HeroContentGrid
-        variants={contentGridVariants}
-        initial="hidden"
-        animate="visible"
-      >
+      <HeroContentGrid variants={contentGridVariants} initial="hidden" animate="visible">
         <TextColumn variants={textItemVariants}>
           <HeroTitle>
-            <TextType
-              text={["Keep Your EV in Top Shape"]}
-              typingSpeed={75}
-              showCursor={false}
-              loop={false}
-            />
+            <TextType text={["Keep Your EV in Top Shape"]} typingSpeed={75} showCursor={false} loop={false} />
           </HeroTitle>
           <HeroSubtitle>
             <TrueFocus

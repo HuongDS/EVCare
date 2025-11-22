@@ -23,7 +23,6 @@ const getStatusColor = (status: string) => {
 };
 
 const Manage_Technicians = () => {
-  // const [technicians] = useState(mockTechnicians);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("Available");
   const [flippedCardId, setFlippedCardId] = useState<number | null>(null);
@@ -42,10 +41,7 @@ const Manage_Technicians = () => {
   });
 
   const { total } = useMemo(() => {
-    const total =
-      (techsAvailableCount?.data || 0) +
-      (techsBusyCount?.data || 0) +
-      (techsOnleaveCount?.data || 0);
+    const total = (techsAvailableCount?.data || 0) + (techsBusyCount?.data || 0) + (techsOnleaveCount?.data || 0);
     return { total };
   }, [techsAvailableCount?.data, techsBusyCount?.data]);
 
@@ -92,10 +88,7 @@ const Manage_Technicians = () => {
         </StatsBar>
 
         <FilterSection>
-          <SearchBar
-            handleSearchValue={setSearchTerm}
-            placeholder="Search technician..."
-          />
+          <SearchBar handleSearchValue={setSearchTerm} placeholder="Search technician..." />
           <StyledSelect
             value={statusFilter}
             onChange={(value) => setStatusFilter(String(value))}
@@ -106,8 +99,7 @@ const Manage_Technicians = () => {
             <Option value="OnLeave">OnLeave</Option>
           </StyledSelect>
           <Text style={{ marginLeft: "auto", color: "#64748b" }}>
-            Showing {technicians?.data?.totalItems} of{" "}
-            {technicians?.data?.items?.length} technicians
+            Showing {technicians?.data?.totalItems} of {technicians?.data?.items?.length} technicians
           </Text>
         </FilterSection>
 
@@ -132,10 +124,7 @@ const Manage_Technicians = () => {
                           <h3>{tech.fullName}</h3>
                           <Text className="tech-id">ID: #{tech.id}</Text>
                         </TechInfo>
-                        <StatusBadge
-                          status={getStatusColor(tech.status)}
-                          text={tech.status}
-                        />
+                        <StatusBadge status={getStatusColor(tech.status)} text={tech.status} />
                       </TechHeader>
 
                       <InfoRow>
@@ -153,15 +142,12 @@ const Manage_Technicians = () => {
                         <Award size={18} />
                         <span className="label">Experience:</span>
                         <span style={{ marginLeft: "auto" }}>
-                          {tech.expYears}{" "}
-                          {tech.expYears === 1 ? "year" : "years"}
+                          {tech.expYears} {tech.expYears === 1 ? "year" : "years"}
                         </span>
                       </InfoRow>
 
                       <button
-                        onClick={() =>
-                          setFlippedCardId(isFlipped ? null : tech.id)
-                        }
+                        onClick={() => setFlippedCardId(isFlipped ? null : tech.id)}
                         style={{
                           marginTop: "1rem",
                           background: "#00ad4e",
@@ -178,9 +164,7 @@ const Manage_Technicians = () => {
                     </FlipCardFront>
 
                     <FlipCardBack>
-                      <h3 style={{ marginBottom: "1rem", color: "#1e293b" }}>
-                        Skills & Expertise
-                      </h3>
+                      <h3 style={{ marginBottom: "1rem", color: "#1e293b" }}>Skills & Expertise</h3>
                       <div className="skills-list">
                         {tech.skills.map((skill) => (
                           <SkillTag key={skill.id}>{skill.name}</SkillTag>

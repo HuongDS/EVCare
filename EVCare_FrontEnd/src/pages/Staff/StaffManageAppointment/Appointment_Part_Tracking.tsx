@@ -49,7 +49,6 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
     dispatch(closeModel3d());
   }, [location.pathname, dispatch]);
 
-  //gọi hàm để lấy order detail
   const { data: order, isSuccess } = useGetOrderDetail(data.orderId);
   const { data: appointments } = useGetAllAppointments({
     pageSize: 20,

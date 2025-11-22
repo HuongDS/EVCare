@@ -24,13 +24,6 @@ export async function getAccountInformation() {
   }
 }
 
-// export const useGetAccountInformation = () => {
-//   return useQuery({
-//     queryKey: ["Account Information"],
-//     queryFn: () => getAccountInformation(),
-//   });
-// };
-
 export async function updateAccount(data: AccountUpdateDto) {
   try {
     const response = await api.put<ResponseDto<AccountViewModel>>("/api/Account/update-me", data);

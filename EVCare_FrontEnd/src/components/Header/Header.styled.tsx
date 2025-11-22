@@ -24,7 +24,7 @@ export const Navbar = styled.header<{ $isScrolled: boolean }>`
   justify-content: space-between;
   align-items: center;
   font-family: "Outfit", sans-serif;
-  background: rgba(235, 255, 231, 0.85); /* Nền xanh mờ */
+  background: rgba(235, 255, 231, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.07);

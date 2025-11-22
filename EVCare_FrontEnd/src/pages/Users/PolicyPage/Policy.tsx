@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // (NEW) Thêm useState, useEffect
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Hero,
@@ -24,7 +24,6 @@ import { Shield, FileCheck, Clock, CreditCard, UserCheck, HelpCircle, Sparkles, 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 
-// (NEW) Sửa lại import cho đúng chuẩn
 const { Title, Paragraph } = Typography;
 
 const policies = [
@@ -109,10 +108,8 @@ const itemVariants = {
 
 const Policy: React.FC = () => {
   const navigate = useNavigate();
-  // --- (NEW) State để lưu ID của mục đang active ---
   const [activeId, setActiveId] = useState(policies[0].id);
 
-  // --- (NEW) Logic "Scroll Spy" ---
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -122,12 +119,10 @@ const Policy: React.FC = () => {
           }
         });
       },
-      // rootMargin: "-30% 0px -65% 0px"
-      // Nghĩa là: chỉ "active" khi mục đó nằm trong khoảng 30% top và 65% bottom
+
       { rootMargin: "-30% 0px -65% 0px" }
     );
 
-    // Bắt đầu "quan sát" tất cả các mục
     policies.forEach((policy) => {
       const element = document.getElementById(policy.id);
       if (element) {
@@ -135,7 +130,6 @@ const Policy: React.FC = () => {
       }
     });
 
-    // Dọn dẹp khi component unmount
     return () => {
       policies.forEach((policy) => {
         const element = document.getElementById(policy.id);
@@ -144,7 +138,7 @@ const Policy: React.FC = () => {
         }
       });
     };
-  }, []); // Chỉ chạy 1 lần
+  }, []);
 
   return (
     <Container>
