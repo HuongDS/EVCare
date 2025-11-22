@@ -31,20 +31,21 @@ namespace API.Controllers
                 });
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
                 return BadRequest(new ResponseDto<object>
                 {
-                   statusCode = HttpStatus.BAD_REQUEST,
-                   message = ex.Message,
-                   data = ex.StackTrace,
+                    statusCode = HttpStatus.BAD_REQUEST,
+                    message = ex.Message,
+                    data = ex.StackTrace,
                 });
-                
+
             }
         }
 
         [HttpPut]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateServiceCenter(ServiceCenterViewModel model)
         {
             try
@@ -57,15 +58,16 @@ namespace API.Controllers
 
                 });
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new ResponseDto<object>
                 {
                     statusCode = HttpStatus.BAD_REQUEST,
                     message = ex.Message,
-                    data = ex.StackTrace,
+                    data = null,
                 });
             }
         }
-     }
+    }
 }
