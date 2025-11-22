@@ -2,10 +2,7 @@ import { type Dispatch, type SetStateAction } from "react";
 import { Modal, Fade, Backdrop } from "@mui/material";
 import { ShoppingCart, Trash2, Minus, Plus, X } from "lucide-react";
 import type { OrderPartsResponseDto } from "../../../models/OrderPartModel/Order_Parts_Model";
-import {
-  DamageLevelStringEnum,
-  damageColorMap,
-} from "../../../models/enums/DamageLevelEnum";
+import { DamageLevelStringEnum, damageColorMap } from "../../../models/enums/DamageLevelEnum";
 import type { PartDamageLevelDetail } from "../../../models/OrderPartModel/AppointmentPartCondition";
 
 interface CartModalProps {
@@ -20,9 +17,7 @@ interface CartModalProps {
   isUpdating: boolean;
   orderId: number;
   damageLevels: Record<number, DamageLevelStringEnum>;
-  setDamageLevels: Dispatch<
-    SetStateAction<Record<number, DamageLevelStringEnum>>
-  >;
+  setDamageLevels: Dispatch<SetStateAction<Record<number, DamageLevelStringEnum>>>;
   appointmentHasCondition: PartDamageLevelDetail[];
 }
 
@@ -41,10 +36,7 @@ export default function CartModal({
   damageLevels,
   setDamageLevels,
 }: CartModalProps) {
-  const total = cart.reduce(
-    (sum, item) => sum + (item.part.price ?? 0) * item.quantity,
-    0
-  );
+  const total = cart.reduce((sum, item) => sum + (item.part.price ?? 0) * item.quantity, 0);
 
   const isProcessing = isSending || isUpdating;
 
@@ -89,60 +81,38 @@ export default function CartModal({
                     <CartItem key={part.id}>
                       <ItemInfo>
                         <PartName>{part.name}</PartName>
-                        <PartPrice>
-                          {(part.price ?? 0).toLocaleString("vi-VN")}₫
-                        </PartPrice>
+                        <PartPrice>{(part.price ?? 0).toLocaleString("vi-VN")}₫</PartPrice>
                       </ItemInfo>
 
                       <ItemControls>
                         <QuantityControl>
                           <QuantityButton
-                            onClick={() =>
-                              onQuantityChange(
-                                part.id,
-                                Math.max(1, quantity - 1)
-                              )
-                            }
+                            onClick={() => onQuantityChange(part.id, Math.max(1, quantity - 1))}
                             disabled={quantity <= 1}
                           >
                             <Minus size={16} />
                           </QuantityButton>
                           <QuantityDisplay>{quantity}</QuantityDisplay>
-                          <QuantityButton
-                            onClick={() =>
-                              onQuantityChange(part.id, quantity + 1)
-                            }
-                          >
+                          <QuantityButton onClick={() => onQuantityChange(part.id, quantity + 1)}>
                             <Plus size={16} />
                           </QuantityButton>
                         </QuantityControl>
 
                         <DamageSelect
-                          value={
-                            damageLevels[part.id] ??
-                            DamageLevelStringEnum.Critical
-                          }
+                          value={damageLevels[part.id] ?? DamageLevelStringEnum.Critical}
                           onChange={(e) =>
                             setDamageLevels((prev) => ({
                               ...prev,
-                              [part.id]: e.target
-                                .value as DamageLevelStringEnum,
+                              [part.id]: e.target.value as DamageLevelStringEnum,
                             }))
                           }
-                          $color={
-                            damageColorMap[
-                              damageLevels[part.id] ??
-                                DamageLevelStringEnum.Critical
-                            ]
-                          }
+                          $color={damageColorMap[damageLevels[part.id] ?? DamageLevelStringEnum.Critical]}
                         >
-                          {Object.entries(DamageLevelStringEnum).map(
-                            ([key, label]) => (
-                              <option key={key} value={key}>
-                                {label}
-                              </option>
-                            )
-                          )}
+                          {Object.entries(DamageLevelStringEnum).map(([key, label]) => (
+                            <option key={key} value={key}>
+                              {label}
+                            </option>
+                          ))}
                         </DamageSelect>
 
                         <DeleteButton onClick={() => onRemove(part.id)}>
@@ -150,10 +120,7 @@ export default function CartModal({
                         </DeleteButton>
                       </ItemControls>
 
-                      <ItemTotal>
-                        {((part.price ?? 0) * quantity).toLocaleString("vi-VN")}
-                        ₫
-                      </ItemTotal>
+                      <ItemTotal>{((part.price ?? 0) * quantity).toLocaleString("vi-VN")}₫</ItemTotal>
                     </CartItem>
                   ))}
                 </CartList>
@@ -164,7 +131,6 @@ export default function CartModal({
               <SummaryCard>
                 <SummaryTitle>Order Summary</SummaryTitle>
 
-                {/* {cart.length > 0 && ( */}
                 <>
                   <SummaryItems>
                     {cart.map(({ part, quantity }) => (
@@ -172,12 +138,7 @@ export default function CartModal({
                         <ItemName>
                           {part.name} <Quantity>×{quantity}</Quantity>
                         </ItemName>
-                        <ItemAmount>
-                          {((part.price ?? 0) * quantity).toLocaleString(
-                            "vi-VN"
-                          )}
-                          ₫
-                        </ItemAmount>
+                        <ItemAmount>{((part.price ?? 0) * quantity).toLocaleString("vi-VN")}₫</ItemAmount>
                       </SummaryItem>
                     ))}
                   </SummaryItems>
@@ -190,11 +151,7 @@ export default function CartModal({
                   </TotalRow>
 
                   <ActionButton
-                    onClick={() =>
-                      appointmentHasCondition.length > 0
-                        ? onUpdate(orderId)
-                        : onSend(orderId)
-                    }
+                    onClick={() => (appointmentHasCondition.length > 0 ? onUpdate(orderId) : onSend(orderId))}
                     disabled={isProcessing}
                     $processing={isProcessing}
                   >
