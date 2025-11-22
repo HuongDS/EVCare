@@ -22,8 +22,6 @@ export const Header = styled.header`
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  /* padding-bottom: 24px;
-  margin-bottom: 24px; */
 `;
 
 export const Title = styled(motion.h1)`
@@ -116,12 +114,8 @@ export const TabButton = styled.button<{ $isActive: boolean }>`
   border-radius: 8px;
   cursor: pointer;
   color: ${({ $isActive }) => ($isActive ? "#fff" : "#374151")};
-  background: ${({ $isActive }) =>
-    $isActive
-      ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)"
-      : "transparent"};
-  box-shadow: ${({ $isActive }) =>
-    $isActive ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none"};
+  background: ${({ $isActive }) => ($isActive ? "linear-gradient(135deg, #00ad4e 0%, #00c853 100%)" : "transparent")};
+  box-shadow: ${({ $isActive }) => ($isActive ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none")};
   transition: all 0.3s ease;
 
   &:hover:not(:disabled):not(:active) {
