@@ -44,7 +44,6 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
   setViewDetailModal,
   setIsRepairing,
 }) => {
-  const techId = useAppSelector((state) => state.tech.techId);
   const [expandedSections, setExpandedSections] = useState({
     images: false,
     services: false,
@@ -57,16 +56,24 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
     isFetching,
   } = useGetAppointmentPartCondition(data.id);
 
+  const {
+    data: techDetail,
+    isLoading: loadAccount,
+    isFetching: fetchAccount,
+  } = useGetAccount();
+
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
-  if (isLoading || isFetching) {
+  if (isLoading || isFetching || loadAccount || fetchAccount) {
     return <SpinnerComponent />;
   }
 
   const isAnyPartNotDone = data.parts.some(
-    (part) => part.partStatus !== "Done" && part.technicianId === techId
+    (part) =>
+      part.partStatus !== "Done" &&
+      part.technicianId === techDetail?.data?.techId
   );
 
   return (
@@ -299,4 +306,4 @@ import {
 } from "./Style/TechnicianAppointmentCard.styled";
 import AlertModal from "./AlertModal";
 import ShowButton from "../../../components/Button/ShowButton";
-import { useAppSelector } from "../../../states/store";
+import { useGetAccount } from "../../../services/authService";
