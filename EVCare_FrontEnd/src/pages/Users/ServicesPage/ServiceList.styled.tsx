@@ -63,11 +63,7 @@ export const BookButton = styled(Button as any)`
   gap: 0.5rem;
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      ${lighten(0.05, EVCareGreen)} 0%,
-      ${EVCareGreen} 100%
-    );
+    background: linear-gradient(135deg, ${lighten(0.05, EVCareGreen)} 0%, ${EVCareGreen} 100%);
     box-shadow: 0 6px 20px rgba(0, 173, 78, 0.4);
     transform: translateY(-2px);
   }
@@ -142,8 +138,7 @@ export const ServiceStorySection = styled(motion.section)<{
   grid-template-columns: 1fr 1fr;
   gap: 3rem;
   align-items: center;
-  grid-template-areas: ${(props) =>
-    props.$imagePosition === "left" ? "'image text'" : "'text image'"};
+  grid-template-areas: ${(props) => (props.$imagePosition === "left" ? "'image text'" : "'text image'")};
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -210,7 +205,13 @@ const bounce = keyframes`
   50% { transform: translateY(-8px); }
 `;
 
-export const StickyBookButton = styled(motion.button)`
+const spin = keyframes`
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const StickyBookButton = styled(motion.button)<{ $isLoading?: boolean }>`
   position: fixed;
   bottom: 2rem;
   right: 2rem;
@@ -228,17 +229,16 @@ export const StickyBookButton = styled(motion.button)`
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  justify-content: center;
+  min-height: 58px;
+  min-width: 180px;
 
   &::before {
     content: "";
     position: absolute;
     inset: -3px;
     border-radius: 50px;
-    background: linear-gradient(
-      135deg,
-      ${lighten(0.1, EVCareGreen)},
-      ${EVCareGreen}
-    );
+    background: linear-gradient(135deg, ${lighten(0.1, EVCareGreen)}, ${EVCareGreen});
     filter: blur(8px);
     opacity: 0.7;
     z-index: -1;
@@ -248,6 +248,25 @@ export const StickyBookButton = styled(motion.button)`
   &:hover::before {
     opacity: 1;
   }
+
+  .button-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: ${spin} 0.8s linear infinite;
+  }
+
+  ${({ $isLoading }) =>
+    $isLoading &&
+    `
+    cursor: not-allowed;
+    animation: none; 
+    &::before {
+      opacity: 0.5; 
+    }
+  `}
 
   animation: ${bounce} 1.5s ease-in-out infinite;
   animation-delay: 1s;

@@ -131,7 +131,7 @@ const ServiceList = () => {
         <HeaderSection>
           <ServiceLabel>OUR SERVICES</ServiceLabel>
           <MainTitle>Maintenance Your Vehicle</MainTitle>
-          {isLoading ? (
+          {loadingForm ? (
             <SpinnerComponent />
           ) : (
             <BookButton onClick={handleOpenBookingForm}>
@@ -227,9 +227,12 @@ const ServiceList = () => {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={!loadingForm ? { scale: 1.05 } : {}}
+          whileTap={!loadingForm ? { scale: 0.95 } : {}}
+          disabled={loadingForm}
+          $isLoading={loadingForm}
         >
+          {loadingForm && <span className="button-spinner" />}
           Book Now <FiArrowRight />
         </StickyBookButton>
         <BookingForm
