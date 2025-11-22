@@ -545,14 +545,16 @@ namespace DataAccess.Repositories
             int technicianId, AppointmentTechnicianQueryDto model) {
             var start = model.BeginTime?.ToDateTime(TimeOnly.MinValue);
             var end = model.EndTime?.ToDateTime(TimeOnly.MaxValue);
-            var query = _dbContext.TechnicianWorkingSessions.AsNoTracking()
+            var query = _dbContext.TechnicianWorkingSessions
+                .AsNoTracking()
                 .Include(t => t.Order).ThenInclude(o => o.Appointment)
                 .Where(tws => tws.TechnicianId == technicianId &&
                 (!model.Status.HasValue || tws.Status == model.Status.Value) &&
                 (!start.HasValue || tws.Order.Appointment.Appointment_Date >= start.Value) &&
                 (!end.HasValue || tws.Order.Appointment.Appointment_Date <= end.Value) &&
                 (!model.Status.HasValue || tws.Status == model.Status.Value))
-                .Select(x => new { x.OrderId, x.Order.Appointment.Appointment_Date });
+                .Select(x => new { x.OrderId, x.Order.Appointment.Appointment_Date })
+                .Distinct();
             query = query.ApplySorting(model.SortField, model.SortOrder);
             var pagedResult = await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
             if (!pagedResult.Items.Any())
