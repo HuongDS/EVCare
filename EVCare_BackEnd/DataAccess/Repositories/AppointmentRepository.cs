@@ -437,13 +437,24 @@ namespace DataAccess.Repositories
             int technicianId, AppointmentTechnicianQueryDto model) { 
             var start = model.BeginTime?.ToDateTime(TimeOnly.MinValue); 
             var end = model.EndTime?.ToDateTime(TimeOnly.MaxValue); 
-            var query = _dbContext.TechnicianWorkingSessions.AsNoTracking().Include(t => t.Order).ThenInclude(o => o.Appointment).Where(tws => tws.TechnicianId == technicianId && (!model.Status.HasValue || tws.Status == model.Status.Value) && (!start.HasValue || tws.Order.Appointment.Appointment_Date >= start.Value) && (!end.HasValue || tws.Order.Appointment.Appointment_Date <= end.Value) && (!model.Status.HasValue || tws.Status == model.Status.Value)).Select(x => new { x.OrderId, x.Order.Appointment.Appointment_Date }); query = query.ApplySorting(model.SortField, model.SortOrder); var pagedResult = await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value); 
+            var query = _dbContext.TechnicianWorkingSessions.AsNoTracking()
+                .Include(t => t.Order).ThenInclude(o => o.Appointment)
+                .Where(tws => tws.TechnicianId == technicianId && 
+                (!model.Status.HasValue || tws.Status == model.Status.Value) &&
+                (!start.HasValue || tws.Order.Appointment.Appointment_Date >= start.Value) &&
+                (!end.HasValue || tws.Order.Appointment.Appointment_Date <= end.Value) && 
+                (!model.Status.HasValue || tws.Status == model.Status.Value))
+                .Select(x => new { x.OrderId, x.Order.Appointment.Appointment_Date });
+            query = query.ApplySorting(model.SortField, model.SortOrder); 
+            var pagedResult = await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value); 
             if (!pagedResult.Items.Any()) return new PageResultDto<AppointmentTechnicianViewModel>(new List<AppointmentTechnicianViewModel>(), 0, model.PageSize.Value, model.PageIndex.Value);
             var orderIds = pagedResult.Items.Select(x => x.OrderId).ToList();
-            var appointments = await _dbContext.Appointments.AsNoTracking().AsSplitQuery()
+            var appointments = await _dbContext.Appointments
+                .AsNoTracking()
+                .AsSplitQuery()
                 .Where(a => orderIds.Contains(a.OrderId.Value))
-                .Include(a => a.AppointmentPartConditions).
-                Include(a => a.Vehicle).ThenInclude(v => v.Category)
+                .Include(a => a.AppointmentPartConditions)
+                .Include(a => a.Vehicle).ThenInclude(v => v.Category)
                 .Include(a => a.Customer).ThenInclude(c => c.Account)
                 .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
                 .Include(a => a.AppointmentImages).Include(a => a.Order)
@@ -456,14 +467,25 @@ namespace DataAccess.Repositories
                     Id = a.Id, AppointmentDate = a.Appointment_Date, VehicleModel = a.Vehicle.Category.Name,
                     LicensePlate = a.Vehicle.LicensePlate, CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name, 
                     PhoneNumber = a.Customer.Account.Phone, Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(), 
-                    OrderId = a.OrderId, Parts = a.Order.OrderParts.Select(op => new PartTechnicianViewModel { 
+                    OrderId = a.OrderId, 
+                    Parts = a.Order.OrderParts.Select(op => new PartTechnicianViewModel { 
                         TechnicianName = op.Technician.Employee.Account.First_Name + " " + op.Technician.Employee.Account.Last_Name, 
-                        Name = op.Part.Name, Quantity = op.Quantity, ImageUrl = op.Part.Image, Price = op.Price, 
-                        ReplacementPrice = op.ReplacementPrice, Stock = op.Part.Stock, Id = op.PartId, 
-                        PartStatus = a.AppointmentPartConditions.Where(apc => apc.PartId == op.PartId).Select(apc => apc.Level).FirstOrDefault(), TechnicianId = op.TechnicianId }).ToList(),
+                        Name = op.Part.Name, 
+                        Quantity = op.Quantity,
+                        ImageUrl = op.Part.Image,
+                        Price = op.Price, 
+                        ReplacementPrice = op.ReplacementPrice, 
+                        Stock = op.Part.Stock, 
+                        Id = op.PartId, 
+                        PartStatus = a.AppointmentPartConditions
+                        .Where(apc => apc.PartId == op.PartId)
+                        .Select(apc => apc.Level)
+                        .FirstOrDefault(), 
+                        TechnicianId = op.TechnicianId 
+                    }).ToList(),
                     Status = a.Order.TechnicianWorkingSessions.
-                    OrderByDescending(tws => tws.Id).
-                    FirstOrDefault(tws => tws.TechnicianId == technicianId).Status, 
+                                    OrderByDescending(tws => tws.Id).
+                                    FirstOrDefault(tws => tws.TechnicianId == technicianId).Status, 
                     AppointmentImages = a.AppointmentImages.Select(img => img.Image) }).ToListAsync();
             var orderedAppointments = orderIds
                 .Select(id => appointments.FirstOrDefault(a => a.OrderId == id))
