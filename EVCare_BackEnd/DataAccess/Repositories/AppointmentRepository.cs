@@ -505,7 +505,8 @@ namespace DataAccess.Repositories
                         TechnicianId = op.TechnicianId
                     }).ToList(),
                     Status = a.Order.TechnicianWorkingSessions
-                                .FirstOrDefault(tws => tws.TechnicianId == technicianId && tws.EndTime == null).Status,
+                                .OrderByDescending(tws=>tws.Id)
+                                .FirstOrDefault(tws => tws.TechnicianId == technicianId).Status,
                     AppointmentImages = a.AppointmentImages.Select(img => img.Image)
                 })
                 .ToListAsync();
