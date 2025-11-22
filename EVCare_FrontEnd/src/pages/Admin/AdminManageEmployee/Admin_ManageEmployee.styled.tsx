@@ -7,6 +7,7 @@ export const PageWrapper = styled.div`
   min-height: calc(100vh - 80px);
   padding: 32px;
   background: linear-gradient(135deg, #f0f9f4 0%, #e6f7f0 100%);
+  font-family: "Outfit", sans-serif;
 `;
 
 export const ContentWrapper = styled.main`
@@ -88,7 +89,6 @@ export const Header = styled.header`
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  padding-bottom: 24px;
   margin-bottom: 24px;
 `;
 
@@ -183,8 +183,10 @@ export const RoleBadge = styled.span<{ $role: RoleEnum }>`
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  background: ${({ $role }) => ($role === RoleEnum.TECHNICIAN ? "rgba(0, 173, 78, 0.15)" : "#e0f2fe")};
-  color: ${({ $role }) => ($role === RoleEnum.TECHNICIAN ? "#065f46" : "#0c4a6e")};
+  background: ${({ $role }) =>
+    $role === RoleEnum.TECHNICIAN ? "rgba(0, 173, 78, 0.15)" : "#e0f2fe"};
+  color: ${({ $role }) =>
+    $role === RoleEnum.TECHNICIAN ? "#065f46" : "#0c4a6e"};
 `;
 
 export const BannedBadge = styled.span`

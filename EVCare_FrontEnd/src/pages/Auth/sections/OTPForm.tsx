@@ -119,10 +119,6 @@ export default function OTPForm({
           Verify Code
         </VerifyButton>
       )}
-
-      <ResendText>
-        Didn't receive the code? <ResendLink>Resend</ResendLink>
-      </ResendText>
     </FormContainer>
   );
 }
@@ -213,7 +209,6 @@ const OTPInput = styled.input<{ $filled: boolean }>`
     transform: scale(1.05);
   }
 
-  /* Remove number input arrows */
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -267,22 +262,4 @@ const VerifyButton = styled.button<{ $enabled: boolean }>`
 const SpinnerWrapper = styled.div`
   padding: 16px;
   margin-bottom: 20px;
-`;
-
-const ResendText = styled.p`
-  font-size: 14px;
-  color: #666;
-  margin: 0;
-`;
-
-const ResendLink = styled.span`
-  color: #00ad4e;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    text-decoration: underline;
-    color: #00c853;
-  }
 `;

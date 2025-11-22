@@ -213,11 +213,13 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
                   <PriceRow>
                     <PriceItem>
                       <Label>Unit:</Label>
-                      <TotalValue>{formatCurrency(part.price)}₫</TotalValue>
+                      <TotalValue>{formatCurrency(part.price)}</TotalValue>
                     </PriceItem>
                     <PriceItem>
                       <Label>Replace:</Label>
-                      <TotalValue>{formatCurrency(part.replacementPrice)}₫</TotalValue>
+                      <TotalValue>
+                        {formatCurrency(part.replacementPrice)}
+                      </TotalValue>
                     </PriceItem>
                   </PriceRow>
                 </PartInfo>
@@ -281,7 +283,11 @@ export default function Appointment_Part_Tracking({ data, closeModal }: Props) {
 
                 <PartTotal>
                   <TotalLabel>Total</TotalLabel>
-                  <TotalValue>{((part.price + part.replacementPrice) * part.quantity).toLocaleString()}₫</TotalValue>
+                  <TotalValue>
+                    {formatCurrency(
+                      (part.price + part.replacementPrice) * part.quantity
+                    )}
+                  </TotalValue>
                 </PartTotal>
               </PartRight>
             </PartCard>
