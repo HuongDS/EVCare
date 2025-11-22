@@ -22,33 +22,41 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class AppointmentRepository : GenericRepository<Appointment>, IAppointmentRepository {
-        public AppointmentRepository(EVCareDbContext dbContext) : base(dbContext) {
+    public class AppointmentRepository : GenericRepository<Appointment>, IAppointmentRepository
+    {
+        public AppointmentRepository(EVCareDbContext dbContext) : base(dbContext)
+        {
         }
-        public async Task UpdateAppointmentStatusAsync(int appointmentID, AppointmentStatusEnum status) {
+        public async Task UpdateAppointmentStatusAsync(int appointmentID, AppointmentStatusEnum status)
+        {
             var entity = await _dbSet.FirstOrDefaultAsync(e => e.Id == appointmentID);
-            if (entity is null) {
+            if (entity is null)
+            {
                 throw new Exception($"Entity with id = {appointmentID} is not found.");
             }
             entity.Status = status;
-            if (status == AppointmentStatusEnum.Canceled) {
+            if (status == AppointmentStatusEnum.Canceled)
+            {
                 entity.Deleted_At = DateTime.Now;
             }
             _dbContext.Update(entity);
             await _dbContext.SaveChangesAsync();
         }
-        public async Task<PageResultDto<Appointment>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, DateOnly currentDate, int pageSize, int pageIndex) {
+        public async Task<PageResultDto<Appointment>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, DateOnly currentDate, int pageSize, int pageIndex)
+        {
             var startDate = currentDate.ToDateTime(TimeOnly.MinValue);
             var endDate = currentDate.ToDateTime(TimeOnly.MaxValue);
             var appointments = _dbSet.Where(a => a.EmployeeId == employeeID && a.Status == status && a.Appointment_Date >= startDate && a.Appointment_Date <= endDate).AsQueryable();
             return await PaginationHelper.PaginationAsync(appointments, pageSize, pageIndex);
         }
-        public async Task<PageResultDto<Appointment>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex) {
+        public async Task<PageResultDto<Appointment>> GetAppointmentByEmployeeIDAsync(int employeeID, AppointmentStatusEnum status, int pageSize, int pageIndex)
+        {
             var appointments = _dbSet.Where(a => a.EmployeeId == employeeID && a.Status == status).AsQueryable();
             return await PaginationHelper.PaginationAsync(appointments, pageSize, pageIndex);
         }
 
-        public async Task<int> CountAppointmentsPerDay(int customerId) {
+        public async Task<int> CountAppointmentsPerDay(int customerId)
+        {
             var today = DateTime.Today;
             var tomorrow = today.AddDays(1);
 
@@ -59,7 +67,8 @@ namespace DataAccess.Repositories
             );
         }
 
-        public async Task<int> CountAppointmnetToday() {
+        public async Task<int> CountAppointmnetToday()
+        {
             var today = DateTime.Today;
             var tomorrow = today.AddDays(1);
             return await _dbSet.CountAsync(x =>
@@ -69,7 +78,8 @@ namespace DataAccess.Repositories
                 );
         }
 
-        public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsByCustomerId(int customerId) {
+        public async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsByCustomerId(int customerId)
+        {
 
             return await _dbContext.Appointments.Where(a => a.CustomerId == customerId)
                 .Include(a => a.Customer).ThenInclude(a => a.Account)
@@ -99,7 +109,8 @@ namespace DataAccess.Repositories
 
         }
 
-        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex, string customername) {
+        public async Task<PageResultDto<AppointmentViewModel>> GetAppointmentsWithPagination(int payload, int pageindex, string customername)
+        {
             var query = _dbContext.Appointments.Include(a => a.Vehicle).ThenInclude(v => v.Category)
                 .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
                 .Include(a => a.Customer).ThenInclude(a => a.Account)
@@ -126,13 +137,14 @@ namespace DataAccess.Repositories
 
         }
 
-        public async Task<AppointmentViewDetailModel> GetAppointmentWithDetails(int appointmentId) {
+        public async Task<AppointmentViewDetailModel> GetAppointmentWithDetails(int appointmentId)
+        {
             return await _dbContext.Appointments.AsNoTracking()
                 .Where(a => a.Id == appointmentId)
                 .Include(a => a.Vehicle).ThenInclude(v => v.Category)
                 .Include(a => a.Customer).ThenInclude(c => c.Account)
                 .Include(a => a.Employee).ThenInclude(e => e.Account)
-                .Include(a=>a.Order).ThenInclude(a=>a.TechnicianWorkingSessions).ThenInclude(tws=>tws.Technician).ThenInclude(t=>t.Employee).ThenInclude(e=>e.Account)
+                .Include(a => a.Order).ThenInclude(a => a.TechnicianWorkingSessions).ThenInclude(tws => tws.Technician).ThenInclude(t => t.Employee).ThenInclude(e => e.Account)
                 .Include(a => a.AppointmentImages)
                 .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
                 .Select(a => new AppointmentViewDetailModel
@@ -144,7 +156,7 @@ namespace DataAccess.Repositories
                     VehicleId = a.VehicleId,
                     VehicleName = a.Vehicle.Category.Name,
                     VehiclePlateNumber = a.Vehicle.LicensePlate,
-                    IsNeedMantainance = a.Vehicle.NextServiceDate == null?true: a.Vehicle.Last_Appointment <= a.Order.Invoice.Updated_At,
+                    IsNeedMantainance = a.Vehicle.NextServiceDate == null ? true : a.Vehicle.Last_Appointment <= a.Order.Invoice.Updated_At,
                     CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
                     CustomerEmail = a.Customer.Account.Email,
                     PhoneNumber = a.Customer.Account.Phone,
@@ -180,28 +192,35 @@ namespace DataAccess.Repositories
                 })
                 .FirstOrDefaultAsync();
         }
-        public async Task<int> GetCurrentSlotAsync() {
+        public async Task<int> GetCurrentSlotAsync()
+        {
             var currSlot = await _dbSet.CountAsync(a => a.Status == AppointmentStatusEnum.InProgress);
             return currSlot;
         }
-        public async Task<PageResultDto<Appointment>> GetAppointmentInDayWithPaginationAsync(DateTime date, int pageSize, int pageIndex) {
+        public async Task<PageResultDto<Appointment>> GetAppointmentInDayWithPaginationAsync(DateTime date, int pageSize, int pageIndex)
+        {
             var query = _dbContext.Appointments.Where(a => a.Appointment_Date.Date == date.Date && a.Status == AppointmentStatusEnum.Confirmed).AsQueryable();
             return await PaginationHelper.PaginationAsync(query, pageSize, pageIndex);
         }
-        public async Task<Appointment> GetAppointmentByOrderIdAsync(int orderId) {
+        public async Task<Appointment> GetAppointmentByOrderIdAsync(int orderId)
+        {
             var entity = await _dbContext.Appointments.FirstOrDefaultAsync(x => x.OrderId == orderId);
-            if (entity is null) {
+            if (entity is null)
+            {
                 throw new Exception($"Entity with orderId = {orderId} is not found.");
             }
             return entity;
         }
-        public async Task<PageResultDto<Appointment>> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex) {
+        public async Task<PageResultDto<Appointment>> GetAppointmentBeforeDayAsync(DateTime date, int pageSize, int pageIndex)
+        {
             var entity = _dbSet.Where(a => a.Appointment_Date.Date <= date.Date && a.Status == AppointmentStatusEnum.Confirmed).OrderBy(a => a.Appointment_Date).AsQueryable();
             return await PaginationHelper.PaginationAsync(entity, pageSize, pageIndex);
         }
-        public async Task<Appointment> UpdateAppointmentDate(DateTime date, int appointmentId) {
+        public async Task<Appointment> UpdateAppointmentDate(DateTime date, int appointmentId)
+        {
             var appointment = await _dbSet.FirstOrDefaultAsync(a => a.Id == appointmentId);
-            if (appointment == null) {
+            if (appointment == null)
+            {
                 throw new Exception($"Appointment with id = {appointmentId} is not found.");
             }
             appointment.Appointment_Date = date;
@@ -210,7 +229,8 @@ namespace DataAccess.Repositories
             return appointment;
         }
 
-        public async Task<CenterDailyCapacityModel> GetAppointmentWithDailyCount(int days, DateOnly today) {
+        public async Task<CenterDailyCapacityModel> GetAppointmentWithDailyCount(int days, DateOnly today)
+        {
             var center = await _dbContext.ServiceCenters.FirstOrDefaultAsync();
             var capacity = center.Capacity;
             var start = today.ToDateTime(TimeOnly.MinValue);
@@ -243,7 +263,8 @@ namespace DataAccess.Repositories
 
         }
 
-        public async Task CancelAppointment() {
+        public async Task CancelAppointment()
+        {
             var today = DateOnly.FromDateTime(DateTime.Now);
             await _dbContext.Appointments
                 .Where(a =>
@@ -311,7 +332,8 @@ namespace DataAccess.Repositories
         //    return await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
 
         //}
-        public async Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model) {
+        public async Task<PageResultDto<AppointmentViewModel>> GetWithPaginationAsync(AppointmentQueryDto model)
+        {
             var baseQuery = _dbSet
                          .AsNoTracking()
                          .Include(a => a.Customer).ThenInclude(a => a.Account)
@@ -350,7 +372,7 @@ namespace DataAccess.Repositories
                         .ThenInclude(tws => tws.Technician)
                             .ThenInclude(t => t.Employee)
                                 .ThenInclude(e => e.Account)
-  
+
                 .Include(a => a.Order)
                     .ThenInclude(order => order.TechnicianWorkingSessions)
                         .ThenInclude(tws => tws.Technician)
@@ -416,7 +438,7 @@ namespace DataAccess.Repositories
             var end = model.EndTime?.ToDateTime(TimeOnly.MaxValue);
             var query = _dbContext.TechnicianWorkingSessions
                 .AsNoTracking()
-                .Include(t=>t.Order).ThenInclude(o=>o.Appointment)
+                .Include(t => t.Order).ThenInclude(o => o.Appointment)
                 .Where(tws => tws.TechnicianId == technicianId
                     && (!model.Status.HasValue || tws.Status == model.Status.Value)
                     && (!start.HasValue || tws.Order.Appointment.Appointment_Date >= start.Value)
@@ -437,7 +459,7 @@ namespace DataAccess.Repositories
                 .AsNoTracking()
                 .AsSplitQuery()
                 .Where(a => orderIds.Contains(a.OrderId.Value))
-                .Include(a=>a.AppointmentPartConditions)
+                .Include(a => a.AppointmentPartConditions)
                  .Include(a => a.Vehicle)
                     .ThenInclude(v => v.Category)
                 .Include(a => a.Customer)
@@ -483,14 +505,14 @@ namespace DataAccess.Repositories
                         TechnicianId = op.TechnicianId
                     }).ToList(),
                     Status = a.Order.TechnicianWorkingSessions
-                                .FirstOrDefault(tws => tws.TechnicianId == technicianId).Status,
+                                .FirstOrDefault(tws => tws.TechnicianId == technicianId && tws.EndTime == null).Status,
                     AppointmentImages = a.AppointmentImages.Select(img => img.Image)
                 })
                 .ToListAsync();
 
-            var orderedAppointments = orderIds.Select(id=> appointments.FirstOrDefault(a => a.OrderId == id))
+            var orderedAppointments = orderIds.Select(id => appointments.FirstOrDefault(a => a.OrderId == id))
                 .Where(a => a != null)
-                .DistinctBy(x=>x.Id)
+                .DistinctBy(x => x.Id)
                 .ToList();
             return new PageResultDto<AppointmentTechnicianViewModel>(orderedAppointments, pagedResult.TotalItems, model.PageSize.Value, model.PageIndex.Value);
 
@@ -624,11 +646,13 @@ namespace DataAccess.Repositories
                 && a.Status == status);
         }
 
-        public async Task<Appointment> GetByOrderIdAsync(int orderId) {
+        public async Task<Appointment> GetByOrderIdAsync(int orderId)
+        {
             return await _dbSet.FirstOrDefaultAsync(a => a.OrderId == orderId);
         }
 
-        public async Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId) {
+        public async Task<AppointmentVehicleViewModel> GetVehicleByAppointmentId(int appointmentId)
+        {
             var parts = await _dbContext.AppointmentPartConditions
                 .AsNoTracking()
                 .Where(apc => apc.AppointmentId == appointmentId)
@@ -636,8 +660,8 @@ namespace DataAccess.Repositories
                 .GroupBy(apc => apc.Part.Category.Name)
                 .Select(apc => new PartCategoryAppointmentViewModel
                 {
-                        PartCategoryName = apc.Key,
-                         DamagedPartViewModels = apc
+                    PartCategoryName = apc.Key,
+                    DamagedPartViewModels = apc
                        .GroupBy(apc2 => apc2.PartId)
                        .Select(g => g
                         .OrderByDescending(x => x.Level)
@@ -647,7 +671,7 @@ namespace DataAccess.Repositories
                             Id = x.PartId,
                             PartName = x.Part.Name,
                             PartCategoryId = x.Part.CategoryId,
-                            NodeName = x.Part.Name.Replace(" ","_")
+                            NodeName = x.Part.Name.Replace(" ", "_")
                         })
                         .FirstOrDefault()
                         ).ToList()
@@ -655,36 +679,40 @@ namespace DataAccess.Repositories
 
             return await _dbSet.Where(x => x.Id == appointmentId)
                 .Include(x => x.Vehicle).ThenInclude(v => v.Category)
-                .Include(x=>x.AppointmentPartConditions)
+                .Include(x => x.AppointmentPartConditions)
                 .Select(x => new AppointmentVehicleViewModel
                 {
                     Id = x.Id,
                     VehicleCategoryId = x.Vehicle.CategoryId,
                     VehicleModel3DUrl = x.Vehicle.Category.Model3DUrl,
                     PartCategoryAppointmentViewModels = parts,
-                    Scale = new Dtos.Others.ScaleDto { 
-                        
+                    Scale = new Dtos.Others.ScaleDto
+                    {
+
                         X = x.Vehicle.Category.ScaleX,
-                        Y = x.Vehicle.Category.ScaleY,  
+                        Y = x.Vehicle.Category.ScaleY,
                         Z = x.Vehicle.Category.ScaleZ
-                    
+
                     }
 
 
                 }).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<ServiceSummaryViewModel>> GetTopServicesAsync(ServiceSummaryQueryDto model) {
+        public async Task<IEnumerable<ServiceSummaryViewModel>> GetTopServicesAsync(ServiceSummaryQueryDto model)
+        {
             var query = _dbContext.AppointmentServices
                 .AsNoTracking()
                 .Include(asv => asv.Service)
                 .Include(asv => asv.Appointment)
                 .AsQueryable();
-            if (model.FromDate.HasValue) {
+            if (model.FromDate.HasValue)
+            {
 
                 query = query.Where(asv => DateOnly.FromDateTime(asv.Appointment.Appointment_Date) >= model.FromDate);
             }
-            if (model.ToDate.HasValue) {
+            if (model.ToDate.HasValue)
+            {
                 query = query.Where(asv => DateOnly.FromDateTime(asv.Appointment.Appointment_Date) <= model.ToDate);
             }
             var grouped = query
@@ -697,32 +725,37 @@ namespace DataAccess.Repositories
                })
              .OrderByDescending(s => s.TotalAppointments);
 
-            if (model.Top.HasValue) {
+            if (model.Top.HasValue)
+            {
                 var limited = grouped.Take(model.Top.Value);
                 return await limited.ToListAsync();
             }
             return await grouped.ToListAsync();
         }
 
-        public async Task<bool> CheckInValidVehicleID(int vehicleId) {
+        public async Task<bool> CheckInValidVehicleID(int vehicleId)
+        {
             return await _dbContext.Appointments
                 .Where(a => a.VehicleId == vehicleId)
                 .AnyAsync(a => a.Status != AppointmentStatusEnum.Done && a.Status != AppointmentStatusEnum.Canceled);
         }
 
-        public async Task<IEnumerable<AppointmentServiceViewModel>> GetAppointmentServices(int appointmentId) {
+        public async Task<IEnumerable<AppointmentServiceViewModel>> GetAppointmentServices(int appointmentId)
+        {
             return await _dbContext.AppointmentServices
                 .AsNoTracking()
-                .Where(x=>x.AppointmentId == appointmentId)
-                .Include(x=>x.Service)
-                .Select(x=> new AppointmentServiceViewModel {
+                .Where(x => x.AppointmentId == appointmentId)
+                .Include(x => x.Service)
+                .Select(x => new AppointmentServiceViewModel
+                {
                     ServiceId = x.ServiceId,
                     ServiceName = x.Service.Name,
                 }).ToListAsync();
         }
 
-        public async Task<IEnumerable<int>> GetPartIdsInAppointment(int appointmentId) {
-            
+        public async Task<IEnumerable<int>> GetPartIdsInAppointment(int appointmentId)
+        {
+
             var serviceIds = await _dbContext.AppointmentServices
                 .AsNoTracking()
                 .Where(x => x.AppointmentId == appointmentId)
