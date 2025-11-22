@@ -175,8 +175,6 @@ export const ContainerWrapper = styled.div`
   }
 
   .profile-card {
-    // background: rgba(255, 255, 255, 0.7);
-    // backdrop-filter: blur(15px);
     background: #fff;
     border: 1px solid rgba(255, 255, 255, 1);
     border-radius: 20px;
@@ -194,7 +192,7 @@ export const ContainerWrapper = styled.div`
   .profile-title {
     font-size: 28px;
     font-weight: 700;
-    color: #333; /* Chữ màu tối */
+    color: #333;
   }
 
   .rank-badge {
@@ -333,7 +331,7 @@ export const ContainerWrapper = styled.div`
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     gap: 20px;
     padding: 20px;
-    background: rgba(255, 255, 255, 0.5); /* Kính trắng mờ */
+    background: rgba(255, 255, 255, 0.5);
     border-radius: 12px;
     border-left: 4px solid #00ad4e;
     transition: all 0.3s ease;

@@ -17,11 +17,7 @@ export const ProgressSteps = ({ steps, currentStep, children }: StepsProps) => {
         {steps.map((step, index) => (
           <Steps.Item key={index} index={index} title={step.title}>
             <Steps.Indicator boxSize={8} />
-            <Steps.Title
-              style={{ fontSize: "15px", fontFamily: "'Outfit', sans-serif" }}
-            >
-              {step.title}
-            </Steps.Title>
+            <Steps.Title style={{ fontSize: "15px", fontFamily: "'Outfit', sans-serif" }}>{step.title}</Steps.Title>
             <Steps.Separator />
           </Steps.Item>
         ))}
@@ -31,7 +27,6 @@ export const ProgressSteps = ({ steps, currentStep, children }: StepsProps) => {
   );
 };
 
-//Title của Appoinment Steps:
 export const stepsAppointment = [
   {
     title: "Check In",
@@ -50,7 +45,6 @@ export const stepsAppointment = [
   },
 ];
 
-//Thay đổi Step theo Appointment Status
 export const getAppointmentStepFromStatus = (status: string) => {
   switch (status) {
     case "Confirmed":

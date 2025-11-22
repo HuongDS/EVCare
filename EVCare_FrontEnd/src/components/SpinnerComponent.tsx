@@ -7,7 +7,7 @@ const roadStripesAnimation = keyframes`
     background-position: 0 0;
   }
   100% {
-    background-position: -60px 0; /* Di chuyển các vạch đường */
+    background-position: -60px 0;
   }
 `;
 
@@ -68,13 +68,7 @@ const Road = styled.div`
     left: 0;
     width: 100%;
     height: 2px;
-    background-image: linear-gradient(
-      to right,
-      #fff 0%,
-      #fff 50%,
-      transparent 50%,
-      transparent 100%
-    );
+    background-image: linear-gradient(to right, #fff 0%, #fff 50%, transparent 50%, transparent 100%);
     background-size: 60px 2px;
     animation: ${roadStripesAnimation} 1s linear infinite;
     transform: translateY(-50%);

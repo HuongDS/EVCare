@@ -25,9 +25,7 @@ interface props {
 }
 export default function Appointment_Assign({ data }: props) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTechnicians, setSelectedTechnicians] = useState<
-    AssignedTechnician[]
-  >([]);
+  const [selectedTechnicians, setSelectedTechnicians] = useState<AssignedTechnician[]>([]);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [confirm, setConfirm] = useState(false);
@@ -38,26 +36,17 @@ export default function Appointment_Assign({ data }: props) {
 
   const { data: technicians } = useGetTechniciansToday({
     Skills: allSkills,
-    // Status: "Available",
   });
 
   const filteredTechnicians =
     technicians?.data?.items?.filter((tech) => {
-      const nameMatch = tech.fullName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const skillMatch = tech.skills.some((skill) =>
-        skill.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      const notSelected = !selectedTechnicians.some(
-        (st) => st.technicianID === tech.id
-      );
+      const nameMatch = tech.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+      const skillMatch = tech.skills.some((skill) => skill.name.toLowerCase().includes(searchQuery.toLowerCase()));
+      const notSelected = !selectedTechnicians.some((st) => st.technicianID === tech.id);
       return (nameMatch || skillMatch) && notSelected;
     }) || [];
 
-  const handleAddTechnician = async (
-    technician: TechnicianModel<TechnicianSkills>
-  ) => {
+  const handleAddTechnician = async (technician: TechnicianModel<TechnicianSkills>) => {
     const newAssignment: AssignedTechnician = {
       technicianID: technician.id,
       technician,
@@ -68,14 +57,10 @@ export default function Appointment_Assign({ data }: props) {
   };
 
   const handleRemoveTechnician = (technicianID: number) => {
-    setSelectedTechnicians(
-      selectedTechnicians.filter((st) => st.technicianID !== technicianID)
-    );
+    setSelectedTechnicians(selectedTechnicians.filter((st) => st.technicianID !== technicianID));
   };
 
-  const techniciansList = selectedTechnicians
-    .map((tech) => tech.technicianID)
-    .flat();
+  const techniciansList = selectedTechnicians.map((tech) => tech.technicianID).flat();
 
   const { mutateAsync: assignTech, isPending } = useAssignTechnician();
   const { mutateAsync: appointmentStatus } = useChangeAppointmentStatus();
@@ -110,15 +95,11 @@ export default function Appointment_Assign({ data }: props) {
   };
 
   const getTechnicianCountForService = (serviceId: number) => {
-    return selectedTechnicians.filter((tech) =>
-      tech.technician.skills.some((skill) => skill.id === serviceId)
-    ).length;
+    return selectedTechnicians.filter((tech) => tech.technician.skills.some((skill) => skill.id === serviceId)).length;
   };
 
   const handleConfirmAssign = () => {
-    const isAssign = data.services.some(
-      (service) => getTechnicianCountForService(service.id) < 1
-    );
+    const isAssign = data.services.some((service) => getTechnicianCountForService(service.id) < 1);
 
     if (isAssign) {
       setConfirm(true);
@@ -149,10 +130,7 @@ export default function Appointment_Assign({ data }: props) {
               <h2>Assigned Technicians ({selectedTechnicians.length})</h2>
               {selectedTechnicians.length > 0 && (
                 <ButtonGroup>
-                  <ClearButton
-                    onClick={() => setSelectedTechnicians([])}
-                    disabled={isPending}
-                  >
+                  <ClearButton onClick={() => setSelectedTechnicians([])} disabled={isPending}>
                     Clear All
                   </ClearButton>
                   {isPending ? (
@@ -179,9 +157,7 @@ export default function Appointment_Assign({ data }: props) {
                   <TechnicianCard
                     key={assignment.technicianID}
                     technician={assignment.technician}
-                    onRemove={() =>
-                      handleRemoveTechnician(assignment.technicianID)
-                    }
+                    onRemove={() => handleRemoveTechnician(assignment.technicianID)}
                     isSelected
                   />
                 ))}
@@ -207,10 +183,7 @@ export default function Appointment_Assign({ data }: props) {
                       <span>{service.name}</span>
                       <p>
                         {!isHighlighted && (
-                          <Tooltip
-                            title="No technicians have been assigned to this service yet"
-                            color="#00ad4e"
-                          >
+                          <Tooltip title="No technicians have been assigned to this service yet" color="#00ad4e">
                             <PiWarning color="orange" size={20} />
                           </Tooltip>
                         )}
@@ -269,19 +242,9 @@ export default function Appointment_Assign({ data }: props) {
         </Card>
       </ContentWrapper>
       {isSuccessModalOpen && (
-        <SuccessModal
-          header="Assign Technician"
-          message={modalMessage}
-          action={onAssignSuccess}
-        />
+        <SuccessModal header="Assign Technician" message={modalMessage} action={onAssignSuccess} />
       )}
-      {isErrorModalOpen && (
-        <FailedModal
-          header="Assign Technician"
-          message={modalMessage}
-          action={handleCloseModal}
-        />
-      )}
+      {isErrorModalOpen && <FailedModal header="Assign Technician" message={modalMessage} action={handleCloseModal} />}
 
       {confirm && (
         <ConfirmModal
@@ -302,17 +265,9 @@ interface TechnicianCardProps {
   isSelected?: boolean;
 }
 
-const TechnicianCard = ({
-  technician,
-  onAdd,
-  onRemove,
-  isSelected = false,
-  ...rest
-}: TechnicianCardProps) => {
+const TechnicianCard = ({ technician, onAdd, onRemove, isSelected = false, ...rest }: TechnicianCardProps) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
-  const displayedSkills = showAllSkills
-    ? technician.skills
-    : technician.skills.slice(0, 3);
+  const displayedSkills = showAllSkills ? technician.skills : technician.skills.slice(0, 3);
   return (
     <TechnicianCardWrapper $isSelected={isSelected} {...rest}>
       <TechnicianHeader>
@@ -325,9 +280,7 @@ const TechnicianCard = ({
         />
         <TechnicianInfo>
           <h3>{technician.fullName}</h3>
-          <StatusBadge $status={technician.status}>
-            {technician.status}
-          </StatusBadge>
+          <StatusBadge $status={technician.status}>{technician.status}</StatusBadge>
         </TechnicianInfo>
 
         {isSelected && onRemove && (
@@ -353,17 +306,11 @@ const TechnicianCard = ({
 
         <WorkInfo>
           <InfoItem>
-            KPI:{" "}
-            <StatusBadge $status={technician.status}>
-              {technician.kpiPerDays}
-            </StatusBadge>
+            KPI: <StatusBadge $status={technician.status}>{technician.kpiPerDays}</StatusBadge>
           </InfoItem>
 
           <InfoItem>
-            Completed Orders:{" "}
-            <StatusBadge $status={technician.status}>
-              {technician.completedOrders}
-            </StatusBadge>
+            Completed Orders: <StatusBadge $status={technician.status}>{technician.completedOrders}</StatusBadge>
           </InfoItem>
         </WorkInfo>
       </TechInfo>

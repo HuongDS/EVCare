@@ -147,7 +147,7 @@ const PageNotFound: React.FC = () => {
             const contentRect = animatedContent.getBoundingClientRect();
             const contentFront = contentRect.left + contentRect.width;
             const contentBack = contentRect.left;
-            //Split effect 404
+
             if (contentFront > splitZoneStart && contentBack < splitZoneEnd) {
               gsap.to(top, { y: -25, duration: 0.18, overwrite: "auto" });
               gsap.to(bottom, { y: 35, duration: 0.18, overwrite: "auto" });
@@ -182,8 +182,7 @@ const PageNotFound: React.FC = () => {
       </NumberWrapper>
 
       <Description>
-        Oops! Looks like this road doesn’t exist. Let’s get you back on track to
-        the main route.
+        Oops! Looks like this road doesn’t exist. Let’s get you back on track to the main route.
       </Description>
 
       <BackButton onClick={handleGoBack}>

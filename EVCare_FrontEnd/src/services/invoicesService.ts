@@ -9,17 +9,12 @@ import { useQuery } from "@tanstack/react-query";
 
 export async function getInvoices() {
   try {
-    const response = await api.get<ResponseDto<InvoiceViewModel[]>>(
-      "/api/Invoice/invoices"
-    );
+    const response = await api.get<ResponseDto<InvoiceViewModel[]>>("/api/Invoice/invoices");
     return response.data;
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
-      const errMsg =
-        error.response?.data.message ||
-        error.message ||
-        ERROR_MESSAGE.FETCH_DATA_FAILED;
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
       throw new Error(errMsg);
     }
     throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
@@ -28,31 +23,21 @@ export async function getInvoices() {
 
 export async function getRevenue(year: number, month: number) {
   try {
-    const response = await api.get<ResponseDto<number>>(
-      `/api/Invoice/get-revenue/${year}/${month}`
-    );
+    const response = await api.get<ResponseDto<number>>(`/api/Invoice/get-revenue/${year}/${month}`);
     return response.data;
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
-      const errMsg =
-        error.response?.data.message ||
-        error.message ||
-        ERROR_MESSAGE.FETCH_DATA_FAILED;
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
       throw new Error(errMsg);
     }
     throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
   }
 }
 
-export async function getInvoicesWithPagination(
-  pageSize: number,
-  pageIndex: number
-) {
+export async function getInvoicesWithPagination(pageSize: number, pageIndex: number) {
   try {
-    const response = await api.get<
-      ResponseDto<PageResultDto<InvoiceViewModel>>
-    >("/api/Invoice/get-recently-invoices", {
+    const response = await api.get<ResponseDto<PageResultDto<InvoiceViewModel>>>("/api/Invoice/get-recently-invoices", {
       params: {
         pageSize: pageSize,
         pageIndex: pageIndex,
@@ -62,10 +47,7 @@ export async function getInvoicesWithPagination(
   } catch (error) {
     handleError(error);
     if (axios.isAxiosError(error)) {
-      const errMsg =
-        error.response?.data.message ||
-        error.message ||
-        ERROR_MESSAGE.FETCH_DATA_FAILED;
+      const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
       throw new Error(errMsg);
     }
     throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
@@ -78,17 +60,12 @@ export const useGetInvoice = (orderId: number) => {
     queryKey: ["Invoice", orderId],
     queryFn: async () => {
       try {
-        const response = await api.get<ResponseDto<InvoiceViewModel>>(
-          `/api/Invoice/by-order/${orderId}`
-        );
+        const response = await api.get<ResponseDto<InvoiceViewModel>>(`/api/Invoice/by-order/${orderId}`);
         return response.data;
       } catch (error) {
         handleError(error);
         if (axios.isAxiosError(error)) {
-          const errMsg =
-            error.response?.data.message ||
-            error.message ||
-            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
           throw new Error(errMsg);
         }
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
@@ -116,10 +93,7 @@ export const useDownloadInvoice = (orderId: number) => {
       } catch (error) {
         handleError(error);
         if (axios.isAxiosError(error)) {
-          const errMsg =
-            error.response?.data.message ||
-            error.message ||
-            ERROR_MESSAGE.FETCH_DATA_FAILED;
+          const errMsg = error.response?.data.message || error.message || ERROR_MESSAGE.FETCH_DATA_FAILED;
           throw new Error(errMsg);
         }
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);

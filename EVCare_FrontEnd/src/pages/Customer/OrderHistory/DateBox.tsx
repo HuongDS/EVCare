@@ -7,7 +7,7 @@ import { useState } from "react";
 
 interface DateBoxProps {
   label?: string;
-  date?: string; // yyyy-MM-dd
+  date?: string;
 }
 
 export default function DateBox({ date }: DateBoxProps) {

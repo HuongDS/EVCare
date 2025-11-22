@@ -164,7 +164,6 @@ export default function CartModal({
                       : "Send Order"}
                   </ActionButton>
                 </>
-                {/* )} */}
               </SummaryCard>
             </SummarySection>
           </ContentWrapper>

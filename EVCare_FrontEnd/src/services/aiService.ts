@@ -1,7 +1,6 @@
 import { api } from "../api/api";
 import type { SummaryRes } from "../models/Dashboard/dashBoardSummaryDto";
 import type { PerfRes } from "../models/Dashboard/perfRes";
-// import type { PerfRes } from "../models/Dashboard/perfRes";
 
 export async function getSummary() {
   const response = await api.get<SummaryRes>("/api/AI/summary");

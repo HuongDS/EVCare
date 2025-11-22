@@ -30,9 +30,7 @@ interface PaymentPageProps {
 }
 
 export default function Appointment_Payment({ data }: PaymentPageProps) {
-  const [paymentMethod, setPaymentMethod] = useState<
-    "VnPay" | "PayOs" | "Cash"
-  >();
+  const [paymentMethod, setPaymentMethod] = useState<"VnPay" | "PayOs" | "Cash">();
   const [vnPayPending, setVnPayPending] = useState(false);
   const [qrcode, setQrCode] = useState("");
   const [openQrCode, setOpenQrcode] = useState(false);
@@ -68,7 +66,6 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
     }
   };
 
-  //lấy qr code
   const { mutateAsync: payment, isPending } = useHandlePayment();
   const handlePaymentMethod = useCallback(async () => {
     try {
@@ -96,10 +93,7 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
   };
 
   const subtotal =
-    orderDetail?.data?.parts.reduce(
-      (sum, part) => sum + (part.price + part.replacementPrice) * part.quantity,
-      0
-    ) ?? 0;
+    orderDetail?.data?.parts.reduce((sum, part) => sum + (part.price + part.replacementPrice) * part.quantity, 0) ?? 0;
 
   const vatAmount = (subtotal * (orderDetail?.data?.vat ?? 0)) / 100;
 
@@ -142,9 +136,7 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
                 <InfoLabel>
                   <CalendarOutlined /> Appointment Date
                 </InfoLabel>
-                <InfoValue>
-                  {formatDate(data.appointmentDate.toString())}
-                </InfoValue>
+                <InfoValue>{formatDate(data.appointmentDate.toString())}</InfoValue>
               </InfoItem>
             </InfoGrid>
           </StyledCard>
@@ -168,11 +160,7 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
                       <td>{part.quantity}</td>
                       <td>{formatCurrency(part.price)}</td>
                       <td>{formatCurrency(part.replacementPrice)}</td>
-                      <td>
-                        {formatCurrency(
-                          (part.price + part.replacementPrice) * part.quantity
-                        )}
-                      </td>
+                      <td>{formatCurrency((part.price + part.replacementPrice) * part.quantity)}</td>
                     </tr>
                   ))}
                 </TableBody>
@@ -225,16 +213,10 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
 
             {paymentMethod === "PayOs" && openQrCode && (
               <QRSection>
-                {isPending ? (
-                  <ColorSpinner width="6em" height="6em" />
-                ) : (
-                  <iframe src={qrcode} />
-                )}
+                {isPending ? <ColorSpinner width="6em" height="6em" /> : <iframe src={qrcode} />}
                 <QRInfo>
                   <p>Scan QR code to complete payment</p>
-                  <AmountTag>
-                    Amount: {formatCurrency(calculateTotal())}
-                  </AmountTag>
+                  <AmountTag>Amount: {formatCurrency(calculateTotal())}</AmountTag>
                 </QRInfo>
               </QRSection>
             )}
@@ -245,10 +227,7 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
                   <ColorSpinner width="3em" height="3em" />
                   <TextContainer>
                     <MainText>Awaiting Payment</MainText>
-                    <Description>
-                      Payment instructions have been sent to customer email via
-                      VNPay
-                    </Description>
+                    <Description>Payment instructions have been sent to customer email via VNPay</Description>
                     <HintText>Wait for completing appointment</HintText>
                   </TextContainer>
                   <CancelPaymentButton onclick={() => setVnPayPending(false)} />
@@ -259,18 +238,10 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
         </MainContent>
 
         <Footer>
-          <ConfirmButton
-            type="primary"
-            size="large"
-            onClick={handlePayment}
-            disabled={!paymentMethod}
-          >
+          <ConfirmButton type="primary" size="large" onClick={handlePayment} disabled={!paymentMethod}>
             {isPending ? (
               <div style={{ textAlign: "center" }}>
-                <TextWaitingEffect
-                  text="Waiting for processing"
-                  fontSize="20px"
-                />
+                <TextWaitingEffect text="Waiting for processing" fontSize="20px" />
               </div>
             ) : (
               <text>Confirm Payment</text>
@@ -279,11 +250,7 @@ export default function Appointment_Payment({ data }: PaymentPageProps) {
         </Footer>
       </ContentWrapper>
       {isSuccess && (
-        <SuccessModal
-          header="Order Payment"
-          message="Order is paid successfully"
-          action={handleCloseModal}
-        />
+        <SuccessModal header="Order Payment" message="Order is paid successfully" action={handleCloseModal} />
       )}
     </PageContainer>
   );
