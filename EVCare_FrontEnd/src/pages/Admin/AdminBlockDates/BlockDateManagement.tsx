@@ -122,7 +122,7 @@ const BlockDateManagement: React.FC = () => {
   return (
     <PageWrapper>
       <Header>
-        <Title>BlockDate Management</Title> {/* <-- Dùng Title */}
+        <Title>BlockDate Management</Title>
         <Instruction>Select a date on the calendar to add, edit, or delete the center's blocked dates.</Instruction>
       </Header>
       {isLoading ? (

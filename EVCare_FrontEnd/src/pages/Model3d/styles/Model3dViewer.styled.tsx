@@ -34,8 +34,7 @@ export const Container = styled.div`
   width: 100vw;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   overflow: hidden;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 `;
 
 export const LeftPanel = styled.div<{ $isOpen: boolean }>`
@@ -55,12 +54,7 @@ export const LeftPanel = styled.div<{ $isOpen: boolean }>`
     right: 0;
     width: 1px;
     height: 100%;
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      rgba(59, 130, 246, 0.5) 50%,
-      transparent
-    );
+    background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.5) 50%, transparent);
   }
 
   @media (max-width: 1024px) {
@@ -132,8 +126,6 @@ export const ErrorContent = styled.div`
 export const CanvasWrapper = styled.div`
   width: 100%;
   height: 100%;
-  /* position: relative; */
-  /* right: 5%; */
   canvas {
     outline: none;
   }

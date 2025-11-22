@@ -86,7 +86,6 @@ export const StaffChatPage = () => {
       <Layout className="chat-layout" style={{ height: "100%" }}>
         <Sider width={320} className="chat-sider">
           <div className="h-full flex flex-col">
-            {/* Header */}
             <div className="staff-chat-header">
               <h2 className="staff-chat-title">
                 <CustomerServiceOutlined />

@@ -9,11 +9,7 @@ export const WidgetChatStyleWrapper = styled.div`
     height: 60px;
     font-size: 24px;
     z-index: 99999;
-    background: linear-gradient(
-      90deg,
-      hsla(147, 100%, 34%, 1) 30%,
-      hsla(147, 100%, 31%, 1) 100%
-    );
+    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
     border: none;
     box-shadow: 0 8px 20px rgba(46, 212, 44, 0.25);
     transition: all 0.3s ease;
@@ -49,7 +45,7 @@ export const WidgetChatStyleWrapper = styled.div`
   .chat-layout {
     height: 100% !important;
     border-radius: 12px;
-    flex-direction: column; /* Chế độ 1 cột */
+    flex-direction: column;
     overflow: hidden;
   }
 
@@ -140,7 +136,7 @@ export const WidgetChatStyleWrapper = styled.div`
     font-size: 1.25rem;
     font-weight: 700;
     color: #1f2937;
-    margin: 0; /* Xóa margin-bottom */
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -161,11 +157,7 @@ export const WidgetChatStyleWrapper = styled.div`
   .btn-new-chat-widget {
     width: auto;
     flex-shrink: 0;
-    background: linear-gradient(
-      90deg,
-      hsla(147, 100%, 34%, 1) 30%,
-      hsla(147, 100%, 31%, 1) 100%
-    );
+    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
     border: none;
     font-weight: 600;
     box-shadow: 0 2px 8px rgba(46, 212, 44, 0.08);
@@ -286,7 +278,7 @@ export const WidgetChatStyleWrapper = styled.div`
   .message-content {
     display: flex;
     gap: 0.5rem;
-    max-width: 85%; /* Cho phép rộng hơn 1 chút */
+    max-width: 85%;
   }
 
   .message-content.own {
@@ -319,11 +311,7 @@ export const WidgetChatStyleWrapper = styled.div`
   }
 
   .message-bubble.own {
-    background: linear-gradient(
-      90deg,
-      hsla(147, 100%, 34%, 1) 30%,
-      hsla(147, 100%, 31%, 1) 100%
-    );
+    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
     color: #ffffff;
     border-bottom-right-radius: 4px;
   }
@@ -390,11 +378,7 @@ export const WidgetChatStyleWrapper = styled.div`
     height: 42px;
     padding: 0 1.5rem;
     border-radius: 12px;
-    background: linear-gradient(
-      90deg,
-      hsla(147, 100%, 34%, 1) 30%,
-      hsla(147, 100%, 31%, 1) 100%
-    );
+    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
     border: none;
     box-shadow: 0 4px 12px rgba(46, 212, 44, 0.08);
     font-weight: 600;
@@ -515,11 +499,7 @@ export const WidgetChatStyleWrapper = styled.div`
   }
 
   .btn-choice-staff {
-    background: linear-gradient(
-      90deg,
-      hsla(147, 100%, 34%, 1) 30%,
-      hsla(147, 100%, 31%, 1) 100%
-    );
+    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
     border: none;
     box-shadow: 0 4px 12px rgba(46, 212, 44, 0.08);
   }
@@ -617,9 +597,8 @@ export const WidgetChatStyleWrapper = styled.div`
 
   .custom-modal-body,
   .custom-modal-body * {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
   }
 
   .custom-modal-body {
@@ -701,7 +680,7 @@ export const WidgetChatStyleWrapper = styled.div`
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    border: 2px solid #d1d5db; /* Viền xám */
+    border: 2px solid #d1d5db;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -757,8 +736,7 @@ export const WidgetChatStyleWrapper = styled.div`
     text-align: center;
     padding: 2rem;
     background: #f9fafb;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
   }
 
   .chat-offline-message .chat-offline-title {

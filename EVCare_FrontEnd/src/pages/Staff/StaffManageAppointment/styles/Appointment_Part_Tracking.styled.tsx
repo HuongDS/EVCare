@@ -2,11 +2,7 @@ import styled from "styled-components";
 
 export const PageContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(
-    135deg,
-    rgba(170, 255, 211, 0.5) 0%,
-    rgba(174, 255, 206, 0.5) 20%
-  );
+  background: linear-gradient(135deg, rgba(170, 255, 211, 0.5) 0%, rgba(174, 255, 206, 0.5) 20%);
   padding: 32px 20px;
   font-family: "Outfit", sans-serif;
 `;
@@ -184,7 +180,6 @@ export const Value = styled.span`
 `;
 
 export const QuantitySection = styled.div`
-  /* display: flex; */
   justify-content: center;
 
   @media (max-width: 768px) {

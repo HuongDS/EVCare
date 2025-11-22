@@ -6,14 +6,14 @@ export const StaffChatStyleWrapper = styled.div`
     border-radius: 12px;
     overflow: hidden;
     display: flex;
-    flex-direction: row; /* Chế độ 2 cột */
+    flex-direction: row;
   }
 
   .chat-sider {
     background: #ffffff;
     box-shadow: 4px 0 24px rgba(46, 212, 44, 0.08);
     border-radius: 12px 0 0 12px;
-    width: 320px; /* Cố định 320px */
+    width: 320px;
     min-width: 320px;
     height: 100%;
     display: flex;
@@ -23,7 +23,7 @@ export const StaffChatStyleWrapper = styled.div`
   .chat-content {
     position: relative;
     padding: 0;
-    flex: 1; /* Chiếm phần còn lại */
+    flex: 1;
     background: transparent;
     height: 100%;
   }
@@ -441,7 +441,6 @@ export const StaffChatStyleWrapper = styled.div`
     line-height: 1.6;
   }
 
-  /* Ẩn các nút lựa chọn của Khách hàng */
   .chat-choice-buttons {
     display: none;
   }

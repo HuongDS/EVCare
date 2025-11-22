@@ -21,9 +21,8 @@ export const Hero = styled(motion.div)`
     position: absolute;
     inset: 0;
 
-    /* (ĐÂY LÀ CHỖ SỬA 1) */
-    background: radial-gradient(circle at 20% 30%, rgba(0, 173, 78, 0.15) 0%, transparent 50% /* <-- Đã thêm */),
-      radial-gradient(circle at 80% 70%, rgba(0, 200, 80, 0.15) 0%, transparent 50% /* <-- Đã thêm */);
+    background: radial-gradient(circle at 20% 30%, rgba(0, 173, 78, 0.15) 0%, transparent 50%,
+      radial-gradient(circle at 80% 70%, rgba(0, 200, 80, 0.15) 0%, transparent 50% );
 
     animation: pulse 8s ease-in-out infinite;
   }
@@ -88,7 +87,6 @@ export const TrustBadge = styled(motion.div)`
   font-weight: 500;
 
   svg {
-    /* (NEW) Đã đổi màu icon trong .tsx */
   }
 `;
 
@@ -208,9 +206,8 @@ export const IconWrapper = styled.div`
   padding: 0.75rem;
   border-radius: 12px;
   display: inline-flex;
-  color: #00ad4e; /* (NEW) Màu icon xanh lá */
+  color: #00ad4e;
   flex-shrink: 0;
-  /* (NEW) Bóng đổ xanh lá */
   box-shadow: 0 2px 8px rgba(0, 173, 78, 0.15);
 `;
 
@@ -232,8 +229,8 @@ export const AdditionalInfo = styled(motion.div)`
     width: 100%;
     height: 100%;
 
-    background: radial-gradient(circle at 10% 20%, rgba(0, 173, 78, 0.03) 0%, transparent 50% /* <-- Đã thêm */),
-      radial-gradient(circle at 90% 80%, rgba(0, 173, 78, 0.03) 0%, transparent 50% /* <-- Đã thêm */);
+    background: radial-gradient(circle at 10% 20%, rgba(0, 173, 78, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(0, 173, 78, 0.03) 0%, transparent 50%);
 
     pointer-events: none;
   }
@@ -307,7 +304,7 @@ export const DecorativeShape = styled.div`
   height: 300px;
   border-radius: 50%;
 
-  background: radial-gradient(circle, rgba(0, 173, 78, 0.05) 0%, transparent 70% /* <-- Đã thêm */);
+  background: radial-gradient(circle, rgba(0, 173, 78, 0.05) 0%, transparent 70%);
 
   top: -150px;
   right: -150px;

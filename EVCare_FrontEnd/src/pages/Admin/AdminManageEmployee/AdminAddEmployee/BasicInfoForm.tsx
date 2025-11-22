@@ -49,7 +49,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
       <div className="section-title">Basic Information</div>
 
       <div className="form-grid">
-        {/* First Name */}
         <div className="form-group">
           <label className="form-label">
             First Name<span className="required">*</span>
@@ -65,7 +64,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           />
         </div>
 
-        {/* Last Name */}
         <div className="form-group">
           <label className="form-label">
             Last Name<span className="required">*</span>
@@ -81,7 +79,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           />
         </div>
 
-        {/* Email */}
         <div className="form-group">
           <label className="form-label">
             Email<span className="required">*</span>
@@ -97,7 +94,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           />
         </div>
 
-        {/* Phone */}
         <div className="form-group">
           <label className="form-label">
             Phone Number<span className="required">*</span>
@@ -113,7 +109,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           />
         </div>
 
-        {/* CCCD */}
         <div className="form-group">
           <label className="form-label">
             CCCD<span className="required">*</span>
@@ -129,7 +124,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           />
         </div>
 
-        {/* Password */}
         <div className="form-group">
           <label className="form-label">
             Password<span className="required">*</span>
@@ -145,7 +139,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           />
         </div>
 
-        {/* Confirm Password */}
         <div className="form-group">
           <label className="form-label">
             Confirm Password<span className="required">*</span>
@@ -161,7 +154,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           />
         </div>
 
-        {/* Role */}
         <div className="form-group">
           <label className="form-label">
             Role<span className="required">*</span>
@@ -178,7 +170,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           />
         </div>
 
-        {/* Image */}
         <div className="form-group">
           <label className="form-label">
             Add Image<span className="required">*</span>
