@@ -12,10 +12,7 @@ export const useTechnician_MyJob = () => {
   const [pageIndex, setPageIndex] = useState<number>(1);
   const queryClient = useQueryClient();
 
-  const savedStatus =
-    sessionStorage.getItem("activeStatus") ||
-    TechnicianWorkingSessionEnum.ADDING_PART;
-  const [activeStatus, setActiveStatus] = useState<string>(savedStatus);
+  const [activeStatus, setActiveStatus] = useState<string>("AddingPart");
 
   const { data, isLoading, isFetching } = useGetTechnicianAppointments({
     Status: String(activeStatus),
@@ -33,12 +30,13 @@ export const useTechnician_MyJob = () => {
           appointment.status !== TechnicianWorkingSessionEnum.CANCELED
       );
 
-      if (activeAppointment) {
-        setActiveStatus(activeAppointment.status);
-        sessionStorage.setItem("activeStatus", activeAppointment.status);
+      const newStatus = activeAppointment?.status || "AddingPart";
+
+      if (newStatus !== activeStatus) {
+        setActiveStatus(newStatus);
       }
     }
-  }, [data?.data?.items]);
+  }, [data]);
 
   const { mutateAsync: updateWorkingSession, isPending: isUpdating } =
     useUpdateTechnicianWorkingSession();
