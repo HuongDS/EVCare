@@ -83,8 +83,7 @@ export const InfoBox = styled.div`
   padding: 8px 10px;
   font-size: 0.95em;
   color: #555;
-  min-height: 40px;
-  max-height: 100px;
+  height: 60px;
   overflow-y: auto;
   word-break: break-word;
   transition: all 0.3s ease;
