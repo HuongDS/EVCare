@@ -61,11 +61,13 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
+  if (isLoading || isFetching) {
+    return <SpinnerComponent />;
+  }
+
   const isAnyPartNotDone = data.parts.some(
     (part) => part.partStatus !== "Done" && part.technicianId === techId
   );
-
-  console.log("no done" + isAnyPartNotDone);
 
   return (
     <CardContainer>
