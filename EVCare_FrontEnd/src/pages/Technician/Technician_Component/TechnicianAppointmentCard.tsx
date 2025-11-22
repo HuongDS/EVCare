@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Zoom from "react-medium-image-zoom";
 import { formatDate } from "../../../utils/formatDate";
 import { useGetAppointmentPartCondition } from "../../../services/appointmentPartCondition";
 import type { TechnicianAppointmentsDto } from "../../../models/AppointmentsModel/Technician_Appointments_Model";
@@ -22,6 +21,8 @@ import {
   ChevronUp,
   Image as ImageIcon,
 } from "lucide-react";
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
 
 type Props = {
   data: TechnicianAppointmentsDto;
@@ -160,7 +161,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
                 <ImageGrid>
                   {data.appointmentImages.map((img, idx) => (
                     <Zoom key={idx}>
-                      <ImageThumb key={idx} src={img} alt={`img-${idx}`} />
+                      <ImageThumb src={img} alt={`img-${idx}`} />
                     </Zoom>
                   ))}
                 </ImageGrid>

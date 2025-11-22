@@ -1,4 +1,4 @@
-import { debounce } from "@mui/material";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 interface handleSearchProps {
@@ -12,12 +12,16 @@ const SearchBar = ({
   placeholder,
   searchValue,
 }: handleSearchProps) => {
-  const handleChange = debounce(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      handleSearchValue(event.target.value);
-    },
-    400
-  );
+  const [text, setText] = useState(searchValue || "");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleSearchValue(text);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [text]);
+
   return (
     <StyledWrapper>
       <div className="group">
@@ -32,8 +36,8 @@ const SearchBar = ({
           type="search"
           placeholder={placeholder}
           name="searchbar"
-          value={searchValue}
-          onChange={handleChange}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
         />
       </div>
     </StyledWrapper>
