@@ -146,7 +146,6 @@ export const Legend = styled.p`
 export const Row = styled.div`
   display: flex;
   gap: 20px;
-  // margin-top: 10px;
   align-items: center;
 
   @media (max-width: 480px) {
@@ -512,8 +511,8 @@ export const PartQuantity = styled.span`
 export const PartPrices = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-end; // Căn phải
-  min-width: 120px; // Đặt chiều rộng tối thiểu
+  align-items: flex-end;
+  min-width: 120px;
   flex-shrink: 0;
 `;
 

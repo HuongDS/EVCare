@@ -1,4 +1,3 @@
-//Order_Parts_Model.ts
 export type ResponseDto<T> = {
   statusCode: number;
   message?: string;

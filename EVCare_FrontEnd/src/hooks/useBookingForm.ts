@@ -159,7 +159,6 @@ export const useBookingForm = ({ show, setLoading, handleClose, accountId, isAut
   );
 
   const handleSubmit = useCallback(async () => {
-    // Validate step 3: date & time
     if (!validateStep(2)) {
       notification.error({
         message: MSG_TITLE.CREATE_APPOINTMENT,
@@ -168,7 +167,6 @@ export const useBookingForm = ({ show, setLoading, handleClose, accountId, isAut
       return;
     }
 
-    // Validate policy checkbox
     if (!checkbox) {
       notification.error({
         message: MSG_TITLE.CREATE_APPOINTMENT,
@@ -229,7 +227,6 @@ export const useBookingForm = ({ show, setLoading, handleClose, accountId, isAut
     validateStep,
   ]);
 
-  // useEffect call 5 API
   useEffect(() => {
     if (!show || !isAuthenticated || !accountId) return;
     const fetchData = async () => {

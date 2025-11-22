@@ -22,19 +22,19 @@ import {
   ServiceListContainer,
 } from "./ServiceList.styled";
 
-import BookingForm from "../../Customer/Booking/BookingForm"; // Đảm bảo đường dẫn đúng
+import BookingForm from "../../Customer/Booking/BookingForm";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../../states/store"; // Đảm bảo đường dẫn đúng
-import { closeAppointmentForm, openAppointmentForm, openLogin, setAction } from "../../../states/uiSlice"; // Đảm bảo đường dẫn đúng
-import { ACTION } from "../../../constants/messages/Actions"; // Đảm bảo đường dẫn đúng
-import { getAllActiveService } from "../../../services/servicesApi"; // Đảm bảo đường dẫn đúng
-import ServiceCarousel from "./ServiceCarousel"; // Đảm bảo đường dẫn đúng
-import { Pagination } from "../../../components/Paginations/Pagination"; // Đảm bảo đường dẫn đúng
-import SearchBar from "../../../components/SearchBar/Search"; // Đảm bảo đường dẫn đúng
-import { LIST_SERVICES_MESSAGE } from "../../../constants/messages/Message"; // Đảm bảo đường dẫn đúng
-import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model"; // Đảm bảo đường dẫn đúng
-import SpinnerComponent from "../../../components/SpinnerComponent"; // Đảm bảo đường dẫn đúng
-import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled"; // Đảm bảo đường dẫn đúng
+import type { AppDispatch, RootState } from "../../../states/store";
+import { closeAppointmentForm, openAppointmentForm, openLogin, setAction } from "../../../states/uiSlice";
+import { ACTION } from "../../../constants/messages/Actions";
+import { getAllActiveService } from "../../../services/servicesApi";
+import ServiceCarousel from "./ServiceCarousel";
+import { Pagination } from "../../../components/Paginations/Pagination";
+import SearchBar from "../../../components/SearchBar/Search";
+import { LIST_SERVICES_MESSAGE } from "../../../constants/messages/Message";
+import type { ServicesResponseDto } from "../../../models/ServicesModel/Customer_Services_Model";
+import SpinnerComponent from "../../../components/SpinnerComponent";
+import { NOT_FOUND_ITEMS } from "../../../components/MessageStyled/MessageStyled";
 import { FiArrowRight } from "react-icons/fi";
 
 type SortBy = "Name" | "Duration";

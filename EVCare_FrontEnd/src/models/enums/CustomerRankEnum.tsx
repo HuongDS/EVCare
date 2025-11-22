@@ -1,4 +1,3 @@
-//CustomerRankEnum
 export enum CustomerRankEnum {
   VIP = "VIP",
   MEMBER = "MEMBER",

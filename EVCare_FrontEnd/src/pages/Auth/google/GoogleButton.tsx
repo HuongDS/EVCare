@@ -1,8 +1,5 @@
 import { loginWithGoogle, saveTokens } from "../../../services/authService.ts";
-import {
-  ERROR_MESSAGE,
-  MSG_TITLE,
-} from "../../../constants/messages/Message.ts";
+import { ERROR_MESSAGE, MSG_TITLE } from "../../../constants/messages/Message.ts";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../states/store.ts";
 import { loginSuccess } from "../../../states/authSlice.ts";
@@ -39,7 +36,7 @@ export default function GoogleButton() {
     saveUser(user);
     dispatch(loginSuccess(user));
     dispatch(closeLogin());
-    // Author
+
     switch (user.role) {
       case RoleEnum.ADMIN:
         navigate("/admin/general");

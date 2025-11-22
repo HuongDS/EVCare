@@ -1,4 +1,3 @@
-// File: Authentication.styled.tsx
 import styled from "styled-components";
 import { Modal, Form } from "react-bootstrap";
 

@@ -1,4 +1,3 @@
-//AppointmentStatusEnum
 export enum AppointmentStatusEnum {
   PENDING = "Pending",
   CONFIRMED = "Confirmed",

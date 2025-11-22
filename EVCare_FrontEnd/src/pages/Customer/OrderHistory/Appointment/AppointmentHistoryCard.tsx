@@ -19,7 +19,6 @@ import SpinnerComponent from "../../../../components/SpinnerComponent";
 import { useEffect, useState } from "react";
 import { AppointmentStatusEnum } from "../../../../models/enums";
 import { ReviewWrapper } from "../../../../components/Review/Review.styled.tsx";
-// import ReviewModal from "../../../../components/Review/ReviewModal.tsx";
 import LazyReviewModal from "../../../../components/Review/LazyReviewModal.tsx";
 import type { CardData } from "../../../../models/Pics/CardData.ts";
 import { LazyReviewPicsSection } from "./LazyReviewPicsSection.tsx";
@@ -46,7 +45,6 @@ export default function AppointmentHistoryCard({
   const [isDisplayReviewButton, setIsDisplayReviewButton] = useState(false);
   const [isOpenReviewForm, setIsOpenReviewForm] = useState(false);
   const [pics, setPics] = useState<CardData[]>([]);
-  // const { data: appointmentDetail } = useGetAppointmentById(data.id);
 
   const onOpen = () => {
     setIsOpenReviewForm(true);
@@ -60,8 +58,7 @@ export default function AppointmentHistoryCard({
     if (data.status === AppointmentStatusEnum.DONE) {
       setIsDisplayReviewButton(true);
     }
-    if (data.appointmentImages.length > 1)
-      setPics(data.appointmentImages.map((p, i) => ({ id: i, url: p })));
+    if (data.appointmentImages.length > 1) setPics(data.appointmentImages.map((p, i) => ({ id: i, url: p })));
   }, [data.status, data.appointmentImages]);
 
   return (
@@ -74,8 +71,7 @@ export default function AppointmentHistoryCard({
       <GeneralStyled>
         <DateStyled>
           <h5>
-            Date:{" "}
-            <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
+            Date: <span>{dayjs(data.appointmentDate).format("DD/MM/YYYY")}</span>
           </h5>
           <div>
             <StatusTag status={data.status} />
@@ -89,10 +85,7 @@ export default function AppointmentHistoryCard({
             {pics.length > 1 ? (
               <LazyReviewPicsSection data={pics} />
             ) : (
-              <img
-                src={data.appointmentImages ? data.appointmentImages[0] : Car}
-                alt=""
-              />
+              <img src={data.appointmentImages ? data.appointmentImages[0] : Car} alt="" />
             )}
           </ImageWrapper>
           <ServiceWrapper>
@@ -128,11 +121,7 @@ export default function AppointmentHistoryCard({
 
               {isDisplayReviewButton && !data.reviewId && (
                 <div style={{ marginLeft: "10px" }}>
-                  <ButtonAction
-                    text="Write Review"
-                    variant="secondary"
-                    action={() => onOpen()}
-                  />
+                  <ButtonAction text="Write Review" variant="secondary" action={() => onOpen()} />
                 </div>
               )}
             </>
@@ -140,11 +129,7 @@ export default function AppointmentHistoryCard({
           {isOpenReviewForm && (
             <ReviewWrapper>
               {/* <ReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} /> */}
-              <LazyReviewModal
-                appointmentData={data}
-                onClose={onClose}
-                open={isOpenReviewForm}
-              />
+              <LazyReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} />
             </ReviewWrapper>
           )}
         </ButtonStyle>

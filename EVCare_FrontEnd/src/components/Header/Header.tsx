@@ -20,8 +20,6 @@ import { ChristmasTheme } from "../XmasTheme/ChristmasTheme";
 import ThemeToggleRound from "../XmasTheme/ButtonTheme";
 
 export default function Header() {
-  // const [showAuth, setShowAuth] = useState(false);
-  // const [tongle, setTongle] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const user = useSelector((state: RootState) => state.auth.user);
@@ -53,7 +51,6 @@ export default function Header() {
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
-      // setTongle(true);
     };
   }, []);
 
@@ -140,10 +137,7 @@ export default function Header() {
         </div>
       ) : (
         <Buttons>
-          <button
-            className="btn btn-fill"
-            onClick={() => dispatch(openLogin())}
-          >
+          <button className="btn btn-fill" onClick={() => dispatch(openLogin())}>
             Get Started
           </button>
         </Buttons>

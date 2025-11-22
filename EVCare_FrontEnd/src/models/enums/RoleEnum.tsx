@@ -1,4 +1,3 @@
-//RoleEnum
 export enum RoleEnum {
   ADMIN = "Admin",
   STAFF = "Staff",

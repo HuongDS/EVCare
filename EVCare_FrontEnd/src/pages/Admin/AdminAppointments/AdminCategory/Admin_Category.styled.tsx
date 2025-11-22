@@ -187,12 +187,6 @@ export const TabContent = styled(motion.div)`
   padding: 1.5rem 2rem;
 `;
 
-// export const TableWrapper = styled.div`
-//   overflow-x: auto;
-//   border: 1px solid #e5e7eb;
-//   border-radius: 8px;
-// `;
-
 export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -434,8 +428,8 @@ export const PillButton = styled.button<{ $isSelected: boolean }>`
   ${({ $isSelected }) =>
     $isSelected
       ? css`
-          background: #dcfce7; // EVCare green light
-          color: #065f46; // EVCare green dark
+          background: #dcfce7;
+          color: #065f46;
           border-color: #00ad4e;
         `
       : css`

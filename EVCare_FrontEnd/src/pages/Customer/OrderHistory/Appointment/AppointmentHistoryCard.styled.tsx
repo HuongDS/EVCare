@@ -50,8 +50,6 @@ export const IDWrapper = styled.div`
   }
 `;
 
-// --- (Chỉnh sửa) ---
-// Bỏ thanh xám, thay bằng đường kẻ
 export const GeneralStyled = styled.div`
   display: flex;
   justify-content: space-between;
@@ -75,8 +73,6 @@ export const GeneralStyled = styled.div`
   }
 `;
 
-// --- (Chỉnh sửa) ---
-// Tinh chỉnh lại khoảng cách
 export const DateStyled = styled.div`
   display: flex;
   align-items: center;

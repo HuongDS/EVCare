@@ -328,7 +328,6 @@ export const ModalBackdrop = styled.div`
   animation: ${fadeIn} 0.3s ease;
 `;
 
-// Kế thừa style từ GlassContainer
 export const ModalContent = styled(GlassContainer)`
   position: relative;
   width: 90%;
@@ -374,7 +373,6 @@ export const EmployeeInfo = styled(ModalColumn)`
   padding-right: 2rem;
 
   @media (max-width: 768px) {
-    // Responsive
     border-right: none;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     padding-right: 0;

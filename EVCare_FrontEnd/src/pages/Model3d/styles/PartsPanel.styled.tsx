@@ -21,7 +21,6 @@ export const slideIn = keyframes`
   }
 `;
 
-// Styled Components
 export const Container = styled.div`
   height: 100%;
   background: rgba(19, 241, 156, 0.2);
@@ -208,11 +207,7 @@ export const PartItem = styled.div<{
   ${(props) =>
     props.$isSelected
       ? css`
-          background: linear-gradient(
-            to right,
-            rgba(34, 197, 94, 0.25),
-            rgba(22, 163, 74, 0.2)
-          );
+          background: linear-gradient(to right, rgba(34, 197, 94, 0.25), rgba(22, 163, 74, 0.2));
           border-color: rgba(34, 197, 94, 0.6);
           box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);
         `

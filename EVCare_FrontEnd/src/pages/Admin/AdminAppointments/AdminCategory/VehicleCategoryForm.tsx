@@ -3,7 +3,7 @@ import { FormWrapper, FormActions, SubmitButton, LoadingSpinner } from "./Admin_
 import { FaSave } from "react-icons/fa";
 import { useNotification } from "../../../../context/useNotification";
 import type { VehicleCategoryCreateDto } from "../../../../models/VehicleModels/VehicleCategoryCreateDto";
-import VehicleCategoryFormFields from "./VehicleCategoryFormFields"; // <-- IMPORT SHARED FORM
+import VehicleCategoryFormFields from "./VehicleCategoryFormFields";
 import { createVehicleCategory } from "../../../../services/vehicleServicesApi";
 
 interface Props {

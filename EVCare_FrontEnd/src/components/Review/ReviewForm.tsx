@@ -34,21 +34,10 @@ interface ReviewFormProps {
   appointmentData: AppointmentViewDetailModel;
 }
 
-const ReviewForm: React.FC<ReviewFormProps> = ({
-  onSubmit,
-  onCancel,
-  appointmentData,
-}) => {
+const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, onCancel, appointmentData }) => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
-  const ratingTexts = [
-    "Please select a rating",
-    "Poor",
-    "Fair",
-    "Good",
-    "Very Good",
-    "Excellent",
-  ];
+  const ratingTexts = ["Please select a rating", "Poor", "Fair", "Good", "Very Good", "Excellent"];
   const [data, setData] = useState<AppointmentViewDetailModel | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -142,17 +131,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                   skin: "oxide",
                   content_css: "default",
                 }}
-                onEditorChange={handleEditorChange} // Sử dụng hàm mới
+                onEditorChange={handleEditorChange}
               />
               <CharCounter>{review.length}/500</CharCounter>
             </TextareaContainer>
           </FormSection>
 
           <ButtonGroup>
-            <SubmitButton
-              type="submit"
-              disabled={!(rating > 0 && review.trim().length > 0)}
-            >
+            <SubmitButton type="submit" disabled={!(rating > 0 && review.trim().length > 0)}>
               Submit Review
             </SubmitButton>
             <CancelButton type="button" onClick={onCancel}>

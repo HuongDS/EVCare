@@ -54,7 +54,7 @@ export const Card = ({
       }}
       animate={{
         scale: isFront ? 1 : 0.98 - (cards.length - 1 - cards.findIndex((c) => c.id === id)) * 0.02,
-        y: isFront ? 0 : -20, // Hơi nâng thẻ trên cùng lên
+        y: isFront ? 0 : -20,
       }}
       drag={isFront ? "x" : false}
       dragConstraints={{

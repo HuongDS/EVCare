@@ -1,5 +1,3 @@
-// ../components/Authorazitons/PublicRoute.tsx
-
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { RoleEnum } from "../../models/enums";

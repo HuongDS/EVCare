@@ -12,7 +12,6 @@ export type ResponseDtoCreateAppointment<T> = {
   appointmentId?: T;
 };
 
-//Get appointment
 export type PageModel<T> = {
   items?: T[];
   pageSize: number;
@@ -48,13 +47,11 @@ export type GetAppointmentsParams = {
   sortOrder?: string;
 };
 
-//Change appointment status
 export type ChangeAppointmentStatusParams = {
   appointmentId: number;
   status: string;
 };
 
-//Type lấy danh sách các cuộc hẹn có kỹ thuật viên rời việc
 export type GetAppointmentWithTechnician<T> = {
   id: number;
   appointmentDate: string;
@@ -67,13 +64,11 @@ export type GetAppointmentWithTechnician<T> = {
   technicians: T[];
 };
 
-//Payload nhập remind schedule
 export type RemindSchedulePayload = {
   id?: number;
   reminderIntervalMonths?: number;
 };
 
-//Payload tạo appointment
 export type StaffCreateAppointmentPayload = {
   customerId: number;
   vehicleId: number;
@@ -83,14 +78,12 @@ export type StaffCreateAppointmentPayload = {
   serviceIds: number[];
 };
 
-//UploadImage appointment
 export type MultipleImageDto = {
   fileName: string;
   url: string;
   errorMessage: string | null;
 };
 
-//appointment detail
 export type AppointmentDetailModel<T> = {
   id: number;
   appointmentDate: string;
