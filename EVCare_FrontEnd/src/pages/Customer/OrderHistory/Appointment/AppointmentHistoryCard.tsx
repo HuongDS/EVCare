@@ -128,7 +128,6 @@ export default function AppointmentHistoryCard({
           )}
           {isOpenReviewForm && (
             <ReviewWrapper>
-              {/* <ReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} /> */}
               <LazyReviewModal appointmentData={data} onClose={onClose} open={isOpenReviewForm} />
             </ReviewWrapper>
           )}
