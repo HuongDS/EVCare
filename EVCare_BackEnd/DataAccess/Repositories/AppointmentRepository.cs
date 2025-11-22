@@ -431,80 +431,160 @@ namespace DataAccess.Repositories
                 model.PageIndex.Value
             );
         }
+        //    public async Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentTechnicianViewModelByTechnicianId(
+        //int technicianId,
+        //AppointmentTechnicianQueryDto model) {
+        //        var start = model.BeginTime?.ToDateTime(TimeOnly.MinValue);
+        //        var end = model.EndTime?.ToDateTime(TimeOnly.MaxValue);
+
+        //        var sessionQuery = _dbContext.TechnicianWorkingSessions
+        //            .AsNoTracking()
+        //            .Include(t => t.Order).ThenInclude(o => o.Appointment)
+        //            .Where(tws => tws.TechnicianId == technicianId
+        //                && (!model.Status.HasValue || tws.Status == model.Status.Value)
+        //                && (!start.HasValue || tws.Order.Appointment.Appointment_Date >= start.Value)
+        //                && (!end.HasValue || tws.Order.Appointment.Appointment_Date <= end.Value)
+        //            )
+        //            .Select(x => new
+        //            {
+        //                SessionId = x.Id,
+        //                x.OrderId,
+        //                AppointmentDate = x.Order.Appointment.Appointment_Date,
+        //                Status = x.Status
+        //            });
+
+        //        sessionQuery = sessionQuery.ApplySorting(model.SortField, model.SortOrder);
+
+        //        var pagedResult = await PaginationHelper.PaginationAsync(
+        //            sessionQuery,
+        //            model.PageSize.Value,
+        //            model.PageIndex.Value);
+
+        //        if (!pagedResult.Items.Any())
+        //            return new PageResultDto<AppointmentTechnicianViewModel>(
+        //                new List<AppointmentTechnicianViewModel>(),
+        //                0,
+        //                model.PageSize.Value,
+        //                model.PageIndex.Value);
+
+        //        var sessionIds = pagedResult.Items
+        //            .Select(x => x.SessionId)
+        //            .ToList();
+
+        //        var pageAppointments = await _dbContext.TechnicianWorkingSessions
+        //            .AsNoTracking()
+        //            .AsSplitQuery()
+        //            .Where(tws => sessionIds.Contains(tws.Id))
+        //            .Include(tws => tws.Order)
+        //                .ThenInclude(o => o.Appointment)
+        //            .Include(tws => tws.Order)
+        //                .ThenInclude(o => o.OrderParts)
+        //                    .ThenInclude(op => op.Part)
+        //            .Include(tws => tws.Order.Appointment.Vehicle)
+        //                .ThenInclude(v => v.Category)
+        //            .Include(tws => tws.Order.Appointment.Customer)
+        //                .ThenInclude(c => c.Account)
+        //            .Include(tws => tws.Order.Appointment.AppointmentServices)
+        //                .ThenInclude(asv => asv.Service)
+        //            .Include(tws => tws.Order.Appointment.AppointmentImages)
+        //            .Include(tws => tws.Order.Appointment.AppointmentPartConditions)
+        //            .Select(tws => new AppointmentTechnicianViewModel
+        //            {
+        //                TechnicianWorkingSessionId = tws.Id,             
+        //                Id = tws.Order.Appointment.Id,
+        //                AppointmentDate = tws.Order.Appointment.Appointment_Date,
+        //                VehicleModel = tws.Order.Appointment.Vehicle.Category.Name,
+        //                LicensePlate = tws.Order.Appointment.Vehicle.LicensePlate,
+        //                CustomerName = tws.Order.Appointment.Customer.Account.First_Name + " " +
+        //                                  tws.Order.Appointment.Customer.Account.Last_Name,
+        //                PhoneNumber = tws.Order.Appointment.Customer.Account.Phone,
+        //                Services = tws.Order.Appointment.AppointmentServices
+        //                                        .Select(s => s.Service.Name).ToList(),
+        //                OrderId = tws.OrderId,
+        //                Parts = tws.Order.OrderParts.Select(op => new PartTechnicianViewModel
+        //                {
+        //                    TechnicianName = op.Technician.Employee.Account.First_Name + " " +
+        //                                       op.Technician.Employee.Account.Last_Name,
+        //                    Name = op.Part.Name,
+        //                    Quantity = op.Quantity,
+        //                    ImageUrl = op.Part.Image,
+        //                    Price = op.Price,
+        //                    ReplacementPrice = op.ReplacementPrice,
+        //                    Stock = op.Part.Stock,
+        //                    Id = op.PartId,
+        //                    PartStatus = tws.Order.Appointment.AppointmentPartConditions
+        //                                          .Where(apc => apc.PartId == op.PartId)
+        //                                          .Select(apc => apc.Level)
+        //                                          .FirstOrDefault(),
+        //                    TechnicianId = op.TechnicianId
+        //                }).ToList(),
+        //                Status = tws.Status,   
+        //                AppointmentImages = tws.Order.Appointment.AppointmentImages
+        //                                       .Select(img => img.Image)
+        //            })
+        //            .ToListAsync();
+
+
+        //        var ordered = sessionIds
+        //            .Join(pageAppointments,
+        //                sid => sid,
+        //                app => app.TechnicianWorkingSessionId,
+        //                (sid, app) => app)
+        //            .ToList();
+
+        //        return new PageResultDto<AppointmentTechnicianViewModel>(
+        //            ordered,
+        //            pagedResult.TotalItems,
+        //            model.PageSize.Value,
+        //            model.PageIndex.Value);
+        //    }
+
+
+
         public async Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentTechnicianViewModelByTechnicianId(
-    int technicianId,
-    AppointmentTechnicianQueryDto model) {
+            int technicianId, AppointmentTechnicianQueryDto model) {
             var start = model.BeginTime?.ToDateTime(TimeOnly.MinValue);
             var end = model.EndTime?.ToDateTime(TimeOnly.MaxValue);
-
-            var sessionQuery = _dbContext.TechnicianWorkingSessions
-                .AsNoTracking()
+            var query = _dbContext.TechnicianWorkingSessions.AsNoTracking()
                 .Include(t => t.Order).ThenInclude(o => o.Appointment)
-                .Where(tws => tws.TechnicianId == technicianId
-                    && (!model.Status.HasValue || tws.Status == model.Status.Value)
-                    && (!start.HasValue || tws.Order.Appointment.Appointment_Date >= start.Value)
-                    && (!end.HasValue || tws.Order.Appointment.Appointment_Date <= end.Value)
-                )
-                .Select(x => new
-                {
-                    SessionId = x.Id,
-                    x.OrderId,
-                    AppointmentDate = x.Order.Appointment.Appointment_Date,
-                    Status = x.Status
-                });
-
-            sessionQuery = sessionQuery.ApplySorting(model.SortField, model.SortOrder);
-
-            var pagedResult = await PaginationHelper.PaginationAsync(
-                sessionQuery,
-                model.PageSize.Value,
-                model.PageIndex.Value);
-
+                .Where(tws => tws.TechnicianId == technicianId &&
+                (!model.Status.HasValue || tws.Status == model.Status.Value) &&
+                (!start.HasValue || tws.Order.Appointment.Appointment_Date >= start.Value) &&
+                (!end.HasValue || tws.Order.Appointment.Appointment_Date <= end.Value) &&
+                (!model.Status.HasValue || tws.Status == model.Status.Value))
+                .Select(x => new { x.OrderId, x.Order.Appointment.Appointment_Date });
+            query = query.ApplySorting(model.SortField, model.SortOrder);
+            var pagedResult = await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value);
             if (!pagedResult.Items.Any())
-                return new PageResultDto<AppointmentTechnicianViewModel>(
-                    new List<AppointmentTechnicianViewModel>(),
-                    0,
-                    model.PageSize.Value,
-                    model.PageIndex.Value);
-
-            var sessionIds = pagedResult.Items
-                .Select(x => x.SessionId)
-                .ToList();
-
-            var pageAppointments = await _dbContext.TechnicianWorkingSessions
+                return new PageResultDto<AppointmentTechnicianViewModel>(new List<AppointmentTechnicianViewModel>(), 0, model.PageSize.Value, model.PageIndex.Value);
+            var orderIds = pagedResult.Items.Select(x => x.OrderId).ToList();
+            var appointments = await _dbContext.Appointments
                 .AsNoTracking()
                 .AsSplitQuery()
-                .Where(tws => sessionIds.Contains(tws.Id))
-                .Include(tws => tws.Order)
-                    .ThenInclude(o => o.Appointment)
-                .Include(tws => tws.Order)
-                    .ThenInclude(o => o.OrderParts)
-                        .ThenInclude(op => op.Part)
-                .Include(tws => tws.Order.Appointment.Vehicle)
-                    .ThenInclude(v => v.Category)
-                .Include(tws => tws.Order.Appointment.Customer)
-                    .ThenInclude(c => c.Account)
-                .Include(tws => tws.Order.Appointment.AppointmentServices)
-                    .ThenInclude(asv => asv.Service)
-                .Include(tws => tws.Order.Appointment.AppointmentImages)
-                .Include(tws => tws.Order.Appointment.AppointmentPartConditions)
-                .Select(tws => new AppointmentTechnicianViewModel
+                .Where(a => orderIds.Contains(a.OrderId.Value))
+                .Include(a => a.AppointmentPartConditions)
+                .Include(a => a.Vehicle).ThenInclude(v => v.Category)
+                .Include(a => a.Customer).ThenInclude(c => c.Account)
+                .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
+                .Include(a => a.AppointmentImages).Include(a => a.Order)
+                .ThenInclude(o => o.OrderParts).ThenInclude(op => op.Part)
+                .Include(a => a.Order).ThenInclude(o => o.TechnicianWorkingSessions)
+                .ThenInclude(tws => tws.Technician).ThenInclude(t => t.Employee)
+                .ThenInclude(e => e.Account).Include(a => a.Order).ThenInclude(o => o.TechnicianWorkingSessions)
+                .ThenInclude(tws => tws.Technician).ThenInclude(t => t.TechnicianSkills).ThenInclude(ts => ts.Service)
+                .Select(a => new AppointmentTechnicianViewModel
                 {
-                    TechnicianWorkingSessionId = tws.Id,             
-                    Id = tws.Order.Appointment.Id,
-                    AppointmentDate = tws.Order.Appointment.Appointment_Date,
-                    VehicleModel = tws.Order.Appointment.Vehicle.Category.Name,
-                    LicensePlate = tws.Order.Appointment.Vehicle.LicensePlate,
-                    CustomerName = tws.Order.Appointment.Customer.Account.First_Name + " " +
-                                      tws.Order.Appointment.Customer.Account.Last_Name,
-                    PhoneNumber = tws.Order.Appointment.Customer.Account.Phone,
-                    Services = tws.Order.Appointment.AppointmentServices
-                                            .Select(s => s.Service.Name).ToList(),
-                    OrderId = tws.OrderId,
-                    Parts = tws.Order.OrderParts.Select(op => new PartTechnicianViewModel
+                    Id = a.Id,
+                    AppointmentDate = a.Appointment_Date,
+                    VehicleModel = a.Vehicle.Category.Name,
+                    LicensePlate = a.Vehicle.LicensePlate,
+                    CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name,
+                    PhoneNumber = a.Customer.Account.Phone,
+                    Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(),
+                    OrderId = a.OrderId,
+                    Parts = a.Order.OrderParts.Select(op => new PartTechnicianViewModel
                     {
-                        TechnicianName = op.Technician.Employee.Account.First_Name + " " +
-                                           op.Technician.Employee.Account.Last_Name,
+                        TechnicianName = op.Technician.Employee.Account.First_Name + " " + op.Technician.Employee.Account.Last_Name,
                         Name = op.Part.Name,
                         Quantity = op.Quantity,
                         ImageUrl = op.Part.Image,
@@ -512,95 +592,23 @@ namespace DataAccess.Repositories
                         ReplacementPrice = op.ReplacementPrice,
                         Stock = op.Part.Stock,
                         Id = op.PartId,
-                        PartStatus = tws.Order.Appointment.AppointmentPartConditions
-                                              .Where(apc => apc.PartId == op.PartId)
-                                              .Select(apc => apc.Level)
-                                              .FirstOrDefault(),
+                        PartStatus = a.AppointmentPartConditions
+                        .Where(apc => apc.PartId == op.PartId)
+                        .Select(apc => apc.Level)
+                        .FirstOrDefault(),
                         TechnicianId = op.TechnicianId
                     }).ToList(),
-                    Status = tws.Status,   
-                    AppointmentImages = tws.Order.Appointment.AppointmentImages
-                                           .Select(img => img.Image)
-                })
-                .ToListAsync();
-
-          
-            var ordered = sessionIds
-                .Join(pageAppointments,
-                    sid => sid,
-                    app => app.TechnicianWorkingSessionId,
-                    (sid, app) => app)
-                .ToList();
-
-            return new PageResultDto<AppointmentTechnicianViewModel>(
-                ordered,
-                pagedResult.TotalItems,
-                model.PageSize.Value,
-                model.PageIndex.Value);
+                    Status = a.Order.TechnicianWorkingSessions.
+                                    OrderByDescending(tws => tws.Id).
+                                    FirstOrDefault(tws => tws.TechnicianId == technicianId).Status,
+                    AppointmentImages = a.AppointmentImages.Select(img => img.Image)
+                }).ToListAsync();
+            var orderedAppointments = orderIds
+                .Select(id => appointments.FirstOrDefault(a => a.OrderId == id))
+                .Where(a => a != null)
+                .DistinctBy(x => x.Id).ToList();
+            return new PageResultDto<AppointmentTechnicianViewModel>(orderedAppointments, pagedResult.TotalItems, model.PageSize.Value, model.PageIndex.Value);
         }
-
-
-
-        //public async Task<PageResultDto<AppointmentTechnicianViewModel>> GetAppointmentTechnicianViewModelByTechnicianId(
-        //    int technicianId, AppointmentTechnicianQueryDto model) { 
-        //    var start = model.BeginTime?.ToDateTime(TimeOnly.MinValue); 
-        //    var end = model.EndTime?.ToDateTime(TimeOnly.MaxValue); 
-        //    var query = _dbContext.TechnicianWorkingSessions.AsNoTracking()
-        //        .Include(t => t.Order).ThenInclude(o => o.Appointment)
-        //        .Where(tws => tws.TechnicianId == technicianId && 
-        //        (!model.Status.HasValue || tws.Status == model.Status.Value) &&
-        //        (!start.HasValue || tws.Order.Appointment.Appointment_Date >= start.Value) &&
-        //        (!end.HasValue || tws.Order.Appointment.Appointment_Date <= end.Value) && 
-        //        (!model.Status.HasValue || tws.Status == model.Status.Value))
-        //        .Select(x => new { x.OrderId, x.Order.Appointment.Appointment_Date });
-        //    query = query.ApplySorting(model.SortField, model.SortOrder); 
-        //    var pagedResult = await PaginationHelper.PaginationAsync(query, model.PageSize.Value, model.PageIndex.Value); 
-        //    if (!pagedResult.Items.Any()) return new PageResultDto<AppointmentTechnicianViewModel>(new List<AppointmentTechnicianViewModel>(), 0, model.PageSize.Value, model.PageIndex.Value);
-        //    var orderIds = pagedResult.Items.Select(x => x.OrderId).ToList();
-        //    var appointments = await _dbContext.Appointments
-        //        .AsNoTracking()
-        //        .AsSplitQuery()
-        //        .Where(a => orderIds.Contains(a.OrderId.Value))
-        //        .Include(a => a.AppointmentPartConditions)
-        //        .Include(a => a.Vehicle).ThenInclude(v => v.Category)
-        //        .Include(a => a.Customer).ThenInclude(c => c.Account)
-        //        .Include(a => a.AppointmentServices).ThenInclude(asv => asv.Service)
-        //        .Include(a => a.AppointmentImages).Include(a => a.Order)
-        //        .ThenInclude(o => o.OrderParts).ThenInclude(op => op.Part)
-        //        .Include(a => a.Order).ThenInclude(o => o.TechnicianWorkingSessions)
-        //        .ThenInclude(tws => tws.Technician).ThenInclude(t => t.Employee)
-        //        .ThenInclude(e => e.Account).Include(a => a.Order).ThenInclude(o => o.TechnicianWorkingSessions)
-        //        .ThenInclude(tws => tws.Technician).ThenInclude(t => t.TechnicianSkills).ThenInclude(ts => ts.Service)
-        //        .Select(a => new AppointmentTechnicianViewModel {
-        //            Id = a.Id, AppointmentDate = a.Appointment_Date, VehicleModel = a.Vehicle.Category.Name,
-        //            LicensePlate = a.Vehicle.LicensePlate, CustomerName = a.Customer.Account.First_Name + " " + a.Customer.Account.Last_Name, 
-        //            PhoneNumber = a.Customer.Account.Phone, Services = a.AppointmentServices.Select(s => s.Service.Name).ToList(), 
-        //            OrderId = a.OrderId, 
-        //            Parts = a.Order.OrderParts.Select(op => new PartTechnicianViewModel { 
-        //                TechnicianName = op.Technician.Employee.Account.First_Name + " " + op.Technician.Employee.Account.Last_Name, 
-        //                Name = op.Part.Name, 
-        //                Quantity = op.Quantity,
-        //                ImageUrl = op.Part.Image,
-        //                Price = op.Price, 
-        //                ReplacementPrice = op.ReplacementPrice, 
-        //                Stock = op.Part.Stock, 
-        //                Id = op.PartId, 
-        //                PartStatus = a.AppointmentPartConditions
-        //                .Where(apc => apc.PartId == op.PartId)
-        //                .Select(apc => apc.Level)
-        //                .FirstOrDefault(), 
-        //                TechnicianId = op.TechnicianId 
-        //            }).ToList(),
-        //            Status = a.Order.TechnicianWorkingSessions.
-        //                            OrderByDescending(tws => tws.Id).
-        //                            FirstOrDefault(tws => tws.TechnicianId == technicianId).Status, 
-        //            AppointmentImages = a.AppointmentImages.Select(img => img.Image) }).ToListAsync();
-        //    var orderedAppointments = orderIds
-        //        .Select(id => appointments.FirstOrDefault(a => a.OrderId == id))
-        //        .Where(a => a != null)
-        //        .DistinctBy(x => x.Id).ToList(); 
-        //    return new PageResultDto<AppointmentTechnicianViewModel>(orderedAppointments, pagedResult.TotalItems, model.PageSize.Value, model.PageIndex.Value); 
-        //}
 
         public async Task<int> CountAppointment(DateOnly appointment_Date)
         {
