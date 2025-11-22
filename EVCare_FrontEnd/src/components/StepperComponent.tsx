@@ -204,7 +204,6 @@ export default function Stepper({
   return (
     <OuterContainer {...rest}>
       <StepCircleContainer>
-        {/* Step indicators */}
         <StepIndicatorRow>
           {stepsArray.map((_, index) => {
             const isNotLast = index < totalSteps - 1;
@@ -217,12 +216,10 @@ export default function Stepper({
           })}
         </StepIndicatorRow>
 
-        {/* Step content */}
         <StepContentWrapper isCompleted={isCompleted} currentStep={currentStep} direction={direction}>
           {stepsArray[currentStep]}
         </StepContentWrapper>
 
-        {/* Navigation buttons */}
         {!isCompleted && (
           <FooterContainer>
             <FooterNav $isFirst={currentStep === 0}>
