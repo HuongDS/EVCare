@@ -18,7 +18,6 @@ import {
   SUCCESS_MESSAGE,
 } from "../../../constants/messages/Message";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAppSelector } from "../../../states/store";
 
 interface Props {
   appointment: TechnicianAppointmentsDto;
@@ -32,25 +31,35 @@ export default function Technician_Repairing({
   orderId,
 }: Props) {
   const [loadingPartId, setLoadingPartId] = useState<number | null>(null);
-  const techId = useAppSelector((state) => state.tech.techId);
   const { mutateAsync: updatePartStatus } = useUpdatePartStatus();
   const notification = useNotification();
   const queryClient = useQueryClient();
 
   const [localParts, setLocalParts] = useState(appointment.parts);
 
+  const { data: techDetail, isLoading, isFetching } = useGetAccount();
+
+  if (isLoading || isFetching) {
+    return <SpinnerComponent />;
+  }
+
   const totalParts = localParts.filter(
-    (part) => part.technicianId === techId
+    (part) => part.technicianId === techDetail?.data?.techId
   ).length;
   const completedParts = localParts.filter(
-    (p) => p.partStatus === "Done" && p.technicianId === techId
+    (p) =>
+      p.partStatus === "Done" && p.technicianId === techDetail?.data?.techId
   ).length;
 
   const progressPercentage =
     totalParts > 0 ? (completedParts / totalParts) * 100 : 0;
 
-  const myParts = localParts.filter((p) => p.technicianId === techId);
-  const otherParts = localParts.filter((p) => p.technicianId !== techId);
+  const myParts = localParts.filter(
+    (p) => p.technicianId === techDetail?.data?.techId
+  );
+  const otherParts = localParts.filter(
+    (p) => p.technicianId !== techDetail?.data?.techId
+  );
 
   const handleUpdatePartStatus = async (
     partId: number,
@@ -274,3 +283,5 @@ import {
   Title,
   WaitingBadge,
 } from "./styles/Technician_Repairing.styled";
+import { useGetAccount } from "../../../services/authService";
+import SpinnerComponent from "../../../components/SpinnerComponent";
