@@ -222,6 +222,7 @@ export const AdminGeneralStyled = styled.div`
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     margin-bottom: 30px;
+    font-family: "Outfit", sans-serif;
   }
 
   .chart-header {
@@ -234,7 +235,8 @@ export const AdminGeneralStyled = styled.div`
   .chart-title {
     font-size: 20px;
     font-weight: 600;
-    color: #333;
+    color: #00ad4e;
+    font-family: "Outfit", sans-serif;
   }
 
   .date-filter {
@@ -253,6 +255,7 @@ export const AdminGeneralStyled = styled.div`
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    font-family: "Outfit", sans-serif;
   }
 
   .orders-header {
@@ -265,7 +268,7 @@ export const AdminGeneralStyled = styled.div`
   .orders-title {
     font-size: 20px;
     font-weight: 600;
-    color: #333;
+    color: #00ad4e;
   }
 
   .view-details {
@@ -336,10 +339,11 @@ export const AdminGeneralStyled = styled.div`
   }
 
   .stats-header {
-    margin-bottom: 20px;
+    margin: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-family: "Outfit", sans-serif;
   }
 
   .stats-header h2 {

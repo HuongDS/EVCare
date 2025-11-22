@@ -95,7 +95,7 @@ export const InvoicePage = ({ data }: InvoicePageProps) => {
             <HeaderTop>
               <CompanyInfo>
                 <h1>EVCare Service</h1>
-                <p>123 Main Street, District 1</p>
+                <p>7 D1 Street, Long Thanh My, Thu Duc</p>
                 <p>Ho Chi Minh City, Vietnam</p>
                 <p>Phone: (+84) 9123456789</p>
                 <p>Email: info@evcare.vn</p>

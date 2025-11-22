@@ -33,6 +33,7 @@ export default function Appoinment_Progress_Modal({
   const {
     data: appointmentDetail,
     isLoading,
+    isFetching,
     error,
   } = useGetAppointmentById(appointmentId ?? 0);
 
@@ -41,7 +42,7 @@ export default function Appoinment_Progress_Modal({
     appointmentDetail?.data?.status ?? "Pending"
   );
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <ModalStyled open={show} onCancel={close} footer={null}>
         <ModalBodyStyled>

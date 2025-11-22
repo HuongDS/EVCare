@@ -33,12 +33,14 @@ export const PageWrapper = styled.div`
   padding: 32px;
   background: linear-gradient(135deg, #f0f9f4 0%, #e6f7f0 100%);
   box-sizing: border-box;
+  font-family: "Outfit", sans-serif;
 `;
 
 export const Subtitle = styled.p`
   margin: 0;
   font-size: 1rem;
   color: #555;
+  font-weight: bold;
 `;
 
 export const ContentWrapper = styled.main`

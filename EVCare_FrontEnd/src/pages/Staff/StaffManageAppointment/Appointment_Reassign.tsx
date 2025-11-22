@@ -686,7 +686,7 @@ export const TechnicianCard = ({
           </InfoItem>
 
           <InfoItem>
-            Completed Orders:{" "}
+            Orders:{" "}
             <StatusBadge $status={technician.status}>
               {technician.completedOrders}
             </StatusBadge>

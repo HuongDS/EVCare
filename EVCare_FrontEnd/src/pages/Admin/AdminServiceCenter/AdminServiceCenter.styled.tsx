@@ -20,6 +20,7 @@ export const PageWrapper = styled.div`
   min-height: 100vh;
   padding: 2rem;
   background: linear-gradient(135deg, #f0f9f4 0%, #e6f7f0 100%);
+  font-family: "Outfit", sans-serif;
 `;
 
 export const Header = styled.header`

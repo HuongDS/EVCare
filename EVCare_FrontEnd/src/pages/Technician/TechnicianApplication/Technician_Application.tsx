@@ -15,9 +15,13 @@ export default function Technician_Application() {
 
   return (
     <ApplicationPage
-      tabs={["SendApplication", "MyApplications"]}
+      tabs={["Send Application", "My Applications"]}
       activeTab={activeTab}
-      onTabChange={setActiveTab}
+      onTabChange={(val) => {
+        if (val !== activeTab) {
+          setActiveTab(val.replace(/\s+/g, ""));
+        }
+      }}
       onSuccess={handleSuccess}
       onError={handleError}
     />
