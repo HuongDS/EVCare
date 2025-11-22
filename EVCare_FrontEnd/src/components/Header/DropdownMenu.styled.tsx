@@ -150,11 +150,8 @@ export const StyledWrapper = styled.div`
   .popup-window hr {
     margin: var(--underline-margin-y) 0;
     border: none;
-    border-bottom: var(--underline-border-width) solid
-      var(--underline-border-color);
+    border-bottom: var(--underline-border-width) solid var(--underline-border-color);
   }
-
-  /* actions */
 
   .popup-window ul button:hover,
   .popup-window ul button:focus-visible {
@@ -192,15 +189,11 @@ export const StyledWrapper = styled.div`
     outline-offset: var(--burger-enable-outline-offset);
   }
 
-  /* (Giữ nguyên logic của checkbox) */
   .popup input:checked + .burger span:nth-child(1) {
-    /* ... */
   }
   .popup input:checked + .burger span:nth-child(2) {
-    /* ... */
   }
   .popup input:checked + .burger span:nth-child(3) {
-    /* ... */
   }
 
   .popup input:checked ~ nav {
