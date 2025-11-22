@@ -179,7 +179,6 @@ const Policy: React.FC = () => {
             <ul>
               {policies.map((policy) => (
                 <li key={policy.id}>
-                  {/* --- (NEW) Thêm class "active" nếu ID trùng --- */}
                   <a href={`#${policy.id}`} className={activeId === policy.id ? "active" : ""}>
                     {policy.title}
                   </a>
@@ -217,7 +216,6 @@ const Policy: React.FC = () => {
           transition={{ duration: 0.8 }}
         >
           <DecorativeShape />
-          {/* (NEW) Sửa lại Title cho đúng (Antd) */}
           <Title level={3} className="ant-typography-h3">
             <HelpCircle size={28} color="#00ad4e" />
             Need More Information?
