@@ -176,7 +176,6 @@ export const SectionHeader = styled.div`
 export const SectionTitle = styled.div`
   width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 8px;
   font-size: 14px;
