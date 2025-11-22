@@ -44,7 +44,6 @@ export default function StockPredictionTable({ onBack }: Props) {
     ...((predictionDate !== 0 && { LeadDate: predictionDate }) || {}),
   });
 
-  // Handle AI prediction
   const handlePredict = async () => {
     if (!leadDate || leadDate < 1 || leadDate > 365) {
       antMessage.error("Please enter a valid number of days (1-365)");
@@ -53,7 +52,6 @@ export default function StockPredictionTable({ onBack }: Props) {
     setPredictionDate(leadDate);
   };
 
-  // Filter data based on search and status
   const filteredData =
     predictedParts?.data?.items.filter((item) => {
       const matchSearch = item.partName
@@ -69,7 +67,6 @@ export default function StockPredictionTable({ onBack }: Props) {
       return matchSearch && matchStatus;
     }) || [];
 
-  // Calculate summary statistics
   const totalParts = predictedParts?.data?.totalItems || 0;
   const partsNeedingRestock =
     predictedParts?.data?.items.filter((item) => item.needQuantity > 0)
@@ -295,22 +292,6 @@ export default function StockPredictionTable({ onBack }: Props) {
                         <ViewReasonButton>View Details</ViewReasonButton>
                       </Popover>
                     )}
-                  />
-
-                  <Table.Column
-                    title="Action"
-                    key="action"
-                    width={120}
-                    align="center"
-                    render={(_, record: AIPredictionItems) =>
-                      record.needQuantity > 0 && (
-                        <ShowButton
-                          text="Update"
-                          onclick={() => setIsOpen(true)}
-                          height="30px"
-                        />
-                      )
-                    }
                   />
                 </Table>
               </TableCard>

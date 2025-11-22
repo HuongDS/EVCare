@@ -72,5 +72,9 @@ export const useGetAppointmentPartCondition = (appointmentId: number) => {
         throw new Error(ERROR_MESSAGE.SOME_THING_WENT_WRONG);
       }
     },
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
   });
 };

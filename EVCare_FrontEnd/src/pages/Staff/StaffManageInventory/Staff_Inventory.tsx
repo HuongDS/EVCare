@@ -45,8 +45,6 @@ const Staff_Inventory = () => {
 
   const filteredParts = parts?.data?.items ?? [];
 
-  // console.log(parts?.data?.items);
-
   const categoryOptions = [
     { label: "All Categories", value: null },
     ...(partCategories?.data?.items?.map((c) => ({

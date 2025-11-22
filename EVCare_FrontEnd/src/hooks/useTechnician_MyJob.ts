@@ -22,22 +22,6 @@ export const useTechnician_MyJob = () => {
     SortOrder: "desc",
   });
 
-  useEffect(() => {
-    if (data?.data?.items?.length) {
-      const activeAppointment = data.data.items.find(
-        (appointment) =>
-          appointment.status !== TechnicianWorkingSessionEnum.COMPLETED &&
-          appointment.status !== TechnicianWorkingSessionEnum.CANCELED
-      );
-
-      const newStatus = activeAppointment?.status || "AddingPart";
-
-      if (newStatus !== activeStatus) {
-        setActiveStatus(newStatus);
-      }
-    }
-  }, [data]);
-
   const { mutateAsync: updateWorkingSession, isPending: isUpdating } =
     useUpdateTechnicianWorkingSession();
 
