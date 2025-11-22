@@ -210,7 +210,7 @@ const TechnicianAppointmentCard: React.FC<Props> = ({
             </SectionTitle>
           </SectionHeader>
           <PartsContainer>
-            {isLoading && isFetching ? (
+            {isLoading || isFetching ? (
               <SpinnerComponent />
             ) : (appointment?.data?.partDamageLevels?.length || 0) > 0 ? (
               <PartsTable>

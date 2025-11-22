@@ -110,7 +110,7 @@ export default function Technician_MyJob() {
 
         <AppointmentList layout transition={{ duration: 0.3 }}>
           <AnimatePresence>
-            {isLoading && isFetching ? (
+            {isLoading || isFetching ? (
               <SpinnerComponent />
             ) : appointments.length > 0 ? (
               appointments.map((item: any) => (
