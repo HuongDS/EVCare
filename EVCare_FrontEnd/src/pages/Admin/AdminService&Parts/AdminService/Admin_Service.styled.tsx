@@ -6,6 +6,7 @@ export const PageWrapper = styled.div`
   min-height: calc(100vh - 80px);
   padding: 32px;
   background: linear-gradient(135deg, #f0f9f4 0%, #e6f7f0 100%);
+  font-family: "Outfit", sans-serif;
 `;
 
 export const ContentWrapper = styled.main`

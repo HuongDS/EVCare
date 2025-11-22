@@ -6,6 +6,7 @@ export const PageWrapper = styled.div`
   min-height: calc(100vh - 80px);
   padding: 32px;
   background: linear-gradient(135deg, #f0f9f4 0%, #e6f7f0 100%);
+  font-family: "Outfit", sans-serif;
 `;
 
 export const ContentWrapper = styled.main`
@@ -175,7 +176,8 @@ export const StatusBadge = styled.span<{ $isBanned: boolean }>`
   font-weight: 700;
   text-transform: capitalize;
   color: ${({ $isBanned }) => ($isBanned ? "#6b7280" : "#065f46")};
-  background-color: ${({ $isBanned }) => ($isBanned ? "#f3f4f6" : "rgba(0, 173, 78, 0.15)")};
+  background-color: ${({ $isBanned }) =>
+    $isBanned ? "#f3f4f6" : "rgba(0, 173, 78, 0.15)"};
 `;
 
 export const ActionGroup = styled.div`
@@ -184,7 +186,10 @@ export const ActionGroup = styled.div`
   gap: 8px;
 `;
 
-export const ActionButton = styled.button<{ $isBanButton?: boolean; $isExpanded?: boolean }>`
+export const ActionButton = styled.button<{
+  $isBanButton?: boolean;
+  $isExpanded?: boolean;
+}>`
   padding: 8px 12px;
   font-size: 0.85rem;
   font-weight: 600;

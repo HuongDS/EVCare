@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { PageWrapper, Header, Title, Instruction, MainTabContainer, MainTabButton } from "./Admin_Category.styled";
+import {
+  PageWrapper,
+  Header,
+  Title,
+  Instruction,
+  MainTabContainer,
+  MainTabButton,
+} from "./Admin_Category.styled";
 import { FaCar, FaCogs, FaTools } from "react-icons/fa";
 import PartCategoryAdmin from "./PartCategoryAdmin";
 import VehicleCategoryAdmin from "./VehicleCategoryAdmin";
@@ -27,17 +34,28 @@ export default function Admin_Category() {
     <PageWrapper>
       <Header>
         <Title>Category Management</Title>
-        <Instruction>Catalog management for Vehicles, Parts, and Services.</Instruction>
+        <Instruction>
+          Catalog management for Vehicles, Parts, and Services.
+        </Instruction>
       </Header>
 
       <MainTabContainer>
-        <MainTabButton $isActive={activeMainTab === "vehicle"} onClick={() => setActiveMainTab("vehicle")}>
+        <MainTabButton
+          $isActive={activeMainTab === "vehicle"}
+          onClick={() => setActiveMainTab("vehicle")}
+        >
           <FaCar /> Vehicle Categories
         </MainTabButton>
-        <MainTabButton $isActive={activeMainTab === "part"} onClick={() => setActiveMainTab("part")}>
+        <MainTabButton
+          $isActive={activeMainTab === "part"}
+          onClick={() => setActiveMainTab("part")}
+        >
           <FaCogs /> Part Categories
         </MainTabButton>
-        <MainTabButton $isActive={activeMainTab === "service"} onClick={() => setActiveMainTab("service")}>
+        <MainTabButton
+          $isActive={activeMainTab === "service"}
+          onClick={() => setActiveMainTab("service")}
+        >
           <FaTools /> Service Categories
         </MainTabButton>
       </MainTabContainer>

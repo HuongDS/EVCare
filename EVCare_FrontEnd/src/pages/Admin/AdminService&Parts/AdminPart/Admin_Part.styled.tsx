@@ -6,6 +6,7 @@ export const PageWrapper = styled.div`
   min-height: calc(100vh - 80px);
   padding: 32px;
   background: linear-gradient(135deg, #f0f9f4 0%, #e6f7f0 100%);
+  font-family: "Outfit", sans-serif;
 `;
 
 export const ContentWrapper = styled.main`
@@ -104,10 +105,12 @@ export const TabButton = styled.button<{ $isActive: boolean }>`
   transition: all 0.3s ease;
   background: ${({ $isActive }) => ($isActive ? "#00ad4e" : "transparent")};
   color: ${({ $isActive }) => ($isActive ? "#fff" : "#374151")};
-  box-shadow: ${({ $isActive }) => ($isActive ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none")};
+  box-shadow: ${({ $isActive }) =>
+    $isActive ? "0 4px 12px rgba(0, 173, 78, 0.3)" : "none"};
 
   &:hover:not(:disabled) {
-    background: ${({ $isActive }) => ($isActive ? "#008f3f" : "rgba(0, 173, 78, 0.1)")};
+    background: ${({ $isActive }) =>
+      $isActive ? "#008f3f" : "rgba(0, 173, 78, 0.1)"};
   }
 `;
 
@@ -128,7 +131,8 @@ export const FormWrapper = styled(motion.form)`
 
 export const FormGrid = styled.div<{ $isNested?: boolean }>`
   display: grid;
-  grid-template-columns: ${({ $isNested }) => ($isNested ? "1fr 1fr" : "1fr 1fr")};
+  grid-template-columns: ${({ $isNested }) =>
+    $isNested ? "1fr 1fr" : "1fr 1fr"};
   gap: 24px;
 
   @media (max-width: 900px) {
@@ -264,19 +268,16 @@ export const Th = styled.th`
 
   &:nth-child(1) {
     width: 10%;
+  }
   &:nth-child(2) {
     width: 25%;
-  &:nth-child(3) {
+  }
+  &:nth-child(3) &:nth-child(4) &:nth-child(5) {
     width: 15%;
-  &:nth-child(4) {
-    width: 15%;
-  &:nth-child(5) {
-    width: 15%;
-  &:nth-child(6) {
+  }
+  &:nth-child(6) &:nth-child(7) {
     width: 10%;
-  &:nth-child(7) {
-    width: 10%;
-
+  }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
