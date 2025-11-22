@@ -119,10 +119,6 @@ export default function OTPForm({
           Verify Code
         </VerifyButton>
       )}
-
-      <ResendText>
-        Didn't receive the code? <ResendLink>Resend</ResendLink>
-      </ResendText>
     </FormContainer>
   );
 }
