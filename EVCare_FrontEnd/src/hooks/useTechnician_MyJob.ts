@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TechnicianWorkingSessionEnum } from "../models/enums/TechnicianWorkingSessionEnum";
 import { useGetTechnicianAppointments } from "../services/appointmentTechnicianApi";
 import { useUpdateTechnicianWorkingSession } from "../services/TechnicianWorkingSessionApi";

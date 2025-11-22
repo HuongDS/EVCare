@@ -35,7 +35,7 @@ export const useGetTechnicianAppointments = (params?: {
         handleError(error);
       }
     },
-    // staleTime: 0,
+
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,

@@ -37,8 +37,6 @@ import {
 } from "./Technician_General.styled";
 
 import { TechnicianWorkingSessionEnum } from "../../../models/enums";
-import { useAppDispatch } from "../../../states/store";
-import { setTechnicianId } from "../../../states/technicianSlice";
 
 const { Title } = Typography;
 
@@ -55,15 +53,12 @@ interface TechnicianAppointment {
   status: string;
 }
 const TechnicianGeneral: React.FC = () => {
-  const dispatch = useAppDispatch();
   const [appointments, setAppointments] = useState<TechnicianAppointment[]>([]);
   const [completedAppointment, setCompletedAppointment] = useState(0);
   const [total, setTotal] = useState(0);
 
   const navigate = useNavigate();
   const { data: techInfo } = useGetAccount();
-
-  dispatch(setTechnicianId(techInfo?.data?.techId ?? 0));
 
   const statuses = [
     TechnicianWorkingSessionEnum.ADDING_PART,

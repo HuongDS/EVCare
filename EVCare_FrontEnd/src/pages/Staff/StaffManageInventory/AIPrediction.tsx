@@ -22,7 +22,6 @@ import { useGetPredictedParts } from "../../../services/staffService";
 import type { AIPredictionItems } from "../../../models/Inventory/InventoryModel";
 import ColorSpinner from "../StaffComponents/ColorSpinner";
 import BackButton from "../../../components/Button/BackButton";
-import ShowButton from "../../../components/Button/ShowButton";
 import UpdatePartModal from "./UpdatePartModal";
 
 const { Title, Paragraph, Text } = Typography;
