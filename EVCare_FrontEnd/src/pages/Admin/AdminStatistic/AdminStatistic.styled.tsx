@@ -1,12 +1,13 @@
 import styled from "styled-components";
 
 export const AdminStatisticStyleWrapper = styled.div`
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-family: "Outfit", sans-serif;
 
   .dashboard-page {
     padding: 1.5rem;
-    background-color: #f9fafb; /* Màu nền trang */
+    background-color: #f9fafb;
     min-height: 100vh;
+    font-family: "Outfit", sans-serif;
   }
 
   .dashboard-tabs {
@@ -34,15 +35,18 @@ export const AdminStatisticStyleWrapper = styled.div`
   }
 
   .tab-button.active {
-    background: linear-gradient(90deg, hsla(147, 100%, 34%, 1) 30%, hsla(147, 100%, 31%, 1) 100%);
+    background: linear-gradient(
+      90deg,
+      hsla(147, 100%, 34%, 1) 30%,
+      hsla(147, 100%, 31%, 1) 100%
+    );
     color: white;
-    transform: translateY(2px); /* Hơi nhô lên */
+    transform: translateY(2px);
     box-shadow: 0 -4px 10px rgba(0, 173, 78, 0.1);
   }
 
   .dashboard-content {
     background: #ffffff;
-    /* Bo góc khớp với tab */
     border-radius: 0 8px 8px 8px;
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -73,6 +77,7 @@ export const AdminStatisticStyleWrapper = styled.div`
     color: #00ad4e;
     width: 32px;
     text-align: center;
+    font-family: "Outfit", sans-serif !important;
   }
 
   .list-container .ant-list-item-meta-title a {
