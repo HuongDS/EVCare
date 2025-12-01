@@ -1,4 +1,4 @@
-# EVCare – Electric Vehicle Service Management Platform
+# EVCare – Electric Vehicle Service Management System
 
 EVCare is a comprehensive platform for managing electric vehicle service operations, including appointment scheduling, technician workflows, inventory management, real-time tracking, intelligent predictions, online payments, and AI-assisted interactions.
 
