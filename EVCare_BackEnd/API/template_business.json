@@ -1,0 +1,749 @@
+[
+  {
+    "business_name": "Quản lý Tài khoản",
+    "apis": [
+      {
+        "controller": "AccountController",
+        "method": "GET GetMyAccountDetail"
+      },
+      {
+        "controller": "AccountController",
+        "method": "PUT UpdateAccountDetail"
+      },
+      {
+        "controller": "AccountController",
+        "method": "DELETE DeleteAccount"
+      },
+      {
+        "controller": "AccountController",
+        "method": "POST VerifyPassword"
+      },
+      {
+        "controller": "AccountController",
+        "method": "POST UpdatePassword"
+      },
+      {
+        "controller": "AccountController",
+        "method": "PUT UnbannedAccount"
+      },
+      {
+        "controller": "AccountController",
+        "method": "GET GetAccountIdByEmail"
+      }
+    ]
+  },
+  {
+    "business_name": "AI",
+    "apis": [
+      {
+        "controller": "AIController",
+        "method": "GET Get"
+      },
+      {
+        "controller": "AIController",
+        "method": "GET Summary"
+      },
+      {
+        "controller": "AIController",
+        "method": "GET Performance"
+      },
+      {
+        "controller": "AIController",
+        "method": "GET Insights"
+      },
+      {
+        "controller": "AIController",
+        "method": "GET PredictRevenue"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Đơn ứng tuyển",
+    "apis": [
+      {
+        "controller": "ApplicationController",
+        "method": "POST SendApplicationAsync"
+      },
+      {
+        "controller": "ApplicationController",
+        "method": "GET GetApplicationAsync"
+      },
+      {
+        "controller": "ApplicationController",
+        "method": "GET GetDateOffAsync"
+      },
+      {
+        "controller": "ApplicationController",
+        "method": "GET GetAllApplicationsAsync"
+      },
+      {
+        "controller": "ApplicationController",
+        "method": "PUT UpdateApplicationStatusAsync"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Đặt lịch hẹn",
+    "apis": [
+      {
+        "controller": "AppointmentController",
+        "method": "POST CreateAppointment"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "POST UpdateAppointmentStatus"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "POST CreateAppointmentForCustomer"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "PUT UpdateAppointment"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "DELETE DeleteAppointment"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET GetAppointmentDetailByAppointmetId"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET GetAppointmentHistory"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET GetAppointmentHistoryByCustomerId"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET GetAppointmentsWithPagination"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET UpdateConfirmAppointmentDateAsync"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET UpdateCancelAppointmentDateAsync"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET GetDailyCounts"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET GetAppointmentServices"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET GetAppointmentByTechnician"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET GetUnderstaffedInProgressAsync"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET CountAppointmentsInMonth"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET CountCustomersInMonth"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET CountAppointmentsInMonthWithStatus"
+      },
+      {
+        "controller": "AppointmentController",
+        "method": "GET GetVehicleCategoryByAppointmentId"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Tình trạng phụ tùng theo lịch hẹn",
+    "apis": [
+      {
+        "controller": "AppointmentPartConditionController",
+        "method": "GET GetAppointmentPartConditions"
+      },
+      {
+        "controller": "AppointmentPartConditionController",
+        "method": "PUT UpdateAppointmentPartConditionStatus"
+      },
+      {
+        "controller": "AppointmentPartConditionController",
+        "method": "POST CreateAppointmentPartCondition"
+      },
+      {
+        "controller": "AppointmentPartConditionController",
+        "method": "PUT UpdateAppointmentPartCondition"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Xác thực",
+    "apis": [
+      {
+        "controller": "AuthController",
+        "method": "POST Register"
+      },
+      {
+        "controller": "AuthController",
+        "method": "POST VerifyOtpRegister"
+      },
+      {
+        "controller": "AuthController",
+        "method": "POST RegisterForEmployee"
+      },
+      {
+        "controller": "AuthController",
+        "method": "POST Login"
+      },
+      {
+        "controller": "AuthController",
+        "method": "POST GoogleCallback"
+      },
+      {
+        "controller": "AuthController",
+        "method": "POST Logout"
+      },
+      {
+        "controller": "AuthController",
+        "method": "POST RefreshTokenAsync"
+      },
+      {
+        "controller": "AuthController",
+        "method": "POST SendOTP"
+      },
+      {
+        "controller": "AuthController",
+        "method": "POST ResetPassword"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Ngày nghỉ",
+    "apis": [
+      {
+        "controller": "BlockedDateController",
+        "method": "GET GetBlockedDate"
+      },
+      {
+        "controller": "BlockedDateController",
+        "method": "POST PostBlockedDate"
+      },
+      {
+        "controller": "BlockedDateController",
+        "method": "PUT PutBlockedDate"
+      },
+      {
+        "controller": "BlockedDateController",
+        "method": "DELETE DeleteBlockedDate"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Chat",
+    "apis": [
+      {
+        "controller": "ChatController",
+        "method": "POST CreateDomainWithAi"
+      },
+      {
+        "controller": "ChatController",
+        "method": "POST StartConsultation"
+      },
+      {
+        "controller": "ChatController",
+        "method": "GET List"
+      },
+      {
+        "controller": "ChatController",
+        "method": "GET History"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Khách hàng",
+    "apis": [
+      {
+        "controller": "CustomerController",
+        "method": "GET GetCustomerByAccountId"
+      },
+      {
+        "controller": "CustomerController",
+        "method": "GET GetAllCustomers"
+      },
+      {
+        "controller": "CustomerController",
+        "method": "GET GetBannedCustomers"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Nhân viên",
+    "apis": [
+      {
+        "controller": "EmployeeController",
+        "method": "GET CheckSlotsAsync"
+      },
+      {
+        "controller": "EmployeeController",
+        "method": "POST AssignTechnicianToOrder"
+      },
+      {
+        "controller": "EmployeeController",
+        "method": "POST AssignTechniciansToOrder"
+      },
+      {
+        "controller": "EmployeeController",
+        "method": "POST UpdateAppointmentDate"
+      },
+      {
+        "controller": "EmployeeController",
+        "method": "GET GetEmployeeId"
+      },
+      {
+        "controller": "EmployeeController",
+        "method": "GET GetAllEmployees"
+      },
+      {
+        "controller": "EmployeeController",
+        "method": "GET GetAllEmployees"
+      },
+      {
+        "controller": "EmployeeController",
+        "method": "GET GetEmployeeDetails"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý File",
+    "apis": [
+      {
+        "controller": "FileController",
+        "method": "POST UploadFile"
+      },
+      {
+        "controller": "FileController",
+        "method": "POST UploadMultipleFiles"
+      },
+      {
+        "controller": "FileController",
+        "method": "POST UploadModel3D"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Hóa đơn",
+    "apis": [
+      {
+        "controller": "InvoiceController",
+        "method": "POST CreateInvoice"
+      },
+      {
+        "controller": "InvoiceController",
+        "method": "GET PaymentCallback"
+      },
+      {
+        "controller": "InvoiceController",
+        "method": "POST Webhook"
+      },
+      {
+        "controller": "InvoiceController",
+        "method": "GET GetInvoicesByCustomerId"
+      },
+      {
+        "controller": "InvoiceController",
+        "method": "GET GetInvoicesByCustomerId"
+      },
+      {
+        "controller": "InvoiceController",
+        "method": "GET GetRecentInVoices"
+      },
+      {
+        "controller": "InvoiceController",
+        "method": "GET GetRevenue"
+      },
+      {
+        "controller": "InvoiceController",
+        "method": "GET GetInvoiceByOrderId"
+      },
+      {
+        "controller": "InvoiceController",
+        "method": "GET PrintInvoiceByOrderId"
+      },
+      {
+        "controller": "InvoiceController",
+        "method": "GET GetInvoiceDetail"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Công việc",
+    "apis": [
+      {
+        "controller": "JobController",
+        "method": "POST Attendance"
+      },
+      {
+        "controller": "JobController",
+        "method": "POST CancelExpired"
+      },
+      {
+        "controller": "JobController",
+        "method": "POST Reminder"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Đơn hàng",
+    "apis": [
+      {
+        "controller": "OrderController",
+        "method": "POST CreateOrder"
+      },
+      {
+        "controller": "OrderController",
+        "method": "POST AddPartsToOrder"
+      },
+      {
+        "controller": "OrderController",
+        "method": "PUT UpdatePartsToOrder"
+      },
+      {
+        "controller": "OrderController",
+        "method": "POST UpdateOrderStatus"
+      },
+      {
+        "controller": "OrderController",
+        "method": "GET GetOrderDetail"
+      },
+      {
+        "controller": "OrderController",
+        "method": "PUT UpdateOrder"
+      },
+      {
+        "controller": "OrderController",
+        "method": "POST AddOrderPart"
+      },
+      {
+        "controller": "OrderController",
+        "method": "GET GetOrdersForTechnician"
+      },
+      {
+        "controller": "OrderController",
+        "method": "PUT UpdateOrderPartStatus"
+      },
+      {
+        "controller": "OrderController",
+        "method": "PUT UpdateOrderPartTechnician"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Nhật ký đơn hàng",
+    "apis": [
+      {
+        "controller": "OrderDetailLogController",
+        "method": "GET GetLog"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Danh mục phụ tùng",
+    "apis": [
+      {
+        "controller": "PartCategoryController",
+        "method": "GET GetCategories"
+      },
+      {
+        "controller": "PartCategoryController",
+        "method": "POST CreateCategory"
+      },
+      {
+        "controller": "PartCategoryController",
+        "method": "PUT UpdateCategory"
+      },
+      {
+        "controller": "PartCategoryController",
+        "method": "DELETE DeleteCategory"
+      },
+      {
+        "controller": "PartCategoryController",
+        "method": "PUT RestoreCategory"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Phụ tùng",
+    "apis": [
+      {
+        "controller": "PartController",
+        "method": "GET GetPartImportTemplate"
+      },
+      {
+        "controller": "PartController",
+        "method": "GET GetAllParts"
+      },
+      {
+        "controller": "PartController",
+        "method": "GET GetPartsForService"
+      },
+      {
+        "controller": "PartController",
+        "method": "POST CreatePart"
+      },
+      {
+        "controller": "PartController",
+        "method": "PUT UpdatePart"
+      },
+      {
+        "controller": "PartController",
+        "method": "PUT StaffUpdatePart"
+      },
+      {
+        "controller": "PartController",
+        "method": "DELETE DeleteAPart"
+      },
+      {
+        "controller": "PartController",
+        "method": "PUT RestorePart"
+      },
+      {
+        "controller": "PartController",
+        "method": "GET ExportParts"
+      },
+      {
+        "controller": "PartController",
+        "method": "POST ImportParts"
+      },
+      {
+        "controller": "PartController",
+        "method": "GET GetTotalPriceOfParts"
+      },
+      {
+        "controller": "PartController",
+        "method": "GET GetLowStockParts"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Đánh giá",
+    "apis": [
+      {
+        "controller": "ReviewController",
+        "method": "POST CreateReview"
+      },
+      {
+        "controller": "ReviewController",
+        "method": "GET GetReviewByAppointment"
+      },
+      {
+        "controller": "ReviewController",
+        "method": "GET GetAllReviews"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Danh mục dịch vụ",
+    "apis": [
+      {
+        "controller": "ServiceCategoryController",
+        "method": "GET GetAll"
+      },
+      {
+        "controller": "ServiceCategoryController",
+        "method": "GET GetAllForAdmin"
+      },
+      {
+        "controller": "ServiceCategoryController",
+        "method": "POST CreateServiceCategory"
+      },
+      {
+        "controller": "ServiceCategoryController",
+        "method": "PUT UpdateServiceCategory"
+      },
+      {
+        "controller": "ServiceCategoryController",
+        "method": "DELETE DeleteServiceCategory"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Trung tâm dịch vụ",
+    "apis": [
+      {
+        "controller": "ServiceCenterController",
+        "method": "GET GetServiceCenterInfo"
+      },
+      {
+        "controller": "ServiceCenterController",
+        "method": "PUT UpdateServiceCenter"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Dịch vụ",
+    "apis": [
+      {
+        "controller": "ServiceController",
+        "method": "GET GetAllServices"
+      },
+      {
+        "controller": "ServiceController",
+        "method": "GET GetActiveServices"
+      },
+      {
+        "controller": "ServiceController",
+        "method": "POST AddAService"
+      },
+      {
+        "controller": "ServiceController",
+        "method": "DELETE DeleteAService"
+      },
+      {
+        "controller": "ServiceController",
+        "method": "PUT UpdateAService"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Thống kê",
+    "apis": [
+      {
+        "controller": "StatisticController",
+        "method": "GET GetDashboardSummary"
+      },
+      {
+        "controller": "StatisticController",
+        "method": "GET GetTopUsedParts"
+      },
+      {
+        "controller": "StatisticController",
+        "method": "GET GetPartUsageHistories"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Kỹ thuật viên",
+    "apis": [
+      {
+        "controller": "TechnicianController",
+        "method": "GET GetTechnicianToday"
+      },
+      {
+        "controller": "TechnicianController",
+        "method": "GET GetTechnicianDeatil"
+      },
+      {
+        "controller": "TechnicianController",
+        "method": "GET GetTechniciansByOrderId"
+      },
+      {
+        "controller": "TechnicianController",
+        "method": "GET GetTechnicianStatus"
+      },
+      {
+        "controller": "TechnicianController",
+        "method": "PUT UpdateTechnicianProfile"
+      },
+      {
+        "controller": "TechnicianController",
+        "method": "GET GetTechnicianPendingParts"
+      },
+      {
+        "controller": "TechnicianController",
+        "method": "GET GetTechnicianRepairedParts"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Kỹ năng kỹ thuật viên",
+    "apis": [
+      {
+        "controller": "TechnicianSkillController",
+        "method": "POST AddTechnicianSkill"
+      },
+      {
+        "controller": "TechnicianSkillController",
+        "method": "PUT UpdateTechnicianSkill"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Ca làm việc của kỹ thuật viên",
+    "apis": [
+      {
+        "controller": "TechnicianWorkingSessionController",
+        "method": "PUT UpdateWorkingSession"
+      },
+      {
+        "controller": "TechnicianWorkingSessionController",
+        "method": "PUT UpdateTechnicianStatusInOrder"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Danh mục xe",
+    "apis": [
+      {
+        "controller": "VehicleCategoryController",
+        "method": "GET GetAllActiveCategories"
+      },
+      {
+        "controller": "VehicleCategoryController",
+        "method": "GET GetCategoryDetail"
+      },
+      {
+        "controller": "VehicleCategoryController",
+        "method": "POST CreateCategory"
+      },
+      {
+        "controller": "VehicleCategoryController",
+        "method": "PUT UpdateCategory"
+      },
+      {
+        "controller": "VehicleCategoryController",
+        "method": "DELETE DeleteCategory"
+      },
+      {
+        "controller": "VehicleCategoryController",
+        "method": "PUT UnbannedVehicleCategory"
+      }
+    ]
+  },
+  {
+    "business_name": "Quản lý Xe",
+    "apis": [
+      {
+        "controller": "VehicleController",
+        "method": "POST CreateVehicle"
+      },
+      {
+        "controller": "VehicleController",
+        "method": "PUT UpdateVehicle"
+      },
+      {
+        "controller": "VehicleController",
+        "method": "GET GetVehiclesByCustomerId"
+      },
+      {
+        "controller": "VehicleController",
+        "method": "GET GetVehicleDetailById"
+      },
+      {
+        "controller": "VehicleController",
+        "method": "PUT UpdateVehicleForStaff"
+      },
+      {
+        "controller": "VehicleController",
+        "method": "PUT SoftDeleteVehicle"
+      }
+    ]
+  }
+]
